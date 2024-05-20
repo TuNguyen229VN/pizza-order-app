@@ -3,6 +3,47 @@
 @tailwind utilities;
 
 section.hero{
-  @apply grid;
-  grid-template-columns: .4fr .6fr;
+    @apply block md:grid;
+    grid-template-columns: .4fr .6fr;
+}
+
+select,
+input[type="email"],
+input[type="password"],
+input[type="tel"],
+input[type="text"] {
+    @apply block w-full mb-2 rounded-xl;
+    @apply p-2 bg-gray-100 border border-gray-300;
+}
+input[type="email"]:disabled,
+input[type="password"]:disabled,
+input[type="tel"]:disabled,
+input[type="text"]:disabled {
+    @apply text-gray-500 bg-gray-300 border-0 cursor-not-allowed;
+}
+label{
+    @apply text-sm leading-tight text-gray-500;
+}
+label + input{
+    margin-top: -2px;
+}
+button, .button{
+    @apply flex justify-center w-full gap-2 font-semibold text-gray-700;
+    @apply px-6 py-2 border border-gray-300 rounded-xl;
+}
+button[type="submit"], .submit, button.primary{
+    @apply text-white border-primary bg-primary;
+}
+button[type="submit"]:disabled, .submit:disabled{
+    @apply bg-red-400 cursor-not-allowed;
+}
+div.tabs > * {
+    @apply px-4 py-2 text-gray-700 bg-gray-300 rounded-full;
+}
+div.tabs > *.active{
+    @apply text-white bg-primary;
+}
+
+.flying-button-parent button{
+    @apply text-white rounded-full border-primary bg-primary;
 }

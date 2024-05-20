@@ -1,6 +1,7 @@
 import { Roboto } from "next/font/google";
 import "./globals.css";
-
+import Header from "@/components/layout/Header";
+import AppProvider from "@/components/AppContext"
 const roboto = Roboto({ subsets: ["latin"], weight: ["400", "500", "700"] });
 
 export const metadata = {
@@ -10,9 +11,17 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" className="scroll-smooth" suppressHydrationWarning={true}>
       <body className={roboto.className}>
-        <main className="max-w-6xl mx-auto p-4">{children}</main>
+        <main className="max-w-6xl p-4 mx-auto">
+          <AppProvider>
+            <Header />
+            {children}
+            <footer className="p-8 mt-16 text-center text-gray-500 border-t">
+              &copy; 2024 All rights reserved
+            </footer>
+          </AppProvider>
+        </main>
       </body>
     </html>
   );
