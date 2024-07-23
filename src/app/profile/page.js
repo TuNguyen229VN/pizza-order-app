@@ -64,7 +64,7 @@ const ProfilePage = () => {
         )}
         {isSaving && (
           <h2 className="p-4 text-center bg-blue-100 border border-blue-300 rounded-lg">
-            Saving...
+            Saving....
           </h2>
         )}
         <div className="flex items-center gap-4">
