@@ -16,7 +16,7 @@ const LoginPage = () => {
   return (
     <section className="mt-8">
       <h1 className="mb-4 text-4xl text-center text-primary">Login</h1>
-      <form className="max-w-xs mx-auto" onSubmit={handleFormSubmit}>
+      <form className="max-w-xs mx-auto" method="post" onSubmit={handleFormSubmit}>
         <input
           type="email"
           name="email"

@@ -9,9 +9,16 @@
 - **mongoose**
 - **bcrypt**
 - **mongodb-adapter mongodb**
+<!-- - **@aws-sdk/client-s3**
+- **uniqid**:random name upload hình avatar -->
+- **axios**
+- **form-data**
+
 ## Pages:
-- Homepage
+- Home Page
 - Login Page
+- Profile Page
 ## Main Features:
 - Authentication
+- Edit Account Information 
 ## Development Rules:

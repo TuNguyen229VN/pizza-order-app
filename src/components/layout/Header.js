@@ -2,12 +2,12 @@
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 
-function AuthLinks({ status, userName="alo" }) {
+function AuthLinks({ status = "unauthenticated", userName }) {
   if (status === "authenticated") {
     return (
       <>
-        <Link href={"/profile"} className="whitespace-nowrap">
-          Hello, {userName}
+        <Link href={"/profile"} className="whitespace-nowrap" title={userName}>
+          Hello, {userName.split(" ")[0]}
         </Link>
         <button
           onClick={() => signOut()}
@@ -36,6 +36,9 @@ function AuthLinks({ status, userName="alo" }) {
 const Header = () => {
   const session = useSession();
   const status = session.status;
+  const userData = session.data?.user;
+  let userName = userData?.name || userData?.email;
+
   return (
     <header className="flex items-center justify-between">
       <nav className="flex items-center gap-8 font-semibold text-gray-500">
@@ -48,7 +51,7 @@ const Header = () => {
         <Link href={""}>Contact</Link>
       </nav>
       <nav className="flex items-center gap-4 font-semibold text-gray-500">
-        <AuthLinks status={status} />
+        <AuthLinks status={status} userName={userName} />
       </nav>
     </header>
   );

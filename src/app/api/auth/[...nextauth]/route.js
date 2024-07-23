@@ -7,7 +7,7 @@ import GoogleProvider from "next-auth/providers/google";
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import clientPromise from "@/libs/mongoConnect";
 
-const handler = NextAuth({
+export const authOptions = {
   secret: process.env.SECRET,
   adapter: MongoDBAdapter(clientPromise),
   providers: [
@@ -39,6 +39,14 @@ const handler = NextAuth({
       },
     }),
   ],
-});
+  session: {
+    strategy: "jwt", // "jwt" Hoặc 'database' nếu bạn lưu session vào MongoDB
+  },
+  pages: {
+    signIn: "/login", // Đường dẫn đến trang đăng nhập tùy chỉnh
+  },
+};
+
+const handler = NextAuth(authOptions);
 
 export { handler as GET, handler as POST };

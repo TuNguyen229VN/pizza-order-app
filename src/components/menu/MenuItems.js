@@ -4,7 +4,11 @@ const MenuItems = () => {
   return (
     <div className="p-4 text-center transition-all bg-gray-200 rounded-lg hover:bg-white hover:shadow-md hover:shadow-black/25">
       <div className="text-center ">
-        <img src="/pizza.png" alt="pizza" className="block mx-auto max-h-auto max-h-24" />
+        <img
+          src="/pizza.png"
+          alt="pizza"
+          className="block mx-auto max-h-auto max-h-24"
+        />
       </div>
       <h4 className="my-3 text-xl font-semibold">Pepperoni Pizza</h4>
       <p className="text-sm text-gray-500">
