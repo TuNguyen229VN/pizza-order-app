@@ -1,7 +1,9 @@
 # Pizza Order App
+
 ## Overview:
 
 ## Technologies & Libraries:
+
 - **NextJS 14**
 - **MongoDB**
 - **Tailwind Css**
@@ -13,12 +15,17 @@
 - **uniqid**:random name upload hình avatar -->
 - **axios**
 - **form-data**
+- **react-hot-toast**
 
 ## Pages:
+
 - Home Page
 - Login Page
 - Profile Page
+
 ## Main Features:
+
 - Authentication
-- Edit Account Information 
+- Edit Account Information
+
 ## Development Rules:
