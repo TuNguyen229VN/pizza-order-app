@@ -1,0 +1,3 @@
+-chưa check trùng email
+-chưa validate input
+-chưa filter page
