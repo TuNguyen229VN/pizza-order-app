@@ -45,6 +45,27 @@ export const authOptions = {
   pages: {
     signIn: "/login", // Đường dẫn đến trang đăng nhập tùy chỉnh
   },
+  callbacks: {
+    async jwt({ token, user,session, trigger }) {
+      if (trigger === "update" && session?.name) {
+        token.name = session.name;
+      }
+      if (user) {
+        token.id = user._id;
+        token.email = user.email;
+        token.name = user.name;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      session.user = {
+        id: token.id,
+        email: token.email,
+        name: token.name,
+      };
+      return session;
+    },
+  },
 };
 
 const handler = NextAuth(authOptions);

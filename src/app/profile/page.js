@@ -1,5 +1,7 @@
 "use client";
-import { useSession } from "next-auth/react";
+import UserTabs from "@/components/layout/UserTabs";
+import { ChecksumAlgorithm } from "@aws-sdk/client-s3";
+import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -14,7 +16,9 @@ const ProfilePage = () => {
   const [postalCode, setPostalCode] = useState("");
   const [city, setCity] = useState("");
   const [country, setCountry] = useState("");
-  const { status } = session;
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [profileFetched, setProfileFetched] = useState(false);
+  const { status, update } = session;
   useEffect(() => {
     if (status === "authenticated") {
       // setUserName(session?.data?.user?.name);
@@ -28,15 +32,17 @@ const ProfilePage = () => {
           setPostalCode(data.postalCode);
           setCity(data.city);
           setCountry(data.country);
+          setIsAdmin(data.admin);
+          setProfileFetched(true);
         });
       });
     }
   }, [session, status]);
-  if (status === "loading") {
-    return "Loading...";
-  }
   if (status === "unauthenticated") {
     return redirect("/login");
+  }
+  if (status === "loading" || !profileFetched) {
+    return "Loading...";
   }
 
   const handleFileChange = async (e) => {
@@ -82,8 +88,10 @@ const ProfilePage = () => {
           country,
         }),
       });
-      if (response.ok) resolve();
-      else reject();
+      if (response.ok) {
+        update({ name: userName });
+        resolve();
+      } else reject();
     });
     toast.promise(savingPromise, {
       loading: "Saving...",
@@ -93,8 +101,8 @@ const ProfilePage = () => {
   };
   return (
     <section className="mt-8">
-      <h1 className="mb-4 text-4xl text-center text-primary">Profile</h1>
-      <div className="max-w-md mx-auto">
+      <UserTabs isAdmin={isAdmin}></UserTabs>
+      <div className="max-w-md mx-auto mt-8">
         <div className="flex gap-4">
           <div className="rounded-lg">
             <div className="relative p-2 rounded-lg max-w-[120px]">

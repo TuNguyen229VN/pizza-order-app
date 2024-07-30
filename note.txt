@@ -1,3 +1,7 @@
 -chưa check trùng email
 -chưa validate input
 -chưa filter page
+-responsive
+-tối ưu(tách component,...)
+-loading page
+- lổi loading khi npm run dev ở trang profile
