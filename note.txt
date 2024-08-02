@@ -5,3 +5,4 @@
 -tối ưu(tách component,...)
 -loading page
 - lổi loading khi npm run dev ở trang profile
+-ahihi
