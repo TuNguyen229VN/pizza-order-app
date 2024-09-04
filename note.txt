@@ -6,3 +6,8 @@
 -loading page
 - lổi loading khi npm run dev ở trang profile
 -ahihi
+<<<<<<< HEAD
+=======
+
+=ALo 
+>>>>>>> tunguyen
