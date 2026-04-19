@@ -7,7 +7,7 @@ export default function UseProfile() {
     setLoading(true);
     fetch("/api/profile").then((response) => {
       response.json().then((data) => {
-        setData_(data.admin);
+        setData_(data);
         setLoading(false);
       });
     });

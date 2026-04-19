@@ -7,3 +7,4 @@
 - lổi loading khi npm run dev ở trang profile
 -avtar cap nhât chưa dúng
 -them proptypes
+-chua validation category
