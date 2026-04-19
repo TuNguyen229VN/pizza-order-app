@@ -5,9 +5,5 @@
 -tối ưu(tách component,...)
 -loading page
 - lổi loading khi npm run dev ở trang profile
--ahihi
-<<<<<<< HEAD
-=======
-
-=ALo 
->>>>>>> tunguyen
+-avtar cap nhât chưa dúng
+-them proptypes

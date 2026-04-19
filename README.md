@@ -2,6 +2,8 @@
 
 ## Overview:
 
+**🗓️ Project created on:** May 13, 2024
+
 ## Technologies & Libraries:
 
 - **NextJS 14**
