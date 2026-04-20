@@ -3,9 +3,10 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/route";
 import { User } from "@/models/User";
 import { UserInfo } from "@/models/UserInfo";
+import { connectDB } from "@/libs/connectDB";
 
 export async function PUT(req) {
-  mongoose.connect(process.env.MONGO_URL);
+  await connectDB();
   const data = await req.json();
 
   const { name, image, ...otherUserInfo } = data;
@@ -22,7 +23,7 @@ export async function PUT(req) {
 }
 
 export async function GET(req) {
-  mongoose.connect(process.env.MONGO_URL);
+  await connectDB();
   const session = await getServerSession(authOptions);
   const email = session?.user?.email;
   if (!email) {

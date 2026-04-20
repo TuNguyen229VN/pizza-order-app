@@ -1,10 +1,10 @@
 "use client";
+import EditTableImage from "@/components/layout/EditTableImage";
 import UserTabs from "@/components/layout/UserTabs";
-import { API_PROFILE, API_UPLOAD_IMAGE } from "@/constant/constant";
+import { API_PROFILE } from "@/constant/constant";
 import { LOGIN_ROUTE } from "@/constant/routesApp";
 import { ChecksumAlgorithm } from "@aws-sdk/client-s3";
 import { signIn, useSession } from "next-auth/react";
-import Image from "next/image";
 import { redirect } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -47,33 +47,6 @@ const ProfilePage = () => {
     return "Loading...";
   }
 
-  const handleFileChange = async (e) => {
-    const files = e?.target.files;
-    if (files?.length === 1) {
-      const data = new FormData();
-      data.set("file", files[0]);
-      const uploadPromise = new Promise(async (resolve, reject) => {
-        const response = await fetch(API_UPLOAD_IMAGE, {
-          method: "POST",
-          // headers: { "Content-Type": "multipart/form-data" },
-          body: data,
-        });
-        if (response.ok) {
-          const link = await response.json();
-          setImage(link?.url);
-          resolve();
-        } else {
-          reject();
-        }
-      });
-      toast.promise(uploadPromise, {
-        loading: "Uploading...",
-        success: "Upload completed",
-        error: "Upload error",
-      });
-    }
-  };
-
   const handleProfileInfoUpdate = async (e) => {
     e.preventDefault();
     const savingPromise = new Promise(async (resolve, reject) => {
@@ -108,25 +81,7 @@ const ProfilePage = () => {
         <div className="flex gap-4">
           <div className="rounded-lg">
             <div className="relative p-2 rounded-lg max-w-[120px]">
-              {image && (
-                <Image
-                  className="object-cover w-full h-full mb-4 rounded-lg"
-                  src={image}
-                  width={250}
-                  height={250}
-                  alt="avatar"
-                />
-              )}
-              <label>
-                <input
-                  type="file"
-                  className="hidden"
-                  onChange={handleFileChange}
-                />
-                <span className="block p-2 text-center border border-gray-300 rounded-lg cursor-pointer">
-                  Edit
-                </span>
-              </label>
+              <EditTableImage link={image} setLink={setImage} />
             </div>
           </div>
           <form className="grow" onSubmit={handleProfileInfoUpdate}>
