@@ -1,4 +1,6 @@
 "use client";
+import { API_REGISTER } from "@/constant/constant";
+import { HOME_ROUTE, LOGIN_ROUTE } from "@/constant/routesApp";
 import { signIn } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -15,7 +17,7 @@ const RegisterPage = () => {
     setCreatingUser(true);
     setError(false);
     setUserCreated(false);
-    const response = await fetch("/api/register", {
+    const response = await fetch(API_REGISTER, {
       method: "POST",
       body: JSON.stringify({ email, password }),
       headers: { "Content-Type": "application/json" },
@@ -34,7 +36,7 @@ const RegisterPage = () => {
         <div className="my-4 text-center">
           User created.
           <br /> Now you can{" "}
-          <Link href={"/login"} className="underline">
+          <Link href={LOGIN_ROUTE} className="underline">
             Login &raquo;
           </Link>
         </div>
@@ -70,14 +72,14 @@ const RegisterPage = () => {
         <button
           type="button"
           className="flex items-center justify-center gap-4"
-          onClick={() => signIn("google", { callbackUrl: "/" })}
+          onClick={() => signIn("google", { callbackUrl: HOME_ROUTE })}
         >
           <Image src={"/google.png"} alt="google" width={32} height={32} />
           Login with google
         </button>
         <div className="pt-4 my-4 text-center text-gray-500 border-t">
           Existing account?{" "}
-          <Link className="underline" href={"/login"}>
+          <Link className="underline" href={LOGIN_ROUTE}>
             Login here &raquo;
           </Link>
         </div>

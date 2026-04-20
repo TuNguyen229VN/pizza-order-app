@@ -1,4 +1,5 @@
 "use client";
+import { HOME_ROUTE } from "@/constant/routesApp";
 import { signIn } from "next-auth/react";
 import Image from "next/image";
 import React, { useState } from "react";
@@ -10,7 +11,7 @@ const LoginPage = () => {
   async function handleFormSubmit(e) {
     e.preventDefault();
     setLoginInProgress(true);
-    await signIn("credentials", { email, password, callbackUrl: "/" });
+    await signIn("credentials", { email, password, callbackUrl: HOME_ROUTE });
     setLoginInProgress(false);
   }
   return (
@@ -41,7 +42,7 @@ const LoginPage = () => {
         </div>
         <button
           type="button"
-          onClick={() => signIn("google", { callbackUrl: "/" })}
+          onClick={() => signIn("google", { callbackUrl: HOME_ROUTE })}
           className="flex justify-center gap-4"
         >
           <Image src={"/google.png"} alt={""} width={24} height={24} />

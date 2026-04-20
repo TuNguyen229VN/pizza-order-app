@@ -1,6 +1,7 @@
 "use client";
 import UserTabs from "@/components/layout/UserTabs";
 import UseProfile from "@/components/UseProfile";
+import { API_CATEGORIES } from "@/constant/constant";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
@@ -15,7 +16,7 @@ const CategoriesPage = () => {
   }, []);
 
   const fetchCategories = () => {
-    fetch("/api/categories").then((res) => {
+    fetch(API_CATEGORIES).then((res) => {
       res.json().then((categories) => {
         setCategories(categories);
       });
@@ -35,7 +36,7 @@ const CategoriesPage = () => {
       if(editedCategory){
         data._id=editedCategory._id;
       }
-      const response = await fetch("/api/categories", {
+      const response = await fetch(API_CATEGORIES, {
         method: editedCategory ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),

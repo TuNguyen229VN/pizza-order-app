@@ -1,5 +1,7 @@
 "use client";
 import UserTabs from "@/components/layout/UserTabs";
+import { API_PROFILE, API_UPLOAD_IMAGE } from "@/constant/constant";
+import { LOGIN_ROUTE } from "@/constant/routesApp";
 import { ChecksumAlgorithm } from "@aws-sdk/client-s3";
 import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
@@ -23,7 +25,7 @@ const ProfilePage = () => {
     if (status === "authenticated") {
       // setUserName(session?.data?.user?.name);
       // setImage(session.data.user.image);
-      fetch("/api/profile").then((response) => {
+      fetch(API_PROFILE).then((response) => {
         response.json().then((data) => {
           setUserName(data.name);
           setImage(data.image);
@@ -39,7 +41,7 @@ const ProfilePage = () => {
     }
   }, [session, status]);
   if (status === "unauthenticated") {
-    return redirect("/login");
+    return redirect(LOGIN_ROUTE);
   }
   if (status === "loading" || !profileFetched) {
     return "Loading...";
@@ -51,7 +53,7 @@ const ProfilePage = () => {
       const data = new FormData();
       data.set("file", files[0]);
       const uploadPromise = new Promise(async (resolve, reject) => {
-        const response = await fetch("/api/upload", {
+        const response = await fetch(API_UPLOAD_IMAGE, {
           method: "POST",
           // headers: { "Content-Type": "multipart/form-data" },
           body: data,
@@ -75,7 +77,7 @@ const ProfilePage = () => {
   const handleProfileInfoUpdate = async (e) => {
     e.preventDefault();
     const savingPromise = new Promise(async (resolve, reject) => {
-      const response = await fetch("/api/profile", {
+      const response = await fetch(API_PROFILE, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

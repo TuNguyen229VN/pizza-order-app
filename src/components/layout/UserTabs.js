@@ -1,4 +1,5 @@
 "use client";
+import { CATEGORIES_ROUTE, MENU_ITEMS_ROUTE, PROFILE_ROUTE, USERS_ROUTE } from "@/constant/routesApp";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
@@ -7,24 +8,24 @@ const UserTabs = ({ isAdmin }) => {
   const path = usePathname();
   return (
     <div className="flex justify-center gap-2 mx-auto tabs">
-      <Link className={path === "/profile" ? "active" : ""} href={"/profile"}>
+      <Link className={path === PROFILE_ROUTE ? "active" : ""} href={PROFILE_ROUTE}>
         Profile
       </Link>
       {isAdmin && (
         <>
           <Link
-            className={path === "/categories" ? "active" : ""}
-            href={"/categories"}
+            className={path === CATEGORIES_ROUTE ? "active" : ""}
+            href={CATEGORIES_ROUTE}
           >
             Categories
           </Link>
           <Link
-            className={path === "/menu-items" ? "active" : ""}
-            href={"/menu-items"}
+            className={path === MENU_ITEMS_ROUTE ? "active" : ""}
+            href={MENU_ITEMS_ROUTE}
           >
             Menu Items
           </Link>
-          <Link className={path === "/users" ? "active" : ""} href={"/users"}>
+          <Link className={path === USERS_ROUTE ? "active" : ""} href={USERS_ROUTE}>
             Users
           </Link>
         </>

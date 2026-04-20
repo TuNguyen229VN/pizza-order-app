@@ -8,3 +8,4 @@
 -avtar cap nhât chưa dúng
 -them proptypes
 -chua validation category
+- làm register page
