@@ -1,9 +1,14 @@
-import { Roboto } from "next/font/google";
+import { Roboto, Roboto_Condensed } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import AppProvider from "@/components/AppContext";
 import { Toaster } from "react-hot-toast";
-const roboto = Roboto({ subsets: ["latin"], weight: ["400", "500", "700"] });
+
+const roboto = Roboto({ 
+  subsets: ["latin"], 
+  weight: ["400", "500", "700"],
+  display: "swap",
+});
 
 export const metadata = {
   title: "Create Next App",

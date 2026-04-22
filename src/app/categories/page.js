@@ -33,8 +33,8 @@ const CategoriesPage = () => {
     ev.preventDefault();
     const creationPromise = new Promise(async (resolve, reject) => {
       const data = { name: categoryName };
-      if(editedCategory){
-        data._id=editedCategory._id;
+      if (editedCategory) {
+        data._id = editedCategory._id;
       }
       const response = await fetch(API_CATEGORIES, {
         method: editedCategory ? "PUT" : "POST",
@@ -88,7 +88,7 @@ const CategoriesPage = () => {
                 setEditedCategory(category);
                 setCategoryName(category.name);
               }}
-              className="flex gap-1 p-2 px-4 mb-1 bg-gray-200 cursor-pointer rounded-xl"
+              className="flex gap-1 p-2 px-4 mb-1 cursor-pointer rounded-xl"
               key={category._id}
             >
               <span>{category.name}</span>
