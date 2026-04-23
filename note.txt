@@ -9,4 +9,4 @@
 -them proptypes
 -chua validation category,menuitems (price so am)
 -disable nút save truoc khi save hình
-- làm register page
+- làm register page.
