@@ -7,5 +7,6 @@
 - lổi loading khi npm run dev ở trang profile
 -avtar cap nhât chưa dúng
 -them proptypes
--chua validation category,menuitems
+-chua validation category,menuitems (price so am)
+-disable nút save truoc khi save hình
 - làm register page

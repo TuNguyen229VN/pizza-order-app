@@ -1,11 +1,17 @@
+"use client";
 import Left from '@/components/icons/Left';
 import EditTableImage from '@/components/layout/EditTableImage';
 import UserTabs from '@/components/layout/UserTabs';
 import UseProfile from '@/components/UseProfile';
+import { API_MENU_ITEMS } from '@/constant/constant';
+import { MENU_ITEMS_ROUTE } from '@/constant/routesApp';
 import Link from 'next/link';
-import React, { useState } from 'react'
+import { redirect, useParams } from 'next/navigation';
+import React, { useEffect, useState } from 'react'
+import toast from 'react-hot-toast';
 
 export default function EditMenuItemPage() {
+    const { id } = useParams();
     const { loading: profileLoading, data: profileData } = UseProfile();
 
     const [image, setImage] = useState("");
@@ -14,12 +20,28 @@ export default function EditMenuItemPage() {
     const [basePrice, setBasePrice] = useState("");
     const [redirectToItems, setRedirectToItems] = useState(false)
 
+    useEffect(() => {
+        fetch(API_MENU_ITEMS).then(response => {
+            response.json().then(items => {
+                const item = items.find(i => i._id === id);
+                if (item) {
+                    setImage(item.image);
+                    setName(item.name);
+                    setDescription(item.description);
+                    setBasePrice(item.basePrice);
+                }
+            })
+        })
+        
+    }, [id])
+
+
     const handleFormSubmit = async (e) => {
         e.preventDefault();
-        const data = { image, name, description, basePrice };
+        const data = { image, name, description, basePrice,_id: id };
         const savingPromise = new Promise(async (resolve, reject) => {
             const response = await fetch(API_MENU_ITEMS, {
-                method: "POST",
+                method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
             });
