@@ -56,6 +56,11 @@ const CategoriesPage = () => {
       error: "Error,sorry",
     });
   };
+
+  const handleCategoryDelete = async (_id) => {
+    await fetch(`${API_CATEGORIES}/?_id=${_id}`, { method: "DELETE" });
+  }
+
   return (
     <section className="max-w-lg mx-auto mt-8">
       <UserTabs isAdmin={profileData} />
@@ -80,19 +85,22 @@ const CategoriesPage = () => {
         </div>
       </form>
       <ul>
-        <h2 className="mt-8 text-sm text-gray-500">Edit category:</h2>
+        <h2 className="mt-8 text-sm text-gray-500">Existing categories:</h2>
         {categories?.length > 0 &&
           categories.map((category) => (
-            <button
-              onClick={() => {
-                setEditedCategory(category);
-                setCategoryName(category.name);
-              }}
-              className="flex gap-1 p-2 px-4 mb-1 cursor-pointer rounded-xl"
+            <div
+              className="flex gap-1 p-2 px-4 mb-1 bg-gray-100 rounded-xl"
               key={category._id}
             >
-              <span>{category.name}</span>
-            </button>
+              <div className="grow" >{category.name}</div>
+              <div className="flex gap-1">
+                <button type="button" onClick={() => {
+                  setEditedCategory(category);
+                  setCategoryName(category.name);
+                }}>Edit</button>
+                <button type="button" onClick={() => handleCategoryDelete(category._id)}>Delete</button>
+              </div>
+            </div>
           ))}
       </ul>
     </section>
