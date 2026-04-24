@@ -31,7 +31,10 @@ export default function EditMenuItemPage() {
 
     }, [id])
 
-
+    const handleSearch = (query) => {
+        // Implement search logic here
+        console.log("Searching for:", query);
+    }
     const handleFormSubmit = async (e, formData) => {
         e.preventDefault();
         const data = {  _id: id,...formData };
