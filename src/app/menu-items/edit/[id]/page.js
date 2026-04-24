@@ -31,10 +31,15 @@ export default function EditMenuItemPage() {
 
     }, [id])
 
-    const handleSearch = (query) => {
-        // Implement search logic here
-        console.log("Searching for:", query);
-    }
+   const handleTest = () => {
+        const data = { name: "Test", description: "Test", image: "https://via.placeholder.com/150", price: 10, category: "Test" }
+        fetch(API_MENU_ITEMS, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) }).then(response => {
+            if (response.ok) {
+                console.log("Menu item created successfully");      } else {
+                console.error("Error creating menu item");
+            }   })
+    }   
+    
     const handleFormSubmit = async (e, formData) => {
         e.preventDefault();
         const data = {  _id: id,...formData };
