@@ -31,12 +31,8 @@ export default function EditMenuItemPage() {
 
     }, [id])
 
-    const handleLikeToggle = async () => {
-        const updatedMenuItem = { ...menuItem, liked: !menuItem.liked };
-        setMenuItem(updatedMenuItem);
-        await fetch(`${API_MENU_ITEMS}/${menuItem._id}/like`, {
-            method: "POST",
-        });
+    const handleImageChange = (imageUrl) => {
+        setMenuItem(prev => ({ ...prev, image: imageUrl }))
     }
 
     const handleFormSubmit = async (e, formData) => {
