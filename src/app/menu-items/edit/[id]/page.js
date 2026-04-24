@@ -31,14 +31,9 @@ export default function EditMenuItemPage() {
 
     }, [id])
 
-   const handleTest = () => {
-        const data = { name: "Test", description: "Test", image: "https://via.placeholder.com/150", price: 10, category: "Test" }
-        fetch(API_MENU_ITEMS, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) }).then(response => {
-            if (response.ok) {
-                console.log("Menu item created successfully");      } else {
-                console.error("Error creating menu item");
-            }   })
-    }   
+  const test1 = { name: "Test",
+ description: "Test description",
+ image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cGFzdGF8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=800&q=60",  }
     
     const handleFormSubmit = async (e, formData) => {
         e.preventDefault();
