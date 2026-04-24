@@ -31,13 +31,25 @@ export default function EditMenuItemPage() {
 
     }, [id])
 
-  const test1 = { name: "Test",
- description: "Test description",
- image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cGFzdGF8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=800&q=60",  }
-    
+    const test1 = {
+        name: "Test",
+        description: "Test description",
+        image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cGFzdGF8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=800&q=60",
+    }
+    const handleLoadingImage = (url) => {
+        setMenuItem(prev => {
+            return { ...prev, image: url }
+        })
+    }
+    const handleDeleteImage = () => {
+        setMenuItem(prev => {
+            return { ...prev, image: "" }
+        })
+    }
+
     const handleFormSubmit = async (e, formData) => {
         e.preventDefault();
-        const data = {  _id: id,...formData };
+        const data = { _id: id, ...formData };
         console.log(data)
         const savingPromise = new Promise(async (resolve, reject) => {
             const response = await fetch(API_MENU_ITEMS, {
