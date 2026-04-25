@@ -31,9 +31,26 @@ export default function EditMenuItemPage() {
 
     }, [id])
 
-    const handleImageChange = (imageUrl) => {
-        setMenuItem(prev => ({ ...prev, image: imageUrl }))
+    const handleDeleteClick = async () => {
+        const promise = new Promise(async (resolve, reject) => {
+            const response = await fetch(`${API_MENU_ITEMS}?_id=${id}`, {
+                method: "DELETE",
+            })
+            if (response.ok) {
+                resolve();
+            } else {
+                reject();
+            }
+            await toast.promise(promise, {
+                loading: "Deleting...",
+                success: "Deleted",
+                error: "Error",
+            });
+
+            setRedirectToItems(true);
+        })
     }
+
 
     const handleFormSubmit = async (e, formData) => {
         e.preventDefault();
@@ -81,6 +98,11 @@ export default function EditMenuItemPage() {
                 </Link>
             </div>
             <MenuItemForm onSubmit={handleFormSubmit} menuItem={menuItem}></MenuItemForm>
+            <div className='max-w-md mx-auto mt-4'>
+                <div className="max-w-xs pl-4 ml-auto ">
+                    <button type='button' onClick={handleDeleteClick}>Delete this menu item</button>
+                </div>
+            </div>
         </section>
     )
 }

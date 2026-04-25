@@ -20,3 +20,11 @@ export async function GET() {
     const menuItems = await MenuItem.find();
     return Response.json(menuItems);
 }
+
+export async function DELETE(req) {
+    await connectDB();
+    const url = new URL(req.url);
+    const _id = url.searchParams.get("_id");
+    await MenuItem.findByIdAndDelete(_id);
+    return Response.json(true);
+}

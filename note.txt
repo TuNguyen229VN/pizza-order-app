@@ -10,3 +10,4 @@
 -chua validation category,menuitems (price so am)
 -disable nút save truoc khi save hình
 - làm register page.a
+- them confirm truoc khi xóa cho delete function

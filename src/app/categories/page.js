@@ -58,8 +58,23 @@ const CategoriesPage = () => {
   };
 
   const handleCategoryDelete = async (_id) => {
-    await fetch(`${API_CATEGORIES}/?_id=${_id}`, { method: "DELETE" });
-  }
+    const promise = new Promise(async (resolve, reject) => {
+      const response = await fetch(`${API_CATEGORIES}/?_id=${_id}`, { method: "DELETE" });
+      if (response.ok) {
+        resolve();
+      } else {
+        reject();
+      }
+    });
+
+    await toast.promise(promise, {
+      loading: "Deleting category...",
+      success: "Category deleted",
+      error: "Error, sorry",
+    });
+
+    fetchCategories();
+  };
 
   return (
     <section className="max-w-lg mx-auto mt-8">
@@ -77,10 +92,14 @@ const CategoriesPage = () => {
               onChange={(ev) => setCategoryName(ev.target.value)}
             />
           </div>
-          <div className="pb-2">
+          <div className="flex gap-2 pb-2">
             <button className="border border-primary" type="submit">
               {editedCategory ? "Update" : "Create"}
             </button>
+            <button type="button" onClick={() => {
+              setCategoryName("");
+              setEditedCategory(null)
+            }}>Cancel</button>
           </div>
         </div>
       </form>
@@ -89,7 +108,7 @@ const CategoriesPage = () => {
         {categories?.length > 0 &&
           categories.map((category) => (
             <div
-              className="flex gap-1 p-2 px-4 mb-1 bg-gray-100 rounded-xl"
+              className="flex items-center gap-1 p-2 px-4 mb-1 bg-gray-100 rounded-xl"
               key={category._id}
             >
               <div className="grow" >{category.name}</div>
