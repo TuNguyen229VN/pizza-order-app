@@ -1,4 +1,5 @@
 "use client";
+import DeleteButton from "@/components/DeleteButton";
 import UserTabs from "@/components/layout/UserTabs";
 import UseProfile from "@/components/UseProfile";
 import { API_CATEGORIES } from "@/constant/constant";
@@ -77,7 +78,7 @@ const CategoriesPage = () => {
   };
 
   return (
-    <section className="max-w-lg mx-auto mt-8">
+    <section className="max-w-2xl mx-auto mt-8">
       <UserTabs isAdmin={profileData} />
       <form className="mt-8" onSubmit={handleCategorySubmit}>
         <div className="flex items-end gap-2">
@@ -117,7 +118,7 @@ const CategoriesPage = () => {
                   setEditedCategory(category);
                   setCategoryName(category.name);
                 }}>Edit</button>
-                <button type="button" onClick={() => handleCategoryDelete(category._id)}>Delete</button>
+                <DeleteButton label="Delete" onDelete={() => handleCategoryDelete(category._id)} />
               </div>
             </div>
           ))}

@@ -1,5 +1,5 @@
 "use client";
-import { CATEGORIES_ROUTE, MENU_ITEMS_ROUTE, PROFILE_ROUTE, USERS_ROUTE } from "@/constant/routesApp";
+import { CATEGORIES_ROUTE, MENU_ITEMS_ROUTE, ORDERS_ROUTE, PROFILE_ROUTE, USERS_ROUTE } from "@/constant/routesApp";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
@@ -27,6 +27,9 @@ const UserTabs = ({ isAdmin }) => {
           </Link>
           <Link className={path === USERS_ROUTE ? "active" : ""} href={USERS_ROUTE}>
             Users
+          </Link>
+          <Link className={path === ORDERS_ROUTE ? "active" : ""} href={ORDERS_ROUTE}>
+            Orders
           </Link>
         </>
       )}

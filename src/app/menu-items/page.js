@@ -28,7 +28,7 @@ export default function MenuItemsPage() {
     return "Not an admin";
   }
   return (
-    <section className="max-w-md mx-auto mt-8">
+    <section className="max-w-2xl mx-auto mt-8">
       <UserTabs isAdmin={profileData.admin}></UserTabs>
       <div className="mt-8">
         <Link className="flex button" href={MENU_ITEM_NEW_ROUTE}><span>Create new menu item</span> <Right /></Link>

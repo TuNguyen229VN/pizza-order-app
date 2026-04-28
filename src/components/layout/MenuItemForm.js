@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import EditTableImage from './EditTableImage'
 import MenuItemPriceProps from './MenuItemPriceProps';
+import { API_CATEGORIES } from '@/constant/constant';
 
 export default function MenuItemForm({ onSubmit, menuItem }) {
     const [image, setImage] = useState(menuItem?.image || "");
@@ -8,9 +9,19 @@ export default function MenuItemForm({ onSubmit, menuItem }) {
     const [description, setDescription] = useState(menuItem?.description || "");
     const [basePrice, setBasePrice] = useState(menuItem?.basePrice || "");
     const [sizes, setSizes] = useState(menuItem?.sizes || []);
+    const [category, setCategory] = useState(menuItem?.category || "");
+    const [categories, setCategories] = useState([]);
     const [extraIngredientPrices, setExtraIngredientPrices] = useState(menuItem?.extraIngredientPrices || []);
+
+    useEffect(() => {
+        fetch(API_CATEGORIES).then(res => {
+            res.json().then(categories => {
+                setCategories(categories);
+            })
+        })
+    }, [menuItem])
     return (
-        <form onSubmit={e => onSubmit(e, { image, name, description, basePrice, sizes, extraIngredientPrices })} className="max-w-md mx-auto mt-8">
+        <form onSubmit={e => onSubmit(e, { image, name, description, basePrice, sizes, extraIngredientPrices,category })} className="max-w-2xl mx-auto mt-8">
             <div
                 className="grid items-start gap-4"
                 style={{ gridTemplateColumns: ".3fr .7fr" }}
@@ -31,6 +42,12 @@ export default function MenuItemForm({ onSubmit, menuItem }) {
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                     />
+                    <label htmlFor="">Category</label>
+                    <select value={category} onChange={(e) => setCategory(e.target.value)}>
+                        {categories.length > 0 && categories.map(category => (
+                            <option key={category._id} value={category._id}>{category.name}</option>
+                        ))}
+                    </select>
                     <label htmlFor="">Base price</label>
                     <input
                         type="text"

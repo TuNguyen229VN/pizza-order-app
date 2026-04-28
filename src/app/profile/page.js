@@ -77,7 +77,7 @@ const ProfilePage = () => {
   return (
     <section className="mt-8">
       <UserTabs isAdmin={isAdmin}></UserTabs>
-      <div className="max-w-md mx-auto mt-8">
+      <div className="max-w-2xl mx-auto mt-8">
         <div className="flex gap-4">
           <div className="rounded-lg">
             <div className="relative p-2 rounded-lg max-w-[120px]">

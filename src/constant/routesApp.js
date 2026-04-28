@@ -5,6 +5,7 @@ const MENU_ITEMS_ROUTE = '/menu-items';
 const MENU_ITEM_NEW_ROUTE = '/menu-items/new';
 const MENU_ITEM_EDIT_ROUTE = '/menu-items/edit';
 const USERS_ROUTE = '/users';
+const ORDERS_ROUTE = '/orders';
 const LOGIN_ROUTE = '/login';
 const REGISTER_ROUTE = '/register';
 
@@ -16,6 +17,7 @@ export {
   MENU_ITEM_NEW_ROUTE,
   MENU_ITEM_EDIT_ROUTE,
   USERS_ROUTE,
+  ORDERS_ROUTE,
   LOGIN_ROUTE,
   REGISTER_ROUTE
 }

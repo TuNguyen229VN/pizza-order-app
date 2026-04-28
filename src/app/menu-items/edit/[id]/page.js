@@ -1,4 +1,5 @@
 "use client";
+import DeleteButton from '@/components/DeleteButton';
 import Left from '@/components/icons/Left';
 import EditTableImage from '@/components/layout/EditTableImage';
 import MenuItemForm from '@/components/layout/MenuItemForm';
@@ -98,9 +99,9 @@ export default function EditMenuItemPage() {
                 </Link>
             </div>
             <MenuItemForm onSubmit={handleFormSubmit} menuItem={menuItem}></MenuItemForm>
-            <div className='max-w-md mx-auto mt-4'>
+            <div className='max-w-2xl mx-auto mt-2'>
                 <div className="max-w-xs pl-4 ml-auto ">
-                    <button type='button' onClick={handleDeleteClick}>Delete this menu item</button>
+                    <DeleteButton label="Delete this menu item" onDelete={handleDeleteClick} />
                 </div>
             </div>
         </section>
