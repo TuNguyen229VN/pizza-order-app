@@ -14,6 +14,11 @@ export const authOptions = {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      authorization: {
+        params: {
+          prompt: "select_account",
+        },
+      },
     }),
     CredentialsProvider({
       name: "Credentials",
@@ -46,7 +51,7 @@ export const authOptions = {
     signIn: "/login", // Đường dẫn đến trang đăng nhập tùy chỉnh
   },
   callbacks: {
-    async jwt({ token, user,session, trigger }) {
+    async jwt({ token, user, session, trigger }) {
       if (trigger === "update" && session?.name) {
         token.name = session.name;
       }

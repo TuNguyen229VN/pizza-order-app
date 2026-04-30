@@ -72,7 +72,7 @@ const RegisterPage = () => {
         <button
           type="button"
           className="flex items-center justify-center gap-4"
-          onClick={() => signIn("google", { callbackUrl: HOME_ROUTE })}
+          onClick={() => signIn("google", { callbackUrl: HOME_ROUTE, prompt: "select_account" })}
         >
           <Image src={"/google.png"} alt="google" width={32} height={32} />
           Login with google

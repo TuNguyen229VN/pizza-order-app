@@ -42,7 +42,7 @@ const LoginPage = () => {
         </div>
         <button
           type="button"
-          onClick={() => signIn("google", { callbackUrl: HOME_ROUTE })}
+          onClick={() => signIn("google", { callbackUrl: HOME_ROUTE, prompt: "select_account" })}
           className="flex justify-center gap-4"
         >
           <Image src={"/google.png"} alt={""} width={24} height={24} />

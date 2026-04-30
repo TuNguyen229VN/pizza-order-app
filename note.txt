@@ -11,3 +11,5 @@
 -disable nút save truoc khi save hình
 - làm register page.a
 - them confirm truoc khi xóa cho delete function
+- quên mat khau và thay doi password
+- register page phải có confirm password

@@ -25,7 +25,7 @@ const UserTabs = ({ isAdmin }) => {
           >
             Menu Items
           </Link>
-          <Link className={path === USERS_ROUTE ? "active" : ""} href={USERS_ROUTE}>
+          <Link className={path.includes(USERS_ROUTE) ? "active" : ""} href={USERS_ROUTE}>
             Users
           </Link>
           <Link className={path === ORDERS_ROUTE ? "active" : ""} href={ORDERS_ROUTE}>
