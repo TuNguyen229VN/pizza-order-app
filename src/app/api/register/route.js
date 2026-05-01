@@ -7,10 +7,13 @@ const saltRounds = 10;
 
 export async function POST(req) {
   const body = await req.json();
- await connectDB();
+  await connectDB();
   const pass = body.password;
   if (!pass?.length || pass.length < 5) {
-    new Error("password must be at least 5 characters");
+    return Response.json(
+      { error: "Password must be at least 5 characters" },
+      { status: 400 }
+    );
   }
 
   const notHashedPassword = pass;

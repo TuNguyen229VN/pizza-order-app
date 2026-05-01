@@ -1,7 +1,9 @@
 "use client";
-import { HOME_ROUTE, LOGIN_ROUTE, PROFILE_ROUTE, REGISTER_ROUTE } from "@/constant/routesApp";
+import { CART_ROUTE, HOME_ROUTE, LOGIN_ROUTE, MENU_ROUTE, PROFILE_ROUTE, REGISTER_ROUTE } from "@/constant/routesApp";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
+import { useContext } from "react";
+import { CartContext } from "../AppContext";
 
 function AuthLinks({ status = "unauthenticated", userName }) {
   if (status === "authenticated") {
@@ -39,6 +41,7 @@ const Header = () => {
   const status = session.status;
   const userData = session.data?.user;
   let userName = userData?.name || userData?.email;
+  const { cartProducts } = useContext(CartContext);
   return (
     <header className="flex items-center justify-between">
       <nav className="flex items-center gap-8 font-semibold text-gray-500">
@@ -46,12 +49,14 @@ const Header = () => {
           ST PIZZA
         </Link>
         <Link href={HOME_ROUTE}>Home</Link>
-        <Link href={""}>Menu</Link>
+        <Link href={MENU_ROUTE}>Menu</Link>
         <Link href={""}>About</Link>
         <Link href={""}>Contact</Link>
       </nav>
       <nav className="flex items-center gap-4 font-semibold text-gray-500">
         <AuthLinks status={status} userName={userName} />
+
+        <Link href={CART_ROUTE}>Cart ({cartProducts?.length})</Link>
       </nav>
     </header>
   );

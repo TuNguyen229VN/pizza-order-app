@@ -21,7 +21,7 @@ export default function MenuItemForm({ onSubmit, menuItem }) {
         })
     }, [menuItem])
     return (
-        <form onSubmit={e => onSubmit(e, { image, name, description, basePrice, sizes, extraIngredientPrices,category })} className="max-w-2xl mx-auto mt-8">
+        <form onSubmit={e => onSubmit(e, { image, name, description, basePrice, sizes, extraIngredientPrices, category })} className="max-w-2xl mx-auto mt-8">
             <div
                 className="grid items-start gap-4"
                 style={{ gridTemplateColumns: ".3fr .7fr" }}
@@ -44,6 +44,7 @@ export default function MenuItemForm({ onSubmit, menuItem }) {
                     />
                     <label htmlFor="">Category</label>
                     <select value={category} onChange={(e) => setCategory(e.target.value)}>
+                        <option value="">-- Select category --</option>
                         {categories.length > 0 && categories.map(category => (
                             <option key={category._id} value={category._id}>{category.name}</option>
                         ))}

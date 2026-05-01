@@ -12,4 +12,8 @@
 - làm register page.a
 - them confirm truoc khi xóa cho delete function
 - quên mat khau và thay doi password
+validate login register
 - register page phải có confirm password
+category ở menuitem khi tao mới sẽ lỗi nếu k chọn gì
+
+chử dài title thì nhớ tooltip,description sản phảm giói hạn 2 dòng phan homepage

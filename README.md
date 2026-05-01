@@ -18,7 +18,7 @@
 - **axios**
 - **form-data**
 - **react-hot-toast**
-
+- **react-flying-item**
 ## Pages:
 
 - Home Page

@@ -8,6 +8,8 @@ const USERS_ROUTE = '/users';
 const ORDERS_ROUTE = '/orders';
 const LOGIN_ROUTE = '/login';
 const REGISTER_ROUTE = '/register';
+const MENU_ROUTE = '/menu';
+const CART_ROUTE = '/cart';
 
 export {
   HOME_ROUTE,
@@ -19,5 +21,7 @@ export {
   USERS_ROUTE,
   ORDERS_ROUTE,
   LOGIN_ROUTE,
-  REGISTER_ROUTE
+  REGISTER_ROUTE,
+  MENU_ROUTE,
+  CART_ROUTE,
 }

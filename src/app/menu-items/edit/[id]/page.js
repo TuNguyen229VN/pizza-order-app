@@ -56,7 +56,6 @@ export default function EditMenuItemPage() {
     const handleFormSubmit = async (e, formData) => {
         e.preventDefault();
         const data = { _id: id, ...formData };
-        console.log(data)
         const savingPromise = new Promise(async (resolve, reject) => {
             const response = await fetch(API_MENU_ITEMS, {
                 method: "PUT",
