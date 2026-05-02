@@ -18,3 +18,11 @@ category ở menuitem khi tao mới sẽ lỗi nếu k chọn gì
 
 chử dài title thì nhớ tooltip,description sản phảm giói hạn 2 dòng phan homepage
 can nhắc bỏ 'react-flying-item' thu vien
+
+thời gian tạo chưa dúng
+
+nguoi đặt nen có history
+
+còn lỗi add to cart menu item
+cart, order ,user,... list nếu k có phải có chữ thong báo k có sản phảm hay gì dó
+chưa thanh toán van chua dúng 
