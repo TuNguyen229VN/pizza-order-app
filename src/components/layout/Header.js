@@ -4,6 +4,7 @@ import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useContext } from "react";
 import { CartContext } from "../AppContext";
+import ShoppingCart from "../icons/ShoppingCart";
 
 function AuthLinks({ status = "unauthenticated", userName }) {
   if (status === "authenticated") {
@@ -56,7 +57,12 @@ const Header = () => {
       <nav className="flex items-center gap-4 font-semibold text-gray-500">
         <AuthLinks status={status} userName={userName} />
 
-        <Link href={CART_ROUTE}>Cart ({cartProducts?.length})</Link>
+        <Link href={CART_ROUTE} className="relative">
+          <ShoppingCart />
+          <span className="absolute px-1 py-1 text-xs leading-3 text-white rounded-full -top-2 -right-4 bg-primary">
+            {cartProducts.length}
+          </span>
+        </Link>
       </nav>
     </header>
   );

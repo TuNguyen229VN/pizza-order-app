@@ -3,6 +3,21 @@ import { SessionProvider } from "next-auth/react";
 import React, { createContext, useEffect, useState } from "react";
 
 export const CartContext = createContext({});
+
+
+export function cartProductPrice(cartProduct) {
+  let price = cartProduct.basePrice;
+  if (cartProduct.size) {
+    price += cartProduct.size.price;
+  }
+  if (cartProduct.extras?.length > 0) {
+    for (const extra of cartProduct.extras) {
+      price += extra.price;
+    }
+  }
+  return price;
+}
+
 const AppProvider = ({ children }) => {
   const [cartProducts, setCartProducts] = useState([]);
   const ls = typeof window !== "undefined" ? window.localStorage : null;

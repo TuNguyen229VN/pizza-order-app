@@ -17,3 +17,4 @@ validate login register
 category ở menuitem khi tao mới sẽ lỗi nếu k chọn gì
 
 chử dài title thì nhớ tooltip,description sản phảm giói hạn 2 dòng phan homepage
+can nhắc bỏ 'react-flying-item' thu vien

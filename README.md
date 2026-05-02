@@ -19,6 +19,7 @@
 - **form-data**
 - **react-hot-toast**
 - **react-flying-item**
+- **stripe**
 ## Pages:
 
 - Home Page
