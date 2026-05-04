@@ -16,7 +16,7 @@ export const metadata = {
   title: "PizzaTeo | Home",
   description: "Pizza ngon, giá cả phải chăng Tận hưởng hương vị đặc trưng của Pizza Teo với ưu đãi đến 40% cho Combo tiệc tại gia, phục vụ 2-6 người. Pizza nóng hổi, giòn ngon kèm theo đồ ăn khai vị đa dạng, hứa hẹn một bữa tiệc tuyệt vời! Đặt hàng ngay để trải nghiệm!",
    icons: {
-    icon: '/favicon.ico',
+    icon: '/favicon1.ico',
   },
 };
 
