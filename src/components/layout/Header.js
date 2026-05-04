@@ -6,6 +6,7 @@ import { useContext, useState } from "react";
 import { CartContext } from "../AppContext";
 import ShoppingCart from "../icons/ShoppingCart";
 import Bars2 from "../icons/Bars";
+import Image from "next/image";
 
 function AuthLinks({ status = "unauthenticated", userName }) {
   if (status === "authenticated") {
@@ -49,7 +50,7 @@ const Header = () => {
     <header>
       <div className="flex items-center justify-between md:hidden">
         <Link className="text-2xl font-semibold text-primary" href={'/'}>
-          ST PIZZA
+          <Image src={"/logo.png"} width={100} height={200} alt="logo"/>
         </Link>
         <div className="flex items-center gap-8">
           <Link href={'/cart'} className="relative">
@@ -83,7 +84,7 @@ const Header = () => {
       <div className="items-center justify-between hidden md:flex">
         <nav className="flex items-center gap-8 font-semibold text-gray-500">
           <Link className="text-2xl font-semibold text-primary" href={HOME_ROUTE}>
-            ST PIZZA
+           <Image src={"/logo.png"} width={200} height={200} alt="logo"/>
           </Link>
           <Link href={HOME_ROUTE}>Home</Link>
           <Link href={MENU_ROUTE}>Menu</Link>
