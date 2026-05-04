@@ -3,6 +3,7 @@ import "./globals.css";
 import Header from "@/components/layout/Header";
 import AppProvider from "@/components/AppContext";
 import { Toaster } from "react-hot-toast";
+import { Analytics } from "@vercel/analytics/next";
 
 const roboto = Roboto({ 
   subsets: ["latin"], 
@@ -31,6 +32,7 @@ export default function RootLayout({ children }) {
             </footer>
           </AppProvider>
         </main>
+         <Analytics />
       </body>
     </html>
   );
