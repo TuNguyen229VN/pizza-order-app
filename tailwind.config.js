@@ -8,6 +8,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        blackHeader: "rgb(17, 25, 40)",
         primary: "#E71E23",
         secondary: "rgb(99, 115, 129)"
       }

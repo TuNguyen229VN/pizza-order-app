@@ -17,7 +17,7 @@ const HomeMenu = () => {
   }, [])
 
   return (
-    <section className="">
+    <section className="mt-4">
       <div className="absolute left-0 right-0 justify-start w-full">
         <div className="absolute left-0 -top-[70px] text-left -z-10">
           <Image src={"/sallad1.png"} width={109} height={189} alt={"sallad"} />

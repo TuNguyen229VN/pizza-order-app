@@ -1,6 +1,5 @@
 import Carousel from "@/components/carousel/Carousel";
 import Bars2 from "@/components/icons/Bars";
-import Hero from "@/components/layout/Hero";
 import HomeMenu from "@/components/layout/HomeMenu";
 import SectionHeader from "@/components/layout/SectionHeader";
 import Slider from "@/components/slider/Slider";
@@ -35,7 +34,6 @@ export default function Home() {
     <>
       <Slider listSlide={listSlide} />
       <Carousel carouselList={carouselList} />
-      <Hero />
       <HomeMenu />
       <section className="my-16 text-center">
         <SectionHeader subHeader={"our story"} mainHeader={"About us"} />
