@@ -53,7 +53,7 @@ const MenuItems = (menuItem) => {
   return (
     <>
       {showPopup && (
-        <div onClick={() => setShowPopup(false)} className="fixed inset-0 flex items-center justify-center bg-black/80">
+        <div onClick={() => setShowPopup(false)} className="fixed inset-0 z-20 flex items-center justify-center bg-black/80">
           <div onClick={ev => ev.stopPropagation()}
             className="max-w-md p-2 my-8 bg-white rounded-lg">
             <div
@@ -100,8 +100,8 @@ const MenuItems = (menuItem) => {
               )}
               <div className="sticky rounded-xl bg-primary bottom-2">
                 <FlyingButton
-                  targetTop={'5%'}
-                  targetLeft={'95%'}
+                  targetTop={'6%'}
+                  targetLeft={'80%'}
                   src={image}>
                   <div
                     className="text-center text-white"

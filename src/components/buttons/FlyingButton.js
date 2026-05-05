@@ -2,8 +2,8 @@
 import { useRef } from "react";
 
 export default function FlyingButton({
-    targetTop = "5%",
-    targetLeft = "95%",
+    targetTop = "6%",
+    targetLeft = "80%",
     src,           // emoji hoặc URL ảnh
     children,
     className = "button bg-primary",

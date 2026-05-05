@@ -7,6 +7,8 @@ import { CartContext } from "../AppContext";
 import ShoppingCart from "../icons/ShoppingCart";
 import Bars2 from "../icons/Bars";
 import Image from "next/image";
+import Bell from "../icons/Bell";
+import UserIcon from "../icons/UserIcon";
 
 function AuthLinks({ status = "unauthenticated", userName }) {
   if (status === "authenticated") {
@@ -39,6 +41,45 @@ function AuthLinks({ status = "unauthenticated", userName }) {
   }
 }
 
+const Test = ({ cartProducts }) => {
+  return (
+    <div className="">
+      <h1 className="sr-only">Pizza Teo ngon nhất TP.HCM</h1>
+      <div className="grid items-center grid-cols-3">
+        <div className="min-w-0">
+          <p className="text-secondary">Mua mang về:</p>
+          <p className="font-medium truncate w-[400px]">Lorem ipsum dolor sit amet consectetur adipisicing elit. Praesentium earum velit, porro debitis molestiae iusto eligendi pariatur aliquid aliquam ipsum? Dolore perferendis itaque nihil. Quia enim corporis quod. Labore, dolore?</p>
+        </div>
+        <div className="flex justify-center">
+          <Link href={HOME_ROUTE}>
+            <Image src={"/logo.png"} width={200} height={200} alt="logo" />
+          </Link>
+        </div>
+        <div className="flex items-center justify-end flex-1 min-w-0 gap-5">
+          <Bell />
+          <p className="text-base font-semibold text-primary">VI</p>
+          <Link
+            href={CART_ROUTE}
+            className={`w-[80px] flex justify-center items-center p-3 border rounded-[50px] transition-colors duration-200 ${cartProducts.length > 0 ? "bg-primary text-white" : "bg-white text-gray-700"
+              }`}
+          >
+            <div className="flex items-center gap-2 transition-transform hover:scale-105">
+              <span className="min-w-[1.2rem] text-center tabular-nums">
+                {cartProducts.length}
+              </span>
+              <ShoppingCart />
+            </div>
+          </Link>
+          <div className="flex justify-center items-center gap-2 p-3 border rounded-[50px] ">
+            <Bars2 />
+            <UserIcon />
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 const Header = () => {
   const session = useSession();
   const status = session.status;
@@ -47,10 +88,11 @@ const Header = () => {
   const { cartProducts } = useContext(CartContext);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   return (
-    <header>
+    <header className="sticky top-0 z-10 p-3 bg-white">
+      <Test cartProducts={cartProducts} />
       <div className="flex items-center justify-between md:hidden">
         <Link className="text-2xl font-semibold text-primary" href={'/'}>
-          <Image src={"/logo.png"} width={100} height={200} alt="logo"/>
+          <Image src={"/logo.png"} width={100} height={200} alt="logo" />
         </Link>
         <div className="flex items-center gap-8">
           <Link href={'/cart'} className="relative">
@@ -84,7 +126,7 @@ const Header = () => {
       <div className="items-center justify-between hidden md:flex">
         <nav className="flex items-center gap-8 font-semibold text-gray-500">
           <Link className="text-2xl font-semibold text-primary" href={HOME_ROUTE}>
-           <Image src={"/logo.png"} width={200} height={200} alt="logo"/>
+            <Image src={"/logo.png"} width={200} height={200} alt="logo" />
           </Link>
           <Link href={HOME_ROUTE}>Home</Link>
           <Link href={MENU_ROUTE}>Menu</Link>

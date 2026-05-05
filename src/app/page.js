@@ -1,10 +1,40 @@
+import Carousel from "@/components/carousel/Carousel";
+import Bars2 from "@/components/icons/Bars";
 import Hero from "@/components/layout/Hero";
 import HomeMenu from "@/components/layout/HomeMenu";
 import SectionHeader from "@/components/layout/SectionHeader";
+import Slider from "@/components/slider/Slider";
 
 export default function Home() {
+  const listSlide = [
+    { name: "slide1", url: "/images/slide1.webp" },
+    { name: "slide2", url: "/images/slide2.webp" },
+    { name: "slide3", url: "/images/slide3.webp" }
+  ]
+
+  const carouselList = [
+    { name: "Pizza1", icons: <Bars2></Bars2> },
+    { name: "Pizza2", icons: <Bars2></Bars2> },
+    { name: "Pizza3", icons: <Bars2></Bars2> },
+    { name: "Pizza4", icons: <Bars2></Bars2> },
+    { name: "Pizza5", icons: <Bars2></Bars2> },
+    { name: "Pizza6", icons: <Bars2></Bars2> },
+    { name: "Pizza7", icons: <Bars2></Bars2> },
+    { name: "Pizza8", icons: <Bars2></Bars2> },
+    { name: "Pizza9", icons: <Bars2></Bars2> },
+    { name: "Pizza10", icons: <Bars2></Bars2> },
+    { name: "Pizza11", icons: <Bars2></Bars2> },
+    { name: "Pizza12", icons: <Bars2></Bars2> },
+    { name: "Pizza13", icons: <Bars2></Bars2> },
+    { name: "Pizza14", icons: <Bars2></Bars2> },
+    { name: "Pizza15", icons: <Bars2></Bars2> },
+    { name: "Pizza16", icons: <Bars2></Bars2> },
+    { name: "Pizza17", icons: <Bars2></Bars2> },
+  ]
   return (
     <>
+      <Slider listSlide={listSlide} />
+      <Carousel carouselList={carouselList} />
       <Hero />
       <HomeMenu />
       <section className="my-16 text-center">

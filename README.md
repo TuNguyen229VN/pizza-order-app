@@ -20,6 +20,7 @@
 - **react-hot-toast**
 - **react-flying-item**
 - **stripe**
+- **swiperjs**
 ## Pages:
 
 - Home Page

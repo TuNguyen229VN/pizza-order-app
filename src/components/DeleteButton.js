@@ -5,7 +5,7 @@ export default function DeleteButton({ label, onDelete }) {
     const [showConfirm, setShowConfirm] = useState(false);
     if (showConfirm) {
         return (
-            <div className='fixed inset-0 flex items-center justify-center h-full bg-black/80'>
+            <div className='fixed inset-0 z-20 flex items-center justify-center h-full bg-black/80'>
                 <div className="p-4 bg-white rounded-lg shadow-lg">
                     <div className="">Are you sure you want to delete?</div>
                     <div className='flex gap-2 mt-1'>

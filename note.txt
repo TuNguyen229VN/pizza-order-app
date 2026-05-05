@@ -26,3 +26,4 @@ nguoi đặt nen có history
 còn lỗi add to cart menu item
 cart, order ,user,... list nếu k có phải có chữ thong báo k có sản phảm hay gì dó
 chưa thanh toán van chua dúng 
+làm capcha login
