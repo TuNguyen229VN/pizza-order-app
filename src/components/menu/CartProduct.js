@@ -14,6 +14,7 @@ export default function CartProduct({index,product,onRemove}) {
           {product.name}
         </h3>
         <p>{product.quantity}</p>
+        <p>{product.noteOrder}</p>
         {product.size && (
           <div className="text-sm">
             Size: <span>{product.size.name}</span>

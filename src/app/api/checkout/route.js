@@ -39,17 +39,19 @@ export async function POST(req) {
                 productPrice += extraThingInfo.price;
             }
         }
-
+        if (cartProduct.quantity && cartProduct.quantity >= 1) {
+            productPrice = productPrice * cartProduct.quantity;
+        }
         const productName = cartProduct.name;
 
         stripeLineItems.push({
             quantity: 1,
             price_data: {
-                currency: 'USD',
+                currency: 'vnd',
                 product_data: {
                     name: productName,
                 },
-                unit_amount: productPrice * 100,
+                unit_amount: Math.round(productPrice) ,
             },
         });
     }
@@ -66,7 +68,7 @@ export async function POST(req) {
                 shipping_rate_data: {
                     display_name: "Delivery fee",
                     type: "fixed_amount",
-                    fixed_amount: { amount: 500, currency: "USD" }
+                    fixed_amount: { amount: 5000, currency: "vnd" }
                 }
             }
         ]

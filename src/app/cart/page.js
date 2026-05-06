@@ -45,7 +45,6 @@ export default function CartPage() {
   async function proceedToCheckout(ev) {
     ev.preventDefault();
     // address and shopping cart products
-
     const promise = new Promise((resolve, reject) => {
       fetch(API_CHECKOUT, {
         method: 'POST',
@@ -107,8 +106,8 @@ export default function CartPage() {
             </div>
             <div className="pl-2 font-semibold text-right">
               ${subtotal}<br />
-              $5<br />
-              ${subtotal + 5}
+              5000<br />
+              ${subtotal + 5000}
             </div>
           </div>
         </div>
@@ -119,7 +118,7 @@ export default function CartPage() {
               addressProps={address}
               setAddressProp={handleAddressChange}
             />
-            <button type="submit">Pay ${subtotal + 5}</button>
+            <button type="submit">Pay ${subtotal + 5000}</button>
           </form>
         </div>
       </div>

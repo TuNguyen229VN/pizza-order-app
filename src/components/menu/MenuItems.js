@@ -12,12 +12,13 @@ import ButtonPrimary from "../buttons/ButtonPrimary";
 
 const MenuItems = (menuItem) => {
   const { image, name, description, basePrice, sizes, extraIngredientPrices } = menuItem
-
   const [
     selectedSize, setSelectedSize
   ] = useState(sizes?.[0] || null);
   const [selectedExtras, setSelectedExtras] = useState([]);
   const [quantity, setQuantity] = useState(1)
+  const [noteOrder, setNoteOrder] = useState("")
+  
   const { addToCart } = useContext(CartContext);
   const [showPopup, setShowPopup] = useState(false)
   const handleAddToCartButtonClick = async () => {
@@ -26,7 +27,7 @@ const MenuItems = (menuItem) => {
       setShowPopup(true);
       return;
     }
-    await addToCart(menuItem, quantity, selectedSize, selectedExtras);
+    addToCart(menuItem, selectedSize, selectedExtras, quantity, noteOrder);
     setSelectedSize(sizes?.[0] || null);
     setSelectedExtras([]);
     setShowPopup(false);
@@ -44,9 +45,9 @@ const MenuItems = (menuItem) => {
   // }
 
   const handleQtyChange = (quantityChange) => {
-    if (quantity >= 1) {
-      setQuantity(quantity + quantityChange)
-    }
+    const newQuantity = quantity + quantityChange;
+    if (newQuantity < 1) return;
+    setQuantity(newQuantity);
   }
   const handleExtraThingClick = (extraThing) => {
     const exists = selectedExtras.find(e => e._id === extraThing._id);
@@ -68,88 +69,8 @@ const MenuItems = (menuItem) => {
       selectedPrice += extra.price;
     }
   }
-
-  const Test = () => {
-    const [noteOrder, setNoteOrder] = useState("")
-    return (
-      <>
-        <div className="w-full">
-          <Image src={image} alt={name} width={200} height={200} className="object-cover object-center w-full h-full" />
-        </div>
-        <div className="">
-          <div className="overflow-auto h-[calc(100%-80px)] p-5">
-            <div>
-              <h3 className="text-2xl leading-[30px] font-semibold">Pizza Lava Bò Phô Mai</h3>
-              <p className="mt-2 text-secondary w-[570px]">{description}</p>
-            </div>
-            {sizes?.length > 0 && (
-              <div className="mt-7 ">
-                <h3 className="font-semibold ">Kích thước</h3>
-                <div className="flex mt-2 overflow-hidden text-center border rounded-md">
-                  {sizes.map(size => (
-                    <InputRadio key={size._id} name={size.name} onClick={() => setSelectedSize(size)} selectedSize={selectedSize?.name} />
-                  ))}
-                </div>
-              </div>
-            )}
-            {extraIngredientPrices?.length > 0 && (
-              <div className="mt-6">
-                <h3 className="font-semibold mb-7">Topping thêm</h3>
-                {extraIngredientPrices.map(extraThing => {
-                  const sel = selectedExtras.find(e => e._id === extraThing._id);
-                  const isChecked = !!sel;
-                  return (
-                    <InputCheckbox key={extraThing._id} extraThing={extraThing} onClick={() => handleExtraThingClick(extraThing)} isChecked={isChecked} />
-                  )
-                })}
-              </div>
-            )}
-            <div className="mt-6">
-              <div className="flex items-center justify-between mb-5">
-                <h3 className="font-semibold">Ghi chú (tùy chọn)</h3>
-                <span className="text-sm whitespace-nowrap">{noteOrder?.length}/72</span>
-              </div>
-              <div className="relative">
-                <input
-                  type="text"
-                  maxLength={72}
-                  placeholder="Chúng tôi sẽ cố gắng hết sức để phục vụ bạn nếu có thể!"
-                  value={noteOrder}
-                  onChange={e => setNoteOrder(e.target.value)}
-                  className="flex-1 w-full px-4 py-3 border rounded-lg outline-none focus:border-black"
-                />
-                {noteOrder?.length > 0 && <button className="absolute p-[1px] border rounded-full right-3 top-2/4 -translate-y-2/4 cursor-pointer" onClick={() => setNoteOrder("")}><CloseIcon className="w-4 h-4" /></button>}
-              </div>
-            </div>
-          </div>
-          <div className="sticky flex items-center justify-between w-full px-5 bottom-2 gap-9">
-
-            <div className="flex items-center justify-center gap-6">
-              <button onClick={() => handleQtyChange(-1)}
-                className="flex items-center justify-center w-10 h-10 text-2xl border rounded-md text-primary">−</button>
-              <span className="w-5 font-medium text-center">{quantity}</span>
-              <button onClick={() => handleQtyChange(1)}
-                className="flex items-center justify-center w-10 h-10 text-2xl border rounded-md text-primary">+</button>
-            </div>
-
-            <FlyingButton
-              className="flex items-center justify-center w-full"
-              targetTop={'6%'}
-              targetLeft={'80%'}
-              src={image}>
-              <ButtonPrimary onClick={handleAddToCartButtonClick}>
-                <div
-                  className="text-center text-white"
-                >
-                  Thêm vào giỏ hàng <span className="inline-block w-2 h-2 mx-2 bg-white rounded-full"></span> {selectedPrice} <span className="underline">đ</span>
-                </div>
-              </ButtonPrimary>
-            </FlyingButton>
-
-          </div>
-        </div>
-      </>
-    )
+  if (quantity >= 1) {
+    selectedPrice = selectedPrice * quantity;
   }
 
   return (
@@ -163,7 +84,81 @@ const MenuItems = (menuItem) => {
               onClick={() => setShowPopup(false)}>
               <CloseIcon />
             </button>
-            <Test />
+            <div className="w-full">
+              <Image src={image} alt={name} width={200} height={200} className="object-cover object-center w-full h-full" />
+            </div>
+            <div className="">
+              <div className="overflow-auto h-[calc(100%-80px)] p-5">
+                <div>
+                  <h3 className="text-2xl leading-[30px] font-semibold">{name}</h3>
+                  <p className="mt-2 text-secondary w-[570px]">{description}</p>
+                </div>
+                {sizes?.length > 0 && (
+                  <div className="mt-7 ">
+                    <h3 className="font-semibold ">Kích thước</h3>
+                    <div className="flex mt-2 overflow-hidden text-center border rounded-md">
+                      {sizes.map(size => (
+                        <InputRadio key={size._id} name={size.name} onClick={() => setSelectedSize(size)} selectedSize={selectedSize?.name} />
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {extraIngredientPrices?.length > 0 && (
+                  <div className="mt-6">
+                    <h3 className="font-semibold mb-7">Topping thêm</h3>
+                    {extraIngredientPrices.map(extraThing => {
+                      const sel = selectedExtras.find(e => e._id === extraThing._id);
+                      const isChecked = !!sel;
+                      return (
+                        <InputCheckbox key={extraThing._id} extraThing={extraThing} onClick={() => handleExtraThingClick(extraThing)} isChecked={isChecked} />
+                      )
+                    })}
+                  </div>
+                )}
+                <div className="mt-6">
+                  <div className="flex items-center justify-between mb-5">
+                    <h3 className="font-semibold">Ghi chú (tùy chọn)</h3>
+                    <span className="text-sm whitespace-nowrap">{noteOrder?.length}/72</span>
+                  </div>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      maxLength={72}
+                      placeholder="Chúng tôi sẽ cố gắng hết sức để phục vụ bạn nếu có thể!"
+                      value={noteOrder}
+                      onChange={e => setNoteOrder(e.target.value)}
+                      className="flex-1 w-full px-4 py-3 pr-10 border rounded-lg outline-none focus:border-black"
+                    />
+                    {noteOrder?.length > 0 && <button className="absolute p-[1px] border rounded-full right-3 top-2/4 -translate-y-2/4 cursor-pointer" onClick={() => setNoteOrder("")}><CloseIcon className="w-4 h-4" /></button>}
+                  </div>
+                </div>
+              </div>
+              <div className="sticky flex items-center justify-between w-full px-5 bottom-2 gap-9">
+                <div className="flex items-center justify-center gap-6">
+                  <button onClick={() => handleQtyChange(-1)}
+                    className="flex items-center justify-center w-10 h-10 text-2xl border rounded-md text-primary">−</button>
+                  <span className="w-5 font-medium text-center">{quantity}</span>
+                  <button onClick={() => handleQtyChange(1)}
+                    className="flex items-center justify-center w-10 h-10 text-2xl border rounded-md text-primary">+</button>
+                </div>
+                <FlyingButton
+                  className="flex items-center justify-center w-full"
+                  targetTop={'6%'}
+                  targetLeft={'80%'}
+                  src={image}>
+                  <ButtonPrimary onClick={handleAddToCartButtonClick}>
+                    <div
+                      className="text-center text-white"
+                    >
+                      Thêm vào giỏ hàng <span className="inline-block w-2 h-2 mx-2 bg-white rounded-full"></span> {selectedPrice} <span className="underline">đ</span>
+                    </div>
+                  </ButtonPrimary>
+                </FlyingButton>
+              </div>
+            </div>
+
+
+            {/* --------------------------------------- */}
             {/* <div
               className="p-2 overflow-y-scroll"
               style={{ maxHeight: 'calc(100vh - 100px)' }}>
