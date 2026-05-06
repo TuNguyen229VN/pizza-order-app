@@ -6,7 +6,7 @@ export default function FlyingButton({
     targetLeft = "80%",
     src,           // emoji hoặc URL ảnh
     children,
-    className = "button bg-primary",
+    className = "",
     onClick
 }) {
     const btnRef = useRef(null);

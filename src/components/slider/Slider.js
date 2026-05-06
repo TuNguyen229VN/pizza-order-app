@@ -18,8 +18,9 @@ export default function Slider({ listSlide = [] }) {
     const prevRef = useRef(null);
     const nextRef = useRef(null);
     return (
-        <div className="relative w-full">
+        <div className="relative">
             <Swiper
+                className='w-full h-[442px] overflow-hidden'
                 spaceBetween={30}
                 effect={'fade'}
                 fadeEffect={{ crossFade: true }}
@@ -50,7 +51,7 @@ export default function Slider({ listSlide = [] }) {
                 {listSlide.length > 0 && listSlide.map(listItem => (
                     <SwiperSlide key={listItem.name}>
                         <Link href={`#${listItem.name}`} >
-                            <Image src={listItem.url} alt={listItem.name} width={500} height={500} className='w-full' />
+                            <Image src={listItem.url} alt={listItem.name} width={500} height={500} className='object-cover object-center w-full h-full' />
                         </Link>
                     </SwiperSlide>
                 )

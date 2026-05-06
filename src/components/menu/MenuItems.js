@@ -4,6 +4,11 @@ import toast from "react-hot-toast";
 import MenuItemTile from "./MenuItemTile";
 import Image from "next/image";
 import FlyingButton from "../buttons/FlyingButton";
+import InputRadio from "../input/InputRadio";
+import CloseIcon from "../icons/CloseIcon";
+import InputCheckbox from "../input/InputCheckbox";
+import ButtonPrimary from "../buttons/ButtonPrimary";
+
 
 const MenuItems = (menuItem) => {
   const { image, name, description, basePrice, sizes, extraIngredientPrices } = menuItem
@@ -12,7 +17,7 @@ const MenuItems = (menuItem) => {
     selectedSize, setSelectedSize
   ] = useState(sizes?.[0] || null);
   const [selectedExtras, setSelectedExtras] = useState([]);
-
+  const [quantity, setQuantity] = useState(1)
   const { addToCart } = useContext(CartContext);
   const [showPopup, setShowPopup] = useState(false)
   const handleAddToCartButtonClick = async () => {
@@ -21,22 +26,36 @@ const MenuItems = (menuItem) => {
       setShowPopup(true);
       return;
     }
-    addToCart(menuItem, selectedSize, selectedExtras);
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await addToCart(menuItem, quantity, selectedSize, selectedExtras);
+    setSelectedSize(sizes?.[0] || null);
+    setSelectedExtras([]);
     setShowPopup(false);
-    toast.success("Added to cart!")
   }
 
-  function handleExtraThingClick(ev, extraThing) {
-    const checked = ev.target.checked;
-    if (checked) {
-      setSelectedExtras(prev => [...prev, extraThing]);
-    } else {
-      setSelectedExtras(prev => {
-        return prev.filter(e => e.name !== extraThing.name);
-      });
+  // function handleExtraThingClick(ev, extraThing) {
+  //   const checked = ev.target.checked;
+  //   if (checked) {
+  //     setSelectedExtras(prev => [...prev, extraThing]);
+  //   } else {
+  //     setSelectedExtras(prev => {
+  //       return prev.filter(e => e.name !== extraThing.name);
+  //     });
+  //   }
+  // }
+
+  const handleQtyChange = (quantityChange) => {
+    if (quantity >= 1) {
+      setQuantity(quantity + quantityChange)
     }
   }
+  const handleExtraThingClick = (extraThing) => {
+    const exists = selectedExtras.find(e => e._id === extraThing._id);
+    if (exists) {
+      setSelectedExtras(prev => prev.filter(e => e._id !== extraThing._id));
+    } else {
+      setSelectedExtras(prev => [...prev, extraThing]);
+    }
+  };
 
   // Choose option will increase the product price 
   // Ex: choose Size (Large,Medium, Small), Extra ingredient(Cheese, Pork,...) => Price Increase (basePrice + selectedPrice + ExtraIngredientPrice)
@@ -50,13 +69,102 @@ const MenuItems = (menuItem) => {
     }
   }
 
+  const Test = () => {
+    const [noteOrder, setNoteOrder] = useState("")
+    return (
+      <>
+        <div className="w-full">
+          <Image src={image} alt={name} width={200} height={200} className="object-cover object-center w-full h-full" />
+        </div>
+        <div className="">
+          <div className="overflow-auto h-[calc(100%-80px)] p-5">
+            <div>
+              <h3 className="text-2xl leading-[30px] font-semibold">Pizza Lava Bò Phô Mai</h3>
+              <p className="mt-2 text-secondary w-[570px]">{description}</p>
+            </div>
+            {sizes?.length > 0 && (
+              <div className="mt-7 ">
+                <h3 className="font-semibold ">Kích thước</h3>
+                <div className="flex mt-2 overflow-hidden text-center border rounded-md">
+                  {sizes.map(size => (
+                    <InputRadio key={size._id} name={size.name} onClick={() => setSelectedSize(size)} selectedSize={selectedSize?.name} />
+                  ))}
+                </div>
+              </div>
+            )}
+            {extraIngredientPrices?.length > 0 && (
+              <div className="mt-6">
+                <h3 className="font-semibold mb-7">Topping thêm</h3>
+                {extraIngredientPrices.map(extraThing => {
+                  const sel = selectedExtras.find(e => e._id === extraThing._id);
+                  const isChecked = !!sel;
+                  return (
+                    <InputCheckbox key={extraThing._id} extraThing={extraThing} onClick={() => handleExtraThingClick(extraThing)} isChecked={isChecked} />
+                  )
+                })}
+              </div>
+            )}
+            <div className="mt-6">
+              <div className="flex items-center justify-between mb-5">
+                <h3 className="font-semibold">Ghi chú (tùy chọn)</h3>
+                <span className="text-sm whitespace-nowrap">{noteOrder?.length}/72</span>
+              </div>
+              <div className="relative">
+                <input
+                  type="text"
+                  maxLength={72}
+                  placeholder="Chúng tôi sẽ cố gắng hết sức để phục vụ bạn nếu có thể!"
+                  value={noteOrder}
+                  onChange={e => setNoteOrder(e.target.value)}
+                  className="flex-1 w-full px-4 py-3 border rounded-lg outline-none focus:border-black"
+                />
+                {noteOrder?.length > 0 && <button className="absolute p-[1px] border rounded-full right-3 top-2/4 -translate-y-2/4 cursor-pointer" onClick={() => setNoteOrder("")}><CloseIcon className="w-4 h-4" /></button>}
+              </div>
+            </div>
+          </div>
+          <div className="sticky flex items-center justify-between w-full px-5 bottom-2 gap-9">
+
+            <div className="flex items-center justify-center gap-6">
+              <button onClick={() => handleQtyChange(-1)}
+                className="flex items-center justify-center w-10 h-10 text-2xl border rounded-md text-primary">−</button>
+              <span className="w-5 font-medium text-center">{quantity}</span>
+              <button onClick={() => handleQtyChange(1)}
+                className="flex items-center justify-center w-10 h-10 text-2xl border rounded-md text-primary">+</button>
+            </div>
+
+            <FlyingButton
+              className="flex items-center justify-center w-full"
+              targetTop={'6%'}
+              targetLeft={'80%'}
+              src={image}>
+              <ButtonPrimary onClick={handleAddToCartButtonClick}>
+                <div
+                  className="text-center text-white"
+                >
+                  Thêm vào giỏ hàng <span className="inline-block w-2 h-2 mx-2 bg-white rounded-full"></span> {selectedPrice} <span className="underline">đ</span>
+                </div>
+              </ButtonPrimary>
+            </FlyingButton>
+
+          </div>
+        </div>
+      </>
+    )
+  }
+
   return (
     <>
       {showPopup && (
         <div onClick={() => setShowPopup(false)} className="fixed inset-0 z-20 flex items-center justify-center bg-black/80">
           <div onClick={ev => ev.stopPropagation()}
-            className="max-w-md p-2 my-8 bg-white rounded-lg">
-            <div
+            className="flex max-w-screen-lg h-[560px] overflow-hidden bg-white rounded-xl relative">
+            <button
+              className="absolute right-5 top-5"
+              onClick={() => setShowPopup(false)}>
+              <CloseIcon />
+            </button>
+            <Test />
+            {/* <div
               className="p-2 overflow-y-scroll"
               style={{ maxHeight: 'calc(100vh - 100px)' }}>
               <Image src={image} alt={name} width={300} height={200} className="mx-auto" />
@@ -115,11 +223,11 @@ const MenuItems = (menuItem) => {
                 onClick={() => setShowPopup(false)}>
                 Cancel
               </button>
-            </div>
+            </div> */}
           </div>
         </div>
       )}
-      <MenuItemTile onAddToCart={handleAddToCartButtonClick} {...menuItem} />
+      <MenuItemTile onClick={() => setShowPopup(true)} onAddToCart={handleAddToCartButtonClick} {...menuItem} />
     </>
   );
 };

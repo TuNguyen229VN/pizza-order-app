@@ -1,14 +1,32 @@
+"use client"
 import Carousel from "@/components/carousel/Carousel";
 import Bars2 from "@/components/icons/Bars";
+import Footer from "@/components/layout/Footer";
 import HomeMenu from "@/components/layout/HomeMenu";
 import SectionHeader from "@/components/layout/SectionHeader";
+import MenuItems from "@/components/menu/MenuItems";
 import Slider from "@/components/slider/Slider";
+import { API_CATEGORIES, API_MENU_ITEMS } from "@/constant/constant";
+import { useEffect, useState } from "react";
 
 export default function Home() {
+  const [categories, setCategories] = useState([])
+  const [menuItems, setMenuItems] = useState([])
+  useEffect(() => {
+    fetch(API_CATEGORIES).then(res => {
+      res.json().then(categories => setCategories(categories))
+    })
+
+    fetch(API_MENU_ITEMS).then(res => {
+      res.json().then(menuItems => setMenuItems(menuItems))
+    })
+  }, [])
+
   const listSlide = [
     { name: "slide1", url: "/images/slide1.webp" },
     { name: "slide2", url: "/images/slide2.webp" },
-    { name: "slide3", url: "/images/slide3.webp" }
+    { name: "slide3", url: "/images/slide3.webp" },
+    { name: "slide3", url: "/images/slide4.jpg" }
   ]
 
   const carouselList = [
@@ -35,40 +53,22 @@ export default function Home() {
       <Slider listSlide={listSlide} />
       <Carousel carouselList={carouselList} />
       <HomeMenu />
-      <section className="my-16 text-center">
-        <SectionHeader subHeader={"our story"} mainHeader={"About us"} />
-        <div className="flex flex-col max-w-2xl gap-4 mx-auto mt-4 text-gray-500">
-          <p className="">
-            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Aliquid
-            architecto, amet, facilis repellat voluptatem quam optio ullam vero
-            quis minus temporibus culpa fugit, quos veniam corrupti illum harum!
-            Sequi, asperiores.
-          </p>
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quod
-            laudantium reiciendis corporis? Cupiditate expedita natus ducimus
-            accusantium esse quasi, consequatur, pariatur maiores velit totam
-            placeat a quos delectus quisquam autem.
-          </p>
-          <p>
-            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nemo
-            libero cumque, obcaecati laudantium voluptate similique? Deleniti
-            fugit aliquid nesciunt sed ratione, molestiae delectus beatae,
-            impedit debitis, non omnis iusto nemo.
-          </p>
-        </div>
+      <section className='mt-8'>
+
+        {categories.length > 0 && categories.map(c => (
+          <div key={c._id}>
+            <div className="text-center">
+              <SectionHeader mainHeader={c.name} />
+            </div>
+            <div className="grid grid-cols-2 gap-6 mt-6 mb-12">
+              {menuItems.filter(item => item.category == c._id).map(item => (
+                <MenuItems key={item._id} {...item} />
+              ))}
+            </div>
+          </div>
+        ))}
       </section>
-      <section className="my-8 text-center">
-        <SectionHeader subHeader={"Don't hesitate"} mainHeader={"Contact us"} />
-        <div className="mt-8">
-          <a
-            href="tel:+84973123123"
-            className="text-4xl text-gray-500 underline"
-          >
-            +84 973 123 123
-          </a>
-        </div>
-      </section>
+      <Footer />
     </>
   );
 }

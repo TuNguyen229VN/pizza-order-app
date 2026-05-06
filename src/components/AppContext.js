@@ -34,9 +34,9 @@ const AppProvider = ({ children }) => {
     }
   }
 
-  function addToCart(product, size = null, extras = []) {
+  function addToCart(product, size = null, extras = [],quantity=1) {
     setCartProducts(prevProducts => {
-      const cartProduct = { ...product, size, extras }
+      const cartProduct = { ...product, size, extras,quantity }
       const newProducts = [...prevProducts, cartProduct];
       saveCartProductToLocalStorage(newProducts);
       return newProducts;

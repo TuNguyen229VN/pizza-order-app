@@ -1,9 +1,10 @@
 import React from 'react'
 import FlyingButton from '../buttons/FlyingButton';
+import ButtonAdd from '../buttons/ButtonAdd';
 
 
 export default function AddToCartButton({
-    hasSizesOrExtras, onClick, basePrice, image
+    hasSizesOrExtras, onClick, basePrice, image,className
 }) {
     if (!hasSizesOrExtras) {
         return (
@@ -12,20 +13,12 @@ export default function AddToCartButton({
                     targetTop={'6%'}
                     targetLeft={'80%'}
                     src={image}>
-                    <div onClick={onClick} className="text-white">
-                        Add to cart ${basePrice}
-                    </div>
+                    <ButtonAdd onClick={onClick} className="add-to-cart-zone"/>
                 </FlyingButton>
             </div>
         );
     }
     return (
-        <button
-            type="button"
-            onClick={onClick}
-            className="px-8 py-2 mt-4 text-white bg-primary"
-        >
-            <span>Add to cart (from ${basePrice})</span>
-        </button>
+        <ButtonAdd onClick={onClick} className="add-to-cart-zone"/>
     );
 }
