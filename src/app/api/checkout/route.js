@@ -8,14 +8,15 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY)
 
 export async function POST(req) {
     await connectDB();
-    const { cartProducts, address } = await req.json();
-
-    const session = await getServerSession(authOptions);
-    const userEmail = session?.user?.email;
+    const { cartProducts, infoProfileCheckout } = await req.json();
+    console.log(infoProfileCheckout)
+    // const session = await getServerSession(authOptions);
+    // const userEmail = session?.user?.email;
 
     const orderDoc = await Order.create({
-        userEmail,
-        ...address,
+        ...infoProfileCheckout,
+        userEmail: infoProfileCheckout.email,
+        userName: infoProfileCheckout.name,
         cartProducts,
         paid: false,
     });
@@ -65,7 +66,7 @@ export async function POST(req) {
     const stripeSession = await stripe.checkout.sessions.create({
         line_items: stripeLineItems,
         mode: "payment",
-        customer_email: userEmail,
+        customer_email: infoProfileCheckout.email,
         success_url: process.env.NEXTAUTH_URL + 'orders/' + orderDoc._id.toString() + '?clear-cart=1',
         cancel_url: process.env.NEXTAUTH_URL + 'cart?canceled=1',
         metadata: { orderId: orderDoc._id.toString() },

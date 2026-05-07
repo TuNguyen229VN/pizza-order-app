@@ -17,7 +17,7 @@ export default function CartPage() {
   for (const p of cartProducts) {
     subtotal += cartProductPrice(p);
   }
- 
+
   return (
     <section className="mt-8">
       <HeaderCart />
@@ -41,8 +41,9 @@ export default function CartPage() {
         </div>
         <div className="">
           <CartSubtotal subtotal={subtotal} />
-          <Link href={CHECKOUT_ROUTE}>
-            <ButtonPrimary className={"mt-6"}>Thanh toán</ButtonPrimary>
+          <Link href={cartProducts?.length > 0 ? CHECKOUT_ROUTE : '#'}
+            className={cartProducts?.length === 0 ? 'pointer-events-none' : ''}>
+            <ButtonPrimary className={"mt-6"} disabled={!cartProducts?.length}>Thanh toán</ButtonPrimary>
           </Link>
         </div>
       </div>

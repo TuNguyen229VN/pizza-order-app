@@ -11,9 +11,12 @@ html {
 }
 
 .swiper-pagination-bullet-active {
-  @apply  !bg-primary;
+  @apply !bg-primary;
 }
 
+.swiper-container {
+   z-index: 0;
+}
 /* .flying-button-parent button {
   @apply text-white rounded-full border-primary bg-primary;
 } */
@@ -63,4 +66,3 @@ div.tabs > * {
 div.tabs > *.active {
   @apply text-white bg-primary;
 } */
-

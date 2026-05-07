@@ -43,8 +43,8 @@ export default function UserForm({ user, onSave }) {
         <input type="email" disabled value={user?.email} />
         
         <AddressInput
-          addressProps={{ phone, streetAddress, postalCode, city, country }}
-          setAddressProp={handleAddressChange}
+          infoProps={{ phone, streetAddress, postalCode, city, country }}
+          setInfoProps={handleAddressChange}
         />
 
         {loggedInUserData?.admin && (

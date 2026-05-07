@@ -4,16 +4,19 @@ import ButtonPrimary from '@/components/buttons/ButtonPrimary';
 import ChevronRight from '@/components/icons/ChevronRight';
 import AddressInput from '@/components/layout/AddressInput'
 import UseProfile from '@/components/UseProfile';
+import { API_CHECKOUT } from '@/constant/constant';
 import { CART_ROUTE } from '@/constant/routesApp';
 import { totalQuantity } from '@/libs/totalQuantity';
 import CartSubtotal from '@/modules/cart/CartSubtotal';
 import HeaderCart from '@/modules/cart/HeaderCart';
+import CheckoutAddress from '@/modules/checkout/CheckoutAddress';
+import CheckoutInfo from '@/modules/checkout/CheckoutInfo';
 import Link from 'next/link';
 import React, { useContext, useEffect, useState } from 'react'
 import toast from 'react-hot-toast';
 
 export default function CheckoutPage() {
-    const [address, setAddress] = useState({});
+    const [infoProfileCheckout, setInfoProfileCheckout] = useState({});
     const { data: profileData } = UseProfile();
 
     const { cartProducts } = useContext(CartContext);
@@ -27,21 +30,23 @@ export default function CheckoutPage() {
     }, []);
 
     useEffect(() => {
-        if (profileData?.city) {
-            const { phone, streetAddress, city, postalCode, country } = profileData;
-            const addressFromProfile = {
+        if (profileData) {
+            const { name, email, phone, streetAddress, city, postalCode, country } = profileData;
+            const infoFromProfile = {
+                name,
+                email,
                 phone,
                 streetAddress,
                 city,
                 postalCode,
-                country
+                country,
             };
-            setAddress(addressFromProfile);
+            setInfoProfileCheckout(infoFromProfile);
         }
     }, [profileData]);
 
-    function handleAddressChange(propName, value) {
-        setAddress(prevAddress => ({ ...prevAddress, [propName]: value }));
+    function handleInfoChange(propName, value) {
+        setInfoProfileCheckout(prevInfo => ({ ...prevInfo, [propName]: value }));
     }
 
     async function proceedToCheckout(ev) {
@@ -52,7 +57,7 @@ export default function CheckoutPage() {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    address,
+                    infoProfileCheckout,
                     cartProducts,
                 }),
             }).then(async (response) => {
@@ -83,24 +88,23 @@ export default function CheckoutPage() {
             <HeaderCart text='Thanh toán' urlLink={CART_ROUTE} />
             <div className="grid grid-cols-3 gap-8 mt-8">
                 <div className='col-span-2'>
-                    <form onSubmit={proceedToCheckout}>
-                        <AddressInput
-                            addressProps={address}
-                            setAddressProp={handleAddressChange}
-                        />
-                        <button type="submit">Pay ${subtotal + 5000}</button>
+                    <form id='checkout-form' onSubmit={proceedToCheckout}>
+                        <CheckoutAddress infoProps={infoProfileCheckout}
+                            setInfoProps={handleInfoChange}></CheckoutAddress>
+                        <CheckoutInfo infoProps={infoProfileCheckout}
+                            setInfoProps={handleInfoChange}></CheckoutInfo>
                     </form>
                 </div>
                 <div>
                     <CartSubtotal subtotal={subtotal}>
                         <Link href={CART_ROUTE} className='flex items-center justify-between '>
                             <p className='mb-1 text-2xl font-semibold'>Giỏ hàng của tôi</p>
-                            <ChevronRight/>                            
+                            <ChevronRight />
                         </Link>
                         <p>Có {totalQuantity(cartProducts)} sản phẩm trong giỏ hàng của bạn</p>
                         <div className='w-full h-[1px] bg-gray-200 my-4'></div>
                     </CartSubtotal>
-                    <ButtonPrimary className={"mt-6"}>
+                    <ButtonPrimary form="checkout-form" type="submit" className={"mt-6"} disabled={!cartProducts?.length}>
                         Đặt hàng
                     </ButtonPrimary>
 
