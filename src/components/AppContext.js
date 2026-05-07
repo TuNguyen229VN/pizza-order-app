@@ -78,6 +78,69 @@ const AppProvider = ({ children }) => {
     })
   }
 
+  function updateCart(product, size, extras, quantity, noteOrder) {
+    setCartProducts(prevProducts => {
+      const currentIndex = prevProducts.findIndex(p => {
+        if (p._id !== product._id) return false;
+
+        const sameSize = (!p.size && !product.size) ||
+          (p.size?._id?.toString() === product.size?._id?.toString());
+        if (!sameSize) return false;
+
+        const pExtraIds = p.extras.map(e => e._id.toString()).sort();
+        const productExtraIds = product.extras.map(e => e._id.toString()).sort();
+        const sameExtras = JSON.stringify(pExtraIds) === JSON.stringify(productExtraIds);
+        if (!sameExtras) return false;
+
+        const sameNote = (p.noteOrder ?? "") === (product.noteOrder ?? "");
+        return sameNote;
+      });
+
+      if (currentIndex === -1) return prevProducts; // không tìm thấy
+
+      // Tìm xem sau khi update có trùng item nào khác không
+      const existingIndex = prevProducts.findIndex((p, i) => {
+        if (i === currentIndex) return false; // bỏ qua chính nó
+
+        if (p._id !== product._id) return false;
+
+        const sameSize = (!p.size && !size) ||
+          (p.size?._id?.toString() === size?._id?.toString());
+        if (!sameSize) return false;
+
+        const pExtraIds = p.extras.map(e => e._id.toString()).sort();
+        const newExtraIds = extras.map(e => e._id.toString()).sort();
+        const sameExtras = JSON.stringify(pExtraIds) === JSON.stringify(newExtraIds);
+        if (!sameExtras) return false;
+
+        const sameNote = (p.noteOrder ?? "") === (noteOrder ?? "");
+        return sameNote;
+      });
+
+      let newProducts;
+      if (existingIndex !== -1) {
+        // Trùng → gộp quantity, xóa item cũ
+        newProducts = prevProducts
+          .map((p, i) =>
+            i === existingIndex
+              ? { ...p, quantity: p.quantity + quantity }
+              : p
+          )
+          .filter((_, i) => i !== currentIndex);
+      } else {
+        // Không trùng → update bình thường
+        newProducts = prevProducts.map((p, i) =>
+          i === currentIndex
+            ? { ...p, size, extras, quantity, noteOrder }
+            : p
+        );
+      }
+
+      saveCartProductToLocalStorage(newProducts);
+      return newProducts;
+    });
+  }
+
   function clearCart() {
     setCartProducts([])
     saveCartProductToLocalStorage([])
@@ -94,7 +157,7 @@ const AppProvider = ({ children }) => {
 
   return <SessionProvider>
     <CartContext.Provider value={{
-      cartProducts, setCartProducts, addToCart, clearCart, removeCartProduct
+      cartProducts, setCartProducts, addToCart, clearCart, removeCartProduct, updateCart
     }}>
       {children}
     </CartContext.Provider>

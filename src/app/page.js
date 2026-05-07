@@ -1,7 +1,6 @@
 "use client"
 import Carousel from "@/components/carousel/Carousel";
 import Bars2 from "@/components/icons/Bars";
-import Footer from "@/components/layout/Footer";
 import HomeMenu from "@/components/layout/HomeMenu";
 import SectionHeader from "@/components/layout/SectionHeader";
 import MenuItems from "@/components/menu/MenuItems";
@@ -68,7 +67,6 @@ export default function Home() {
           </div>
         ))}
       </section>
-      <Footer />
     </>
   );
 }

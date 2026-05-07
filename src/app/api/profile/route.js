@@ -44,7 +44,7 @@ export async function GET(req) {
     filterUser = { email };
 
   }
-  const user = await User.findOne(filterUser).lean();
+  const user = await User.findOne(filterUser).select('-password -__v').lean();
   const userInfo = await UserInfo.findOne({ email: user.email }).lean();
   return Response.json({ ...user, ...userInfo });
 }

@@ -9,6 +9,7 @@ import Bars2 from "../icons/Bars";
 import Image from "next/image";
 import Bell from "../icons/Bell";
 import UserIcon from "../icons/UserIcon";
+import {totalQuantity} from "@/libs/totalQuantity";
 
 function AuthLinks({ status = "unauthenticated", userName }) {
   if (status === "authenticated") {
@@ -41,7 +42,7 @@ function AuthLinks({ status = "unauthenticated", userName }) {
   }
 }
 
-const Test = ({ cartProducts }) => {
+const Test = ({ cartProducts}) => {
   return (
     <div className="">
       <h1 className="sr-only">Pizza Teo ngon nhất TP.HCM</h1>
@@ -65,7 +66,7 @@ const Test = ({ cartProducts }) => {
           >
             <div className="flex items-center gap-2 transition-transform hover:scale-105">
               <span className="min-w-[1.2rem] text-center tabular-nums">
-                {cartProducts.length}
+                {totalQuantity(cartProducts)}
               </span>
               <ShoppingCart />
             </div>
@@ -87,6 +88,7 @@ const Header = () => {
   let userName = userData?.name || userData?.email;
   const { cartProducts } = useContext(CartContext);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+
   return (
     <header className="sticky top-0 z-10 p-3 bg-white">
       <Test cartProducts={cartProducts} />
@@ -140,7 +142,7 @@ const Header = () => {
           <Link href={CART_ROUTE} className="relative">
             <ShoppingCart />
             <span className="absolute px-1 py-1 text-xs leading-3 text-white rounded-full -top-2 -right-4 bg-primary">
-              {cartProducts.length}
+              {totalQuantity(cartProducts)}
             </span>
           </Link>
         </nav>

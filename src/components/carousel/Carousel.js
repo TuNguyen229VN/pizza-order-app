@@ -28,7 +28,7 @@ export default function Carousel({ carouselList = [] }) {
     }, [])
 
     return (
-        <div className='relative sticky z-10 pt-6 pb-3 top-[80px] bg-white'>
+        <div className='sticky z-10 pt-6 pb-3 top-[80px] bg-white'>
             {!isBeginning && (
                 <div className="absolute top-0 left-0 z-10 w-16 h-full pointer-events-none bg-gradient-to-r from-white to-transparent" />
             )}

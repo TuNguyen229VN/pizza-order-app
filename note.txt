@@ -27,3 +27,8 @@ còn lỗi add to cart menu item
 cart, order ,user,... list nếu k có phải có chữ thong báo k có sản phảm hay gì dó
 chưa thanh toán van chua dúng 
 làm capcha login
+check ky thanh toán xong
+
+chưa filter login hay chưa
+
+res trả ve bị lôi pass (dafix) admin check phan network

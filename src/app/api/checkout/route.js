@@ -24,11 +24,15 @@ export async function POST(req) {
     for (const cartProduct of cartProducts) {
 
         const productInfo = await MenuItem.findById(cartProduct._id);
+        if (!productInfo) {
+            return Response.json({ error: 'Sản phẩm không tồn tại' }, { status: 400 });
+        }
 
         let productPrice = productInfo.basePrice;
         if (cartProduct.size) {
             const size = productInfo.sizes
                 .find(size => size._id.toString() === cartProduct.size._id.toString());
+            if (!size) return Response.json({ error: 'Size không hợp lệ' }, { status: 400 });
             productPrice += size.price;
         }
         if (cartProduct.extras?.length > 0) {
@@ -36,22 +40,24 @@ export async function POST(req) {
                 const productExtras = productInfo.extraIngredientPrices;
                 const extraThingInfo = productExtras
                     .find(extra => extra._id.toString() === cartProductExtraThing._id.toString());
+                if (!extraThingInfo) return Response.json({ error: 'Extra không hợp lệ' }, { status: 400 });
                 productPrice += extraThingInfo.price;
             }
         }
-        if (cartProduct.quantity && cartProduct.quantity >= 1) {
-            productPrice = productPrice * cartProduct.quantity;
+
+        const quantity = cartProduct.quantity;
+        if (!Number.isInteger(quantity) || quantity < 1) {
+            return Response.json({ error: 'Số lượng không hợp lệ' }, { status: 400 });
         }
-        const productName = cartProduct.name;
 
         stripeLineItems.push({
-            quantity: 1,
+            quantity,
             price_data: {
                 currency: 'vnd',
                 product_data: {
-                    name: productName,
+                    name: productInfo.name,
                 },
-                unit_amount: Math.round(productPrice) ,
+                unit_amount: Math.round(productPrice),
             },
         });
     }

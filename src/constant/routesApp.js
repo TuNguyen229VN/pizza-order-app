@@ -10,6 +10,7 @@ const LOGIN_ROUTE = '/login';
 const REGISTER_ROUTE = '/register';
 const MENU_ROUTE = '/menu';
 const CART_ROUTE = '/cart';
+const CHECKOUT_ROUTE = '/checkout';
 
 export {
   HOME_ROUTE,
@@ -24,4 +25,5 @@ export {
   REGISTER_ROUTE,
   MENU_ROUTE,
   CART_ROUTE,
+  CHECKOUT_ROUTE,
 }

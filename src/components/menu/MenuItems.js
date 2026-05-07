@@ -1,6 +1,5 @@
 import React, { useContext, useState } from "react";
 import { CartContext } from "../AppContext";
-import toast from "react-hot-toast";
 import MenuItemTile from "./MenuItemTile";
 import Image from "next/image";
 import FlyingButton from "../buttons/FlyingButton";
@@ -18,7 +17,7 @@ const MenuItems = (menuItem) => {
   const [selectedExtras, setSelectedExtras] = useState([]);
   const [quantity, setQuantity] = useState(1)
   const [noteOrder, setNoteOrder] = useState("")
-  
+
   const { addToCart } = useContext(CartContext);
   const [showPopup, setShowPopup] = useState(false)
   const handleAddToCartButtonClick = async () => {
@@ -31,18 +30,9 @@ const MenuItems = (menuItem) => {
     setSelectedSize(sizes?.[0] || null);
     setSelectedExtras([]);
     setShowPopup(false);
+    setNoteOrder("");
+    setQuantity(1);
   }
-
-  // function handleExtraThingClick(ev, extraThing) {
-  //   const checked = ev.target.checked;
-  //   if (checked) {
-  //     setSelectedExtras(prev => [...prev, extraThing]);
-  //   } else {
-  //     setSelectedExtras(prev => {
-  //       return prev.filter(e => e.name !== extraThing.name);
-  //     });
-  //   }
-  // }
 
   const handleQtyChange = (quantityChange) => {
     const newQuantity = quantity + quantityChange;
@@ -88,10 +78,10 @@ const MenuItems = (menuItem) => {
               <Image src={image} alt={name} width={200} height={200} className="object-cover object-center w-full h-full" />
             </div>
             <div className="">
-              <div className="overflow-auto h-[calc(100%-80px)] p-5">
+              <div className="overflow-auto h-[calc(100%-80px)] p-5 w-[570px]">
                 <div>
-                  <h3 className="text-2xl leading-[30px] font-semibold">{name}</h3>
-                  <p className="mt-2 text-secondary w-[570px]">{description}</p>
+                  <h3 className="text-2xl leading-[30px] font-semibold break-words">{name}</h3>
+                  <p className="mt-2 break-words text-secondary">{description}</p>
                 </div>
                 {sizes?.length > 0 && (
                   <div className="mt-7 ">
@@ -150,75 +140,12 @@ const MenuItems = (menuItem) => {
                     <div
                       className="text-center text-white"
                     >
-                      Thêm vào giỏ hàng <span className="inline-block w-2 h-2 mx-2 bg-white rounded-full"></span> {selectedPrice} <span className="underline">đ</span>
+                      Thêm vào giỏ hàng <span className="inline-block w-2 h-2 mx-2 bg-white rounded-full"></span> {selectedPrice.toLocaleString('vi-VN')} <span className="underline">đ</span>
                     </div>
                   </ButtonPrimary>
                 </FlyingButton>
               </div>
             </div>
-
-
-            {/* --------------------------------------- */}
-            {/* <div
-              className="p-2 overflow-y-scroll"
-              style={{ maxHeight: 'calc(100vh - 100px)' }}>
-              <Image src={image} alt={name} width={300} height={200} className="mx-auto" />
-              <h2 className="mb-2 text-lg font-bold text-center">{name}</h2>
-              <p className="mb-2 text-sm text-center text-gray-500">
-                {description}
-              </p>
-              {sizes?.length > 0 && (
-                <div className="py-2">
-                  <h3 className="text-center text-gray-700">Pick your size</h3>
-                  {sizes.map(size => (
-                    <label
-                      key={size._id}
-                      className="flex items-center gap-2 p-4 mb-1 border rounded-md">
-                      <input
-                        type="radio"
-                        onChange={() => setSelectedSize(size)}
-                        checked={selectedSize?.name === size.name}
-                        name="size" />
-                      {size.name} ${basePrice + size.price}
-                    </label>
-                  ))}
-                </div>
-              )}
-              {extraIngredientPrices?.length > 0 && (
-                <div className="py-2">
-                  <h3 className="text-center text-gray-700">Any extras?</h3>
-                  {extraIngredientPrices.map(extraThing => (
-                    <label
-                      key={extraThing._id}
-                      className="flex items-center gap-2 p-4 mb-1 border rounded-md">
-                      <input
-                        type="checkbox"
-                        onChange={ev => handleExtraThingClick(ev, extraThing)}
-                        checked={selectedExtras.map(e => e._id).includes(extraThing._id)}
-                        name={extraThing.name} />
-                      {extraThing.name} +${extraThing.price}
-                    </label>
-                  ))}
-                </div>
-              )}
-              <div className="sticky rounded-xl bg-primary bottom-2">
-                <FlyingButton
-                  targetTop={'6%'}
-                  targetLeft={'80%'}
-                  src={image}>
-                  <div
-                    className="text-center text-white"
-                    onClick={handleAddToCartButtonClick}>
-                    Add to cart ${selectedPrice}
-                  </div>
-                </FlyingButton>
-              </div>
-              <button
-                className="mt-2"
-                onClick={() => setShowPopup(false)}>
-                Cancel
-              </button>
-            </div> */}
           </div>
         </div>
       )}
