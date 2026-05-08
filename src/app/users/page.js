@@ -2,12 +2,16 @@
 import UserTabs from '@/components/layout/UserTabs'
 import UseProfile from '@/components/UseProfile';
 import { API_USERS } from '@/constant/constant';
-import { USERS_ROUTE } from '@/constant/routesApp';
+import { LOGIN_ROUTE, USERS_ROUTE } from '@/constant/routesApp';
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 
 export default function UsersPage() {
+    const session = useSession();
     const { loading: profileLoading, data: profileData } = UseProfile();
+    const { status} = session;
 
     const [users, setUsers] = useState([]);
 
@@ -18,6 +22,10 @@ export default function UsersPage() {
             })
         })
     }, [])
+
+    if (status === "unauthenticated") {
+        return redirect(LOGIN_ROUTE);
+    }
 
     if (profileLoading) {
         return "Loading user info...";

@@ -1,57 +1,38 @@
-import { API_UPLOAD_IMAGE } from "@/constant/constant";
 import Image from "next/image";
 import React from "react";
-import toast from "react-hot-toast";
 
-export default function EditTableImage({ link, setLink }) {
-  const handleFileChange = async (e) => {
-    const files = e?.target.files;
-    if (files?.length === 1) {
-      const data = new FormData();
-      data.set("file", files[0]);
-      const uploadPromise = new Promise(async (resolve, reject) => {
-        const response = await fetch(API_UPLOAD_IMAGE, {
-          method: "POST",
-          // headers: { "Content-Type": "multipart/form-data" },
-          body: data,
-        });
-        if (response.ok) {
-          const link = await response.json();
-          setLink(link?.url);
-          resolve();
-        } else {
-          reject();
-        }
-      });
-      toast.promise(uploadPromise, {
-        loading: "Uploading...",
-        success: "Upload completed",
-        error: "Upload error",
-      });
-    }
+
+export default function EditTableImage({ link, previewLink, onFileSelect }) {
+
+  const handleFileChange = (e) => {
+    const file = e?.target.files?.[0];
+    if (!file) return;
+    const localPreview = URL.createObjectURL(file);
+    onFileSelect(file, localPreview); // trả file + preview lên cha
   };
+  const displayImage = previewLink || link;
   return (
-    <>
-      {link && (
+    <label className="cursor-pointer">
+      {displayImage && (
         <Image
-          className="object-cover w-full h-full mb-4 rounded-lg"
-          src={link}
+          className="object-cover object-center w-full h-full mb-4 rounded-full"
+          src={displayImage}
           width={250}
           height={250}
           alt="avatar"
         />
       )}
-      {!link && (
-        <div className="p-4 mb-1 text-center text-gray-500 bg-gray-200 rounded-lg">
-            No image
+      {!displayImage && (
+        <div className="w-full h-full mb-4 text-gray-500 bg-gray-200 rounded-full ">
+          <p className="absolute -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">No image</p>
         </div>
       )}
-      <label>
+      <div className="absolute hidden -translate-x-1/2 -translate-y-1/2 bg-white border border-gray-300 rounded-lg cursor-pointer group-hover:block top-1/2 left-1/2">
         <input type="file" className="hidden" onChange={handleFileChange} />
-        <span className="block p-2 text-center border border-gray-300 rounded-lg cursor-pointer">
-          Edit
+        <span className="block p-2 text-center ">
+          Chỉnh sửa
         </span>
-      </label>
-    </>
+      </div>
+    </label>
   );
 }

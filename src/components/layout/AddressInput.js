@@ -1,43 +1,57 @@
 import React from 'react'
+import ValidatedInput from '../input/ValidatedInput';
 
-export default function AddressInput({ infoProps, setInfoProps, disabled = false }) {
+export default function AddressInput({ infoProps, setInfoProps, errors, registerRef, clearError, disabled = false }) {
     const { phone, streetAddress, postalCode, city, country } = infoProps;
     return (
         <>
-            <label>Phone</label>
-            <input
-                disabled={disabled}
-                type="tel" placeholder="Phone number"
-                value={phone || ''} onChange={ev => setInfoProps('phone', ev.target.value)} />
-            <label>Street address</label>
-            <input
-                disabled={disabled}
-                type="text" placeholder="Street address"
-                value={streetAddress || ''} onChange={ev => setInfoProps('streetAddress', ev.target.value)}
+            <ValidatedInput
+                label="Số điện thoại"
+                name="phone"
+                value={phone || ""}
+                inputRef={registerRef("phone")}
+                error={errors.phone}
+                placeholder="Nhập số điện thoại của bạn"
+                onChange={(e) => {
+                    setInfoProps('phone', e.target.value);
+                    clearError("phone");
+                }}
             />
-            <div className="grid grid-cols-2 gap-2">
-                <div>
-                    <label>Postal code</label>
-                    <input
-                        disabled={disabled}
-                        type="text" placeholder="Postal code"
-                        value={postalCode || ''} onChange={ev => setInfoProps('postalCode', ev.target.value)}
-                    />
-                </div>
-                <div>
-                    <label>City</label>
-                    <input
-                        disabled={disabled}
-                        type="text" placeholder="City"
-                        value={city || ''} onChange={ev => setInfoProps('city', ev.target.value)}
-                    />
-                </div>
-            </div>
-            <label>Country</label>
-            <input
-                disabled={disabled}
-                type="text" placeholder="Country"
-                value={country || ''} onChange={ev => setInfoProps('country', ev.target.value)}
+            <ValidatedInput
+                label="Địa chỉ nhà"
+                name="streetAddress"
+                value={streetAddress || ""}
+                inputRef={registerRef("streetAddress")}
+                error={errors.streetAddress}
+                placeholder="Nhập đầy đủ địa chỉ nhà của bạn"
+                onChange={(e) => {
+                    setInfoProps('streetAddress', e.target.value);
+                    clearError("streetAddress");
+                }}
+            />
+            <ValidatedInput
+                label="Quận"
+                name="country"
+                value={country || ""}
+                inputRef={registerRef("country")}
+                error={errors.country}
+                placeholder="Nhập tên quận của bạn"
+                onChange={(e) => {
+                    setInfoProps('country', e.target.value);
+                    clearError("country");
+                }}
+            />
+            <ValidatedInput
+                label="Thành phố"
+                name="city"
+                value={city || ""}
+                inputRef={registerRef("city")}
+                error={errors.city}
+                placeholder="Nhập tên thành phố của bạn"
+                onChange={(e) => {
+                    setInfoProps('city', e.target.value);
+                    clearError("city");
+                }}
             />
         </>
     )

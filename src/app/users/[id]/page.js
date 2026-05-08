@@ -2,45 +2,110 @@
 import UserForm from '@/components/layout/UserForm';
 import UserTabs from '@/components/layout/UserTabs'
 import UseProfile from '@/components/UseProfile';
-import { API_PROFILE, API_USERS } from '@/constant/constant';
-import { useParams } from 'next/navigation';
+import { API_PROFILE, API_UPLOAD_IMAGE, API_USERS } from '@/constant/constant';
+import { LOGIN_ROUTE } from '@/constant/routesApp';
+import { useFormValidate } from '@/hooks/useFormValidate';
+import { validators } from '@/libs/validators';
+import HeaderCart from '@/modules/cart/HeaderCart';
+import { useSession } from 'next-auth/react';
+import { redirect, useParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 import toast from 'react-hot-toast';
 
 export default function EditUserPage() {
+    const session = useSession();
     const { loading: profileLoading, data: profileData } = UseProfile();
     const [user, setUser] = useState(null);
-    const { id } = useParams()
+    const { id } = useParams();
+    const { errors, registerRef, handleValidate, clearError } = useFormValidate();
+    const { status } = session;
+    const [loadingForm, setLoadingForm] = useState(false)
 
     useEffect(() => {
-        fetch(`${API_PROFILE}?_id=${id}`).then(res => {
-            res.json().then(user => {
-                setUser(user);
+        if (!id) return;
+        if (status === "authenticated") {
+            fetch(`${API_PROFILE}?_id=${id}`).then(res => {
+                res.json().then(user => {
+                    setUser(user);
+                })
             })
-        })
+        }
+    }, [id])
 
-    }, [])
-
-    const handleSaveButtonClick = async (e, data) => {
+    const handleSaveButtonClick = async (e, data, pendingFile) => {
         e.preventDefault();
+
+        if (loadingForm) return;
+
+        setLoadingForm(true)
+        const isValid = handleValidate({
+            userName: {
+                value: data?.name,
+                rules: [validators.required("tên"), validators.minLength(2), validators.maxLength(200)],
+            },
+            phone: {
+                value: data?.phone,
+                rules: [validators.required("số điện thoại"), validators.phone],
+            },
+            birthday: {
+                value: data?.birthday,
+                rules: [validators.required("ngày sinh"), validators.pastDate, validators.ageDate(10, 90)],
+            },
+            streetAddress: {
+                value: data?.streetAddress,
+                rules: [validators.required("địa chỉ nhà"), validators.minLength(2), validators.maxLength(200)],
+            },
+            city: {
+                value: data?.city,
+                rules: [validators.required("thành phố"), validators.minLength(2), validators.maxLength(200)],
+            },
+            country: {
+                value: data?.country,
+                rules: [validators.required("quận"), validators.minLength(2), validators.maxLength(200)],
+            },
+        });
+        setLoadingForm(false);
+        if (!isValid) return;
+        setLoadingForm(true);
+        // Bước 2: Upload ảnh nếu có file mới
+        let finalImage = data.image;
+        if (pendingFile) {
+            const formData = new FormData();
+            formData.set("file", pendingFile);
+            const uploadRes = await fetch(API_UPLOAD_IMAGE, { method: "POST", body: formData });
+            if (!uploadRes.ok) {
+                setLoadingForm(false);
+                toast.error("Upload ảnh thất bại");
+                return;
+            }
+            const uploadData = await uploadRes.json();
+            finalImage = uploadData?.url;
+        }
+
         const savingPromise = new Promise(async (resolve, reject) => {
             const response = await fetch(API_PROFILE, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ ...data, _id: id }),
+                body: JSON.stringify({ ...data, image: finalImage, _id: id }),
             })
             if (response.ok) {
+                setLoadingForm(false);
                 resolve();
             } else {
+                setLoadingForm(false);
                 reject();
             }
         });
         await toast.promise(savingPromise, {
             loading: "Saving...",
-            success: "Profile saved",
+            success: "Cập nhật thành công",
             error: "Error",
         });
 
+    }
+
+    if (status === "unauthenticated") {
+        return redirect(LOGIN_ROUTE);
     }
 
     if (profileLoading) {
@@ -51,10 +116,14 @@ export default function EditUserPage() {
     }
 
     return (
-        <section className='max-w-2xl mx-auto mt-8'>
-            <UserTabs isAdmin={profileData.admin}></UserTabs>
-            <div className="mt-8">
-                <UserForm user={user} onSave={handleSaveButtonClick} />
+        <section>
+            <HeaderCart text="Tài khoản" />
+            <div className="grid grid-cols-3 gap-6">
+                <UserTabs isAdmin={profileData.admin}></UserTabs>
+                <div className="col-span-2">
+                    <UserForm user={user} onSave={handleSaveButtonClick} errors={errors} registerRef={registerRef}
+                        clearError={clearError} loadingForm={loadingForm} title={"Hồ sô của KH"} />
+                </div>
             </div>
         </section>
     )

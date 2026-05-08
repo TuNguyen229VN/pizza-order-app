@@ -1,5 +1,5 @@
 "use client";
-import DeleteButton from '@/components/DeleteButton';
+import DeleteButton from '@/components/buttons/DeleteButton';
 import Left from '@/components/icons/Left';
 import EditTableImage from '@/components/layout/EditTableImage';
 import MenuItemForm from '@/components/layout/MenuItemForm';

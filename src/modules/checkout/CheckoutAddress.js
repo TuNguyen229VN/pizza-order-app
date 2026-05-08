@@ -1,7 +1,8 @@
 import ChevronRight from '@/components/icons/ChevronRight';
+import ValidatedInput from '@/components/input/ValidatedInput';
 import React from 'react'
 
-export default function CheckoutAddress({ infoProps, setInfoProps,}) {
+export default function CheckoutAddress({ infoProps, setInfoProps, errors, registerRef, clearError }) {
     const { streetAddress, city, country } = infoProps;
     return (
         <div className='px-4 py-4 border rounded-2xl'>
@@ -11,23 +12,41 @@ export default function CheckoutAddress({ infoProps, setInfoProps,}) {
             </div>
             <div className='mt-9'>
                 <p className='mb-2 text-lg'>{streetAddress}, {country}, {city}</p>
-                <p className='my-2 text-sm font-medium'>Địa chỉ nhà</p>
-                <input
-                    type="text" placeholder="Nhập đầy đủ địa chỉ nhà của bạn"
-                    value={streetAddress || ''} onChange={ev => setInfoProps('streetAddress', ev.target.value)}
-                    className='w-full py-3 pl-5 pr-8 border rounded-md outline-none focus:border-black'
+                <ValidatedInput
+                    label="Địa chỉ nhà"
+                    name="streetAddress"
+                    value={streetAddress || ""}
+                    inputRef={registerRef("streetAddress")}
+                    error={errors.streetAddress}
+                    placeholder="Nhập đầy đủ địa chỉ nhà của bạn"
+                    onChange={(e) => {
+                        setInfoProps('streetAddress', e.target.value);
+                        clearError("streetAddress");
+                    }}
                 />
-                <p className='my-2 text-sm font-medium'>Quận</p>
-                <input
-                    className='w-full py-3 pl-5 pr-8 border rounded-md outline-none focus:border-black'
-                    type="text" placeholder="Nhập tên quận của bạn"
-                    value={country || ''} onChange={ev => setInfoProps('country', ev.target.value)}
+                <ValidatedInput
+                    label="Quận"
+                    name="country"
+                    value={country || ""}
+                    inputRef={registerRef("country")}
+                    error={errors.country}
+                    placeholder="Nhập tên quận của bạn"
+                    onChange={(e) => {
+                        setInfoProps('country', e.target.value);
+                        clearError("country");
+                    }}
                 />
-                <p className='my-2 text-sm font-medium'>Thành phố</p>
-                <input
-                    className='w-full py-3 pl-5 pr-8 border rounded-md outline-none focus:border-black'
-                    type="text" placeholder="Nhập tên thành phố của bạn"
-                    value={city || ''} onChange={ev => setInfoProps('city', ev.target.value)}
+                <ValidatedInput
+                    label="Thành phố"
+                    name="city"
+                    value={city || ""}
+                    inputRef={registerRef("city")}
+                    error={errors.city}
+                    placeholder="Nhập tên thành phố của bạn"
+                    onChange={(e) => {
+                        setInfoProps('city', e.target.value);
+                        clearError("city");
+                    }}
                 />
             </div>
 

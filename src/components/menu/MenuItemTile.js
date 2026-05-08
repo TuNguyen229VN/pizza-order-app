@@ -7,7 +7,7 @@ export default function MenuItemTile({ onClick, onAddToCart, ...item }) {
         sizes, extraIngredientPrices,
     } = item;
 
-    const hasSizesOrExtras = sizes?.length > 0 || extraIngredientPrices?.length > 0;
+    const hasSizesOrExtras = sizes?.length > 1 || extraIngredientPrices?.length > 1;
 
     return (
         <div className="flex h-[230px] border rounded-2xl cursor-pointer overflow-hidden group transition duration-300 hover:shadow-[0_3px_8px_rgba(0,0,0,0.1)]" onClick={(e) => {

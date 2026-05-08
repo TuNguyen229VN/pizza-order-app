@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { CartContext } from "../AppContext";
 import MenuItemTile from "./MenuItemTile";
 import Image from "next/image";
@@ -7,6 +7,7 @@ import InputRadio from "../input/InputRadio";
 import CloseIcon from "../icons/CloseIcon";
 import InputCheckbox from "../input/InputCheckbox";
 import ButtonPrimary from "../buttons/ButtonPrimary";
+import { useLockBodyScroll } from "@/hooks/useLockBodyScroll";
 
 
 const MenuItems = (menuItem) => {
@@ -20,8 +21,11 @@ const MenuItems = (menuItem) => {
 
   const { addToCart } = useContext(CartContext);
   const [showPopup, setShowPopup] = useState(false)
+
+  useLockBodyScroll(showPopup);
+
   const handleAddToCartButtonClick = async () => {
-    const hasOptions = sizes.length > 0 || extraIngredientPrices.length > 0;
+    const hasOptions = sizes.length > 1 || extraIngredientPrices.length > 1;
     if (hasOptions && !showPopup) {
       setShowPopup(true);
       return;
@@ -34,6 +38,14 @@ const MenuItems = (menuItem) => {
     setQuantity(1);
   }
 
+  const closePopup = () => {
+    setShowPopup(false);
+    setSelectedSize(sizes?.[0] || null);
+    setSelectedExtras([]);
+    setShowPopup(false);
+    setNoteOrder("");
+    setQuantity(1);
+  }
   const handleQtyChange = (quantityChange) => {
     const newQuantity = quantity + quantityChange;
     if (newQuantity < 1) return;
@@ -66,12 +78,12 @@ const MenuItems = (menuItem) => {
   return (
     <>
       {showPopup && (
-        <div onClick={() => setShowPopup(false)} className="fixed inset-0 z-20 flex items-center justify-center bg-black/80">
+        <div onClick={closePopup} className="fixed inset-0 z-20 flex items-center justify-center bg-black/80">
           <div onClick={ev => ev.stopPropagation()}
             className="flex max-w-screen-lg h-[560px] overflow-hidden bg-white rounded-xl relative">
             <button
               className="absolute right-5 top-5"
-              onClick={() => setShowPopup(false)}>
+              onClick={closePopup}>
               <CloseIcon />
             </button>
             <div className="w-full">

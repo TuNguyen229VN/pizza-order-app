@@ -6,9 +6,12 @@ import AddressInput from '@/components/layout/AddressInput'
 import UseProfile from '@/components/UseProfile';
 import { API_CHECKOUT } from '@/constant/constant';
 import { CART_ROUTE } from '@/constant/routesApp';
+import { useFormValidate } from '@/hooks/useFormValidate';
 import { totalQuantity } from '@/libs/totalQuantity';
+import { validators } from '@/libs/validators';
 import CartSubtotal from '@/modules/cart/CartSubtotal';
 import HeaderCart from '@/modules/cart/HeaderCart';
+import CheckAcceptPolicy from '@/modules/checkout/CheckAcceptPolicy';
 import CheckoutAddress from '@/modules/checkout/CheckoutAddress';
 import CheckoutInfo from '@/modules/checkout/CheckoutInfo';
 import Link from 'next/link';
@@ -16,7 +19,10 @@ import React, { useContext, useEffect, useState } from 'react'
 import toast from 'react-hot-toast';
 
 export default function CheckoutPage() {
+    const { errors, registerRef, handleValidate, clearError } = useFormValidate();
     const [infoProfileCheckout, setInfoProfileCheckout] = useState({});
+    const [checked, setChecked] = useState(false);
+    const [legit, setLegit] = useState(false)
     const { data: profileData } = UseProfile();
 
     const { cartProducts } = useContext(CartContext);
@@ -31,14 +37,13 @@ export default function CheckoutPage() {
 
     useEffect(() => {
         if (profileData) {
-            const { name, email, phone, streetAddress, city, postalCode, country } = profileData;
+            const { name, email, phone, streetAddress, city, country } = profileData;
             const infoFromProfile = {
                 name,
                 email,
                 phone,
                 streetAddress,
                 city,
-                postalCode,
                 country,
             };
             setInfoProfileCheckout(infoFromProfile);
@@ -52,6 +57,37 @@ export default function CheckoutPage() {
     async function proceedToCheckout(ev) {
         ev.preventDefault();
         // address and shopping cart products
+        const isValid = handleValidate({
+            name: {
+                value: infoProfileCheckout.name,
+                rules: [validators.required("họ và tên"), validators.minLength(2),validators.maxLength(200)],
+            },
+            email: {
+                value: infoProfileCheckout.email,
+                rules: [validators.required("email"), validators.email],
+            },
+            phone: {
+                value: infoProfileCheckout.phone,
+                rules: [validators.required("số điện thoại"), validators.phone],
+            },
+            streetAddress: {
+                value: infoProfileCheckout.streetAddress,
+                rules: [validators.required("địa chỉ nhà"), validators.minLength(2),validators.maxLength(200)],
+            },
+            city: {
+                value: infoProfileCheckout.city,
+                rules: [validators.required("thành phố"), validators.minLength(2),validators.maxLength(200)],
+            },
+            country: {
+                value: infoProfileCheckout.country,
+                rules: [validators.required("quận"), validators.minLength(2),validators.maxLength(200)],
+            },
+        });
+
+        if (!isValid) return;
+
+        setLegit(true);
+        if (!checked) return
         const promise = new Promise((resolve, reject) => {
             fetch(API_CHECKOUT, {
                 method: 'POST',
@@ -84,15 +120,17 @@ export default function CheckoutPage() {
 
 
     return (
-        <section className="mt-8">
+        <section>
             <HeaderCart text='Thanh toán' urlLink={CART_ROUTE} />
             <div className="grid grid-cols-3 gap-8 mt-8">
                 <div className='col-span-2'>
                     <form id='checkout-form' onSubmit={proceedToCheckout}>
                         <CheckoutAddress infoProps={infoProfileCheckout}
-                            setInfoProps={handleInfoChange}></CheckoutAddress>
+                            setInfoProps={handleInfoChange} errors={errors} registerRef={registerRef}
+                            clearError={clearError}></CheckoutAddress>
                         <CheckoutInfo infoProps={infoProfileCheckout}
-                            setInfoProps={handleInfoChange}></CheckoutInfo>
+                            setInfoProps={handleInfoChange} errors={errors} registerRef={registerRef}
+                            clearError={clearError} ></CheckoutInfo>
                     </form>
                 </div>
                 <div>
@@ -104,6 +142,7 @@ export default function CheckoutPage() {
                         <p>Có {totalQuantity(cartProducts)} sản phẩm trong giỏ hàng của bạn</p>
                         <div className='w-full h-[1px] bg-gray-200 my-4'></div>
                     </CartSubtotal>
+                    <CheckAcceptPolicy checked={checked} setChecked={setChecked} legit={legit} />
                     <ButtonPrimary form="checkout-form" type="submit" className={"mt-6"} disabled={!cartProducts?.length}>
                         Đặt hàng
                     </ButtonPrimary>

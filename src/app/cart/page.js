@@ -19,7 +19,7 @@ export default function CartPage() {
   }
 
   return (
-    <section className="mt-8">
+    <section>
       <HeaderCart />
       <div className="grid grid-cols-3 gap-8 mt-8">
         <div className='col-span-2'>

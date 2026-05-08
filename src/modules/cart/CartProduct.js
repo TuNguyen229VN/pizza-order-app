@@ -3,9 +3,12 @@ import React, { useState } from 'react'
 import { cartProductPrice } from '../../components/AppContext';
 import TrashCircel from '@/components/icons/TrashCircel';
 import CartProductDetail from './CartProductDetail';
+import { useLockBodyScroll } from '@/hooks/useLockBodyScroll';
+import ConfirmPopup from '@/components/popup/ConfirmPopup';
 
 export default function CartProduct({ index, product, onRemove, showEdit = false }) {
   const [showPopup, setShowPopup] = useState(false)
+  useLockBodyScroll(showPopup);
   return (
     <div className="flex justify-between gap-4 py-4">
       <div className='flex gap-4'>
@@ -46,14 +49,9 @@ export default function CartProduct({ index, product, onRemove, showEdit = false
       <div className='flex items-start text-lg font-medium w-[200px] justify-end gap-5'>
         <p>{cartProductPrice(product).toLocaleString('vi-VN')} <span className='underline'>đ</span></p>
         {!!onRemove && (
-          <div className="">
-            <button
-              type="button"
-              onClick={() => onRemove(index)}
-            >
+            <ConfirmPopup onDelete={() => onRemove(index)}>
               <TrashCircel />
-            </button>
-          </div>
+            </ConfirmPopup>
         )}
       </div>
     </div>

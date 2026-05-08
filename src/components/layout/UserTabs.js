@@ -3,36 +3,68 @@ import { CATEGORIES_ROUTE, MENU_ITEMS_ROUTE, ORDERS_ROUTE, PROFILE_ROUTE, USERS_
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
+import UserIcon from "../icons/UserIcon";
+import CategoryIcon from "../icons/CategoryIcon";
+import { PiPizzaLight, PiUserListLight } from "react-icons/pi";
+import { BsCartCheck } from "react-icons/bs";
+import { TbLockPassword } from "react-icons/tb";
+import Bell from "../icons/Bell";
+import ConfirmPopup from "../popup/ConfirmPopup";
+import SignOutIcon from "../icons/SignOutIcon";
+import { signOut } from "next-auth/react";
 
 const UserTabs = ({ isAdmin }) => {
   const path = usePathname();
   return (
-    <div className="flex justify-center gap-2 mx-auto tabs">
-      <Link className={path === PROFILE_ROUTE ? "active" : ""} href={PROFILE_ROUTE}>
-        Profile
-      </Link>
-      {isAdmin && (
-        <>
-          <Link
-            className={path === CATEGORIES_ROUTE ? "active" : ""}
-            href={CATEGORIES_ROUTE}
-          >
-            Categories
-          </Link>
-          <Link
-            className={path.includes(MENU_ITEMS_ROUTE) ? "active" : ""}
-            href={MENU_ITEMS_ROUTE}
-          >
-            Menu Items
-          </Link>
-          <Link className={path.includes(USERS_ROUTE) ? "active" : ""} href={USERS_ROUTE}>
-            Users
-          </Link>
-        </>
-      )}
-      <Link className={path === ORDERS_ROUTE ? "active" : ""} href={ORDERS_ROUTE}>
-        Orders
-      </Link>
+    <div>
+      <div className="flex flex-col border rounded-2xl">
+        <Link className={`flex items-center p-4 gap-4 text-lg ${path === PROFILE_ROUTE ? "text-primary font-semibold" : ""}`} href={PROFILE_ROUTE}>
+          <UserIcon />
+          <span>Hồ sơ của tôi</span>
+        </Link>
+        {isAdmin && (
+          <>
+            <Link
+              className={`flex items-center p-4 gap-4 text-lg ${path === CATEGORIES_ROUTE ? "text-primary font-semibold" : ""}`}
+              href={CATEGORIES_ROUTE}
+            >
+              <CategoryIcon />
+              <span>Quản lý loại sản phẩm</span>
+            </Link>
+            <Link
+              className={`flex items-center p-4 gap-4 text-lg ${path.includes(MENU_ITEMS_ROUTE) ? "text-primary font-semibold" : ""}`}
+              href={MENU_ITEMS_ROUTE}
+            >
+              <PiPizzaLight  className="w-6 h-6"/>
+              <span>Quản lý món ăn</span>
+            </Link>
+            <Link className={`flex items-center p-4 gap-4 text-lg ${path.includes(USERS_ROUTE) ? "text-primary font-semibold" : ""}`} href={USERS_ROUTE}>
+              <PiUserListLight className="w-6 h-6"/>
+              <span>Quản lý người dùng</span>
+            </Link>
+          </>
+        )}
+        <Link className={`flex items-center p-4 gap-4 text-lg ${path === ORDERS_ROUTE ? "text-primary font-semibold" : ""}`} href={ORDERS_ROUTE}>
+          <BsCartCheck  className="w-6 h-6"/>
+          <span>Quản lý đơn hàng</span>
+        </Link>
+        <Link className={`flex items-center p-4 gap-4 text-lg ${path === ORDERS_ROUTE ? "text-primary font-semibold" : ""}`} href={"#"}>
+          <Bell />
+          <span>Thông báo</span>
+        </Link>
+        <Link className={`flex items-center p-4 gap-4 text-lg ${path === ORDERS_ROUTE ? "text-primary font-semibold" : ""}`} href={"#"}>
+          <TbLockPassword  className="w-6 h-6"/>
+          <span>Đổi mật khẩu</span>
+        </Link>
+      </div>
+      <div className="mt-6 border rounded-2xl">
+        <ConfirmPopup classNameButton="w-full" label="Đăng xuất" labelConfirm="Đăng xuất" onDelete={() => signOut()}>
+          <div className="flex items-center gap-4 p-5 text-lg">
+            <SignOutIcon />
+            <p>Đăng xuất</p>
+          </div>
+        </ConfirmPopup>
+      </div>
     </div>
   );
 };

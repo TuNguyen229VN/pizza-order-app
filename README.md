@@ -21,6 +21,7 @@
 - **react-flying-item**
 - **stripe**
 - **swiperjs**
+- **reacticon**
 ## Pages:
 
 - Home Page

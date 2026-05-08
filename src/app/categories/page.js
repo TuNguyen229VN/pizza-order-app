@@ -1,5 +1,5 @@
 "use client";
-import DeleteButton from "@/components/DeleteButton";
+import DeleteButton from "@/components/buttons/DeleteButton";
 import UserTabs from "@/components/layout/UserTabs";
 import UseProfile from "@/components/UseProfile";
 import { API_CATEGORIES } from "@/constant/constant";

@@ -9,7 +9,7 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY)
 export async function POST(req) {
     await connectDB();
     const { cartProducts, infoProfileCheckout } = await req.json();
-    console.log(infoProfileCheckout)
+
     // const session = await getServerSession(authOptions);
     // const userEmail = session?.user?.email;
 

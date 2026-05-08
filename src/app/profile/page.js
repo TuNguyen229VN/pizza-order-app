@@ -2,8 +2,11 @@
 import EditTableImage from "@/components/layout/EditTableImage";
 import UserForm from "@/components/layout/UserForm";
 import UserTabs from "@/components/layout/UserTabs";
-import { API_PROFILE } from "@/constant/constant";
+import { API_PROFILE, API_UPLOAD_IMAGE } from "@/constant/constant";
 import { LOGIN_ROUTE } from "@/constant/routesApp";
+import { useFormValidate } from "@/hooks/useFormValidate";
+import { validators } from "@/libs/validators";
+import HeaderCart from "@/modules/cart/HeaderCart";
 import { ChecksumAlgorithm } from "@aws-sdk/client-s3";
 import { signIn, useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
@@ -17,6 +20,9 @@ const ProfilePage = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [profileFetched, setProfileFetched] = useState(false);
   const { status, update } = session;
+  const { errors, registerRef, handleValidate, clearError } = useFormValidate();
+  const [loadingForm, setLoadingForm] = useState(false)
+
   useEffect(() => {
     if (status === "authenticated") {
       fetch(API_PROFILE).then((response) => {
@@ -35,31 +41,88 @@ const ProfilePage = () => {
     return "Loading...";
   }
 
-  const handleProfileInfoUpdate = async (e, data) => {
+  const handleProfileInfoUpdate = async (e, data, pendingFile) => {
     e.preventDefault();
+    if (loadingForm) return;
+    setLoadingForm(true)
+    const isValid = handleValidate({
+      userName: {
+        value: data?.name,
+        rules: [validators.required("tên"), validators.minLength(2), validators.maxLength(200)],
+      },
+      phone: {
+        value: data?.phone,
+        rules: [validators.required("số điện thoại"), validators.phone],
+      },
+      birthday: {
+        value: data?.birthday,
+        rules: [validators.required("ngày sinh"), validators.pastDate, validators.ageDate(10, 90)],
+      },
+      streetAddress: {
+        value: data?.streetAddress,
+        rules: [validators.required("địa chỉ nhà"), validators.minLength(2), validators.maxLength(200)],
+      },
+      city: {
+        value: data?.city,
+        rules: [validators.required("thành phố"), validators.minLength(2), validators.maxLength(200)],
+      },
+      country: {
+        value: data?.country,
+        rules: [validators.required("quận"), validators.minLength(2), validators.maxLength(200)],
+      },
+    });
+    setLoadingForm(false);
+    if (!isValid) return;
+    setLoadingForm(true);
+    // Bước 2: Upload ảnh nếu có file mới
+    let finalImage = data.image;
+    if (pendingFile) {
+      const formData = new FormData();
+      formData.set("file", pendingFile);
+      const uploadRes = await fetch(API_UPLOAD_IMAGE, { method: "POST", body: formData });
+      if (!uploadRes.ok) {
+        setLoadingForm(false);
+        toast.error("Upload ảnh thất bại");
+        return;
+      }
+      const uploadData = await uploadRes.json();
+      finalImage = uploadData?.url;
+    }
+
+    // Bước 3: Lưu profile
     const savingPromise = new Promise(async (resolve, reject) => {
       const response = await fetch(API_PROFILE, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, image: finalImage }),
       });
       if (response.ok) {
         await update({ name: data.name });
-        setUser(prev => ({ ...prev, ...data }));
+        setUser(prev => ({ ...prev, ...data, image: finalImage }));
+        setLoadingForm(false);
         resolve();
-      } else reject();
+      } else {
+        setLoadingForm(false);
+        reject();
+      }
+
     });
     await toast.promise(savingPromise, {
       loading: "Saving...",
-      success: "Profile saved",
+      success: "Lưu thông tin thành công",
       error: "Error",
     });
   };
   return (
-    <section className="mt-8">
-      <UserTabs isAdmin={isAdmin}></UserTabs>
-      <div className="max-w-2xl mx-auto mt-8">
-        <UserForm user={user} onSave={handleProfileInfoUpdate} />
+    <section className="">
+      <HeaderCart text="Tài khoản" />
+      <div className="grid grid-cols-3 gap-6">
+        <UserTabs isAdmin={isAdmin}></UserTabs>
+
+        <div className="col-span-2">
+          <UserForm title={"Hồ sơ của tôi"} user={user} onSave={handleProfileInfoUpdate} errors={errors} registerRef={registerRef}
+            clearError={clearError} loadingForm={loadingForm} />
+        </div>
       </div>
     </section>
   );

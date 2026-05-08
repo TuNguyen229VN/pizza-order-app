@@ -10,6 +10,7 @@ import Image from "next/image";
 import Bell from "../icons/Bell";
 import UserIcon from "../icons/UserIcon";
 import { totalQuantity } from "@/libs/totalQuantity";
+import ConfirmPopup from "../popup/ConfirmPopup";
 
 function AuthLinks({ status = "unauthenticated", userName }) {
   if (status === "authenticated") {
@@ -101,7 +102,9 @@ const Header = () => {
                 <p className="py-3 pl-4 hover:font-medium hover:text-primary">Hỗ trợ khách hàng</p>
                 {status === "authenticated" && (<>
                   <div className="w-full h-[1px] bg-gray-200"></div>
-                  <p className="py-3 pl-4 hover:font-medium hover:text-primary" onClick={() => signOut()} >Đăng xuất</p>
+                  <ConfirmPopup label="Đăng xuất" labelConfirm="Đăng xuất" onDelete={() => signOut()}>
+                    <p className="py-3 pl-4 hover:font-medium hover:text-primary">Đăng xuất</p>
+                  </ConfirmPopup>
                 </>)}
               </div>
             </div>

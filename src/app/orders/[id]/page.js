@@ -32,7 +32,6 @@ export default function OrderPage() {
     let subtotal = 0;
     if (order?.cartProducts) {
         for (const product of order?.cartProducts) {
-            console.log(product)
             subtotal += cartProductPrice(product);
         }
     }
