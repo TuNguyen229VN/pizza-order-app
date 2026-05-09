@@ -8,10 +8,13 @@ const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loginInProgress, setLoginInProgress] = useState(false);
+
   async function handleFormSubmit(e) {
     e.preventDefault();
     setLoginInProgress(true);
-    await signIn("credentials", { email, password, callbackUrl: HOME_ROUTE });
+    const params = new URLSearchParams(window.location.search);
+    const callbackUrl = params.get("callbackUrl") || HOME_ROUTE;
+    await signIn("credentials", { email, password, callbackUrl });
     setLoginInProgress(false);
   }
   return (

@@ -8,12 +8,13 @@ import { useFormValidate } from '@/hooks/useFormValidate';
 import { validators } from '@/libs/validators';
 import HeaderCart from '@/modules/cart/HeaderCart';
 import { useSession } from 'next-auth/react';
-import { redirect, useParams } from 'next/navigation';
+import { redirect, useParams, useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 import toast from 'react-hot-toast';
 
 export default function EditUserPage() {
     const session = useSession();
+    const router = useRouter();
     const { loading: profileLoading, data: profileData } = UseProfile();
     const [user, setUser] = useState(null);
     const { id } = useParams();
@@ -105,7 +106,7 @@ export default function EditUserPage() {
     }
 
     if (status === "unauthenticated") {
-        return redirect(LOGIN_ROUTE);
+        return router.push(LOGIN_ROUTE);
     }
 
     if (profileLoading) {
