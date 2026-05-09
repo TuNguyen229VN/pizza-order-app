@@ -8,7 +8,7 @@ import CartProductEmpty from '@/modules/cart/CartProductEmpty';
 import CartSubtotal from '@/modules/cart/CartSubtotal';
 import ButtonPrimary from '@/components/buttons/ButtonPrimary';
 import Link from 'next/link';
-import { CHECKOUT_ROUTE } from '@/constant/routesApp';
+import { CHECKOUT_ROUTE, HOME_ROUTE } from '@/constant/routesApp';
 
 export default function CartPage() {
   const { cartProducts, removeCartProduct } = useContext(CartContext);
@@ -20,7 +20,7 @@ export default function CartPage() {
 
   return (
     <section>
-      <HeaderCart />
+      <HeaderCart urlLink={HOME_ROUTE}/>
       <div className="grid grid-cols-3 gap-8 mt-8">
         <div className='col-span-2'>
           {cartProducts?.length === 0 && (

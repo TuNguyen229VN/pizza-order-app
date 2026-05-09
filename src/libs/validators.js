@@ -14,6 +14,43 @@ export const validators = {
     return null;
   },
 
+  passwordStrength: (minScore = 4) => (value) => {
+    if (!value) return null;
+
+    const checks = [
+      { pass: /[a-z]/.test(value), msg: "chữ thường" },
+      { pass: /[A-Z]/.test(value), msg: "chữ hoa" },
+      { pass: /[0-9]/.test(value), msg: "số" },
+      { pass: /[^A-Za-z0-9]/.test(value), msg: "ký tự đặc biệt" },
+    ];
+
+    const failed = checks.filter((c) => !c.pass).map((c) => c.msg);
+
+    if (failed.length > 0) {
+      return `Mật khẩu phải có ít nhất 6 ký tự và bao gồm [Chữ cái viết hoa], [Chữ cái viết thường], [Số] và [Ký tự đặc biệt].`;
+    }
+
+    return null;
+  },
+
+  // passwordStrength: (minScore = 2) => (value) => {
+  //   if (!value) return null;
+  //   let score = 0;
+  //   if (value.length >= 8) score++;              // đủ dài
+  //   if (/[A-Z]/.test(value)) score++;            // có chữ hoa
+  //   if (/[0-9]/.test(value)) score++;            // có số
+  //   if (/[^A-Za-z0-9]/.test(value)) score++;     // có ký tự đặc biệt
+
+  //   const levels = ["Rất yếu", "Yếu", "Trung bình", "Mạnh", "Rất mạnh"];
+  //   if (score < minScore) return `Mật khẩu ${levels[score]} — cần chữ hoa, số, ký tự đặc biệt`;
+  //   return null;
+  // },
+
+  matchField: (otherValue, text = "Mật khẩu") => (value) => {
+    if (value && value !== otherValue) return `${text} không khớp`;
+    return null;
+  },
+
   email: (value) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (value && !emailRegex.test(value)) return "Vui lòng nhập email hợp lệ";

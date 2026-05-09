@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import EditTableImage from './EditTableImage';
 import UseProfile from '../UseProfile';
 import AddressInput from './AddressInput';
@@ -7,6 +7,7 @@ import ValidatedInput from '../input/ValidatedInput';
 import ValidatedSelectInput from '../input/ValidatedSelectInput';
 import ValidatedDateInput from '../input/ValidatedDateInput';
 import Loader from '../loading/Loader';
+import ContainerProfileLeft from '@/container/ContainerProfileLeft';
 
 export default function UserForm({ title, user, onSave, errors, registerRef, clearError, loadingForm }) {
   const [userName, setUserName] = useState(user?.name || "");
@@ -32,6 +33,24 @@ export default function UserForm({ title, user, onSave, errors, registerRef, cle
   const [previewImage, setPreviewImage] = useState(null);
 
   const { data: loggedInUserData } = UseProfile();
+
+  useEffect(() => {
+    if (!user) return;
+    setUserName(user.name || "");
+    setImage(user.image || "");
+    setPhone(user.phone || "");
+    setStreetAddress(user.streetAddress || "");
+    setPostalCode(user.postalCode || "");
+    setCity(user.city || "");
+    setCountry(user.country || "");
+    setAdmin(user.admin || false);
+    setGender(user.gender || GENDER_OPTIONS[0].value);
+    setBirthday(user.birthday
+      ? new Date(user.birthday).toISOString().split("T")[0]
+      : ""
+    );
+  }, [user]);
+
 
   function handleAddressChange(propName, value) {
     if (propName === 'phone') setPhone(value);
@@ -83,8 +102,7 @@ export default function UserForm({ title, user, onSave, errors, registerRef, cle
   }
 
   return (
-    <div className="px-4 py-4 border rounded-2xl">
-      <p className='text-[28px] leading-10 font-semibold text-blackHeader capitalize'>{title}</p>
+    <ContainerProfileLeft title={title}>
       <div className="rounded-lg">
         <div className="group relative p-2 rounded-lg w-[200px] h-[200px]  mx-auto">
           <EditTableImage
@@ -100,6 +118,7 @@ export default function UserForm({ title, user, onSave, errors, registerRef, cle
           value={userName || ""}
           inputRef={registerRef("userName")}
           error={errors.userName}
+          disabled={loadingForm}
           placeholder="Nhập tên của bạn"
           onChange={(e) => {
             setUserName(e.target.value);
@@ -111,6 +130,7 @@ export default function UserForm({ title, user, onSave, errors, registerRef, cle
           name="gender"
           value={gender}
           options={GENDER_OPTIONS}
+          disabled={loadingForm}
           inputRef={registerRef("gender")}
           error={errors.gender}
           onChange={(e) => { setGender(e.target.value); clearError("gender"); }}
@@ -121,6 +141,7 @@ export default function UserForm({ title, user, onSave, errors, registerRef, cle
           value={birthday}
           inputRef={registerRef("birthday")}
           error={errors.birthday}
+          disabled={loadingForm}
           onChange={(e) => { setBirthday(e.target.value); clearError("birthday"); }}
         />
         <AddressInput
@@ -128,6 +149,7 @@ export default function UserForm({ title, user, onSave, errors, registerRef, cle
           setInfoProps={handleAddressChange}
           errors={errors} registerRef={registerRef}
           clearError={clearError}
+          disabled={loadingForm}
         />
 
         <ValidatedInput
@@ -149,9 +171,9 @@ export default function UserForm({ title, user, onSave, errors, registerRef, cle
         )}
       </form>
       <div className='flex justify-end gap-4 mt-4'>
-        <button className='font-medium px-6 py-3 outline-none border rounded-lg w-[170px] hover:opacity-80 hover:scale-[1.02]  duration-500 hover:bg-red-100 hover:text-secondary' onClick={handleCancel} disabled={loadingForm}>Hủy</button>
-        <button form='user-form' className='flex items-center justify-center font-medium px-6 py-3 text-white rounded-lg bg-primary w-[170px] hover:opacity-80 hover:scale-[1.02] duration-500' type="submit" disabled={loadingForm}>{loadingForm ? <Loader size={20} /> : <span className='font-medium'>Lưu</span>}</button>
+        <button className={`font-medium flex items-center justify-center px-6 py-3 outline-none border rounded-lg w-[170px] hover:opacity-80 hover:scale-[1.02]  duration-500 hover:bg-red-100 hover:text-secondary ${loadingForm ? "bg-[#DFE4EA] text-secondary pointer-events-none" : " pointer-events-auto"}`} onClick={handleCancel} disabled={loadingForm}>{loadingForm ? <Loader size={20} /> : <span className='font-medium'>Hủy</span>}</button>
+        <button form='user-form' className={`flex items-center justify-center font-medium px-6 py-3 rounded-lg w-[170px] hover:opacity-80 hover:scale-[1.02] duration-500 ${loadingForm ? "bg-[#DFE4EA] text-secondary pointer-events-none" : "bg-primary text-white pointer-events-auto"}`} type="submit" disabled={loadingForm}>{loadingForm ? <Loader size={20} /> : <span className='font-medium'>Lưu</span>}</button>
       </div>
-    </div>
+    </ContainerProfileLeft>
   )
 }

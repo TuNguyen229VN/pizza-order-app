@@ -6,6 +6,8 @@ import UserTabs from '@/components/layout/UserTabs';
 import UseProfile from '@/components/UseProfile';
 import { API_MENU_ITEMS } from '@/constant/constant';
 import { MENU_ITEMS_ROUTE } from '@/constant/routesApp';
+import ContainerProfileLeft from '@/container/ContainerProfileLeft';
+import HeaderCart from '@/modules/cart/HeaderCart';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import React, { useState } from 'react'
@@ -35,11 +37,11 @@ export default function NewMenuItemPage() {
                 error: "Error",
             });
 
-           setRedirectToItems(true);
+            setRedirectToItems(true);
         });
     };
 
-    if(redirectToItems) {
+    if (redirectToItems) {
         redirect(MENU_ITEMS_ROUTE);
     }
 
@@ -51,15 +53,23 @@ export default function NewMenuItemPage() {
     }
 
     return (
-        <section className="mt-8">
-            <UserTabs isAdmin={profileData.admin}></UserTabs>
-            <div className="max-w-2xl mx-auto mt-8">
-                <Link href={MENU_ITEMS_ROUTE} className="button">
-                    <Left />
-                    <span>Show all menu items</span>
-                </Link>
+        <section className="">
+            <HeaderCart text="Tạo món ăn mới" />
+            <div className="grid grid-cols-3 gap-6">
+                <UserTabs isAdmin={profileData.admin}></UserTabs>
+                <div className="col-span-2">
+                    <ContainerProfileLeft >
+
+                        <div className="max-w-2xl mx-auto mt-8">
+                            <Link href={MENU_ITEMS_ROUTE} className="button">
+                                <Left />
+                                <span>Show all menu items</span>
+                            </Link>
+                        </div>
+                        <MenuItemForm onSubmit={handleFormSubmit} menuItem={null}></MenuItemForm>
+                    </ContainerProfileLeft>
+                </div>
             </div>
-            <MenuItemForm onSubmit={handleFormSubmit} menuItem={null}></MenuItemForm>
         </section>
     )
 }

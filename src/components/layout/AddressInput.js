@@ -12,6 +12,7 @@ export default function AddressInput({ infoProps, setInfoProps, errors, register
                 inputRef={registerRef("phone")}
                 error={errors.phone}
                 placeholder="Nhập số điện thoại của bạn"
+                disabled={disabled}
                 onChange={(e) => {
                     setInfoProps('phone', e.target.value);
                     clearError("phone");
@@ -24,6 +25,7 @@ export default function AddressInput({ infoProps, setInfoProps, errors, register
                 inputRef={registerRef("streetAddress")}
                 error={errors.streetAddress}
                 placeholder="Nhập đầy đủ địa chỉ nhà của bạn"
+                disabled={disabled}
                 onChange={(e) => {
                     setInfoProps('streetAddress', e.target.value);
                     clearError("streetAddress");
@@ -36,6 +38,7 @@ export default function AddressInput({ infoProps, setInfoProps, errors, register
                 inputRef={registerRef("country")}
                 error={errors.country}
                 placeholder="Nhập tên quận của bạn"
+                disabled={disabled}
                 onChange={(e) => {
                     setInfoProps('country', e.target.value);
                     clearError("country");
@@ -48,6 +51,7 @@ export default function AddressInput({ infoProps, setInfoProps, errors, register
                 inputRef={registerRef("city")}
                 error={errors.city}
                 placeholder="Nhập tên thành phố của bạn"
+                disabled={disabled}
                 onChange={(e) => {
                     setInfoProps('city', e.target.value);
                     clearError("city");

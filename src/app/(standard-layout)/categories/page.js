@@ -3,6 +3,8 @@ import DeleteButton from "@/components/buttons/DeleteButton";
 import UserTabs from "@/components/layout/UserTabs";
 import UseProfile from "@/components/UseProfile";
 import { API_CATEGORIES } from "@/constant/constant";
+import ContainerProfileLeft from "@/container/ContainerProfileLeft";
+import HeaderCart from "@/modules/cart/HeaderCart";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
@@ -78,51 +80,58 @@ const CategoriesPage = () => {
   };
 
   return (
-    <section className="max-w-2xl mx-auto mt-8">
-      <UserTabs isAdmin={profileData} />
-      <form className="mt-8" onSubmit={handleCategorySubmit}>
-        <div className="flex items-end gap-2">
-          <div className="grow">
-            <label htmlFor="">
-              {editedCategory ? "Edit category name" : "New category name"}
-              {editedCategory && <b>:{editedCategory.name}</b>}
-            </label>
-            <input
-              type="text"
-              value={categoryName}
-              onChange={(ev) => setCategoryName(ev.target.value)}
-            />
-          </div>
-          <div className="flex gap-2 pb-2">
-            <button className="border border-primary" type="submit">
-              {editedCategory ? "Update" : "Create"}
-            </button>
-            <button type="button" onClick={() => {
-              setCategoryName("");
-              setEditedCategory(null)
-            }}>Cancel</button>
-          </div>
-        </div>
-      </form>
-      <ul>
-        <h2 className="mt-8 text-sm text-gray-500">Existing categories:</h2>
-        {categories?.length > 0 &&
-          categories.map((category) => (
-            <div
-              className="flex items-center gap-1 p-2 px-4 mb-1 bg-gray-100 rounded-xl"
-              key={category._id}
-            >
-              <div className="grow" >{category.name}</div>
-              <div className="flex gap-1">
-                <button type="button" onClick={() => {
-                  setEditedCategory(category);
-                  setCategoryName(category.name);
-                }}>Edit</button>
-                <DeleteButton label="Delete" onDelete={() => handleCategoryDelete(category._id)} />
+    <section className="">
+      <HeaderCart text="Quản lý loại sản phẩm" />
+      <div className="grid grid-cols-3 gap-6">
+        <UserTabs isAdmin={profileData} />
+        <div className="col-span-2">
+          <ContainerProfileLeft >
+            <form className="mt-8" onSubmit={handleCategorySubmit}>
+              <div className="flex items-end gap-2">
+                <div className="grow">
+                  <label htmlFor="">
+                    {editedCategory ? "Edit category name" : "New category name"}
+                    {editedCategory && <b>:{editedCategory.name}</b>}
+                  </label>
+                  <input
+                    type="text"
+                    value={categoryName}
+                    onChange={(ev) => setCategoryName(ev.target.value)}
+                  />
+                </div>
+                <div className="flex gap-2 pb-2">
+                  <button className="border border-primary" type="submit">
+                    {editedCategory ? "Update" : "Create"}
+                  </button>
+                  <button type="button" onClick={() => {
+                    setCategoryName("");
+                    setEditedCategory(null)
+                  }}>Cancel</button>
+                </div>
               </div>
-            </div>
-          ))}
-      </ul>
+            </form>
+            <ul>
+              <h2 className="mt-8 text-sm text-gray-500">Existing categories:</h2>
+              {categories?.length > 0 &&
+                categories.map((category) => (
+                  <div
+                    className="flex items-center gap-1 p-2 px-4 mb-1 bg-gray-100 rounded-xl"
+                    key={category._id}
+                  >
+                    <div className="grow" >{category.name}</div>
+                    <div className="flex gap-1">
+                      <button type="button" onClick={() => {
+                        setEditedCategory(category);
+                        setCategoryName(category.name);
+                      }}>Edit</button>
+                      <DeleteButton label="Delete" onDelete={() => handleCategoryDelete(category._id)} />
+                    </div>
+                  </div>
+                ))}
+            </ul>
+          </ContainerProfileLeft>
+        </div>
+      </div>
     </section>
   );
 };

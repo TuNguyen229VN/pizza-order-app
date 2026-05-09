@@ -1,36 +1,32 @@
 "use client";
+import ArrowLeft from '@/components/icons/ArrowLeft';
 import UserForm from '@/components/layout/UserForm';
 import UserTabs from '@/components/layout/UserTabs'
 import UseProfile from '@/components/UseProfile';
 import { API_PROFILE, API_UPLOAD_IMAGE, API_USERS } from '@/constant/constant';
-import { LOGIN_ROUTE } from '@/constant/routesApp';
+import { USERS_ROUTE } from '@/constant/routesApp';
 import { useFormValidate } from '@/hooks/useFormValidate';
 import { validators } from '@/libs/validators';
 import HeaderCart from '@/modules/cart/HeaderCart';
-import { useSession } from 'next-auth/react';
-import { redirect, useParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { useParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 import toast from 'react-hot-toast';
 
 export default function EditUserPage() {
-    const session = useSession();
-    const router = useRouter();
     const { loading: profileLoading, data: profileData } = UseProfile();
     const [user, setUser] = useState(null);
     const { id } = useParams();
-    const { errors, registerRef, handleValidate, clearError } = useFormValidate();
-    const { status } = session;
+    const { setErrors, errors, registerRef, handleValidate, clearError } = useFormValidate();
     const [loadingForm, setLoadingForm] = useState(false)
-
     useEffect(() => {
         if (!id) return;
-        if (status === "authenticated") {
-            fetch(`${API_PROFILE}?_id=${id}`).then(res => {
-                res.json().then(user => {
-                    setUser(user);
-                })
+        console.log(id)
+        fetch(`${API_PROFILE}?_id=${id}`).then(res => {
+            res.json().then(user => {
+                setUser(user);
             })
-        }
+        })
     }, [id])
 
     const handleSaveButtonClick = async (e, data, pendingFile) => {
@@ -84,29 +80,45 @@ export default function EditUserPage() {
         }
 
         const savingPromise = new Promise(async (resolve, reject) => {
-            const response = await fetch(API_PROFILE, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ ...data, image: finalImage, _id: id }),
-            })
-            if (response.ok) {
+            try {
+                const response = await fetch(API_PROFILE, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ ...data, image: finalImage, _id: id }),
+                })
+                if (response.ok) {
+                    setLoadingForm(false);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    resolve();
+                } else {
+                    const errorData = await response.json().catch(() => null);
+                    setLoadingForm(false);
+                    reject(errorData);
+                }
+            } catch (error) {
+                reject(error)
+            } finally {
                 setLoadingForm(false);
-                resolve();
-            } else {
-                setLoadingForm(false);
-                reject();
             }
+
         });
         await toast.promise(savingPromise, {
             loading: "Saving...",
             success: "Cập nhật thành công",
-            error: "Error",
+            error: (err) => {
+                // Xử lý lỗi validation từ server
+                if (err?.errors && typeof err.errors === 'object') {
+                    // ✅ Dùng setErrors để trigger re-render
+                    setErrors(prev => ({
+                        ...prev,
+                        ...err.errors // merge lỗi server vào errors hiện tại
+                    }));
+                    return err?.message || "Dữ liệu không hợp lệ";
+                }
+                return err?.message || "Cập nhật thất bại";
+            },
         });
 
-    }
-
-    if (status === "unauthenticated") {
-        return router.push(LOGIN_ROUTE);
     }
 
     if (profileLoading) {
@@ -121,9 +133,10 @@ export default function EditUserPage() {
             <HeaderCart text="Tài khoản" />
             <div className="grid grid-cols-3 gap-6">
                 <UserTabs isAdmin={profileData.admin}></UserTabs>
-                <div className="col-span-2">
+                <div className="relative col-span-2">
+                    <Link href={USERS_ROUTE} className='absolute flex items-center right-4 top-4'><ArrowLeft className='w-5 h-5'/> <span className='ml-1'>Trở lại trang QLND</span></Link>
                     <UserForm user={user} onSave={handleSaveButtonClick} errors={errors} registerRef={registerRef}
-                        clearError={clearError} loadingForm={loadingForm} title={"Hồ sô của KH"} />
+                        clearError={clearError} loadingForm={loadingForm} title={"Hồ sơ của KH"} />
                 </div>
             </div>
         </section>

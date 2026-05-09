@@ -55,7 +55,7 @@ const Header = () => {
 
 
   return (
-    <header className="sticky top-0 z-20 p-3 bg-white">
+    <header className="sticky top-0 z-20 max-w-6xl p-4 mx-auto bg-white ">
       <div className="">
         <h1 className="sr-only">Pizza Teo ngon nhất TP.HCM</h1>
         <div className="grid items-center grid-cols-3">
@@ -65,7 +65,7 @@ const Header = () => {
           </div>
           <div className="flex justify-center">
             <Link href={HOME_ROUTE}>
-              <Image src={"/logo.png"} width={200} height={200} alt="logo" />
+              <Image src={"/logo.png"} width={180} height={180} alt="logo" />
             </Link>
           </div>
           <div className="flex items-center justify-end flex-1 min-w-0 gap-5">

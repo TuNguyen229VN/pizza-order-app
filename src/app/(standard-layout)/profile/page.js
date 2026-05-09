@@ -19,7 +19,7 @@ const ProfilePage = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [profileFetched, setProfileFetched] = useState(false);
   const { status, update } = session;
-  const { errors, registerRef, handleValidate, clearError } = useFormValidate();
+  const { errors, setErrors, registerRef, handleValidate, clearError } = useFormValidate();
   const [loadingForm, setLoadingForm] = useState(false)
 
   useEffect(() => {
@@ -102,15 +102,27 @@ const ProfilePage = () => {
         setLoadingForm(false);
         resolve();
       } else {
+        const errorData = await response.json().catch(() => null);
         setLoadingForm(false);
-        reject();
+        reject(errorData);
       }
 
     });
     await toast.promise(savingPromise, {
       loading: "Saving...",
       success: "Lưu thông tin thành công",
-      error: "Error",
+      error: (err) => {
+        // Xử lý lỗi validation từ server
+        if (err?.errors && typeof err.errors === 'object') {
+          // ✅ Dùng setErrors để trigger re-render
+          setErrors(prev => ({
+            ...prev,
+            ...err.errors // merge lỗi server vào errors hiện tại
+          }));
+          return err?.message || "Dữ liệu không hợp lệ";
+        }
+        return err?.message || "Cập nhật thất bại";
+      },
     });
   };
   return (

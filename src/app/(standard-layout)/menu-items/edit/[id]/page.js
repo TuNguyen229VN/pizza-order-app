@@ -7,7 +7,9 @@ import UserTabs from '@/components/layout/UserTabs';
 import UseProfile from '@/components/UseProfile';
 import { API_MENU_ITEMS } from '@/constant/constant';
 import { MENU_ITEMS_ROUTE } from '@/constant/routesApp';
+import ContainerProfileLeft from '@/container/ContainerProfileLeft';
 import { MenuItem } from '@/models/MenuItem';
+import HeaderCart from '@/modules/cart/HeaderCart';
 import Link from 'next/link';
 import { redirect, useParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
@@ -89,18 +91,26 @@ export default function EditMenuItemPage() {
     }
 
     return (
-        <section className="mt-8">
-            <UserTabs isAdmin={profileData.admin}></UserTabs>
-            <div className="max-w-md mx-auto mt-8">
-                <Link href={MENU_ITEMS_ROUTE} className="button">
-                    <Left />
-                    <span>Show all menu items</span>
-                </Link>
-            </div>
-            <MenuItemForm onSubmit={handleFormSubmit} menuItem={menuItem}></MenuItemForm>
-            <div className='max-w-2xl mx-auto mt-2'>
-                <div className="max-w-xs pl-4 ml-auto ">
-                    <DeleteButton label="Delete this menu item" onDelete={handleDeleteClick} />
+        <section className="">
+            <HeaderCart text="Chỉnh sửa món ăn" />
+            <div className="grid grid-cols-3 gap-6">
+                <UserTabs isAdmin={profileData.admin}></UserTabs>
+                <div className="col-span-2">
+                    <ContainerProfileLeft title={menuItem?.name||"Món ăn"}>
+
+                        <div className="max-w-md mx-auto mt-8">
+                            <Link href={MENU_ITEMS_ROUTE} className="button">
+                                <Left />
+                                <span>Show all menu items</span>
+                            </Link>
+                        </div>
+                        <MenuItemForm onSubmit={handleFormSubmit} menuItem={menuItem}></MenuItemForm>
+                        <div className='max-w-2xl mx-auto mt-2'>
+                            <div className="max-w-xs pl-4 ml-auto ">
+                                <DeleteButton label="Delete this menu item" onDelete={handleDeleteClick} />
+                            </div>
+                        </div>
+                    </ContainerProfileLeft>
                 </div>
             </div>
         </section>

@@ -4,7 +4,7 @@ import React from 'react'
 
 export default function Footer() {
     return (
-        <footer>
+        <footer className='max-w-6xl px-4 pb-4 mx-auto'>
             <section className='grid grid-cols-3 gap-8 bg-[#F3F4F6] py-12 px-7 rounded-2xl mt-8'>
                 <div className='flex flex-col justify-between'>
                     <Image src={"/logo.png"} alt='logofooter' width={200} height={200} />
