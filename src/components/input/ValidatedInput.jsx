@@ -23,6 +23,7 @@ const ValidatedInput = ({ label, name, error, inputRef, type, value, ...props })
         {isPassword && (
           <button
             type="button"
+            tabIndex={-1}
             onClick={() => setShowPassword((prev) => !prev)}
             className="absolute text-gray-400 -translate-y-1/2 right-2 top-1/2 hover:text-gray-600"
           >

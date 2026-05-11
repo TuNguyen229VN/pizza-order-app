@@ -6,7 +6,7 @@ export default function StandardLayout({ children }) {
     return (
         <>
             <Header />
-            <main className="max-w-6xl px-4 mx-auto">
+            <main className="max-w-6xl mx-auto">
                 {children}
             </main>
             <Footer />

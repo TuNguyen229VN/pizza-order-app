@@ -22,6 +22,7 @@
 - **stripe**
 - **swiperjs**
 - **reacticon**
+- **react-google-recaptcha**
 ## Pages:
 
 - Home Page

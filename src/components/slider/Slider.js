@@ -20,7 +20,7 @@ export default function Slider({ listSlide = [] }) {
     return (
         <div className="relative">
             <Swiper
-                className='w-full h-[442px] overflow-hidden'
+                className='w-full h-[442px] overflow-hidden rounded-2xl'
                 spaceBetween={30}
                 effect={'fade'}
                 fadeEffect={{ crossFade: true }}

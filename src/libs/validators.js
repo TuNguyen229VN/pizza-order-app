@@ -52,11 +52,10 @@ export const validators = {
   },
 
   email: (value) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailRegex = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
     if (value && !emailRegex.test(value)) return "Vui lòng nhập email hợp lệ";
     return null;
   },
-
   phone: (value) => {
     const phoneRegex = /^[0-9]{10,11}$/;
     if (value && !phoneRegex.test(value)) return "Số điện thoại không hợp lệ";

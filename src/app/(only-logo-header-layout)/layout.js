@@ -5,7 +5,7 @@ export default function OnlyLogoHeaderLayout({ children }) {
   return (
     <>
       <HeaderOnlyLogo />
-      <main className="max-w-6xl px-4 mx-auto">
+      <main className="max-w-6xl mx-auto">
         {children}
       </main>
     </>
