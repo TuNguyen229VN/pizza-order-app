@@ -8,9 +8,9 @@ import { API_MENU_ITEMS } from "@/constant/constant";
 const HomeMenu = () => {
   const [bestSellers, setBestSellers] = useState([])
   useEffect(() => {
-    fetch(API_MENU_ITEMS).then(res => {
-      res.json().then(menuItems => {
-        const bestSellers = menuItems.slice(-3);
+    fetch(`${API_MENU_ITEMS}?all=true`).then(res => {
+      res.json().then(data => {
+        const bestSellers = data?.menuItems.slice(-3);
         setBestSellers(bestSellers);
       })
     })

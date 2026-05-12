@@ -31,7 +31,7 @@ export default function HeaderCart({ text = "Giỏ hàng của tôi", urlLink })
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
     return (
-        <div className={`h-[80px] sticky flex items-center z-10 top-[80px] pt-3 pb-3 px-2 bg-white ${scrolled ? "shadow-[0_4px_5px_-3px_rgba(0,0,0,0.1)]" : ""}`}>
+        <div className={`h-[80px] sticky flex items-center z-20 top-[80px] pt-3 pb-3 px-2 bg-white ${scrolled ? "shadow-[0_4px_5px_-3px_rgba(0,0,0,0.1)]" : ""}`}>
             <div onClick={handleBack} className='flex text-blackHeader text-sm leading-[22px] items-center gap-2 absolute cursor-pointer'>
                 <ArrowLeft className='w-5 h-5' strokeWidth='3' />
                 <span>Trở lại</span>

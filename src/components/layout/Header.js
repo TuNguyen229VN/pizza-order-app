@@ -55,7 +55,7 @@ const Header = () => {
 
 
   return (
-    <header className="sticky top-0 z-20 max-w-6xl p-4 mx-auto bg-white ">
+    <header className="sticky top-0 z-30 max-w-6xl p-4 mx-auto bg-white ">
       <div className="">
         <h1 className="sr-only">Pizza Teo ngon nhất TP.HCM</h1>
         <div className="grid items-center grid-cols-3">
@@ -99,18 +99,20 @@ const Header = () => {
                     <Link href={PROFILE_ROUTE} className="block py-3 pl-4 hover:font-medium hover:text-primary">Hồ sơ của tôi</Link>
                   </>
                 )}
+                <ConfirmPopup labelConfirm="Gọi ngay" label="Hỗ trợ khách hàng" labelDesc="gọi đến 1900 1822" onDelete={() => window.location.href = 'tel:0123456789'}>
                 <p className="py-3 pl-4 hover:font-medium hover:text-primary">Hỗ trợ khách hàng</p>
-                {status === "authenticated" && (<>
-                  <div className="w-full h-[1px] bg-gray-200"></div>
-                  <ConfirmPopup label="Đăng xuất" labelConfirm="Đăng xuất" onDelete={() => signOut()}>
-                    <p className="py-3 pl-4 hover:font-medium hover:text-primary">Đăng xuất</p>
-                  </ConfirmPopup>
-                </>)}
-              </div>
+              </ConfirmPopup>
+              {status === "authenticated" && (<>
+                <div className="w-full h-[1px] bg-gray-200"></div>
+                <ConfirmPopup label="Đăng xuất" labelConfirm="Đăng xuất" onDelete={() => signOut()}>
+                  <p className="py-3 pl-4 hover:font-medium hover:text-primary">Đăng xuất</p>
+                </ConfirmPopup>
+              </>)}
             </div>
           </div>
         </div>
       </div>
+    </div>
 
       {/* 
       <div className="flex items-center justify-between md:hidden">
@@ -144,7 +146,7 @@ const Header = () => {
           <AuthLinks status={status} userName={userName} />
         </div>
       )} */}
-    </header>
+    </header >
 
   );
 };

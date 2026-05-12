@@ -29,7 +29,7 @@ const UserTabs = ({ isAdmin }) => {
               href={CATEGORIES_ROUTE}
             >
               <CategoryIcon />
-              <span>Quản lý loại sản phẩm</span>
+              <span>Quản lý danh mục</span>
             </Link>
             <Link
               className={`flex items-center p-4 gap-4 text-lg ${path.includes(MENU_ITEMS_ROUTE) ? "text-primary font-semibold" : ""}`}

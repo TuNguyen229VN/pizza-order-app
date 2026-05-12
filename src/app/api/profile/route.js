@@ -14,6 +14,10 @@ export async function PUT(req) {
         value: data?.name,
         rules: [validators.required("tên"), validators.minLength(2), validators.maxLength(200)],
       },
+      gender: {
+        value: data?.gender,
+        rules: [validators.requiredSelect("giới tính")],
+      },
       phone: {
         value: data?.phone,
         rules: [validators.required("số điện thoại"), validators.phone],

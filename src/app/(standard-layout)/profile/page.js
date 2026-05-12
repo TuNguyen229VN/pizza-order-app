@@ -50,6 +50,10 @@ const ProfilePage = () => {
         value: data?.name,
         rules: [validators.required("tên"), validators.minLength(2), validators.maxLength(200)],
       },
+      gender: {
+        value: data?.gender,
+        rules: [validators.requiredSelect("giới tính")],
+      },
       phone: {
         value: data?.phone,
         rules: [validators.required("số điện thoại"), validators.phone],
@@ -109,7 +113,7 @@ const ProfilePage = () => {
 
     });
     await toast.promise(savingPromise, {
-      loading: "Saving...",
+      loading: "Đang lưu...",
       success: "Lưu thông tin thành công",
       error: (err) => {
         // Xử lý lỗi validation từ server

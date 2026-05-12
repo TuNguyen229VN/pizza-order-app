@@ -54,7 +54,7 @@ const LoginPage = () => {
   return (
     <section className="mb-8">
       <Thumbnail />
-      <div className="p-4 mt-8 border rounded-2xl w-[510px] mx-auto">
+      <div className="p-4 mt-8 border rounded-2xl w-[510px] mx-auto shadow-sm">
         {error && <p className="px-20 mb-4 text-sm text-center text-primary">{error}</p>}
         <form className="mx-auto " method="post" onSubmit={handleFormSubmit}>
           <ValidatedInput

@@ -1,13 +1,17 @@
 "use client";
 import DeleteButton from '@/components/buttons/DeleteButton';
+import ArrowLeft from '@/components/icons/ArrowLeft';
 import Left from '@/components/icons/Left';
 import EditTableImage from '@/components/layout/EditTableImage';
 import MenuItemForm from '@/components/layout/MenuItemForm';
 import UserTabs from '@/components/layout/UserTabs';
+import ConfirmPopup from '@/components/popup/ConfirmPopup';
 import UseProfile from '@/components/UseProfile';
 import { API_MENU_ITEMS } from '@/constant/constant';
 import { MENU_ITEMS_ROUTE } from '@/constant/routesApp';
 import ContainerProfileLeft from '@/container/ContainerProfileLeft';
+import { useFormValidate } from '@/hooks/useFormValidate';
+import { validators } from '@/libs/validators';
 import { MenuItem } from '@/models/MenuItem';
 import HeaderCart from '@/modules/cart/HeaderCart';
 import Link from 'next/link';
@@ -21,11 +25,14 @@ export default function EditMenuItemPage() {
 
     const [menuItem, setMenuItem] = useState(null)
     const [redirectToItems, setRedirectToItems] = useState(false)
+    const [loadingForm, setLoadingForm] = useState(false)
+
+    const { errors, setErrors, registerRef, handleValidate, clearError } = useFormValidate();
 
     useEffect(() => {
-        fetch(API_MENU_ITEMS).then(response => {
+        fetch(`${API_MENU_ITEMS}?all=true`).then(response => {
             response.json().then(items => {
-                const item = items.find(i => i._id === id);
+                const item = items.menuItems.find(i => i._id === id);
                 if (item) {
                     setMenuItem(item);
                 }
@@ -57,6 +64,60 @@ export default function EditMenuItemPage() {
 
     const handleFormSubmit = async (e, formData) => {
         e.preventDefault();
+
+        if (loadingForm) return;
+        setLoadingForm(true);
+
+        // Build dynamic rules cho sizes và extraIngredientPrices
+        const dynamicFields = {};
+
+        formData.sizes.forEach((item, i) => {
+            dynamicFields[`sizes_${i}_name`] = {
+                value: item.name,
+                rules: [validators.required("tên size")],
+            };
+            dynamicFields[`sizes_${i}_price`] = {
+                value: item.price,
+                rules: [validators.required("giá"), validators.isNumber("Giá"), validators.minValue(1000), validators.maxValue(100000000)],
+            };
+        });
+
+        formData.extraIngredientPrices.forEach((item, i) => {
+            dynamicFields[`extraIngredientPrices_${i}_name`] = {
+                value: item.name,
+                rules: [validators.required("tên topping")],
+            };
+            dynamicFields[`extraIngredientPrices_${i}_price`] = {
+                value: item.price,
+                rules: [validators.required("giá"), validators.isNumber("Giá"), validators.minValue(1000), validators.maxValue(100000000)],
+            };
+        });
+
+
+        const isValid = handleValidate({
+            name: {
+                value: formData?.name,
+                rules: [validators.required("tên món ăn"), validators.minLength(2), validators.maxLength(200)],
+            },
+            description: {
+                value: formData?.description,
+                rules: [validators.required("mô tả"), validators.minLength(2), validators.maxLength(200)],
+            },
+            basePrice: {
+                value: formData?.basePrice,
+                rules: [validators.required("giá cơ bản"), validators.isNumber("giá cơ bản"), validators.minValue(1000), validators.maxValue(100000000)],
+            },
+            category: {
+                value: formData?.category,
+                rules: [validators.requiredSelect("danh mục")],
+            },
+            ...dynamicFields,
+        });
+        console.log(isValid)
+        setLoadingForm(false);
+        if (!isValid) return;
+        setLoadingForm(true);
+
         const data = { _id: id, ...formData };
         const savingPromise = new Promise(async (resolve, reject) => {
             const response = await fetch(API_MENU_ITEMS, {
@@ -95,20 +156,17 @@ export default function EditMenuItemPage() {
             <HeaderCart text="Chỉnh sửa món ăn" />
             <div className="grid grid-cols-3 gap-6">
                 <UserTabs isAdmin={profileData.admin}></UserTabs>
-                <div className="col-span-2">
-                    <ContainerProfileLeft title={menuItem?.name||"Món ăn"}>
+                <div className="relative col-span-2">
+                    <ContainerProfileLeft title={menuItem?.name || "Món ăn"}>
 
-                        <div className="max-w-md mx-auto mt-8">
-                            <Link href={MENU_ITEMS_ROUTE} className="button">
-                                <Left />
-                                <span>Show all menu items</span>
-                            </Link>
-                        </div>
-                        <MenuItemForm onSubmit={handleFormSubmit} menuItem={menuItem}></MenuItemForm>
-                        <div className='max-w-2xl mx-auto mt-2'>
-                            <div className="max-w-xs pl-4 ml-auto ">
-                                <DeleteButton label="Delete this menu item" onDelete={handleDeleteClick} />
-                            </div>
+                        <Link href={MENU_ITEMS_ROUTE} className='absolute flex items-center right-4 top-4'><ArrowLeft className='w-5 h-5' /> <span className='ml-1'>Hiển thị tất cả món ăn</span></Link>
+
+                        <MenuItemForm onSubmit={handleFormSubmit} menuItem={menuItem} errors={errors} registerRef={registerRef}
+                            clearError={clearError} loadingForm={loadingForm}></MenuItemForm>
+                        <div className='flex items-center justify-center w-full p-4 mt-6 text-lg font-medium rounded-lg hover:bg-gray-200'>
+                            <ConfirmPopup onDelete={handleDeleteClick} label='Xóa món ăn' classNameButton='w-full'>
+                                <p >Xóa món ăn</p>
+                            </ConfirmPopup>
                         </div>
                     </ContainerProfileLeft>
                 </div>

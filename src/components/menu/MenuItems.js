@@ -8,6 +8,7 @@ import CloseIcon from "../icons/CloseIcon";
 import InputCheckbox from "../input/InputCheckbox";
 import ButtonPrimary from "../buttons/ButtonPrimary";
 import { useLockBodyScroll } from "@/hooks/useLockBodyScroll";
+import { createPortal } from "react-dom";
 
 
 const MenuItems = (menuItem) => {
@@ -77,8 +78,8 @@ const MenuItems = (menuItem) => {
 
   return (
     <>
-      {showPopup && (
-        <div onClick={closePopup} className="fixed inset-0 z-20 flex items-center justify-center bg-black/80">
+      {showPopup && createPortal(
+        <div onClick={closePopup} className="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
           <div onClick={ev => ev.stopPropagation()}
             className="flex max-w-screen-lg h-[560px] overflow-hidden bg-white rounded-xl relative">
             <button
@@ -160,6 +161,7 @@ const MenuItems = (menuItem) => {
             </div>
           </div>
         </div>
+        , document.body
       )}
       <MenuItemTile onClick={() => setShowPopup(true)} onAddToCart={handleAddToCartButtonClick} {...menuItem} />
     </>

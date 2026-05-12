@@ -21,7 +21,6 @@ export default function EditUserPage() {
     const [loadingForm, setLoadingForm] = useState(false)
     useEffect(() => {
         if (!id) return;
-        console.log(id)
         fetch(`${API_PROFILE}?_id=${id}`).then(res => {
             res.json().then(user => {
                 setUser(user);
@@ -39,6 +38,10 @@ export default function EditUserPage() {
             userName: {
                 value: data?.name,
                 rules: [validators.required("tên"), validators.minLength(2), validators.maxLength(200)],
+            },
+            gender: {
+                value: data?.gender,
+                rules: [validators.requiredSelect("giới tính")],
             },
             phone: {
                 value: data?.phone,
@@ -103,7 +106,7 @@ export default function EditUserPage() {
 
         });
         await toast.promise(savingPromise, {
-            loading: "Saving...",
+            loading: "Đang cập nhật...",
             success: "Cập nhật thành công",
             error: (err) => {
                 // Xử lý lỗi validation từ server
@@ -134,7 +137,7 @@ export default function EditUserPage() {
             <div className="grid grid-cols-3 gap-6">
                 <UserTabs isAdmin={profileData.admin}></UserTabs>
                 <div className="relative col-span-2">
-                    <Link href={USERS_ROUTE} className='absolute flex items-center right-4 top-4'><ArrowLeft className='w-5 h-5'/> <span className='ml-1'>Trở lại trang QLND</span></Link>
+                    <Link href={USERS_ROUTE} className='absolute flex items-center right-4 top-4'><ArrowLeft className='w-5 h-5' /> <span className='ml-1'>Trở lại trang QLND</span></Link>
                     <UserForm user={user} onSave={handleSaveButtonClick} errors={errors} registerRef={registerRef}
                         clearError={clearError} loadingForm={loadingForm} title={"Hồ sơ của KH"} />
                 </div>

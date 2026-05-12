@@ -4,13 +4,40 @@ export const validators = {
     return null;
   },
 
+  requiredSelect: (text) => (value) => {
+    if (value === null || value === undefined || value === "" || value === -1)
+      return `Vui lòng chọn ${text}`;
+    return null;
+  },
+
   minLength: (min) => (value) => {
+    if (!value) return null;
     if (value && value.length < min) return `Tối thiểu ${min} ký tự`;
     return null;
   },
 
   maxLength: (max) => (value) => {
+    if (!value) return null;
     if (value && value.length > max) return `Tối đa ${max} ký tự`;
+    return null;
+  },
+
+  isNumber: (text = "Giá trị") => (value) => {
+    if (value === null || value === undefined || value === "") return null;
+    if (isNaN(Number(value)) || value.toString().trim() === "")
+      return `${text} phải là số hợp lệ`;
+    return null;
+  },
+
+  minValue: (min, text = "Giá trị") => (value) => {
+    if (value === null || value === undefined || value === "") return null;
+    if (Number(value) < min) return `${text} phải lớn hơn hoặc bằng ${min.toLocaleString()}`;
+    return null;
+  },
+
+  maxValue: (max, text = "Giá trị") => (value) => {
+    if (value === null || value === undefined || value === "") return null;
+    if (Number(value) > max) return `${text} phải nhỏ hơn hoặc bằng ${max.toLocaleString()}`;
     return null;
   },
 

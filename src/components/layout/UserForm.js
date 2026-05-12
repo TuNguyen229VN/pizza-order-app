@@ -8,6 +8,7 @@ import ValidatedSelectInput from '../input/ValidatedSelectInput';
 import ValidatedDateInput from '../input/ValidatedDateInput';
 import Loader from '../loading/Loader';
 import ContainerProfileLeft from '@/container/ContainerProfileLeft';
+import ButtonCancel from '../buttons/ButtonCancel';
 
 export default function UserForm({ title, user, onSave, errors, registerRef, clearError, loadingForm }) {
   const [userName, setUserName] = useState(user?.name || "");
@@ -108,7 +109,8 @@ export default function UserForm({ title, user, onSave, errors, registerRef, cle
           <EditTableImage
             link={image}
             previewLink={previewImage}
-            onFileSelect={handleFileSelect} />
+            onFileSelect={handleFileSelect}
+            loadingForm={loadingForm} />
         </div>
       </div>
       <form id='user-form' className="grow" onSubmit={handleSubmit}>
@@ -171,8 +173,8 @@ export default function UserForm({ title, user, onSave, errors, registerRef, cle
         )}
       </form>
       <div className='flex justify-end gap-4 mt-4'>
-        <button className={`font-medium flex items-center justify-center px-6 py-3 outline-none border rounded-lg w-[170px] hover:opacity-80 hover:scale-[1.02]  duration-500 hover:bg-red-100 hover:text-secondary ${loadingForm ? "bg-[#DFE4EA] text-secondary pointer-events-none" : " pointer-events-auto"}`} onClick={handleCancel} disabled={loadingForm}>{loadingForm ? <Loader size={20} /> : <span className='font-medium'>Hủy</span>}</button>
-        <button form='user-form' className={`flex items-center justify-center font-medium px-6 py-3 rounded-lg w-[170px] hover:opacity-80 hover:scale-[1.02] duration-500 ${loadingForm ? "bg-[#DFE4EA] text-secondary pointer-events-none" : "bg-primary text-white pointer-events-auto"}`} type="submit" disabled={loadingForm}>{loadingForm ? <Loader size={20} /> : <span className='font-medium'>Lưu</span>}</button>
+        <ButtonCancel loadingForm={loadingForm} onClick={handleCancel} />
+        <button form='user-form' className={`flex items-center justify-center font-medium px-6 py-3 rounded-lg w-[170px] hover:opacity-80 hover:scale-[1.02] duration-500 ${loadingForm ? "bg-[#DFE4EA] text-secondary pointer-events-none" : "bg-primary text-white pointer-events-auto"}`} type="submit" disabled={loadingForm}>{loadingForm ? <Loader size={20} /> : <span className='font-medium'>Cập nhật</span>}</button>
       </div>
     </ContainerProfileLeft>
   )
