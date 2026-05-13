@@ -96,3 +96,30 @@ export async function GET(req) {
   const userInfo = await UserInfo.findOne({ email: user.email }).lean();
   return Response.json({ ...user, ...userInfo });
 }
+
+
+export async function PATCH(req) {
+  try {
+    await connectDB();
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user.admin) {
+      return Response.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
+    const { _id, status } = await req.json();
+
+    const user = await User.findOne({ _id }).lean();
+    if (!user) return Response.json({ message: "Người dùng không tồn tại" }, { status: 404 });
+    if (user.admin) return Response.json({ message: "Không thể chặn người dùng là admin" }, { status: 400 });
+    
+    const updated = await UserInfo.findOneAndUpdate(
+      { email: user.email },
+      { status },
+      { upsert: true, new: true }
+    );
+
+    return Response.json({ success: true, status: updated.status });
+  } catch (error) {
+    return Response.json({ message: "Không thể kết nối Database" }, { status: 500 });
+  }
+}

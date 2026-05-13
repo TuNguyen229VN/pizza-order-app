@@ -6,6 +6,7 @@ import Right from "@/components/icons/Right";
 import InputSearch from "@/components/input/InputSearch";
 import EditTableImage from "@/components/layout/EditTableImage";
 import Paging from "@/components/layout/Paging";
+import TotalDashboard from "@/components/layout/TotalDashboard";
 import UserTabs from "@/components/layout/UserTabs";
 import UseProfile from "@/components/UseProfile";
 import { API_CATEGORIES, API_MENU_ITEMS } from "@/constant/constant";
@@ -27,17 +28,14 @@ export default function MenuItemsPage() {
     { value: "desc", label: "Tên Z-A" },
   ];
 
-  const STATUS_OPTIONS = [
-    { value: "on", label: "Đang kinh doanh" },
-    { value: "off", label: "Tạm đóng" },
-  ];
-
   const [loadingForm, setLoadingForm] = useState(false);
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("newest");
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
+  const [totalOn, setTotalOn] = useState(0);
+  const [totalOff, setTotalOff] = useState(0);
   const [categories, setCategories] = useState([]);
 
   const debouncedSearch = useDebounce(search, 400);
@@ -66,10 +64,13 @@ export default function MenuItemsPage() {
       sort,
       page,
     });
+    
     fetch(`${API_MENU_ITEMS}?${params}`).then((res) =>
       res.json().then((data) => {
         setMenuItems(data.menuItems);
         setTotal(data.total);
+        setTotalOn(data.totalOn);
+        setTotalOff(data.totalOff);
         setTotalPages(data.totalPages);
       })
     );
@@ -117,7 +118,7 @@ export default function MenuItemsPage() {
               <h3 class="font-label-bold text-secondary uppercase tracking-wider">Danh sách món ăn</h3>
 
               <div className="flex items-center gap-3 my-4">
-                <InputSearch search={search} setSearch={setSearch} />
+                <InputSearch search={search} setSearch={setSearch} placeholder="Tìm kiếm món ăn..."/>
                 <FilterSort sort={sort} setSort={setSort} listOption={listOption} />
               </div>
 
@@ -136,6 +137,7 @@ export default function MenuItemsPage() {
           </ContainerProfileLeft>
         </div>
       </div>
+      <TotalDashboard quantityAll={total} textAll="Tổng món ăn" textOn="Món ăn đang kinh doanh" textOff="Món ăn tạm đóng" quantityOn={totalOn} quantityOff={totalOff} />
     </section>
   );
 }

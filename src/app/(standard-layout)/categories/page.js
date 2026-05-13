@@ -4,6 +4,7 @@ import Trash from "@/components/icons/Trash";
 import InputSearch from "@/components/input/InputSearch";
 import EditTableImage from "@/components/layout/EditTableImage";
 import Paging from "@/components/layout/Paging";
+import TotalDashboard from "@/components/layout/TotalDashboard";
 import UserTabs from "@/components/layout/UserTabs";
 import ConfirmPopup from "@/components/popup/ConfirmPopup";
 import UseProfile from "@/components/UseProfile";
@@ -25,14 +26,15 @@ const CategoriesPage = () => {
     { value: "asc", label: "Tên A-Z" },
     { value: "desc", label: "Tên Z-A" },
   ];
-  const [categoryName, setCategoryName] = useState("");
-  const [categories, setCategories] = useState("");
-  const { loading: profileLoading, data: profileData } = UseProfile();
-  const [editedCategory, setEditedCategory] = useState(null);
   const STATUS_OPTIONS = [
     { value: "on", label: "Đang kinh doanh" },
     { value: "off", label: "Tạm đóng" },
   ];
+  
+  const [categoryName, setCategoryName] = useState("");
+  const [categories, setCategories] = useState("");
+  const { loading: profileLoading, data: profileData } = UseProfile();
+  const [editedCategory, setEditedCategory] = useState(null);
   const [status, setStatus] = useState(editedCategory?.status || STATUS_OPTIONS[0].value);
   const [pendingFile, setPendingFile] = useState(null);     // file chờ upload
   const [previewImage, setPreviewImage] = useState(null);
@@ -43,6 +45,8 @@ const CategoriesPage = () => {
   const [sort, setSort] = useState("newest");
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
+  const [totalOn, setTotalOn] = useState(0);
+  const [totalOff, setTotalOff] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
 
   const debouncedSearch = useDebounce(search, 400);
@@ -68,6 +72,8 @@ const CategoriesPage = () => {
     fetch(`${API_CATEGORIES}?${params}`).then((res) =>
       res.json().then((data) => {
         setCategories(data.categories);
+        setTotalOn(data.totalOn);
+        setTotalOff(data.totalOff);
         setTotal(data.total);
         setTotalPages(data.totalPages);
       })
@@ -225,6 +231,7 @@ const CategoriesPage = () => {
           </ContainerProfileLeft>
         </div>
       </div>
+      <TotalDashboard quantityAll={total} textAll="Tổng danh mục" textOn="Danh mục đang hoạt động" textOff="Danh mục tạm đóng" quantityOn={totalOn} quantityOff={totalOff} />
     </section>
   );
 };

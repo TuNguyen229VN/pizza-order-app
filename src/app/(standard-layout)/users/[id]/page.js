@@ -90,6 +90,7 @@ export default function EditUserPage() {
                     body: JSON.stringify({ ...data, image: finalImage, _id: id }),
                 })
                 if (response.ok) {
+                    setUser(prev => ({ ...prev, ...data, image: finalImage }));
                     setLoadingForm(false);
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                     resolve();
@@ -137,7 +138,12 @@ export default function EditUserPage() {
             <div className="grid grid-cols-3 gap-6">
                 <UserTabs isAdmin={profileData.admin}></UserTabs>
                 <div className="relative col-span-2">
-                    <Link href={USERS_ROUTE} className='absolute flex items-center right-4 top-4'><ArrowLeft className='w-5 h-5' /> <span className='ml-1'>Trở lại trang QLND</span></Link>
+                    <div className='absolute right-4 top-4'>
+                        <Link href={USERS_ROUTE} className='flex items-center '><ArrowLeft className='w-5 h-5' /> <span className='ml-1'>Trở lại trang QLND</span></Link>
+                        {profileData?.admin && profileData?.email !== user?.email && (
+                            <span className={`inline-block mt-4 w-[150px] text-center  px-3 py-1 rounded-full  ${user?.status === "on" ? "bg-red-100 text-red-800" : " bg-green-100 text-green-800"}`}>{user?.status === "on" ? "Bị chặn" : "Đang hoạt động"}</span>
+                        )}
+                    </div>
                     <UserForm user={user} onSave={handleSaveButtonClick} errors={errors} registerRef={registerRef}
                         clearError={clearError} loadingForm={loadingForm} title={"Hồ sơ của KH"} />
                 </div>

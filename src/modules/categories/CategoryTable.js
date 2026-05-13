@@ -4,7 +4,7 @@ import Image from 'next/image';
 import React from 'react'
 import { MdOutlineModeEdit } from 'react-icons/md';
 
-export default function CategoryTable({categories, setEditedCategory, setCategoryName, setStatus, clearError, loadingForm, setPendingFile, setPreviewImage, handleCategoryDelete}) {
+export default function CategoryTable({ categories, setEditedCategory, setCategoryName, setStatus, clearError, loadingForm, setPendingFile, setPreviewImage, handleCategoryDelete }) {
     return (
         <table className="w-full text-left">
             <thead className="bg-surface border-b border-outline-variant text-[12px] font-bold text-secondary uppercase tracking-wider">
@@ -22,9 +22,12 @@ export default function CategoryTable({categories, setEditedCategory, setCategor
                             <td className="px-6 py-4">
                                 <Image width={200} height={200} alt="Pizza Thumbnail" className="object-cover w-12 h-12 border rounded border-outline-variant" src={category.image || "/images/noimage.png"} />
                             </td>
-                            <td className="px-6 py-4 font-bold text-on-surface ">
-                                <p className="w-[100px] line-clamp-1 break-all overflow-hidden" title={category.name}>
+                            <td className="px-6 py-4 text-on-surface ">
+                                <p className="w-[100px] font-bold line-clamp-1 break-all overflow-hidden" title={category.name}>
                                     {category.name}
+                                </p>
+                                <p className="w-[100px] line-clamp-1 break-all overflow-hidden text-sm text-secondary" title={category._id}>
+                                    ID: {category._id}
                                 </p>
                             </td>
                             <td className="px-6 py-4">
@@ -42,7 +45,7 @@ export default function CategoryTable({categories, setEditedCategory, setCategor
                                         setPendingFile(null);
                                         setPreviewImage(null);
                                     }}><MdOutlineModeEdit className="w-5 h-5" /></button>
-                                    <ConfirmPopup disabled={loadingForm} onDelete={() => { handleCategoryDelete(category._id) }}>
+                                    <ConfirmPopup disabled={loadingForm} label={`Xóa danh mục ${category.name}`} onDelete={() => { handleCategoryDelete(category._id) }}>
                                         <Trash className="w-5 h-5" />
                                     </ConfirmPopup>
                                 </div>

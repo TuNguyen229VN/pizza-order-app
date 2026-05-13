@@ -7,7 +7,7 @@ import MenuItemForm from '@/components/layout/MenuItemForm';
 import UserTabs from '@/components/layout/UserTabs';
 import ConfirmPopup from '@/components/popup/ConfirmPopup';
 import UseProfile from '@/components/UseProfile';
-import { API_MENU_ITEMS } from '@/constant/constant';
+import { API_MENU_ITEMS, API_UPLOAD_IMAGE } from '@/constant/constant';
 import { MENU_ITEMS_ROUTE } from '@/constant/routesApp';
 import ContainerProfileLeft from '@/container/ContainerProfileLeft';
 import { useFormValidate } from '@/hooks/useFormValidate';
@@ -52,9 +52,9 @@ export default function EditMenuItemPage() {
                 reject();
             }
             await toast.promise(promise, {
-                loading: "Deleting...",
-                success: "Deleted",
-                error: "Error",
+                loading: "Đang xóa...",
+                success: "Đã xóa món ăn",
+                error: "Lỗi khi xóa món ăn",
             });
 
             setRedirectToItems(true);
@@ -62,7 +62,7 @@ export default function EditMenuItemPage() {
     }
 
 
-    const handleFormSubmit = async (e, formData) => {
+    const handleFormSubmit = async (e, formData, pendingFile) => {
         e.preventDefault();
 
         if (loadingForm) return;
@@ -78,7 +78,7 @@ export default function EditMenuItemPage() {
             };
             dynamicFields[`sizes_${i}_price`] = {
                 value: item.price,
-                rules: [validators.required("giá"), validators.isNumber("Giá"), validators.minValue(1000), validators.maxValue(100000000)],
+                rules: [validators.required("giá"), validators.isNumber("giá cơ bản"), validators.minValue(1000), validators.maxValue(100000000)],
             };
         });
 
@@ -89,7 +89,7 @@ export default function EditMenuItemPage() {
             };
             dynamicFields[`extraIngredientPrices_${i}_price`] = {
                 value: item.price,
-                rules: [validators.required("giá"), validators.isNumber("Giá"), validators.minValue(1000), validators.maxValue(100000000)],
+                rules: [validators.required("giá"), validators.isNumber("giá cơ bản"), validators.minValue(1000), validators.maxValue(100000000)],
             };
         });
 
@@ -111,32 +111,75 @@ export default function EditMenuItemPage() {
                 value: formData?.category,
                 rules: [validators.requiredSelect("danh mục")],
             },
+            status: {
+                value: formData?.status,
+                rules: [validators.requiredSelect("trạng thái")],
+            },
+            image: {
+                value: pendingFile || formData.image, // ✅ check cả file mới lẫn ảnh cũ
+                rules: [validators.required("ảnh món ăn")],
+            },
+
             ...dynamicFields,
         });
-        console.log(isValid)
         setLoadingForm(false);
         if (!isValid) return;
         setLoadingForm(true);
 
+        let finalImage = formData.image;
+        if (pendingFile) {
+            const formData_Image = new FormData();
+            formData_Image.set("file", pendingFile);
+            const uploadRes = await fetch(API_UPLOAD_IMAGE, { method: "POST", body: formData_Image });
+            if (!uploadRes.ok) {
+                setLoadingForm(false);
+                toast.error("Upload ảnh thất bại");
+                return;
+            }
+            const uploadData = await uploadRes.json();
+            finalImage = uploadData?.url;
+        }
+
+
         const data = { _id: id, ...formData };
         const savingPromise = new Promise(async (resolve, reject) => {
-            const response = await fetch(API_MENU_ITEMS, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data),
-            });
-            if (response.ok) {
-                resolve();
-            } else {
-                reject();
-            }
-            await toast.promise(savingPromise, {
-                loading: "Saving...",
-                success: "Saved",
-                error: "Error",
-            });
+            try {
+                const response = await fetch(API_MENU_ITEMS, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ ...data, image: finalImage }),
+                });
+                if (response.ok) {
+                    setMenuItem(prev => ({ ...prev, ...data, image: finalImage }));
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    resolve();
+                } else {
+                    const errorData = await response.json().catch(() => null);
+                    reject(errorData);
+                }
 
-            setRedirectToItems(true);
+            } catch (error) {
+                reject(error);
+            } finally {
+                setLoadingForm(false);
+            }
+
+        });
+        await toast.promise(savingPromise, {
+            loading: "Đang cập nhật...",
+            success: "Cập nhật thành công",
+            error: (err) => {
+                // Xử lý lỗi validation từ server
+                if (err?.errors && typeof err.errors === 'object') {
+                    // ✅ Dùng setErrors để trigger re-render
+                    setErrors(prev => ({
+                        ...prev,
+                        ...err.errors // merge lỗi server vào errors hiện tại
+                    }));
+                    return err?.message || "Dữ liệu không hợp lệ";
+                }
+                return err?.message || "Cập nhật thất bại";
+            },
         });
     };
 
@@ -158,7 +201,7 @@ export default function EditMenuItemPage() {
                 <UserTabs isAdmin={profileData.admin}></UserTabs>
                 <div className="relative col-span-2">
                     <ContainerProfileLeft title={menuItem?.name || "Món ăn"}>
-
+                        <p className='text-secondary'>ID: {menuItem?._id}</p>
                         <Link href={MENU_ITEMS_ROUTE} className='absolute flex items-center right-4 top-4'><ArrowLeft className='w-5 h-5' /> <span className='ml-1'>Hiển thị tất cả món ăn</span></Link>
 
                         <MenuItemForm onSubmit={handleFormSubmit} menuItem={menuItem} errors={errors} registerRef={registerRef}

@@ -19,7 +19,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import toast from 'react-hot-toast';
 
 export default function CheckoutPage() {
-    const { errors, registerRef, handleValidate, clearError } = useFormValidate();
+    const { errors, setErrors, registerRef, handleValidate, clearError } = useFormValidate();
     const [infoProfileCheckout, setInfoProfileCheckout] = useState({});
     const [checked, setChecked] = useState(false);
     const [legit, setLegit] = useState(false)
@@ -60,7 +60,7 @@ export default function CheckoutPage() {
         const isValid = handleValidate({
             name: {
                 value: infoProfileCheckout.name,
-                rules: [validators.required("họ và tên"), validators.minLength(2),validators.maxLength(200)],
+                rules: [validators.required("họ và tên"), validators.minLength(2), validators.maxLength(200)],
             },
             email: {
                 value: infoProfileCheckout.email,
@@ -72,15 +72,15 @@ export default function CheckoutPage() {
             },
             streetAddress: {
                 value: infoProfileCheckout.streetAddress,
-                rules: [validators.required("địa chỉ nhà"), validators.minLength(2),validators.maxLength(200)],
+                rules: [validators.required("địa chỉ nhà"), validators.minLength(2), validators.maxLength(200)],
             },
             city: {
                 value: infoProfileCheckout.city,
-                rules: [validators.required("thành phố"), validators.minLength(2),validators.maxLength(200)],
+                rules: [validators.required("thành phố"), validators.minLength(2), validators.maxLength(200)],
             },
             country: {
                 value: infoProfileCheckout.country,
-                rules: [validators.required("quận"), validators.minLength(2),validators.maxLength(200)],
+                rules: [validators.required("quận"), validators.minLength(2), validators.maxLength(200)],
             },
         });
 
@@ -101,16 +101,28 @@ export default function CheckoutPage() {
                     resolve();
                     window.location = await response.json();
                 } else {
-                    reject();
+                    const errorData = await response.json().catch(() => null);
+                    reject(errorData);
                 }
             });
         });
 
         await toast.promise(promise, {
-            loading: 'Preparing your order...',
-            success: 'Redirecting to payment...',
-            error: 'Something went wrong... Please try again later',
-        })
+            loading: 'Đang xử lý...',
+            success: 'Đang chuyển hướng thanh toán...',
+            error: (err) => {
+                // Xử lý lỗi validation từ server
+                if (err?.errors && typeof err.errors === 'object') {
+                    // ✅ Dùng setErrors để trigger re-render
+                    setErrors(prev => ({
+                        ...prev,
+                        ...err.errors // merge lỗi server vào errors hiện tại
+                    }));
+                    return err?.message || "Dữ liệu không hợp lệ";
+                }
+                return err?.message || "Cập nhật thất bại";
+            },
+        });
     }
 
     let subtotal = 0;

@@ -57,10 +57,10 @@ export default function Home() {
         {categories
           .filter(c =>
             c.status === "on" &&
-            menuItems.filter(item => item.category == c._id).length > 0
+            menuItems.filter(item => item.category == c._id && item.status === "on").length > 0
           )
           .map(c => {
-            const items = menuItems.filter(item => item.category == c._id);
+            const items = menuItems.filter(item => item.category == c._id && item.status === "on");
             return (
               <div key={c._id}>
                 <div className="text-center">

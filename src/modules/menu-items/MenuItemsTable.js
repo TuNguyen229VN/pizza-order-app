@@ -34,7 +34,7 @@ export default function MenuItemsTable({ menuItems, loadingForm, handleMenuItemD
                                     {item.name}
                                 </p>
                                 <p className="w-[100px] line-clamp-1 break-all overflow-hidden text-sm text-secondary" title={item._id}>
-                                    {item._id}
+                                    ID: {item._id}
                                 </p>
                             </td>
                             <td className="px-5 py-4">
@@ -57,7 +57,7 @@ export default function MenuItemsTable({ menuItems, loadingForm, handleMenuItemD
                             <td className="sticky right-0 z-10 px-6 py-4 text-right bg-white ">
                                 <div className="flex justify-end gap-3">
                                     <Link href={`${MENU_ITEM_EDIT_ROUTE}/${item._id}`} className={`transition-colors text-secondary hover:text-primary ${loadingForm ? "opacity-50 cursor-not-allowed" : ""}`}><MdOutlineModeEdit className="w-5 h-5" /></Link>
-                                    <ConfirmPopup disabled={loadingForm} onDelete={() => { handleMenuItemDelete(item._id) }}>
+                                    <ConfirmPopup disabled={loadingForm} label={`Xóa món ${item.name}`} onDelete={() => { handleMenuItemDelete(item._id) }}>
                                         <Trash className="w-5 h-5" />
                                     </ConfirmPopup>
                                 </div>

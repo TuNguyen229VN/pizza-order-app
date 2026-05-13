@@ -11,6 +11,11 @@ import ContainerProfileLeft from '@/container/ContainerProfileLeft';
 import ButtonCancel from '../buttons/ButtonCancel';
 
 export default function UserForm({ title, user, onSave, errors, registerRef, clearError, loadingForm }) {
+  const STATUS_OPTIONS = [
+    { value: "off", label: "Đang hoạt động" },
+    { value: "on", label: "Bị chặn" },
+  ];
+  const [status, setStatus] = useState(user?.status || STATUS_OPTIONS[0].value);
   const [userName, setUserName] = useState(user?.name || "");
   const [image, setImage] = useState(user?.image || "");
   const [phone, setPhone] = useState(user?.phone || "");
@@ -91,6 +96,7 @@ export default function UserForm({ title, user, onSave, errors, registerRef, cle
     clearError("streetAddress");
     clearError("country");
     clearError("city");
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   async function handleSubmit(ev) {
@@ -163,7 +169,7 @@ export default function UserForm({ title, user, onSave, errors, registerRef, cle
         />
         {loggedInUserData?.admin && loggedInUserData?.email !== user?.email && (
           <div>
-            <label htmlFor="adminCB" className='inline-flex items-center p-1 mb-2 '>
+            <label htmlFor="adminCB" className='inline-flex items-center p-1 mt-2 mb-2'>
               <input type="checkbox" id='adminCB' className='mr-2' value={"1"}
                 checked={admin} onClick={ev => setAdmin(ev.target.checked)}
               />
