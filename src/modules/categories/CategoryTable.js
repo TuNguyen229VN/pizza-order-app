@@ -44,9 +44,11 @@ export default function CategoryTable({ categories, setEditedCategory, setCatego
                                         setCategoryName(category.name);
                                         setPendingFile(null);
                                         setPreviewImage(null);
-                                    }}><MdOutlineModeEdit className="w-5 h-5" /></button>
-                                    <ConfirmPopup disabled={loadingForm} label={`Xóa danh mục ${category.name}`} onDelete={() => { handleCategoryDelete(category._id) }}>
-                                        <Trash className="w-5 h-5" />
+                                    }}><MdOutlineModeEdit className="w-5 h-5" title='Chỉnh sửa' /></button>
+                                    <ConfirmPopup disabled={loadingForm} label={`Xóa danh mục ${category.name}`} onDelete={() => { handleCategoryDelete(category._id) }} classNameButton='hover:text-primary'>
+                                        <p title='Xóa danh mục'>
+                                            <Trash className="w-5 h-5" />
+                                        </p>
                                     </ConfirmPopup>
                                 </div>
                             </td>

@@ -39,6 +39,10 @@ export const authOptions = {
         const user = await User.findOne({ email });
         const passwordOk = user && bcrypt.compareSync(password, user.password);
         if (passwordOk) {
+          const userInfo = await UserInfo.findOne({ email });
+          if (userInfo?.status === "on") {
+            throw new Error("AccountBlocked"); // Trả về lỗi tùy chỉnh
+          }
           return user;
         }
         return null;
@@ -59,19 +63,33 @@ export const authOptions = {
         token.name = user.name;
         const userInfo = await UserInfo.findOne({ email: user.email });
         token.admin = userInfo?.admin || false;
+        token.status = userInfo?.status || "off";
       }
       if (trigger === "update" && session?.name) {
         if (session.name) token.name = session.name;
         if (session.admin !== undefined) token.admin = session.admin;
+        if (session.status !== undefined) token.status = session.status;
+      }
+
+      // Check realtime mỗi lần token được đọc
+      if (token.email) {
+        const userInfo = await UserInfo.findOne({ email: token.email });
+        token.status = userInfo?.status || "off";
       }
       return token;
     },
     async session({ session, token }) {
+
+      if (token.status === "on") {
+        return null;
+      }
+      
       session.user = {
         id: token.id,
         email: token.email,
         name: token.name,
         admin: token.admin,
+        status: token.status,
       };
       return session;
     },

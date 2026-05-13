@@ -40,7 +40,10 @@ const LoginPage = () => {
     const callbackUrl = params.get("callbackUrl") || HOME_ROUTE;
     const result = await signIn("credentials", { email, password, redirect: false });
     if (result?.error) {
-      if (result.error === "CredentialsSignin") {
+      if (result.error === "AccountBlocked") {
+        setError("Tài khoản của bạn đã bị khóa. Vui lòng liên hệ hỗ trợ.");
+      }
+      else if (result.error === "CredentialsSignin") {
         setError("Email hoặc mật khẩu đăng nhập không hợp lệ. Vui lòng thử lại.");
       } else {
         setError("Đã xảy ra lỗi hệ thống");

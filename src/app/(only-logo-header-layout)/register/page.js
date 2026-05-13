@@ -88,7 +88,7 @@ const RegisterPage = () => {
 
   };
   return (
-    <section className="p-4 mt-8 w-[480px] mx-auto">
+    <section className="p-4 mt-8 w-[480px] mx-auto ">
 
       {userCreated && (
         <div className="">
@@ -112,7 +112,7 @@ const RegisterPage = () => {
       {!userCreated &&
         <><HeaderCart text="Tạo tài khoản" urlLink={LOGIN_ROUTE}></HeaderCart>
 
-          <div className="p-4 mt-8 border rounded-2xl w-[510px] mx-auto">
+          <div className="p-4 mt-8 border rounded-2xl w-[510px] mx-auto shadow-sm">
             {error && <p className="px-20 mb-4 text-sm text-center text-primary">{error}</p>}
             <form className="mx-auto " onSubmit={handleFormSubmit}>
               <ValidatedInput

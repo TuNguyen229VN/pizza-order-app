@@ -3,6 +3,7 @@ import { MenuItem } from "@/models/MenuItem";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/route";
 import { validateMenuItem } from "@/libs/validateMenuItem";
+import { LIMITPAGE } from "@/constant/constant";
 
 export async function POST(req) {
     try {
@@ -64,7 +65,7 @@ export async function GET(req) {
     const search = url.searchParams.get("search") || "";
     const sort = url.searchParams.get("sort") || "newest";
     const page = parseInt(url.searchParams.get("page") || "1");
-    const limit = 4;
+    const limit = LIMITPAGE;
     const skip = (page - 1) * limit;
 
     const query = search

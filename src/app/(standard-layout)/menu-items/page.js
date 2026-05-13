@@ -118,7 +118,7 @@ export default function MenuItemsPage() {
               <h3 class="font-label-bold text-secondary uppercase tracking-wider">Danh sách món ăn</h3>
 
               <div className="flex items-center gap-3 my-4">
-                <InputSearch search={search} setSearch={setSearch} placeholder="Tìm kiếm món ăn..."/>
+                <InputSearch search={search} setSearch={setSearch} placeholder="Nhập tên món ăn"/>
                 <FilterSort sort={sort} setSort={setSort} listOption={listOption} />
               </div>
 

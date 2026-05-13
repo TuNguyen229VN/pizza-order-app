@@ -12,7 +12,20 @@ module.exports = {
         blackHeader: "rgb(17, 25, 40)",
         primary: "#E71E23",
         secondary: "rgb(99, 115, 129)"
-      }
+      },
+      keyframes: {
+        bounceX: {
+          "0%, 100%": {
+            transform: "translateX(0)",
+          },
+          "50%": {
+            transform: "translateX(-10px)",
+          },
+        },
+      },
+      animation: {
+        "bounce-x": "bounceX 1s infinite",
+      },
     },
   },
   plugins: [],

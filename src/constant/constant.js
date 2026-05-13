@@ -1,3 +1,5 @@
+
+const LIMITPAGE=4;
 const API_PROFILE = "/api/profile";
 const API_CATEGORIES = "/api/categories";
 const API_MENU_ITEMS = "/api/menu-items";
@@ -8,5 +10,5 @@ const API_USERS = "/api/users";
 const API_CHECKOUT = "/api/checkout";
 const API_ORDERS = "/api/orders"
 
-export { API_PROFILE, API_CATEGORIES, API_MENU_ITEMS, API_REGISTER, API_LOGIN, API_UPLOAD_IMAGE, API_USERS, API_CHECKOUT, API_ORDERS };
+export { LIMITPAGE, API_PROFILE, API_CATEGORIES, API_MENU_ITEMS, API_REGISTER, API_LOGIN, API_UPLOAD_IMAGE, API_USERS, API_CHECKOUT, API_ORDERS };
 

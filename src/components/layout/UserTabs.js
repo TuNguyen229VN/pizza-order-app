@@ -35,25 +35,25 @@ const UserTabs = ({ isAdmin }) => {
               className={`flex items-center p-4 gap-4 text-lg ${path.includes(MENU_ITEMS_ROUTE) ? "text-primary font-semibold" : ""}`}
               href={MENU_ITEMS_ROUTE}
             >
-              <PiPizzaLight  className="w-6 h-6"/>
+              <PiPizzaLight className="w-6 h-6" />
               <span>Quản lý món ăn</span>
             </Link>
             <Link className={`flex items-center p-4 gap-4 text-lg ${path.includes(USERS_ROUTE) ? "text-primary font-semibold" : ""}`} href={USERS_ROUTE}>
-              <PiUserListLight className="w-6 h-6"/>
+              <PiUserListLight className="w-6 h-6" />
               <span>Quản lý người dùng</span>
+            </Link>
+            <Link className={`flex items-center p-4 gap-4 text-lg ${path === ORDERS_ROUTE ? "text-primary font-semibold" : ""}`} href={ORDERS_ROUTE}>
+              <BsCartCheck className="w-6 h-6" />
+              <span>Quản lý đơn hàng</span>
             </Link>
           </>
         )}
-        <Link className={`flex items-center p-4 gap-4 text-lg ${path === ORDERS_ROUTE ? "text-primary font-semibold" : ""}`} href={ORDERS_ROUTE}>
-          <BsCartCheck  className="w-6 h-6"/>
-          <span>Quản lý đơn hàng</span>
-        </Link>
         <Link className={`flex items-center p-4 gap-4 text-lg ${path === ORDERS_ROUTE ? "text-primary font-semibold" : ""}`} href={"#"}>
           <Bell />
           <span>Thông báo</span>
         </Link>
         <Link className={`flex items-center p-4 gap-4 text-lg ${path === ORDERS_ROUTE ? "text-primary font-semibold" : ""}`} href={"#"}>
-          <TbLockPassword  className="w-6 h-6"/>
+          <TbLockPassword className="w-6 h-6" />
           <span>Đổi mật khẩu</span>
         </Link>
       </div>

@@ -130,7 +130,7 @@ export default function UsersPage() {
                         <h3 class="font-label-bold text-secondary uppercase tracking-wider">Danh sách người dùng</h3>
 
                         <div className="flex items-center gap-3 my-4">
-                            <InputSearch search={search} setSearch={setSearch} placeholder="Tìm kiếm người dùng..." />
+                            <InputSearch search={search} setSearch={setSearch} placeholder="Nhập tên người dùng hoặc email" />
                             <FilterSort sort={sort} setSort={setSort} listOption={listOption} />
                         </div>
 

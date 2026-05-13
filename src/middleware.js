@@ -31,12 +31,15 @@ const protectedRoutePatterns = [
 // route chỉ dành cho role admin
 const adminRoutePatterns = [
     exact(CATEGORIES_ROUTE),
+    exact(ORDERS_ROUTE),
+    withId(ORDERS_ROUTE),
     exact(MENU_ITEMS_ROUTE),
     exact(MENU_ITEMS_ROUTE + "/new"),
     exact(MENU_ITEMS_ROUTE + "/edit"),
     withId(MENU_ITEMS_ROUTE + "/edit"),
     exact(USERS_ROUTE),
     withId(USERS_ROUTE),
+
 ];
 
 // chưa login thì route này
@@ -57,7 +60,7 @@ function isAdminRoute(pathname) {
 export async function middleware(req) {
     const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
     const pathname = req.nextUrl.pathname;
-    if (token && isAuthRoute(pathname)) {
+    if (token && isAuthRoute(pathname) && token.status === "off") {
         return NextResponse.redirect(new URL("/", req.url));
     }
 

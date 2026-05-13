@@ -17,6 +17,7 @@ const ProfilePage = () => {
   const router = useRouter();
   const [user, setUser] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [statusAccount, setstatusAccount] = useState("");
   const [profileFetched, setProfileFetched] = useState(false);
   const { status, update } = session;
   const { errors, setErrors, registerRef, handleValidate, clearError } = useFormValidate();
@@ -28,12 +29,17 @@ const ProfilePage = () => {
         response.json().then((data) => {
           setUser(data);
           setIsAdmin(data.admin);
+          setstatusAccount(data.status);
           setProfileFetched(true);
         });
       });
     }
   }, [session, status]);
   if (status === "unauthenticated") {
+    router.push(LOGIN_ROUTE);
+    return null;
+  }
+  if (status === "authenticated" && statusAccount === "on") {
     router.push(LOGIN_ROUTE);
     return null;
   }

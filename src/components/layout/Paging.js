@@ -6,7 +6,7 @@ export default function Paging({ page, setPage, totalPages, total, items }) {
     return (
         <div className="flex items-center justify-between py-4 border-t px-gutter text-body-md text-secondary border-outline-variant">
             <p>
-                Hiển thị {items.length} của {total} mục
+                Hiển thị {items?.length} của {total} mục
             </p>
             <div className="flex gap-1">
                 <button

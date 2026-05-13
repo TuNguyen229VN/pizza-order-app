@@ -1,3 +1,4 @@
+import { LIMITPAGE } from "@/constant/constant";
 import { connectDB } from "@/libs/connectDB";
 import { User } from "@/models/User";
 import { UserInfo } from "@/models/UserInfo";
@@ -11,7 +12,7 @@ export async function GET(req) {
         const search = url.searchParams.get("search") || "";
         const sort = url.searchParams.get("sort") || "newest";
         const page = parseInt(url.searchParams.get("page") || "1");
-        const limit = 4;
+        const limit = LIMITPAGE;
         const skip = (page - 1) * limit;
 
         const query = search
