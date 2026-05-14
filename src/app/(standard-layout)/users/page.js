@@ -23,15 +23,22 @@ export default function UsersPage() {
         { value: "desc", label: "Tên Z-A" },
     ];
 
+    const listStatusOption = [
+        { value: "", label: "Tất cả" },
+        { value: "off", label: "Đang hoạt động" },
+        { value: "on", label: "Bị chặn" },
+    ];
+
     const { loading: profileLoading, data: profileData } = UseProfile();
 
     const [users, setUsers] = useState([]);
-
+    const [status, setStatus] = useState("");
     const [loadingForm, setLoadingForm] = useState(false);
     const [search, setSearch] = useState("");
     const [sort, setSort] = useState("newest");
     const [page, setPage] = useState(1);
     const [total, setTotal] = useState(0);
+    const [totalAll, setTotalAll] = useState(0);
     const [totalPages, setTotalPages] = useState(1);
     const [totalOn, setTotalOn] = useState(0);
     const [totalOff, setTotalOff] = useState(0);
@@ -41,17 +48,18 @@ export default function UsersPage() {
     // khi search thay đổi → reset về trang 1
     useEffect(() => {
         setPage(1);
-    }, [debouncedSearch, sort]);
+    }, [debouncedSearch, sort,status]);
 
     useEffect(() => {
         fetchUsers();
-    }, [debouncedSearch, sort, page])
+    }, [debouncedSearch, sort, page, status])
 
     const fetchUsers = () => {
         const params = new URLSearchParams({
             search: debouncedSearch,
             sort,
             page,
+            status,
         });
 
         fetch(`${API_USERS}?${params}`).then(response => {
@@ -61,6 +69,7 @@ export default function UsersPage() {
                 setTotalOn(data.totalOn);
                 setTotalOff(data.totalOff);
                 setTotalPages(data.totalPages);
+                setTotalAll(data.totalAll);
             })
         })
     }
@@ -132,6 +141,7 @@ export default function UsersPage() {
                         <div className="flex items-center gap-3 my-4">
                             <InputSearch search={search} setSearch={setSearch} placeholder="Nhập tên người dùng hoặc email" />
                             <FilterSort sort={sort} setSort={setSort} listOption={listOption} />
+                            <FilterSort sort={status} setSort={setStatus} listOption={listStatusOption} />
                         </div>
 
                         <div className="overflow-x-auto">
@@ -148,7 +158,7 @@ export default function UsersPage() {
                     </ContainerProfileLeft>
                 </div>
             </div>
-            <TotalDashboard quantityAll={total} textAll="Tổng người dùng" textOn="Người dùng đang hoạt động" textOff="Người dùng bị chặn" quantityOff={totalOn} quantityOn={total-totalOn} />
+            <TotalDashboard quantityAll={totalAll} textAll="Tổng người dùng" textOn="Người dùng đang hoạt động" textOff="Người dùng bị chặn" quantityOff={totalOn} quantityOn={totalAll - totalOn} />
         </section>
     )
 }

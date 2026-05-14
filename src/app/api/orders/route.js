@@ -8,11 +8,25 @@ import mongoose from "mongoose";
 const buildSearchQuery = (search) => {
     if (!search) return {};
 
-    const isValidId = mongoose.Types.ObjectId.isValid(search);
+    // const isValidId = mongoose.Types.ObjectId.isValid(search);
 
+    // return {
+    //     $or: [
+    //         ...(isValidId ? [{ _id: new mongoose.Types.ObjectId(search) }] : []),
+    //         { phone: { $regex: search, $options: "i" } },
+    //     ]
+    // };
     return {
         $or: [
-            ...(isValidId ? [{ _id: new mongoose.Types.ObjectId(search) }] : []),
+            {
+                $expr: {
+                    $regexMatch: {
+                        input: { $toString: "$_id" },
+                        regex: search,
+                        options: "i"
+                    }
+                }
+            },
             { phone: { $regex: search, $options: "i" } },
         ]
     };
@@ -71,16 +85,18 @@ export async function GET(req) {
         }
 
         // 4. Có phân trang
-        const [orders, total, totalOn, totalOff] = await Promise.all([
+        const [orders, total, totalAll, totalOn, totalOff] = await Promise.all([
             Order.find(baseQuery).sort(sortOrder).skip(skip).limit(limit),
             Order.countDocuments(baseQuery),
-            Order.countDocuments({ ...baseQuery, status: "on" }),
-            Order.countDocuments({ ...baseQuery, status: "off" }),
+            Order.countDocuments(),
+            Order.countDocuments({ paid: true }),
+            Order.countDocuments({ paid: false }),
         ]);
 
         return Response.json({
             orders,
             total,
+            totalAll,
             totalOn,
             totalOff,
             page,

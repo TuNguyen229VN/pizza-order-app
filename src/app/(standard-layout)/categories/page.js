@@ -30,6 +30,11 @@ const CategoriesPage = () => {
     { value: "on", label: "Đang kinh doanh" },
     { value: "off", label: "Tạm đóng" },
   ];
+  const STATUS_OPTIONS_FILTER = [
+    { value: "", label: "Tất cả" },
+    { value: "on", label: "Đang kinh doanh" },
+    { value: "off", label: "Tạm đóng" },
+  ];
   
   const [categoryName, setCategoryName] = useState("");
   const [categories, setCategories] = useState("");
@@ -42,9 +47,11 @@ const CategoriesPage = () => {
 
   // --- state mới ---
   const [search, setSearch] = useState("");
+  const [statusFilter, setstatusFilter] = useState("")
   const [sort, setSort] = useState("newest");
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
+  const [totalAll, setTotalAll] = useState(0);
   const [totalOn, setTotalOn] = useState(0);
   const [totalOff, setTotalOff] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
@@ -56,18 +63,19 @@ const CategoriesPage = () => {
   // fetch lại mỗi khi search/sort/page thay đổi
   useEffect(() => {
     fetchCategories();
-  }, [debouncedSearch, sort, page]);
+  }, [debouncedSearch, sort, page,statusFilter]);
 
   // khi search thay đổi → reset về trang 1
   useEffect(() => {
     setPage(1);
-  }, [debouncedSearch, sort]);
+  }, [debouncedSearch, sort,statusFilter]);
 
   const fetchCategories = () => {
     const params = new URLSearchParams({
       search: debouncedSearch,
       sort,
       page,
+      statusFilter,
     });
     fetch(`${API_CATEGORIES}?${params}`).then((res) =>
       res.json().then((data) => {
@@ -76,6 +84,7 @@ const CategoriesPage = () => {
         setTotalOff(data.totalOff);
         setTotal(data.total);
         setTotalPages(data.totalPages);
+        setTotalAll(data.totalAll);
       })
     );
   };
@@ -216,6 +225,7 @@ const CategoriesPage = () => {
             <div className="flex items-center gap-3 my-4">
               <InputSearch search={search} setSearch={setSearch} />
               <FilterSort sort={sort} setSort={setSort} listOption={listOption} />
+              <FilterSort sort={statusFilter} setSort={setstatusFilter} listOption={STATUS_OPTIONS_FILTER} />
             </div>
 
             <CategoryTable categories={categories} setEditedCategory={setEditedCategory} setCategoryName={setCategoryName} setStatus={setStatus} clearError={clearError} loadingForm={loadingForm} setPendingFile={setPendingFile} setPreviewImage={setPreviewImage} handleCategoryDelete={handleCategoryDelete} />
@@ -231,7 +241,7 @@ const CategoriesPage = () => {
           </ContainerProfileLeft>
         </div>
       </div>
-      <TotalDashboard quantityAll={total} textAll="Tổng danh mục" textOn="Danh mục đang hoạt động" textOff="Danh mục tạm đóng" quantityOn={totalOn} quantityOff={totalOff} />
+      <TotalDashboard quantityAll={totalAll} textAll="Tổng danh mục" textOn="Danh mục đang hoạt động" textOff="Danh mục tạm đóng" quantityOn={totalOn} quantityOff={totalOff} />
     </section>
   );
 };

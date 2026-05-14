@@ -90,14 +90,15 @@ export async function GET(req) {
   const all = url.searchParams.get("all") === "true";
 
   const search = url.searchParams.get("search") || "";
+  const status = url.searchParams.get("statusFilter"); // "on" | "off" | ""
   const sort = url.searchParams.get("sort") || "newest";
   const page = parseInt(url.searchParams.get("page") || "1");
   const limit = LIMITPAGE;
   const skip = (page - 1) * limit;
 
   const query = search
-    ? { name: { $regex: search, $options: "i" } }
-    : {};
+    ? { name: { $regex: search, $options: "i" }, status: status || { $in: ["on", "off"] } }
+    : { status: status || { $in: ["on", "off"] } };
 
   const sortMap = {
     newest: { createdAt: -1 },
@@ -115,16 +116,17 @@ export async function GET(req) {
   }
 
   // Có phân trang
-  const [categories, total, totalOn, totalOff] = await Promise.all([
+  const [categories, total, totalAll, totalOn, totalOff] = await Promise.all([
     Category.find(query).sort(sortOrder).skip(skip).limit(limit),
+    Category.countDocuments(),
     Category.countDocuments(query),
-    Category.countDocuments({ ...query, status: "on" }),
-    Category.countDocuments({ ...query, status: "off" }),
+    Category.countDocuments({ status: "on" }),
+    Category.countDocuments({ status: "off" }),
   ]);
-
   return Response.json({
     categories,
     total,
+    totalAll,
     totalOn,
     totalOff,
     totalPages: Math.ceil(total / limit),

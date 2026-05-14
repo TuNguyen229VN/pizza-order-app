@@ -63,14 +63,15 @@ export async function GET(req) {
     const all = url.searchParams.get("all") === "true";
 
     const search = url.searchParams.get("search") || "";
+    const status = url.searchParams.get("status"); // "on" | "off" | ""
     const sort = url.searchParams.get("sort") || "newest";
     const page = parseInt(url.searchParams.get("page") || "1");
     const limit = LIMITPAGE;
     const skip = (page - 1) * limit;
 
     const query = search
-        ? { name: { $regex: search, $options: "i" } }
-        : {};
+        ? { name: { $regex: search, $options: "i" }, status: status || { $in: ["on", "off"] } }
+        : { status: status || { $in: ["on", "off"] } };
 
     const sortMap = {
         newest: { createdAt: -1 },
@@ -88,16 +89,18 @@ export async function GET(req) {
     }
 
     // Có phân trang
-    const [menuItems, total, totalOn, totalOff] = await Promise.all([
+    const [menuItems, total,totalAll, totalOn, totalOff] = await Promise.all([
         MenuItem.find(query).sort(sortOrder).skip(skip).limit(limit),
         MenuItem.countDocuments(query),
-        MenuItem.countDocuments({ ...query, status: "on" }),
-        MenuItem.countDocuments({ ...query, status: "off" }),
+        MenuItem.countDocuments(),
+        MenuItem.countDocuments({  status: "on" }),
+        MenuItem.countDocuments({ status: "off" }),
     ]);
 
     return Response.json({
         menuItems,
         total,
+        totalAll,
         totalOn,
         totalOff,
         totalPages: Math.ceil(total / limit),

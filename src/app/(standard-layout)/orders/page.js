@@ -2,6 +2,7 @@
 import FilterSort from '@/components/filter/FilterSort';
 import InputSearch from '@/components/input/InputSearch';
 import Paging from '@/components/layout/Paging';
+import TotalDashboard from '@/components/layout/TotalDashboard';
 import UserTabs from '@/components/layout/UserTabs';
 import UseProfile from '@/components/UseProfile';
 import { API_ORDERS } from '@/constant/constant';
@@ -33,6 +34,7 @@ export default function OrdersPage() {
     const [paid, setPaid] = useState(null)
     const [total, setTotal] = useState(0);
     const [totalPages, setTotalPages] = useState(1);
+    const [totalAll, setTotalAll] = useState(0);
     const [totalOn, setTotalOn] = useState(0);
     const [totalOff, setTotalOff] = useState(0);
 
@@ -41,7 +43,7 @@ export default function OrdersPage() {
     // khi search thay đổi → reset về trang 1
     useEffect(() => {
         setPage(1);
-    }, [debouncedSearch, sort]);
+    }, [debouncedSearch, sort,paid]);
 
     useEffect(() => {
         fetchOrders();
@@ -57,10 +59,10 @@ export default function OrdersPage() {
         });
         fetch(`${API_ORDERS}?${params}`).then(res => {
             res.json().then(data => {
-                console.log(data)
                 setOrders(data.orders);
                 setTotal(data.total);
                 setTotalPages(data.totalPages);
+                setTotalAll(data.totalAll);
                 setTotalOn(data.totalOn);
                 setTotalOff(data.totalOff);
                 setLoadingOrders(false);
@@ -114,6 +116,7 @@ export default function OrdersPage() {
                     </ContainerProfileLeft>
                 </div>
             </div>
+             <TotalDashboard quantityAll={totalAll} textAll="Tổng hóa đơn" textOn="Hóa đơn đã thanh toán" textOff="Hóa đơn chưa thanh toán" quantityOn={totalOn} quantityOff={totalOff} />
         </section>
     );
 }

@@ -28,11 +28,19 @@ export default function MenuItemsPage() {
     { value: "desc", label: "Tên Z-A" },
   ];
 
+  const statusOption = [
+    { value: "", label: "Tất cả" },
+    { value: "on", label: "Đang kinh doanh" },
+    { value: "off", label: "Tạm đóng" },
+  ];
+  
   const [loadingForm, setLoadingForm] = useState(false);
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("newest");
+  const [status, setStatus] = useState("");
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
+  const [totalAll, setTotalAll] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [totalOn, setTotalOn] = useState(0);
   const [totalOff, setTotalOff] = useState(0);
@@ -47,7 +55,7 @@ export default function MenuItemsPage() {
   // khi search thay đổi → reset về trang 1
   useEffect(() => {
     setPage(1);
-  }, [debouncedSearch, sort]);
+  }, [debouncedSearch, sort,status]);
 
   useEffect(() => {
     fetchMenuItems();
@@ -56,13 +64,14 @@ export default function MenuItemsPage() {
         setCategories(data?.categories);
       })
     })
-  }, [debouncedSearch, sort, page]);
+  }, [debouncedSearch, sort, page,status]);
 
   const fetchMenuItems = () => {
     const params = new URLSearchParams({
       search: debouncedSearch,
       sort,
       page,
+      status,
     });
     
     fetch(`${API_MENU_ITEMS}?${params}`).then((res) =>
@@ -72,6 +81,7 @@ export default function MenuItemsPage() {
         setTotalOn(data.totalOn);
         setTotalOff(data.totalOff);
         setTotalPages(data.totalPages);
+        setTotalAll(data.totalAll);
       })
     );
   }
@@ -120,6 +130,7 @@ export default function MenuItemsPage() {
               <div className="flex items-center gap-3 my-4">
                 <InputSearch search={search} setSearch={setSearch} placeholder="Nhập tên món ăn"/>
                 <FilterSort sort={sort} setSort={setSort} listOption={listOption} />
+                <FilterSort sort={status} setSort={setStatus} listOption={statusOption} />
               </div>
 
               <div className="overflow-x-auto">
@@ -137,7 +148,7 @@ export default function MenuItemsPage() {
           </ContainerProfileLeft>
         </div>
       </div>
-      <TotalDashboard quantityAll={total} textAll="Tổng món ăn" textOn="Món ăn đang kinh doanh" textOff="Món ăn tạm đóng" quantityOn={totalOn} quantityOff={totalOff} />
+      <TotalDashboard quantityAll={totalAll} textAll="Tổng món ăn" textOn="Món ăn đang kinh doanh" textOff="Món ăn tạm đóng" quantityOn={totalOn} quantityOff={totalOff} />
     </section>
   );
 }

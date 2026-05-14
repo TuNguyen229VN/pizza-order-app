@@ -70,7 +70,7 @@ export default function OrderTable({ orders, loadingForm = false }) {
                                 </td>
                                 <td className="sticky right-0 z-10 px-6 py-4 text-right bg-white ">
                                     <div className="flex justify-end gap-3">
-                                        <Link href={`${ORDERS_ROUTE}/${order._id}`} className={`transition-colors text-secondary hover:text-primary ${loadingForm ? "opacity-50 cursor-not-allowed" : ""}`} ><HiDotsHorizontal className="w-5 h-5" title="Chi tiết" /></Link>
+                                        <Link href={`${ORDERS_ROUTE}/${order._id}?from=orders`} className={`transition-colors text-secondary hover:text-primary ${loadingForm ? "opacity-50 cursor-not-allowed" : ""}`} ><HiDotsHorizontal className="w-5 h-5" title="Chi tiết" /></Link>
                                     </div>
                                 </td>
                             </tr>

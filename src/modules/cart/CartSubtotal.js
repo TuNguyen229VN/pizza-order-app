@@ -3,9 +3,9 @@ import React from 'react'
 
 const DISCOUNT_FEE = 0
 const DELIVERY_FEE = 5000
-export default function CartSubtotal({ subtotal, children }) {
+export default function CartSubtotal({ subtotal, children,className }) {
     return (
-        <div className="px-4 py-4 border rounded-2xl">
+        <div className={`px-4 py-4 border rounded-2xl ${className}`}>
             {children}
             <div className='flex items-center justify-between'>
                 <p>Tạm tính</p>

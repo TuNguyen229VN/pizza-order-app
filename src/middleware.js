@@ -19,7 +19,7 @@ const protectedRoutePatterns = [
     exact(PROFILE_ROUTE),
     exact(CATEGORIES_ROUTE),
     exact(ORDERS_ROUTE),
-    withId(ORDERS_ROUTE),                    // /orders/123
+    // withId(ORDERS_ROUTE),                    // /orders/123
     exact(MENU_ITEMS_ROUTE),
     exact(MENU_ITEMS_ROUTE + "/new"),
     exact(MENU_ITEMS_ROUTE + "/edit"),
@@ -32,7 +32,7 @@ const protectedRoutePatterns = [
 const adminRoutePatterns = [
     exact(CATEGORIES_ROUTE),
     exact(ORDERS_ROUTE),
-    withId(ORDERS_ROUTE),
+    // withId(ORDERS_ROUTE),
     exact(MENU_ITEMS_ROUTE),
     exact(MENU_ITEMS_ROUTE + "/new"),
     exact(MENU_ITEMS_ROUTE + "/edit"),
@@ -84,7 +84,7 @@ export const config = {
         "/profile",
         "/categories",
         "/orders",
-        "/orders/:id*",
+        // "/orders/:id*",
         "/menu-items",
         "/menu-items/new",
         "/menu-items/edit",

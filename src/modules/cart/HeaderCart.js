@@ -11,10 +11,10 @@ export default function HeaderCart({ text = "Giỏ hàng của tôi", urlLink })
     const router = useRouter();
 
     function handleBack() {
-        // if (urlLink) {
-        //     router.push(urlLink);
-        //     return
-        // }
+        if (urlLink) {
+            router.push(urlLink);
+            return
+        }
         if (window.history.length > 1) {
             router.back();
         } else {
