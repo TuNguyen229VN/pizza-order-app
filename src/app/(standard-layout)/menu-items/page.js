@@ -33,7 +33,7 @@ export default function MenuItemsPage() {
     { value: "on", label: "Đang kinh doanh" },
     { value: "off", label: "Tạm đóng" },
   ];
-  
+
   const [loadingForm, setLoadingForm] = useState(false);
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("newest");
@@ -52,10 +52,20 @@ export default function MenuItemsPage() {
   const [menuItems, setMenuItems] = useState([]);
   const { loading: profileLoading, data: profileData } = UseProfile();
 
+  useEffect(() => {
+    if (page > totalPages && totalPages > 0) {
+      setPage(totalPages);
+    }
+  }, [page, totalPages]);
+
   // khi search thay đổi → reset về trang 1
   useEffect(() => {
-    setPage(1);
-  }, [debouncedSearch, sort,status]);
+    if (page !== 1) {
+      setPage(1);
+    } else {
+      fetchMenuItems();
+    }
+  }, [debouncedSearch, sort, status]);
 
   useEffect(() => {
     fetchMenuItems();
@@ -64,7 +74,7 @@ export default function MenuItemsPage() {
         setCategories(data?.categories);
       })
     })
-  }, [debouncedSearch, sort, page,status]);
+  }, [page]);
 
   const fetchMenuItems = () => {
     const params = new URLSearchParams({
@@ -73,7 +83,7 @@ export default function MenuItemsPage() {
       page,
       status,
     });
-    
+
     fetch(`${API_MENU_ITEMS}?${params}`).then((res) =>
       res.json().then((data) => {
         setMenuItems(data.menuItems);
@@ -121,14 +131,14 @@ export default function MenuItemsPage() {
         <UserTabs isAdmin={profileData.admin}></UserTabs>
         <div className="col-span-2">
           <ContainerProfileLeft >
-            <div className="">
-              <Link className="flex justify-end button" href={MENU_ITEM_NEW_ROUTE}><ButtonPrimary className={"w-max p-4 flex items-center gap-2"}> <PlusIcon /> Tạo món ăn mới</ButtonPrimary></Link>
+            <div className="flex justify-end">
+              <Link className="w-max" href={MENU_ITEM_NEW_ROUTE}><ButtonPrimary className={"w-max p-4 flex items-center gap-2"}> <PlusIcon /> Tạo món ăn mới</ButtonPrimary></Link>
             </div>
             <div className="">
               <h3 class="font-label-bold text-secondary uppercase tracking-wider">Danh sách món ăn</h3>
 
               <div className="flex items-center gap-3 my-4">
-                <InputSearch search={search} setSearch={setSearch} placeholder="Nhập tên món ăn"/>
+                <InputSearch search={search} setSearch={setSearch} placeholder="Nhập tên món ăn" />
                 <FilterSort sort={sort} setSort={setSort} listOption={listOption} />
                 <FilterSort sort={status} setSort={setStatus} listOption={statusOption} />
               </div>

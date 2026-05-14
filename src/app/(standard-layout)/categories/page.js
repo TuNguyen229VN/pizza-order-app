@@ -35,7 +35,7 @@ const CategoriesPage = () => {
     { value: "on", label: "Đang kinh doanh" },
     { value: "off", label: "Tạm đóng" },
   ];
-  
+
   const [categoryName, setCategoryName] = useState("");
   const [categories, setCategories] = useState("");
   const { loading: profileLoading, data: profileData } = UseProfile();
@@ -60,15 +60,23 @@ const CategoriesPage = () => {
 
   const { errors, setErrors, registerRef, handleValidate, clearError } = useFormValidate();
 
-  // fetch lại mỗi khi search/sort/page thay đổi
+  useEffect(() => {
+    if (page > totalPages && totalPages > 0) {
+      setPage(totalPages);
+    }
+  }, [page, totalPages]);
+
+  useEffect(() => {
+    if (page !== 1) {
+      setPage(1); // để effect của page tự fetch
+    } else {
+      fetchCategories(); // page đã = 1 rồi, fetch luôn
+    }
+  }, [debouncedSearch, sort, statusFilter]);
+
   useEffect(() => {
     fetchCategories();
-  }, [debouncedSearch, sort, page,statusFilter]);
-
-  // khi search thay đổi → reset về trang 1
-  useEffect(() => {
-    setPage(1);
-  }, [debouncedSearch, sort,statusFilter]);
+  }, [page]);
 
   const fetchCategories = () => {
     const params = new URLSearchParams({
@@ -219,7 +227,7 @@ const CategoriesPage = () => {
 
           </ContainerProfileLeft>
           <ContainerProfileLeft className={"mt-6"}>
-            <h3 class="font-label-bold text-secondary uppercase tracking-wider">Danh sách chi tiết</h3>
+            <h3 className="tracking-wider uppercase font-label-bold text-secondary">Danh sách chi tiết</h3>
 
             {/* ✅ Thanh tìm kiếm + sort */}
             <div className="flex items-center gap-3 my-4">
@@ -229,7 +237,7 @@ const CategoriesPage = () => {
             </div>
 
             <CategoryTable categories={categories} setEditedCategory={setEditedCategory} setCategoryName={setCategoryName} setStatus={setStatus} clearError={clearError} loadingForm={loadingForm} setPendingFile={setPendingFile} setPreviewImage={setPreviewImage} handleCategoryDelete={handleCategoryDelete} />
-            
+
             <Paging
               page={page}
               setPage={setPage}

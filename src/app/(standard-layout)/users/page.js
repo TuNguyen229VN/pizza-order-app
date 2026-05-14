@@ -45,14 +45,24 @@ export default function UsersPage() {
 
     const debouncedSearch = useDebounce(search, 400);
 
+    useEffect(() => {
+        if (page > totalPages && totalPages > 0) {
+            setPage(totalPages);
+        }
+    }, [page, totalPages]);
+
     // khi search thay đổi → reset về trang 1
     useEffect(() => {
-        setPage(1);
-    }, [debouncedSearch, sort,status]);
+        if (page !== 1) {
+            setPage(1); // để effect của page tự fetch
+        } else {
+            fetchUsers(); // page đã = 1 rồi, fetch luôn
+        }
+    }, [debouncedSearch, sort, status]);
 
     useEffect(() => {
         fetchUsers();
-    }, [debouncedSearch, sort, page, status])
+    }, [page])
 
     const fetchUsers = () => {
         const params = new URLSearchParams({

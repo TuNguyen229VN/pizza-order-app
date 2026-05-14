@@ -37,18 +37,38 @@ export default function MenuItemForm({ onSubmit, menuItem, errors, registerRef, 
         setExtraIngredientPrices(menuItem.extraIngredientPrices || []);
         setStatus(menuItem.status || STATUS_OPTIONS[0].value);
     }, [menuItem]);
-
+    
     useEffect(() => {
         fetch(`${API_CATEGORIES}?all=true`).then(res => {
             res.json().then(data => {
-                setCategories(data.categories);
-        
-                if (!menuItem && data.categories.length > 0) {
-                    setCategory(data.categories[0]._id);
+                const fetchedCategories = data.categories || [];
+
+                setCategories(fetchedCategories);
+
+                if (fetchedCategories.length === 0) {
+                    setCategory("");
+                    return;
                 }
-            })
-        })
-    }, [menuItem])
+
+                // create mode
+                if (!menuItem) {
+                    setCategory(fetchedCategories[0]._id);
+                    return;
+                }
+
+                // edit mode
+                const categoryExists = fetchedCategories.some(
+                    c => c._id === menuItem.category
+                );
+
+                setCategory(
+                    categoryExists
+                        ? menuItem.category
+                        : fetchedCategories[0]._id
+                );
+            });
+        });
+    }, [menuItem]);
 
     function handleCancel() {
         if (loadingForm) return

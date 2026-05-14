@@ -118,8 +118,8 @@ export async function GET(req) {
   // Có phân trang
   const [categories, total, totalAll, totalOn, totalOff] = await Promise.all([
     Category.find(query).sort(sortOrder).skip(skip).limit(limit),
-    Category.countDocuments(),
     Category.countDocuments(query),
+    Category.countDocuments(),
     Category.countDocuments({ status: "on" }),
     Category.countDocuments({ status: "off" }),
   ]);

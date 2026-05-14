@@ -40,14 +40,25 @@ export default function OrdersPage() {
 
     const debouncedSearch = useDebounce(search, 400);
 
+    useEffect(() => {
+        if (page > totalPages && totalPages > 0) {
+            setPage(totalPages);
+        }
+    }, [page, totalPages]);
+
+
     // khi search thay đổi → reset về trang 1
     useEffect(() => {
-        setPage(1);
-    }, [debouncedSearch, sort,paid]);
+        if (page !== 1) {
+            setPage(1); // để effect của page tự fetch
+        } else {
+            fetchOrders(); // page đã = 1 rồi, fetch luôn
+        }
+    }, [debouncedSearch, sort, paid]);
 
     useEffect(() => {
         fetchOrders();
-    }, [debouncedSearch, sort, page,paid]);
+    }, [page]);
 
     function fetchOrders() {
         setLoadingOrders(true);
@@ -116,7 +127,7 @@ export default function OrdersPage() {
                     </ContainerProfileLeft>
                 </div>
             </div>
-             <TotalDashboard quantityAll={totalAll} textAll="Tổng hóa đơn" textOn="Hóa đơn đã thanh toán" textOff="Hóa đơn chưa thanh toán" quantityOn={totalOn} quantityOff={totalOff} />
+            <TotalDashboard quantityAll={totalAll} textAll="Tổng hóa đơn" textOn="Hóa đơn đã thanh toán" textOff="Hóa đơn chưa thanh toán" quantityOn={totalOn} quantityOff={totalOff} />
         </section>
     );
 }

@@ -10,7 +10,6 @@ import ButtonPrimary from "../buttons/ButtonPrimary";
 import { useLockBodyScroll } from "@/hooks/useLockBodyScroll";
 import { createPortal } from "react-dom";
 
-
 const MenuItems = (menuItem) => {
   const { image, name, description, basePrice, sizes, extraIngredientPrices } = menuItem
   const [
@@ -61,6 +60,8 @@ const MenuItems = (menuItem) => {
     }
   };
 
+  const isPizza = name?.toLowerCase().includes("pizza");
+
   // Choose option will increase the product price 
   // Ex: choose Size (Large,Medium, Small), Extra ingredient(Cheese, Pork,...) => Price Increase (basePrice + selectedPrice + ExtraIngredientPrice)
   let selectedPrice = basePrice;
@@ -87,10 +88,20 @@ const MenuItems = (menuItem) => {
               onClick={closePopup}>
               <CloseIcon />
             </button>
-            <div className="w-full">
-              <Image src={image} alt={name} width={200} height={200} className="object-cover object-center w-full h-full" />
+            <div className="w-[430px] h-full shrink-0 relative overflow-hidden">
+              <Image
+                src={image}
+                alt={name}
+                fill
+                className="object-cover"
+                style={isPizza ? {
+                  transform: 'scale(1.5)',
+                  objectPosition: 'right center',
+                  left: '-15%'
+                } : {}}
+              />
             </div>
-            <div className="">
+            <div className="flex flex-col flex-1">
               <div className="overflow-auto h-[calc(100%-80px)] p-5 w-[570px]">
                 <div>
                   <h3 className="text-2xl leading-[30px] font-semibold break-words">{name}</h3>

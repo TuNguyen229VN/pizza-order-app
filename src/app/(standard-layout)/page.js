@@ -1,80 +1,174 @@
 "use client"
 import Carousel from "@/components/carousel/Carousel";
-import Bars2 from "@/components/icons/Bars";
 import HomeMenu from "@/components/layout/HomeMenu";
 import SectionHeader from "@/components/layout/SectionHeader";
 import MenuItems from "@/components/menu/MenuItems";
 import Slider from "@/components/slider/Slider";
 import { API_CATEGORIES, API_MENU_ITEMS } from "@/constant/constant";
-import { useEffect, useState } from "react";
+import { getCategoryIcon } from "@/libs/getCategoryIcon";
+import { slugify } from "@/libs/slugify";
+import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
 
 export default function Home() {
-  const [categories, setCategories] = useState([])
-  const [menuItems, setMenuItems] = useState([])
-  useEffect(() => {
-    fetch(`${API_CATEGORIES}?all=true`).then(res => {
-      res.json().then(data => setCategories(data.categories))
-    })
+  const [categories, setCategories] = useState([]);
+  const [menuItems, setMenuItems] = useState([]);
+  const [hash, setHash] = useState("");
+  const sectionRefs = useRef({});
+  const isScrollingTo = useRef(false);
+  const [search, setSearch] = useState("");
+  const [activeSearch, setActiveSearch] = useState("");
+  const [openInputSearch, setOpenInputSearch] = useState(false);
+  const hashRef = useRef("");
 
-    fetch(`${API_MENU_ITEMS}?all=true`).then(res => {
-      res.json().then(data => setMenuItems(data.menuItems))
-    })
+  useEffect(() => {
+    fetch(`${API_CATEGORIES}?all=true`)
+      .then(res => res.json())
+      .then(data => setCategories(data.categories))
+
+    fetch(`${API_MENU_ITEMS}?all=true`)
+      .then(res => res.json())
+      .then(data => setMenuItems(data.menuItems))
   }, [])
+
+  // data load xong: init hash từ URL + scroll đến đúng vị trí
+  useEffect(() => {
+    if (!categories.length || !menuItems.length) return;
+
+    const urlHash = window.location.hash.replace("#", "");
+
+    if (urlHash) {
+      // Set active ngay
+      setHash(urlHash);
+      hashRef.current = urlHash;
+
+      // Scroll đến đúng vị trí có tính offset
+      const target = document.getElementById(urlHash);
+      const carousel = document.querySelector(".sticky");
+
+      if (target) {
+        const carouselHeight = carousel?.offsetHeight ?? 0;
+        const navbarHeight = 80;
+        const offset = navbarHeight + carouselHeight;
+        const top = target.getBoundingClientRect().top + window.scrollY - offset;
+        window.scrollTo({ top, behavior: "smooth" });
+      }
+    }
+  }, [categories, menuItems]);
+
+  //Scroll listener để update hash khi cuộn
+  useEffect(() => {
+    if (!categories.length || !menuItems.length) return;
+
+    const handleScroll = () => {
+      if (isScrollingTo.current) return;
+
+      const els = Object.values(sectionRefs.current).filter(Boolean);
+
+      const current = els.reduce((closest, el) => {
+        const rect = el.getBoundingClientRect();
+        const offset = rect.top - window.innerHeight * 0.3;
+        if (offset <= 0 && offset > (closest?.offset ?? -Infinity)) {
+          return { el, offset };
+        }
+        return closest;
+      }, null);
+
+      if (current?.el) {
+        const id = current.el.id;
+        if (id !== hashRef.current) {
+          hashRef.current = id;
+          setHash(id);
+          window.history.replaceState(null, "", `#${id}`);
+        }
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [categories, menuItems]);
 
   const listSlide = [
     { name: "slide1", url: "/images/slide1.webp" },
     { name: "slide2", url: "/images/slide2.webp" },
     { name: "slide3", url: "/images/slide3.webp" },
-    { name: "slide3", url: "/images/slide4.jpg" }
+    { name: "slide4", url: "/images/slide4.jpg" }
   ]
 
-  const carouselList = [
-    { name: "Pizza1", icons: <Bars2></Bars2> },
-    { name: "Pizza2", icons: <Bars2></Bars2> },
-    { name: "Pizza3", icons: <Bars2></Bars2> },
-    { name: "Pizza4", icons: <Bars2></Bars2> },
-    { name: "Pizza5", icons: <Bars2></Bars2> },
-    { name: "Pizza6", icons: <Bars2></Bars2> },
-    { name: "Pizza7", icons: <Bars2></Bars2> },
-    { name: "Pizza8", icons: <Bars2></Bars2> },
-    { name: "Pizza9", icons: <Bars2></Bars2> },
-    { name: "Pizza10", icons: <Bars2></Bars2> },
-    { name: "Pizza11", icons: <Bars2></Bars2> },
-    { name: "Pizza12", icons: <Bars2></Bars2> },
-    { name: "Pizza13", icons: <Bars2></Bars2> },
-    { name: "Pizza14", icons: <Bars2></Bars2> },
-    { name: "Pizza15", icons: <Bars2></Bars2> },
-    { name: "Pizza16", icons: <Bars2></Bars2> },
-    { name: "Pizza17", icons: <Bars2></Bars2> },
-  ]
+  const handleSearch = () => {
+    setActiveSearch(search.trim())
+  }
+
+  // Lọc theo activeSearch thay vì search
+  const filteredMenuItems = (categoryId) => {
+    return menuItems.filter(item => {
+      const matchCategory = item.category == categoryId && item.status === "on"
+      const matchSearch = activeSearch === "" ||
+        item.name.toLowerCase().includes(activeSearch.toLowerCase())
+      return matchCategory && matchSearch
+    })
+  }
+
+  // filteredCategories vẫn dùng activeSearch để ẩn cả section nếu không có item nào
+  const filteredCategories = categories.filter(c => {
+    if (c.status !== "on") return false
+    return filteredMenuItems(c._id).length > 0
+  })
+
+  const carouselList = filteredCategories.map(c => ({
+    name: c.name,
+    icons: getCategoryIcon(c.name),
+    slug: slugify(c.name)
+  }));
+
+
   return (
     <>
       <Slider listSlide={listSlide} />
-      <Carousel carouselList={carouselList} />
-      <HomeMenu />
+      <Carousel
+        carouselList={carouselList}
+        openInputSearch={openInputSearch}
+        setOpenInputSearch={setOpenInputSearch}
+        setHash={setHash}
+        hash={hash}
+        isScrollingTo={isScrollingTo}
+        search={search}
+        setSearch={setSearch}
+        handleSearch={handleSearch}
+        activeSearch={activeSearch}
+        setActiveSearch={setActiveSearch}
+      />
+      {!openInputSearch && <HomeMenu />}
       <section className='mt-8'>
-
-        {categories
-          .filter(c =>
-            c.status === "on" &&
-            menuItems.filter(item => item.category == c._id && item.status === "on").length > 0
-          )
-          .map(c => {
-            const items = menuItems.filter(item => item.category == c._id && item.status === "on");
-            return (
-              <div key={c._id}>
-                <div className="text-center">
-                  <SectionHeader mainHeader={c.name} urlHeader={c?.image} />
-                </div>
-                <div className="grid grid-cols-2 gap-6 mt-6 mb-12">
-                  {items.map(item => (
-                    <MenuItems key={item._id} {...item} />
-                  ))}
-                </div>
+        {filteredCategories.map(c => {
+          const items = filteredMenuItems(c._id)
+          return (
+            <div
+              key={c._id}
+              id={slugify(c.name)}
+              ref={el => sectionRefs.current[c._id] = el}
+            >
+              <div className="text-center">
+                <SectionHeader mainHeader={c.name} urlHeader={c?.image} />
               </div>
-            );
-          })
-        }
+              <div className="grid grid-cols-2 gap-6 mt-6 mb-12">
+                {items.map(item => (
+                  <MenuItems key={item._id} {...item} />
+                ))}
+              </div>
+            </div>
+          );
+        })}
+
+        {activeSearch && filteredCategories.length === 0 && (
+          <div className="flex flex-col items-center text-center">
+            <div className="w-[300px] h-[300px]">
+              <Image src={"/images/sorry.png"} alt="sorry" width={200} height={200} className="object-cover object-center w-full h-full" />
+            </div>
+            <p className="mt-6 text-2xl font-medium">Xin lỗi, không tìm thấy sản phẩm</p>
+            <p>Hãy thử lại với tìm kiếm mới </p>
+          </div>
+        )}
       </section>
     </>
   );
