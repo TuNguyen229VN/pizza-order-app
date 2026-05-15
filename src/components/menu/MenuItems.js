@@ -9,6 +9,8 @@ import InputCheckbox from "../input/InputCheckbox";
 import ButtonPrimary from "../buttons/ButtonPrimary";
 import { useLockBodyScroll } from "@/hooks/useLockBodyScroll";
 import { createPortal } from "react-dom";
+import { useDelivery } from "@/context/DeliveryContext";
+import DeliveryPickupModal from "@/modules/DeliveryPickupModal";
 
 const MenuItems = (menuItem) => {
   const { image, name, description, basePrice, sizes, extraIngredientPrices } = menuItem
@@ -18,13 +20,34 @@ const MenuItems = (menuItem) => {
   const [selectedExtras, setSelectedExtras] = useState([]);
   const [quantity, setQuantity] = useState(1)
   const [noteOrder, setNoteOrder] = useState("")
+  const [pendingAdd, setPendingAdd] = useState(false);
 
   const { addToCart } = useContext(CartContext);
-  const [showPopup, setShowPopup] = useState(false)
+  const { deliveryInfo } = useDelivery();
+  const [showPopup, setShowPopup] = useState(false);
+  const [open, setOpen] = useState(false)
 
   useLockBodyScroll(showPopup);
 
+  // useEffect(() => {
+  //   if (pendingAdd && deliveryInfo) {
+  //     setPendingAdd(false);
+  //     const hasOptions = sizes.length > 1 || extraIngredientPrices.length > 1;
+  //     if (hasOptions) {
+  //       setShowPopup(true);
+  //     } else {
+  //       addToCart(menuItem, selectedSize, selectedExtras, quantity, noteOrder);
+  //       setQuantity(1);
+  //     }
+  //   }
+  // }, [deliveryInfo, pendingAdd]);
+
   const handleAddToCartButtonClick = async () => {
+    if (!deliveryInfo) {
+      // setPendingAdd(true); 
+      setOpen(true);
+      return;
+    }
     const hasOptions = sizes.length > 1 || extraIngredientPrices.length > 1;
     if (hasOptions && !showPopup) {
       setShowPopup(true);
@@ -175,6 +198,10 @@ const MenuItems = (menuItem) => {
         , document.body
       )}
       <MenuItemTile onClick={() => setShowPopup(true)} onAddToCart={handleAddToCartButtonClick} {...menuItem} />
+      <DeliveryPickupModal
+        isOpen={open}
+        onClose={() => setOpen(false)}
+      />
     </>
   );
 };

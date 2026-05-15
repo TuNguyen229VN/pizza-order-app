@@ -13,6 +13,10 @@ module.exports = {
         primary: "#E71E23",
         secondary: "rgb(99, 115, 129)"
       },
+      backgroundImage: {
+        "primary-gradient":
+          "linear-gradient(135deg, #E63946 0%, #a4133c 100%)",
+      },
       keyframes: {
         bounceX: {
           "0%, 100%": {

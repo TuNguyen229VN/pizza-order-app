@@ -1,11 +1,11 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/layout/Header";
 import AppProvider from "@/components/AppContext";
 import { Toaster } from "react-hot-toast";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import Footer from "@/components/layout/Footer";
+import "leaflet/dist/leaflet.css";
+import { DeliveryProvider } from "@/context/DeliveryContext";
 
 const roboto = Inter({
   subsets: ["latin"],
@@ -24,13 +24,15 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="vi" className="scroll-smooth" suppressHydrationWarning={true}>
-      <body className={roboto.className}>     
-          <AppProvider>
+      <body className={roboto.className}>
+        <AppProvider>
+          <DeliveryProvider>
             <Toaster
               position="top-right"
             />
             {children}
-          </AppProvider>
+          </DeliveryProvider>
+        </AppProvider>
         {/* <Analytics />
         <SpeedInsights /> */}
       </body>

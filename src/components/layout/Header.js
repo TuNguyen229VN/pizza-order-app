@@ -11,37 +11,8 @@ import Bell from "../icons/Bell";
 import UserIcon from "../icons/UserIcon";
 import { totalQuantity } from "@/libs/totalQuantity";
 import ConfirmPopup from "../popup/ConfirmPopup";
-
-function AuthLinks({ status = "unauthenticated", userName }) {
-  if (status === "authenticated") {
-    return (
-      <>
-        <Link href={PROFILE_ROUTE} className="whitespace-nowrap" title={userName}>
-          Hello, {userName.split(" ")[0]}
-        </Link>
-        <button
-          onClick={() => signOut()}
-          className="px-8 py-2 text-white rounded-full bg-primary"
-        >
-          Logout
-        </button>
-      </>
-    );
-  }
-  if (status === "unauthenticated") {
-    return (
-      <>
-        <Link href={LOGIN_ROUTE}>Login</Link>
-        <Link
-          href={REGISTER_ROUTE}
-          className="px-8 py-2 text-white rounded-full bg-primary"
-        >
-          Register
-        </Link>
-      </>
-    );
-  }
-}
+import DeliveryPickupModal from "@/modules/DeliveryPickupModal";
+import { useDelivery } from "@/context/DeliveryContext";
 
 
 
@@ -50,19 +21,27 @@ const Header = () => {
   const status = session.status;
   const userData = session.data?.user;
   let userName = userData?.name || userData?.email;
+  const [open, setOpen] = useState(false);
   const { cartProducts } = useContext(CartContext);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
-
-
+  const { deliveryInfo } = useDelivery();
   return (
     <header className="sticky top-0 z-30 max-w-6xl p-4 mx-auto bg-white ">
       <div className="">
         <h1 className="sr-only">Pizza Teo ngon nhất TP.HCM</h1>
         <div className="grid items-center grid-cols-3">
-          <div className="min-w-0">
-            <p className="text-secondary">Mua mang về:</p>
-            <p className="font-medium truncate w-[400px]">Lorem ipsum dolor sit amet consectetur adipisicing elit. Praesentium earum velit, porro debitis molestiae iusto eligendi pariatur aliquid aliquam ipsum? Dolore perferendis itaque nihil. Quia enim corporis quod. Labore, dolore?</p>
+
+          <DeliveryPickupModal
+            isOpen={open}
+            onClose={() => setOpen(false)}
+          />
+          <div onClick={() => setOpen(true)} className="cursor-pointer">
+            {deliveryInfo ? <> <p className="text-secondary">{deliveryInfo?.mode === "delivery" ? "Mua mang về" : "Giao hàng tới"}</p>
+              <p className="font-medium truncate w-[400px]">{deliveryInfo?.address || deliveryInfo?.store.address}</p></>
+              : <p className="">Bạn đang ở đâu? </p>
+            }
           </div>
+
           <div className="flex justify-center">
             <Link href={HOME_ROUTE}>
               <Image src={"/logo.png"} width={180} height={180} alt="logo" />
@@ -100,19 +79,19 @@ const Header = () => {
                   </>
                 )}
                 <ConfirmPopup labelConfirm="Gọi ngay" label="Hỗ trợ khách hàng" labelDesc="gọi đến 1900 1822" onDelete={() => window.location.href = 'tel:0123456789'}>
-                <p className="py-3 pl-4 hover:font-medium hover:text-primary">Hỗ trợ khách hàng</p>
-              </ConfirmPopup>
-              {status === "authenticated" && (<>
-                <div className="w-full h-[1px] bg-gray-200"></div>
-                <ConfirmPopup label="Đăng xuất" labelConfirm="Đăng xuất" onDelete={() => signOut()}>
-                  <p className="py-3 pl-4 hover:font-medium hover:text-primary">Đăng xuất</p>
+                  <p className="py-3 pl-4 hover:font-medium hover:text-primary">Hỗ trợ khách hàng</p>
                 </ConfirmPopup>
-              </>)}
+                {status === "authenticated" && (<>
+                  <div className="w-full h-[1px] bg-gray-200"></div>
+                  <ConfirmPopup label="Đăng xuất" labelConfirm="Đăng xuất" onDelete={() => signOut()}>
+                    <p className="py-3 pl-4 hover:font-medium hover:text-primary">Đăng xuất</p>
+                  </ConfirmPopup>
+                </>)}
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
       {/* 
       <div className="flex items-center justify-between md:hidden">

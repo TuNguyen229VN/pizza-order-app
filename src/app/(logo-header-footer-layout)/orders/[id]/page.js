@@ -79,10 +79,11 @@ export default function OrderPage() {
 
                 <div className='grid grid-cols-2 gap-6 mt-6'>
                     <div className='p-6 border rounded-lg'>
-                        <h4 className='mb-6 text-2xl font-semibold'>Giao đến</h4>
+                        <h4 className='mb-6 text-2xl font-semibold'>{order?.deliveryInfo?.mode === "delivery" ? "Giao đến" : "Mua mang về tại"}</h4>
                         <p><span className='font-medium'>Khách hàng:</span> {order?.userName}</p>
                         <p> {order?.phone}</p>
-                        <p> {order?.streetAddress}, {order?.country}, {order?.city} </p>
+                        <p> {order?.deliveryInfo?.address || order?.deliveryInfo.store.address} </p>
+                        {order?.noteDelivery && <p className='text-sm italic text-secondary'>Ghi chú giao hàng: {order?.noteDelivery}</p>}
                     </div>
                     <div className='p-6 border rounded-lg'>
                         <h4 className='mb-6 text-2xl font-semibold'>Phương thức thanh toán</h4>
@@ -104,7 +105,7 @@ export default function OrderPage() {
                         </div>
                     </div>
                     <div></div>
-                    <CartSubtotal subtotal={subtotal} className={"border-none"} />
+                    <CartSubtotal subtotal={subtotal} deliveryFee={order?.deliveryInfo?.shipFee} className={"border-none"} />
                 </div>
 
                 {!showAdminLayout && from !== "orders" && <div className='p-6 mt-6 border rounded-lg'>

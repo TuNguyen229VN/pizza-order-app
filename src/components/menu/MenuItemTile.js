@@ -1,6 +1,7 @@
 import React from 'react'
 import AddToCartButton from './AddToCartButton';
 import Image from 'next/image';
+import { useDelivery } from '@/context/DeliveryContext';
 
 export default function MenuItemTile({ onClick, onAddToCart, ...item }) {
     const { image, description, name, basePrice,
@@ -8,10 +9,14 @@ export default function MenuItemTile({ onClick, onAddToCart, ...item }) {
     } = item;
     const isPizza = name?.toLowerCase().includes("pizza");
     const hasSizesOrExtras = sizes?.length > 1 || extraIngredientPrices?.length > 1;
-
+    const { deliveryInfo } = useDelivery();
     return (
         <div className="flex h-[230px] border rounded-2xl cursor-pointer overflow-hidden group transition duration-300 hover:shadow-[0_3px_8px_rgba(0,0,0,0.1)]" onClick={(e) => {
             if (e.target.closest('.add-to-cart-zone')) return;
+            if (!deliveryInfo) {
+                onAddToCart(); // mở modal địa chỉ
+                return;
+            }
             onClick();
         }}>
             <div className="w-[220px] h-full shrink-0 overflow-hidden relative">
@@ -23,7 +28,7 @@ export default function MenuItemTile({ onClick, onAddToCart, ...item }) {
                     className={`transition-transform duration-500 group-hover:scale-110 ${isPizza ? "object-contain scale-[1.4] group-hover:scale-[1.6]" : "object-cover scale-100"} `}
                     style={
                         isPizza ? { objectPosition: "left center", top: "20%", left: "-30%", } : {}
-                        }
+                    }
                 />
             </div>
             <div className='flex flex-col justify-between flex-1 w-full p-4 pl-2'>

@@ -4,17 +4,20 @@ import { Order } from "@/models/Order";
 import { MenuItem } from "@/models/MenuItem";
 import { getServerSession } from "next-auth";
 import { validateForm, validators } from "@/libs/validators";
+import { calcDeliveryInfo } from "@/utils/utils";
 
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY)
 
 export async function POST(req) {
     try {
         await connectDB();
-        const { cartProducts, infoProfileCheckout } = await req.json();
+        const { cartProducts, infoProfileCheckout, deliveryInfo, noteDelivery } = await req.json();
 
         // const session = await getServerSession(authOptions);
         // const userEmail = session?.user?.email;
-
+        if (!deliveryInfo) {
+            return Response.json({ message: "Vui lòng nhập địa chỉ để giao hàng hoặc mua mang về" }, { status: 400 });
+        }
         const { isValid, errors } = validateForm({
             name: {
                 value: infoProfileCheckout.name,
@@ -28,22 +31,26 @@ export async function POST(req) {
                 value: infoProfileCheckout.phone,
                 rules: [validators.required("số điện thoại"), validators.phone],
             },
-            streetAddress: {
-                value: infoProfileCheckout.streetAddress,
-                rules: [validators.required("địa chỉ nhà"), validators.minLength(2), validators.maxLength(200)],
-            },
-            city: {
-                value: infoProfileCheckout.city,
-                rules: [validators.required("thành phố"), validators.minLength(2), validators.maxLength(200)],
-            },
-            country: {
-                value: infoProfileCheckout.country,
-                rules: [validators.required("quận"), validators.minLength(2), validators.maxLength(200)],
-            },
+            noteDelivery: {
+                value: noteDelivery,
+                rules: [validators.maxLength(200)]
+            }
         })
 
         if (!isValid) {
             return Response.json({ message: "Dữ liệu không hợp lệ", errors }, { status: 400 });
+        }
+
+        let shipFee = 0;
+        if (deliveryInfo.mode === "delivery") {
+            if (!deliveryInfo.lat || !deliveryInfo.lng) {
+                return Response.json({ message: "Thiếu tọa độ giao hàng" }, { status: 400 });
+            }
+            const serverDeliveryInfo = calcDeliveryInfo(deliveryInfo.lat, deliveryInfo.lng);
+            if (!serverDeliveryInfo?.canDeliver) {
+                return Response.json({ message: "Địa chỉ ngoài vùng giao hàng" }, { status: 400 });
+            }
+            shipFee = serverDeliveryInfo.fee;
         }
 
         const stripeLineItems = [];
@@ -54,7 +61,7 @@ export async function POST(req) {
                 return Response.json({ message: 'Sản phẩm trong giỏ hàng không tồn tại' }, { status: 400 });
             }
 
-            if(productInfo.status !== "on") {
+            if (productInfo.status !== "on") {
                 return Response.json({ message: 'Sản phẩm trong giỏ hàng không còn bán' }, { status: 400 });
             }
 
@@ -96,6 +103,12 @@ export async function POST(req) {
             ...infoProfileCheckout,
             userEmail: infoProfileCheckout.email,
             userName: infoProfileCheckout.name,
+            noteDelivery,
+            deliveryInfo: {
+                ...deliveryInfo,
+                shipFee,
+                shipFeeText: deliveryInfo.mode === "pickup" ? "Miễn phí" : `${shipFee.toLocaleString('vi-VN')}đ`,
+            },
             cartProducts,
             paid: false,
         });
@@ -112,7 +125,7 @@ export async function POST(req) {
                     shipping_rate_data: {
                         display_name: "Delivery fee",
                         type: "fixed_amount",
-                        fixed_amount: { amount: 5000, currency: "vnd" }
+                        fixed_amount: { amount: shipFee, currency: "vnd" }
                     }
                 }
             ]

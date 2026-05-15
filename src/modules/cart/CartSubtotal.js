@@ -3,7 +3,7 @@ import React from 'react'
 
 const DISCOUNT_FEE = 0
 const DELIVERY_FEE = 5000
-export default function CartSubtotal({ subtotal, children,className }) {
+export default function CartSubtotal({deliveryFee=0, subtotal, children, className }) {
     return (
         <div className={`px-4 py-4 border rounded-2xl ${className}`}>
             {children}
@@ -17,12 +17,12 @@ export default function CartSubtotal({ subtotal, children,className }) {
             </div>
             <div className='flex items-center justify-between pb-4 mt-4 border-b'>
                 <p className='flex items-center gap-1'>Phí giao hàng <InfoIcon /></p>
-                <p className='font-semibold'>{DELIVERY_FEE.toLocaleString('vi-VN')} <span className='underline'>đ</span></p>
+                <p className='font-semibold'>{deliveryFee.toLocaleString('vi-VN')} <span className='underline'>đ</span></p>
             </div>
 
             <div className='flex items-center justify-between mt-4'>
                 <p>Tổng cộng</p>
-                <p className='text-3xl leading-[38px] font-bold'>{(subtotal + DELIVERY_FEE).toLocaleString('vi-VN')} <span className='underline'>đ</span></p>
+                <p className='text-3xl leading-[38px] font-bold'>{(subtotal + deliveryFee).toLocaleString('vi-VN')} <span className='underline'>đ</span></p>
             </div>
         </div>
     )

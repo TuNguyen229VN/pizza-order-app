@@ -23,6 +23,9 @@
 - **swiperjs**
 - **reacticon**
 - **react-google-recaptcha**
+- **OpenStreetMap Nominatim**
+- **leafletjs**
+
 ## Pages:
 
 - Home Page

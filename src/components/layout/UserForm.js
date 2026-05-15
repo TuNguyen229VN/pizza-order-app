@@ -19,8 +19,6 @@ export default function UserForm({ title, user, onSave, errors, registerRef, cle
   const [userName, setUserName] = useState(user?.name || "");
   const [image, setImage] = useState(user?.image || "");
   const [phone, setPhone] = useState(user?.phone || "");
-  const [streetAddress, setStreetAddress] = useState(user?.streetAddress || "");
-  const [postalCode, setPostalCode] = useState(user?.postalCode || "");
   const [city, setCity] = useState(user?.city || "");
   const [country, setCountry] = useState(user?.country || "");
   const [admin, setAdmin] = useState(user?.admin || false);
@@ -45,8 +43,6 @@ export default function UserForm({ title, user, onSave, errors, registerRef, cle
     setUserName(user.name || "");
     setImage(user.image || "");
     setPhone(user.phone || "");
-    setStreetAddress(user.streetAddress || "");
-    setPostalCode(user.postalCode || "");
     setCity(user.city || "");
     setCountry(user.country || "");
     setAdmin(user.admin || false);
@@ -60,8 +56,6 @@ export default function UserForm({ title, user, onSave, errors, registerRef, cle
 
   function handleAddressChange(propName, value) {
     if (propName === 'phone') setPhone(value);
-    if (propName === 'streetAddress') setStreetAddress(value);
-    if (propName === 'postalCode') setPostalCode(value);
     if (propName === 'city') setCity(value);
     if (propName === 'country') setCountry(value);
   }
@@ -80,8 +74,6 @@ export default function UserForm({ title, user, onSave, errors, registerRef, cle
     setImage(user?.image || "");
     setUserName(user?.name || "");
     setPhone(user?.phone || "");
-    setStreetAddress(user?.streetAddress || "");
-    setPostalCode(user?.postalCode || "");
     setCity(user?.city || "");
     setCountry(user?.country || "");
     setAdmin(user?.admin || false);
@@ -92,8 +84,7 @@ export default function UserForm({ title, user, onSave, errors, registerRef, cle
     clearError("userName");
     clearError("gender");
     clearError("birthday");
-    clearError("phone");
-    clearError("streetAddress");
+    clearError("phone")
     clearError("country");
     clearError("city");
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -104,7 +95,7 @@ export default function UserForm({ title, user, onSave, errors, registerRef, cle
     onSave(ev, {
       name: userName,
       image,           // ảnh cũ, để ProfilePage tự xử lý
-      phone, admin, streetAddress, postalCode, city, country, gender, birthday
+      phone, admin, city, country, gender, birthday
     }, pendingFile);
   }
 
@@ -152,13 +143,26 @@ export default function UserForm({ title, user, onSave, errors, registerRef, cle
           disabled={loadingForm}
           onChange={(e) => { setBirthday(e.target.value); clearError("birthday"); }}
         />
-        <AddressInput
+        <ValidatedInput
+          label="Số điện thoại"
+          name="phone"
+          value={phone || ""}
+          inputRef={registerRef("phone")}
+          error={errors.phone}
+          placeholder="Nhập số điện thoại của bạn"
+          disabled={loadingForm}
+          onChange={(e) => {
+            setPhone(e.target.value);
+            clearError("phone");
+          }}
+        />
+        {/* <AddressInput
           infoProps={{ phone, streetAddress, postalCode, city, country }}
           setInfoProps={handleAddressChange}
           errors={errors} registerRef={registerRef}
           clearError={clearError}
           disabled={loadingForm}
-        />
+        /> */}
 
         <ValidatedInput
           label="Email"

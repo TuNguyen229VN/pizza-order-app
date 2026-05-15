@@ -68,18 +68,6 @@ const ProfilePage = () => {
         value: data?.birthday,
         rules: [validators.required("ngày sinh"), validators.pastDate, validators.ageDate(10, 90)],
       },
-      streetAddress: {
-        value: data?.streetAddress,
-        rules: [validators.required("địa chỉ nhà"), validators.minLength(2), validators.maxLength(200)],
-      },
-      city: {
-        value: data?.city,
-        rules: [validators.required("thành phố"), validators.minLength(2), validators.maxLength(200)],
-      },
-      country: {
-        value: data?.country,
-        rules: [validators.required("quận"), validators.minLength(2), validators.maxLength(200)],
-      },
     });
     setLoadingForm(false);
     if (!isValid) return;
