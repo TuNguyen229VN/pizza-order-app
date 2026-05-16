@@ -26,6 +26,7 @@ const RegisterPage = () => {
   const { errors, setErrors, registerRef, handleValidate, clearError } = useFormValidate();
   const handleFormSubmit = async (e) => {
     e.preventDefault();
+    if (loginInProgress) return;
     setError("");
     setLoginInProgress(true);
     setUserCreated(false);

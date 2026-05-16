@@ -1,6 +1,6 @@
 "use client";
 import { SessionProvider } from "next-auth/react";
-import React, { createContext, useEffect, useState } from "react";
+import React, { createContext, useCallback, useEffect, useState } from "react";
 
 export const CartContext = createContext({});
 
@@ -141,10 +141,10 @@ const AppProvider = ({ children }) => {
     });
   }
 
-  function clearCart() {
-    setCartProducts([])
-    saveCartProductToLocalStorage([])
-  }
+ const clearCart = useCallback(() => {
+    setCartProducts([]);
+    saveCartProductToLocalStorage([]);
+}, []);
 
   function removeCartProduct(indexToRemove) {
     setCartProducts(prevCartProducts => {
@@ -155,13 +155,14 @@ const AppProvider = ({ children }) => {
 
   }
 
-  return <SessionProvider>
-    <CartContext.Provider value={{
-      cartProducts, setCartProducts, addToCart, clearCart, removeCartProduct, updateCart
-    }}>
-      {children}
-    </CartContext.Provider>
-  </SessionProvider>;
+  return (
+    <SessionProvider>
+      <CartContext.Provider value={{
+        cartProducts, setCartProducts, addToCart, clearCart, removeCartProduct, updateCart
+      }}>
+        {children}
+      </CartContext.Provider>
+    </SessionProvider>
+  );
 };
-
 export default AppProvider;

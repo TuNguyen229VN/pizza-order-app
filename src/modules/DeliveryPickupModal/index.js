@@ -292,7 +292,7 @@ export default function DeliveryPickupModal({ isOpen, onClose, onConfirm }) {
                                 <div className="pp-map">
                                     <PickupMap selected={pickupStore} onSelect={setPickupStore} />
                                 </div>
-                                <label className="pp-lbl" style={{ marginBottom: 8 }}>🏪 Chọn chi nhánh gần bạn:</label>
+                                <label className="pp-lbl" style={{ marginBottom: 8 }}>Chọn chi nhánh gần bạn:</label>
                                 <div className="pp-branches">
                                     {BRANCHES.map((b) => (
                                         <button

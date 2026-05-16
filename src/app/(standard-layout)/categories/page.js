@@ -211,7 +211,7 @@ const CategoriesPage = () => {
     <section>
       <HeaderCart text="Quản lý danh mục" />
       <div className="grid grid-cols-3 gap-6">
-        <UserTabs isAdmin={profileData} />
+        <UserTabs isAdmin={profileData.admin} />
         <div className="col-span-2">
           <ContainerProfileLeft >
             <div className="relative w-full h-[100px] group mb-4 ">

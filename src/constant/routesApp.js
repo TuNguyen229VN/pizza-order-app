@@ -11,6 +11,8 @@ const REGISTER_ROUTE = '/register';
 const MENU_ROUTE = '/menu';
 const CART_ROUTE = '/cart';
 const CHECKOUT_ROUTE = '/checkout';
+const CHANGEPASSWORD_ROUTE = '/profile/change-password';
+const NOTIFICATION_ROUTE = '/profile/notification';
 
 export {
   HOME_ROUTE,
@@ -26,4 +28,6 @@ export {
   MENU_ROUTE,
   CART_ROUTE,
   CHECKOUT_ROUTE,
+  CHANGEPASSWORD_ROUTE,
+  NOTIFICATION_ROUTE,
 }

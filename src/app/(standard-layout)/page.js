@@ -1,6 +1,7 @@
 "use client"
 import Carousel from "@/components/carousel/Carousel";
 import HomeMenu from "@/components/layout/HomeMenu";
+import NotFindLayout from "@/components/layout/NotFindLayout";
 import SectionHeader from "@/components/layout/SectionHeader";
 import MenuItems from "@/components/menu/MenuItems";
 import Slider from "@/components/slider/Slider";
@@ -161,13 +162,7 @@ export default function Home() {
         })}
 
         {activeSearch && filteredCategories.length === 0 && (
-          <div className="flex flex-col items-center text-center">
-            <div className="w-[300px] h-[300px]">
-              <Image src={"/images/sorry.png"} alt="sorry" width={200} height={200} className="object-cover object-center w-full h-full" />
-            </div>
-            <p className="mt-6 text-2xl font-medium">Xin lỗi, không tìm thấy sản phẩm</p>
-            <p>Hãy thử lại với tìm kiếm mới </p>
-          </div>
+          <NotFindLayout />
         )}
       </section>
     </>

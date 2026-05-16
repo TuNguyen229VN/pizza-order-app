@@ -24,12 +24,15 @@ export default function OrderPage() {
     const searchParams = useSearchParams();
 
     const from = searchParams.get("from");
+
     useEffect(() => {
         if (typeof window.console !== "undefined") {
             if (window.location.href.includes('clear-cart=1')) {
                 clearCart();
             }
         }
+    }, [clearCart]);
+    useEffect(() => {
         if (id) {
             setLoadingOrder(true);
             fetch(`${API_ORDERS}?_id=${id}`).then(res => {

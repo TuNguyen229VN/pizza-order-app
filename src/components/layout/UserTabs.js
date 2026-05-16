@@ -1,5 +1,5 @@
 "use client";
-import { CATEGORIES_ROUTE, MENU_ITEMS_ROUTE, ORDERS_ROUTE, PROFILE_ROUTE, USERS_ROUTE } from "@/constant/routesApp";
+import { CATEGORIES_ROUTE, CHANGEPASSWORD_ROUTE, MENU_ITEMS_ROUTE, NOTIFICATION_ROUTE, ORDERS_ROUTE, PROFILE_ROUTE, USERS_ROUTE } from "@/constant/routesApp";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
@@ -48,11 +48,11 @@ const UserTabs = ({ isAdmin }) => {
             </Link>
           </>
         )}
-        <Link className={`flex items-center p-4 gap-4 text-lg ${path === ORDERS_ROUTE ? "text-primary font-semibold" : ""}`} href={"#"}>
+        <Link className={`flex items-center p-4 gap-4 text-lg ${path === NOTIFICATION_ROUTE ? "text-primary font-semibold" : ""}`} href={NOTIFICATION_ROUTE}>
           <Bell />
           <span>Thông báo</span>
         </Link>
-        <Link className={`flex items-center p-4 gap-4 text-lg ${path === ORDERS_ROUTE ? "text-primary font-semibold" : ""}`} href={"#"}>
+        <Link className={`flex items-center p-4 gap-4 text-lg ${path === CHANGEPASSWORD_ROUTE ? "text-primary font-semibold" : ""}`} href={CHANGEPASSWORD_ROUTE}>
           <TbLockPassword className="w-6 h-6" />
           <span>Đổi mật khẩu</span>
         </Link>

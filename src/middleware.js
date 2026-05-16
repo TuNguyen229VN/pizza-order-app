@@ -2,8 +2,10 @@ import { getToken } from "next-auth/jwt";
 import { NextResponse } from "next/server";
 import {
     CATEGORIES_ROUTE,
+    CHANGEPASSWORD_ROUTE,
     LOGIN_ROUTE,
     MENU_ITEMS_ROUTE,
+    NOTIFICATION_ROUTE,
     ORDERS_ROUTE,
     PROFILE_ROUTE,
     REGISTER_ROUTE,
@@ -17,6 +19,8 @@ const withId = (route) => new RegExp(`^${route}/[^/]+$`)
 // route chỉ dành cho đã login
 const protectedRoutePatterns = [
     exact(PROFILE_ROUTE),
+    exact(CHANGEPASSWORD_ROUTE),
+    exact(NOTIFICATION_ROUTE),
     exact(CATEGORIES_ROUTE),
     exact(ORDERS_ROUTE),
     // withId(ORDERS_ROUTE),                    // /orders/123
@@ -82,6 +86,8 @@ export const config = {
     matcher: [
         // "/((?!api|_next/static|_next/image|favicon.ico|.*\\..*).*)",
         "/profile",
+        "/profile/change-password",
+        '/profile/notification',
         "/categories",
         "/orders",
         // "/orders/:id*",

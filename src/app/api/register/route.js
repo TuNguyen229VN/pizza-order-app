@@ -3,8 +3,7 @@ import bcrypt from "bcrypt";
 import { User } from "@/models/User";
 import { connectDB } from "@/libs/connectDB";
 import { validateForm, validators } from "@/libs/validators";
-
-const saltRounds = 10;
+import { SALT_ROUNDS } from "@/constant/constant";
 
 export async function POST(req) {
   try {
@@ -37,7 +36,7 @@ export async function POST(req) {
     }
 
     const notHashedPassword = body?.password;
-    const salt = bcrypt.genSaltSync(saltRounds);
+    const salt = bcrypt.genSaltSync(SALT_ROUNDS);
     body.password = bcrypt.hashSync(notHashedPassword, salt);
 
     const createdUser = await User.create(body);

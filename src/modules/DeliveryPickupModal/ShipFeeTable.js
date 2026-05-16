@@ -8,7 +8,7 @@ export default function ShipFeeTable({
 }) {
     return (
         <div className="pp-tier-table">
-            <div className="pp-tier-title">📋 Bảng phí ship</div>
+            <div className="pp-tier-title">Bảng phí ship</div>
             {SHIP_TIERS.map((t) => (
                 <div
                     key={t.label}
