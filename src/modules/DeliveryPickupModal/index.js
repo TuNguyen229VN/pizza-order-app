@@ -14,6 +14,7 @@ import { calcDeliveryInfo, hasHouseNumber } from "../../utils/utils";
 import Tabs from "./Tabs";
 import { useDelivery } from "@/context/DeliveryContext";
 import PickupMap from "./PickupMap";
+import { createPortal } from "react-dom";
 
 const HCM_BOUNDS = { minLat: 10.349, maxLat: 11.160, minLng: 106.364, maxLng: 107.031 };
 const inHCM = (lat, lng) =>
@@ -192,7 +193,7 @@ export default function DeliveryPickupModal({ isOpen, onClose, onConfirm }) {
 
     if (!isOpen) return null;
 
-    return (
+    return createPortal(
         <>
             <style>{STYLES}</style>
             <div className="pp-overlay" onClick={handleClose}>
@@ -326,5 +327,5 @@ export default function DeliveryPickupModal({ isOpen, onClose, onConfirm }) {
                 </div>
             </div>
         </>
-    );
+        , document.body);
 }
