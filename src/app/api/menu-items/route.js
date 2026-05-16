@@ -65,13 +65,21 @@ export async function GET(req) {
     const search = url.searchParams.get("search") || "";
     const status = url.searchParams.get("status"); // "on" | "off" | ""
     const sort = url.searchParams.get("sort") || "newest";
+    const category = url.searchParams.get("category") || "";
     const page = parseInt(url.searchParams.get("page") || "1");
     const limit = LIMITPAGE;
     const skip = (page - 1) * limit;
 
-    const query = search
-        ? { name: { $regex: search, $options: "i" }, status: status || { $in: ["on", "off"] } }
-        : { status: status || { $in: ["on", "off"] } };
+    // const query = search
+    //     ? { name: { $regex: search, $options: "i" }, status: status || { $in: ["on", "off"] } }
+    //     : { status: status || { $in: ["on", "off"] } };
+
+    const query = {
+        ...(search && { name: { $regex: search, $options: "i" } }),
+        status: status || { $in: ["on", "off"] },
+        ...(category && { category }), // 👈 thêm
+    };
+
 
     const sortMap = {
         newest: { createdAt: -1 },
@@ -89,11 +97,11 @@ export async function GET(req) {
     }
 
     // Có phân trang
-    const [menuItems, total,totalAll, totalOn, totalOff] = await Promise.all([
+    const [menuItems, total, totalAll, totalOn, totalOff] = await Promise.all([
         MenuItem.find(query).sort(sortOrder).skip(skip).limit(limit),
         MenuItem.countDocuments(query),
         MenuItem.countDocuments(),
-        MenuItem.countDocuments({  status: "on" }),
+        MenuItem.countDocuments({ status: "on" }),
         MenuItem.countDocuments({ status: "off" }),
     ]);
 

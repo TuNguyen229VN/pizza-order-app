@@ -1,31 +1,98 @@
 "use client";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import MenuItems from "../menu/MenuItems";
 import SectionHeader from "./SectionHeader";
 import { API_MENU_ITEMS } from "@/constant/constant";
+import { CartContext } from "../AppContext";
+import { Swiper, SwiperSlide } from 'swiper/react'
+import { Navigation } from "swiper/modules";
+import ChevronLeft from "../icons/ChevronLeft";
+import ChevronRight from "../icons/ChevronRight";
 
 const HomeMenu = () => {
-  const [bestSellers, setBestSellers] = useState([])
+  const [recommendMenuItems, setRecommendMenuItems] = useState([]);
+  const { cartProducts } = useContext(CartContext);
+  const [isBeginning, setIsBeginning] = useState(true);
+  const [isEnd, setIsEnd] = useState(false);
+  const swiperRef = useRef(null);
+  const prevRef = useRef(null);
+  const nextRef = useRef(null);
+
+
   useEffect(() => {
-    fetch(`${API_MENU_ITEMS}?all=true`).then(res => {
-      res.json().then(data => {
-        const bestSellers = data?.menuItems.slice(-3);
-        setBestSellers(bestSellers);
-      })
+    if (swiperRef.current && prevRef.current && nextRef.current) {
+      const swiper = swiperRef.current
+      swiper.params.navigation.prevEl = prevRef.current
+      swiper.params.navigation.nextEl = nextRef.current
+      swiper.navigation.destroy()
+      swiper.navigation.init()
+      swiper.navigation.update()
+    }
+  }, [])
+
+  useEffect(() => {
+    fetch(`${API_MENU_ITEMS + "/recommendations"}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ cartProducts }),
     })
+      .then((res) => res.json())
+      .then((data) => {
+        setRecommendMenuItems(data?.menuItems || []);
+      });
   }, [])
 
   return (
-    <section className="mt-4">
+    <section className="mt-3 mb-12">
       <div className="mb-4 text-center">
-        <SectionHeader subHeader={"check out"} mainHeader={"Our Best Sellers"} />
+        <SectionHeader subHeader={"check out"} mainHeader={"Bạn sẽ thích"} />
       </div>
-      <div className="grid grid-cols-2 gap-6">
-        {bestSellers.length > 0 && bestSellers.map((item) => (
-          <MenuItems key={item._id} {...item} />
-        ))}
+      <div className="relative w-full">
+        {!isBeginning && (
+          <div className="absolute top-0 left-0 z-10 w-16 h-full pointer-events-none bg-gradient-to-r from-white to-transparent" />
+        )}
+        {!isEnd && (
+          <div className="absolute top-0 right-0 z-10 w-16 h-full pointer-events-none bg-gradient-to-l from-white to-transparent" />
+        )}
+        <Swiper
+          slidesPerView={2.3}
+          slidesPerGroup={2}
+          spaceBetween={30}
+          onSwiper={(swiper) => {
+            swiperRef.current = swiper
+            setIsBeginning(swiper.isBeginning)
+            setIsEnd(swiper.isEnd)
+          }}
+          onSlideChange={(swiper) => {
+            setIsBeginning(swiper.isBeginning)
+            setIsEnd(swiper.isEnd)
+          }}
+          navigation={{
+            prevEl: prevRef.current,
+            nextEl: nextRef.current,
+          }}
+          modules={[Navigation]}>
 
+          {recommendMenuItems.length > 0 && recommendMenuItems.map((item) => (
+            <SwiperSlide key={item._id}>
+              <MenuItems  {...item} />
+            </SwiperSlide>
+          ))}
+        </Swiper>
+        <button
+          ref={prevRef}
+          className={`absolute z-20 flex items-center justify-center text-black -translate-y-1/2 bg-white rounded-full w-7 h-7 left-2 top-1/2 shadow transition-opacity ${isBeginning ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+        >
+          <ChevronLeft strokeWidth={3} />
+        </button>
+
+        <button
+          ref={nextRef}
+          className={`absolute z-20 flex items-center justify-center text-black -translate-y-1/2 bg-white rounded-full w-7 h-7 right-2 top-1/2 shadow transition-opacity ${isEnd ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+        >
+          <ChevronRight strokeWidth={3} />
+        </button>
 
       </div>
     </section>

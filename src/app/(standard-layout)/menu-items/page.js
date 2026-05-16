@@ -48,7 +48,7 @@ export default function MenuItemsPage() {
 
   const debouncedSearch = useDebounce(search, 400);
 
-
+  const [category, setCategory] = useState("");
   const [menuItems, setMenuItems] = useState([]);
   const { loading: profileLoading, data: profileData } = UseProfile();
 
@@ -65,7 +65,7 @@ export default function MenuItemsPage() {
     } else {
       fetchMenuItems();
     }
-  }, [debouncedSearch, sort, status]);
+  }, [debouncedSearch, sort, status, category]);
 
   useEffect(() => {
     fetchMenuItems();
@@ -82,6 +82,7 @@ export default function MenuItemsPage() {
       sort,
       page,
       status,
+      category,
     });
 
     fetch(`${API_MENU_ITEMS}?${params}`).then((res) =>
@@ -117,6 +118,10 @@ export default function MenuItemsPage() {
     })
   }
 
+  const categoryOptions = [
+    { value: "", label: "Tất cả danh mục" },
+    ...categories.map((cat) => ({ value: cat._id, label: cat.name })),
+  ];
 
   if (profileLoading) {
     return "Loading user info...";
@@ -141,6 +146,7 @@ export default function MenuItemsPage() {
                 <InputSearch search={search} setSearch={setSearch} placeholder="Nhập tên món ăn" />
                 <FilterSort sort={sort} setSort={setSort} listOption={listOption} />
                 <FilterSort sort={status} setSort={setStatus} listOption={statusOption} />
+                <FilterSort sort={category} setSort={setCategory} listOption={categoryOptions} />
               </div>
 
               <div className="overflow-x-auto">
