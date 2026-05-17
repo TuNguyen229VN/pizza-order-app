@@ -3,7 +3,7 @@ import AddToCartButton from './AddToCartButton';
 import Image from 'next/image';
 import { useDelivery } from '@/context/DeliveryContext';
 
-export default function MenuItemTile({ onClick, onAddToCart, ...item }) {
+export default function MenuItemTile({ onClick, onAddToCart, addToCartRef, addToCartFn, ...item }) {
     const { image, description, name, basePrice,
         sizes, extraIngredientPrices,
     } = item;
@@ -43,9 +43,11 @@ export default function MenuItemTile({ onClick, onAddToCart, ...item }) {
                         <p className='mt-1 text-2xl text-[#374151] font-semibold leading=[30px]'>{(basePrice + (sizes[0]?.price || 0)).toLocaleString('vi-VN')}<span className='ml-2 underline'>đ</span></p>
                     </div>
                     <AddToCartButton
+                        ref={addToCartRef}
                         image={image}
                         hasSizesOrExtras={hasSizesOrExtras}
-                        onClick={onAddToCart}
+                        onClick={onAddToCart}         
+                        onAddToCart={addToCartFn}    
                         basePrice={basePrice}
                         className="add-to-cart-zone"
                     />

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { CartContext } from "../AppContext";
 import MenuItemTile from "./MenuItemTile";
 import Image from "next/image";
@@ -29,22 +29,34 @@ const MenuItems = (menuItem) => {
 
   useLockBodyScroll(showPopup);
 
-  // useEffect(() => {
-  //   if (pendingAdd && deliveryInfo) {
-  //     setPendingAdd(false);
-  //     const hasOptions = sizes.length > 1 || extraIngredientPrices.length > 1;
-  //     if (hasOptions) {
-  //       setShowPopup(true);
-  //     } else {
-  //       addToCart(menuItem, selectedSize, selectedExtras, quantity, noteOrder);
-  //       setQuantity(1);
-  //     }
-  //   }
-  // }, [deliveryInfo, pendingAdd]);
+  const flyingBtnRef = useRef(null);
+
+  const doAddToCart = () => {
+    addToCart(menuItem, selectedSize, selectedExtras, quantity, noteOrder);
+    setSelectedSize(sizes?.[0] || null);
+    setSelectedExtras([]);
+    setShowPopup(false);
+    setNoteOrder("");
+    setQuantity(1);
+  }
+
+  useEffect(() => {
+    if (pendingAdd && deliveryInfo) {
+      setPendingAdd(false);
+      const hasOptions = sizes.length > 1 || extraIngredientPrices.length > 1;
+      if (hasOptions) {
+        setShowPopup(true);
+      } else {
+        flyingBtnRef.current?.triggerFly();
+        // addToCart(menuItem, selectedSize, selectedExtras, quantity, noteOrder);
+        // setQuantity(1);
+      }
+    }
+  }, [deliveryInfo, pendingAdd]);
 
   const handleAddToCartButtonClick = async () => {
     if (!deliveryInfo) {
-      // setPendingAdd(true); 
+      setPendingAdd(true);
       setOpen(true);
       return;
     }
@@ -178,16 +190,60 @@ const MenuItems = (menuItem) => {
                   <button onClick={() => handleQtyChange(1)}
                     className="flex items-center justify-center w-10 h-10 text-2xl border rounded-md text-primary">+</button>
                 </div>
-                <FlyingButton
+                {/* <FlyingButton
                   className="flex items-center justify-center w-full"
                   targetTop={'6%'}
                   targetLeft={'80%'}
-                  src={image}>
+                  src={image}
+                  >
                   <ButtonPrimary onClick={handleAddToCartButtonClick}>
                     <div
                       className="text-center text-white"
                     >
                       Thêm vào giỏ hàng <span className="inline-block w-2 h-2 mx-2 bg-white rounded-full"></span> {selectedPrice.toLocaleString('vi-VN')} <span className="underline">đ</span>
+                    </div>
+                  </ButtonPrimary>
+                </FlyingButton> */}
+                <FlyingButton
+                  ref={flyingBtnRef}
+                  className="flex items-center justify-center w-full"
+                  targetTop={'6%'}
+                  targetLeft={'80%'}
+                  src={image}
+                  onClick={() => {
+                    // chỉ chạy khi animation xong, chỉ dùng cho flow có deliveryInfo + showPopup
+                    addToCart(menuItem, selectedSize, selectedExtras, quantity, noteOrder);
+                    setSelectedSize(sizes?.[0] || null);
+                    setSelectedExtras([]);
+                    setNoteOrder("");
+                    setQuantity(1);
+                  }}
+                >
+                  <ButtonPrimary onClick={(e) => {
+                    if (!deliveryInfo) {
+                      // flow pendingAdd: không bay, chỉ mở modal
+                      e.stopPropagation(); // ← chặn bubble lên FlyingButton, không bay
+                      setPendingAdd(true);
+                      setOpen(true);
+                      return;
+                    }
+                    if (sizes.length > 1 || extraIngredientPrices.length > 1) {
+                      if (!showPopup) {
+                        e.stopPropagation(); // ← chặn bubble, chỉ mở popup
+                        setShowPopup(true);
+                        return;
+                      }
+                      // showPopup đang true → cho bubble lên FlyingButton → bay → addToCart
+                      setShowPopup(false); // đóng popup ngay trước khi bay
+                    } else {
+                      // không có options, cho bay luôn
+                      setShowPopup(false);
+                    }
+                  }}>
+                    <div className="text-center text-white">
+                      Thêm vào giỏ hàng{" "}
+                      <span className="inline-block w-2 h-2 mx-2 bg-white rounded-full" />{" "}
+                      {selectedPrice.toLocaleString('vi-VN')} <span className="underline">đ</span>
                     </div>
                   </ButtonPrimary>
                 </FlyingButton>
@@ -197,7 +253,12 @@ const MenuItems = (menuItem) => {
         </div>
         , document.body
       )}
-      <MenuItemTile onClick={() => setShowPopup(true)} onAddToCart={handleAddToCartButtonClick} {...menuItem} />
+      <MenuItemTile
+        addToCartRef={flyingBtnRef}
+        addToCartFn={doAddToCart}
+        onClick={() => setShowPopup(true)}
+        onAddToCart={handleAddToCartButtonClick}
+        {...menuItem} />
       <DeliveryPickupModal
         isOpen={open}
         onClose={() => setOpen(false)}

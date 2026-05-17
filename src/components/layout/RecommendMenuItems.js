@@ -10,7 +10,7 @@ import { Navigation } from "swiper/modules";
 import ChevronLeft from "../icons/ChevronLeft";
 import ChevronRight from "../icons/ChevronRight";
 
-const HomeMenu = () => {
+const RecommendMenuItems = ({sectionRefs }) => {
   const [recommendMenuItems, setRecommendMenuItems] = useState([]);
   const { cartProducts } = useContext(CartContext);
   const [isBeginning, setIsBeginning] = useState(true);
@@ -44,7 +44,7 @@ const HomeMenu = () => {
   }, [])
 
   return (
-    <section className="mt-3 mb-12">
+    <section id="recommendations" className="mt-3 mb-12" ref={el => sectionRefs.current["recommendations"] = el}>
       <div className="mb-4 text-center">
         <SectionHeader subHeader={"check out"} mainHeader={"Bạn sẽ thích"} />
       </div>
@@ -99,4 +99,4 @@ const HomeMenu = () => {
   );
 };
 
-export default HomeMenu;
+export default RecommendMenuItems;

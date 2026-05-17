@@ -80,7 +80,8 @@ export const validators = {
 
   email: (value) => {
     const emailRegex = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
-    if (value && !emailRegex.test(value)) return "Vui lòng nhập email hợp lệ";
+    const trimmed = value?.trim();
+    if (trimmed && !emailRegex.test(trimmed)) return "Vui lòng nhập email hợp lệ";
     return null;
   },
   phone: (value) => {

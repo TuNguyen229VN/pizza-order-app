@@ -9,14 +9,15 @@ import { Navigation } from 'swiper/modules'
 import ChevronLeft from '../icons/ChevronLeft'
 import ChevronRight from '../icons/ChevronRight'
 import CloseIcon from '../icons/CloseIcon'
+import { AiOutlineLike } from 'react-icons/ai'
 
-export default function Carousel({ carouselList = [], setHash, hash, isScrollingTo, search, setSearch, handleSearch, activeSearch, setActiveSearch,openInputSearch,setOpenInputSearch }) {
+export default function Carousel({ carouselList = [], setHash, hash, isScrollingTo, search, setSearch, handleSearch, activeSearch, setActiveSearch, openInputSearch, setOpenInputSearch }) {
     const prevRef = useRef(null);
     const nextRef = useRef(null);
     const swiperRef = useRef(null);
     const [isBeginning, setIsBeginning] = useState(true)
     const [isEnd, setIsEnd] = useState(false)
- 
+
     useEffect(() => {
         if (swiperRef.current && prevRef.current && nextRef.current) {
             const swiper = swiperRef.current
@@ -117,6 +118,29 @@ export default function Carousel({ carouselList = [], setHash, hash, isScrolling
                                 <SearchIcon />
                                 <p>Tìm kiếm</p>
                             </div>
+                        </SwiperSlide>
+                        <SwiperSlide>
+                            <Link
+                                href={`#recommendations`}
+                                onClick={(e) => {
+                                    e.preventDefault(); // chặn href scroll mặc định, dùng scrollIntoView thay thế
+                                    handleClick("recommendations");
+                                }}
+                                className={`relative flex flex-col items-center justify-center gap-1 pb-3 uppercase transition-colors duration-300 ${"recommendations" === hash
+                                    ? "text-primary"
+                                    : ""
+                                    }`}
+                            >
+                                <AiOutlineLike className='w-6 h-6'/>
+                                <p>Bạn sẽ thích</p>
+
+                                <span
+                                    className={`absolute bottom-0 left-0 h-[6px] w-full rounded-full bg-primary transition-all duration-300 ${"recommendations" === hash
+                                        ? "opacity-100 scale-x-100"
+                                        : "opacity-0 scale-x-0"
+                                        }`}
+                                />
+                            </Link>
                         </SwiperSlide>
                         {carouselList.length > 0 && carouselList.map(carouselItem => (
                             <SwiperSlide key={carouselItem.name}>

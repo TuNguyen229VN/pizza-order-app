@@ -3,7 +3,7 @@ import ButtonPrimary from "@/components/buttons/ButtonPrimary";
 import ValidatedInput from "@/components/input/ValidatedInput";
 import Thumbnail from "@/components/layout/Thumbnail";
 import Loader from "@/components/loading/Loader";
-import { HOME_ROUTE, REGISTER_ROUTE } from "@/constant/routesApp";
+import { FORGOTPASSWORD_ROUTE, HOME_ROUTE, REGISTER_ROUTE } from "@/constant/routesApp";
 import { useFormValidate } from "@/hooks/useFormValidate";
 import { validators } from "@/libs/validators";
 import { signIn } from "next-auth/react";
@@ -61,6 +61,7 @@ const LoginPage = () => {
         {error && <p className="px-20 mb-4 text-sm text-center text-primary">{error}</p>}
         <form className="mx-auto " method="post" onSubmit={handleFormSubmit}>
           <ValidatedInput
+            id="email"
             label="Email"
             name="email"
             value={email || ""}
@@ -81,7 +82,7 @@ const LoginPage = () => {
             disabled={loginInProgress}
             onChange={(e) => { setPassword(e.target.value); clearError("password"); }}
           />
-          <Link href="#" className="flex items-center justify-end w-full mt-4 underline text-primary">Quên mật khẩu</Link>
+          <Link href={FORGOTPASSWORD_ROUTE} className="flex items-center justify-end w-full mt-4 underline text-primary">Quên mật khẩu</Link>
           <ButtonPrimary className={"mt-4 flex items-center justify-center h"} disabled={loginInProgress} type="submit">
             {loginInProgress ? <Loader size={22} /> : <span>Đăng nhập</span>}
           </ButtonPrimary>

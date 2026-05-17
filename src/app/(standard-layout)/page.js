@@ -1,6 +1,5 @@
 "use client"
 import Carousel from "@/components/carousel/Carousel";
-import HomeMenu from "@/components/layout/HomeMenu";
 import NotFindLayout from "@/components/layout/NotFindLayout";
 import SectionHeader from "@/components/layout/SectionHeader";
 import MenuItems from "@/components/menu/MenuItems";
@@ -8,8 +7,8 @@ import Slider from "@/components/slider/Slider";
 import { API_CATEGORIES, API_MENU_ITEMS } from "@/constant/constant";
 import { getCategoryIcon } from "@/libs/getCategoryIcon";
 import { slugify } from "@/libs/slugify";
-import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import RecommendMenuItems from "@/components/layout/RecommendMenuItems";
 
 export default function Home() {
   const [categories, setCategories] = useState([]);
@@ -139,7 +138,7 @@ export default function Home() {
         activeSearch={activeSearch}
         setActiveSearch={setActiveSearch}
       />
-      {!openInputSearch && <HomeMenu />}
+      {!openInputSearch && <RecommendMenuItems sectionRefs={sectionRefs} />}
       <section className='mt-8'>
         {filteredCategories.map(c => {
           const items = filteredMenuItems(c._id)

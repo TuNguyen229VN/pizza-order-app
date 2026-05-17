@@ -13,6 +13,7 @@ const CART_ROUTE = '/cart';
 const CHECKOUT_ROUTE = '/checkout';
 const CHANGEPASSWORD_ROUTE = '/profile/change-password';
 const NOTIFICATION_ROUTE = '/profile/notification';
+const FORGOTPASSWORD_ROUTE = '/forgot-password';
 
 export {
   HOME_ROUTE,
@@ -30,4 +31,5 @@ export {
   CHECKOUT_ROUTE,
   CHANGEPASSWORD_ROUTE,
   NOTIFICATION_ROUTE,
+  FORGOTPASSWORD_ROUTE,
 }

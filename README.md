@@ -25,6 +25,9 @@
 - **react-google-recaptcha**
 - **OpenStreetMap Nominatim**
 - **leafletjs**
+- **resend**
+- **react-email/components**
+- **@react-email/render**
 
 ## Pages:
 

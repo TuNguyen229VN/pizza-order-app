@@ -89,29 +89,30 @@ const RegisterPage = () => {
 
   };
   return (
-    <section className="p-4 mt-8 w-[480px] mx-auto ">
+    <><HeaderCart text="Tạo tài khoản" urlLink={LOGIN_ROUTE}></HeaderCart>
+      <section className="p-4  w-[480px] mx-auto ">
 
-      {userCreated && (
-        <div className="">
-          <div className="w-20 h-20 mx-auto">
-            <Image src={"/images/firework.png"} alt="firework" width={200} height={200} className="object-cover object-center w-full h-full" />
-          </div>
-          <div className="mt-4 mb-2 font-medium">
-            <div className="flex items-center justify-center gap-1 ">
-              <Image src={"/images/party-popper.png"} alt="firework" width={200} height={200} className="object-cover object-center w-4 h-4" />
-              <p>Chúc mừng!</p>
+        {userCreated && (
+          <div className="mt-8">
+            <div className="w-20 h-20 mx-auto">
+              <Image src={"/images/firework.png"} alt="firework" width={200} height={200} className="object-cover object-center w-full h-full" />
             </div>
-            <p className="mx-auto mb-4 w-max">Tài khoản của bạn đã được tạo thành công</p>
+            <div className="mt-4 mb-2 font-medium">
+              <div className="flex items-center justify-center gap-1 ">
+                <Image src={"/images/party-popper.png"} alt="firework" width={200} height={200} className="object-cover object-center w-4 h-4" />
+                <p>Chúc mừng!</p>
+              </div>
+              <p className="mx-auto mb-4 w-max">Tài khoản của bạn đã được tạo thành công</p>
+            </div>
+            <Link href={HOME_ROUTE}>
+              <ButtonPrimary>
+                Quay về trang chủ
+              </ButtonPrimary>
+            </Link>
           </div>
-          <Link href={HOME_ROUTE}>
-            <ButtonPrimary>
-              Quay về trang chủ
-            </ButtonPrimary>
-          </Link>
-        </div>
-      )}
-      {!userCreated &&
-        <><HeaderCart text="Tạo tài khoản" urlLink={LOGIN_ROUTE}></HeaderCart>
+        )}
+        {!userCreated &&
+
 
           <div className="p-4 mt-8 border rounded-2xl w-[510px] mx-auto shadow-sm">
             {error && <p className="px-20 mb-4 text-sm text-center text-primary">{error}</p>}
@@ -174,9 +175,9 @@ const RegisterPage = () => {
               <Image src={"/google.png"} alt={""} width={24} height={24} />
               Đăng nhập bằng Google
             </button>
-          </div>
-        </>}
-    </section>
+          </div>}
+      </section>
+    </>
   );
 };
 

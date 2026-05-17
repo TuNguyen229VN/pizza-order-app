@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import {
     CATEGORIES_ROUTE,
     CHANGEPASSWORD_ROUTE,
+    FORGOTPASSWORD_ROUTE,
     LOGIN_ROUTE,
     MENU_ITEMS_ROUTE,
     NOTIFICATION_ROUTE,
@@ -47,7 +48,7 @@ const adminRoutePatterns = [
 ];
 
 // chưa login thì route này
-const authRoutes = [LOGIN_ROUTE, REGISTER_ROUTE];
+const authRoutes = [LOGIN_ROUTE, REGISTER_ROUTE, FORGOTPASSWORD_ROUTE];
 
 function isProtectedRoute(pathname) {
     return protectedRoutePatterns.some(pattern => pattern.test(pathname));
@@ -99,5 +100,6 @@ export const config = {
         "/users/:id*",
         "/login",
         "/register",
+        "/forgot-password",
     ],
 };
