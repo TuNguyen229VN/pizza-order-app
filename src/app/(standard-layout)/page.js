@@ -151,7 +151,7 @@ export default function Home() {
               <div className="text-center">
                 <SectionHeader mainHeader={c.name} urlHeader={c?.image} />
               </div>
-              <div className="grid grid-cols-2 gap-6 mt-6 mb-12">
+              <div className="grid gap-6 mt-6 mb-12 md:grid-cols-2">
                 {items.map(item => (
                   <MenuItems key={item._id} {...item} />
                 ))}

@@ -1,11 +1,10 @@
-// app/api/auth/forgot-password/route.js
 import bcrypt from "bcrypt";
-import transporter from "@/libs/mailer";  // ← thay Resend
+import crypto from "crypto";
+import transporter from "@/libs/mailer";
 import { User } from "@/models/User";
-import { SALT_ROUNDS } from "@/constant/constant";
 import { ResetToken } from "@/models/Resettoken";
 import { connectDB } from "@/libs/connectDB";
-import { renderResetPasswordEmail } from "@/mail/ResetPasswordEmail"; // xem bước 6
+import { renderResetPasswordEmail } from "@/mail/ResetPasswordEmail";
 
 export async function POST(req) {
     try {
@@ -13,23 +12,30 @@ export async function POST(req) {
         const email = body?.email;
 
         if (!email || typeof email !== "string") {
-            return Response.json({ message: "Email không hợp lệ." }, { status: 400 });
+            return Response.json(
+                { message: "Email không hợp lệ." },
+                { status: 400 }
+            );
         }
 
         await connectDB();
 
-        const user = await User.findOne({ email: email.toLowerCase().trim() });
+        const user = await User.findOne({
+            email: email.toLowerCase().trim(),
+        });
 
         if (!user) {
-            return Response.json({
-                message: "Nếu email tồn tại, bạn sẽ nhận được hướng dẫn trong ít phút.",
-            });
+            return Response.json(
+                { message: "Email không tồn tại trong hệ thống" },
+                { status: 400 }
+            );
         }
 
         if (!user.password) {
             return Response.json(
                 {
-                    message: "Tài khoản này được liên kết với Google. Vui lòng đăng nhập bằng Google.",
+                    message:
+                        "Tài khoản này được liên kết với Google. Vui lòng đăng nhập bằng Google.",
                     provider: "google",
                 },
                 { status: 400 }
@@ -38,9 +44,9 @@ export async function POST(req) {
 
         await ResetToken.deleteMany({ userId: user._id });
 
-        const rawToken = generateToken();
-        const salt = bcrypt.genSaltSync(SALT_ROUNDS);
-        const hashedToken = bcrypt.hashSync(rawToken, salt);
+        const rawToken = crypto.randomBytes(48).toString("hex");
+
+        const hashedToken = await bcrypt.hash(rawToken, 10);
 
         await ResetToken.create({
             userId: user._id,
@@ -49,30 +55,29 @@ export async function POST(req) {
             used: false,
         });
 
-        const resetUrl = `${process.env.NEXTAUTH_URL}/reset-password?token=${rawToken}&id=${user._id}`;
+        const resetUrl =
+            `${process.env.NEXTAUTH_URL}/reset-password?token=${encodeURIComponent(rawToken)}&id=${user._id}`;
 
-        // ← Thay resend bằng nodemailer
         await transporter.sendMail({
             from: `"Pizza Teo" <${process.env.GMAIL_USER}>`,
-            to: user.email, // ← gửi thẳng cho user luôn
+            to: user.email,
+            replyTo: process.env.GMAIL_USER,
             subject: "Đặt lại mật khẩu",
-            html: renderResetPasswordEmail({ resetUrl, userName: user.name }),
+            html: renderResetPasswordEmail({
+                resetUrl,
+                userName: user.name || "bạn",
+            }),
         });
 
         return Response.json({
-            message: "Nếu email tồn tại, bạn sẽ nhận được hướng dẫn trong ít phút.",
+            message: "Đã gửi email đặt lại mật khẩu.",
         });
     } catch (error) {
         console.log("Forgot Password Error:", error);
-        return Response.json({ message: "Lỗi server." }, { status: 500 });
-    }
-}
 
-function generateToken(length = 48) {
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    let token = "";
-    for (let i = 0; i < length; i++) {
-        token += chars.charAt(Math.floor(Math.random() * chars.length));
+        return Response.json(
+            { message: "Lỗi server." },
+            { status: 500 }
+        );
     }
-    return token;
 }

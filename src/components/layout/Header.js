@@ -37,7 +37,7 @@ const Header = () => {
           />
           <div onClick={() => setOpen(true)} className="cursor-pointer">
             {deliveryInfo ? <> <p className="text-secondary">{deliveryInfo?.mode === "delivery" ? "Mua mang về" : "Giao hàng tới"}</p>
-              <p className="font-medium truncate w-[400px]">{deliveryInfo?.address || deliveryInfo?.store.address}</p></>
+              <p className="font-medium truncate w-[400px]">{deliveryInfo?.address || deliveryInfo?.store.name}</p></>
               : <p className="">Bạn đang ở đâu? </p>
             }
           </div>

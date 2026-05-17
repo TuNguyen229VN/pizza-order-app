@@ -33,7 +33,7 @@ export default function MenuItemTile({ onClick, onAddToCart, addToCartRef, addTo
             </div>
             <div className='flex flex-col justify-between flex-1 w-full p-4 pl-2'>
                 <div>
-                    <h4 className='text-2xl font-semibold leading-[30px] capitalize text-[#374151]'>{name}</h4>
+                    <h4 className='text-2xl font-semibold leading-[30px] capitalize text-[#374151] line-clamp-2'>{name}</h4>
                     <p className='text-lg leading-[26px] text-secondary line-clamp-1'>{description}</p>
                     {/* <div className='px-1 py-[2px] mt-1 text-white rounded bg-primary w-max'>New</div> */}
                 </div>

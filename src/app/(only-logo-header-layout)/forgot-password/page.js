@@ -9,6 +9,7 @@ import { LOGIN_ROUTE } from "@/constant/routesApp";
 import ButtonPrimary from "@/components/buttons/ButtonPrimary";
 import Loader from "@/components/loading/Loader";
 import { validators } from "@/libs/validators";
+import { API_FORGOT_PASSWORD } from "@/constant/constant";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -29,7 +30,7 @@ export default function ForgotPasswordPage() {
     setMessage("");
 
     try {
-      const res = await fetch("/api/auth/forgot-password", {
+      const res = await fetch(API_FORGOT_PASSWORD, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
@@ -46,7 +47,7 @@ export default function ForgotPasswordPage() {
         setMessage(data.message);
         return;
       }
-
+      
       setStatus("success");
       setMessage(data.message);
     } catch {

@@ -65,7 +65,7 @@ export default function OrderTable({ orders, loadingForm = false }) {
                                 </td>
                                 <td className="px-5 py-4">
                                     <p className='w-[100px]'>
-                                        Alo
+                                       {order?.deliveryInfo?.mode === "delivery"?"Giao hàng" : "Mua mang về"}
                                     </p>
                                 </td>
                                 <td className="sticky right-0 z-10 px-6 py-4 text-right bg-white ">

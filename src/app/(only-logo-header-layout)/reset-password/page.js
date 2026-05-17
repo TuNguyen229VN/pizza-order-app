@@ -9,6 +9,7 @@ import Loader from "@/components/loading/Loader";
 import ButtonPrimary from "@/components/buttons/ButtonPrimary";
 import { validators } from "@/libs/validators";
 import Image from "next/image";
+import { API_RESET_PASSWORD } from "@/constant/constant";
 function ResetPasswordContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
@@ -51,7 +52,7 @@ function ResetPasswordContent() {
         setMessage("");
 
         try {
-            const res = await fetch("/api/auth/reset-password", {
+            const res = await fetch(API_RESET_PASSWORD, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ token, userId, password }),
