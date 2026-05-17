@@ -1,6 +1,6 @@
 "use client";
 // app/reset-password/page.jsx
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import ValidatedInput from "@/components/input/ValidatedInput";
@@ -76,68 +76,70 @@ export default function ResetPasswordPage() {
     }
 
     return (
-        <div >
-            <div className="p-4 mx-auto border shadow-sm rounded-2xl w-[510px] mt-8">
-                <div style={styles.header}>
-                    <h1 style={styles.title}>Tạo mật khẩu mới</h1>
-                    <p style={styles.subtitle}>Nhập mật khẩu mới cho tài khoản của bạn.</p>
-                </div>
-
-                {status !== "success" ? (
-                    <div style={styles.successBox}>
-                        <div className="w-20 h-20 mx-auto mb-4">
-                            <Image src={"/images/firework.png"} alt="firework" width={200} height={200} className="object-cover object-center w-full h-full" />
-                        </div>
-                        <h2 style={styles.successTitle}>Cập nhật thành công!</h2>
-                        <p style={styles.successText}>{message}</p>
-                        <p style={styles.successNote}>Đang chuyển hướng về trang đăng nhập...</p>
+        <Suspense fallback={<div>Đang tải...</div>}>
+            <div >
+                <div className="p-4 mx-auto border shadow-sm rounded-2xl w-[510px] mt-8">
+                    <div style={styles.header}>
+                        <h1 style={styles.title}>Tạo mật khẩu mới</h1>
+                        <p style={styles.subtitle}>Nhập mật khẩu mới cho tài khoản của bạn.</p>
                     </div>
-                ) : (
-                    <form onSubmit={handleSubmit} style={styles.form}>
-                        <ValidatedInput
-                            label="Mật khẩu mới"
-                            name="password"
-                            type="password"
-                            value={password || ""}
-                            inputRef={registerRef("password")}
-                            error={errors.password}
-                            placeholder="Nhập mật khẩu của bạn"
-                            disabled={status === "loading" || !token}
-                            onChange={(e) => { setPassword(e.target.value); clearError("password"); }}
-                        />
-                        <ValidatedInput
-                            label="Nhập lại mật khẩu"
-                            name="confirm"
-                            type="password"
-                            value={confirm || ""}
-                            inputRef={registerRef("confirm")}
-                            error={errors.confirm}
-                            placeholder="Nhập mật khẩu của bạn"
-                            disabled={status === "loading" || !token}
-                            onChange={(e) => { setConfirm(e.target.value); clearError("confirm"); }}
-                        />
 
-                        {/* Error alert */}
-                        {status === "error" && message && (
-                            <div style={{ ...styles.alert, ...styles.alertError }}>{message}</div>
-                        )}
+                    {status === "success" ? (
+                        <div style={styles.successBox}>
+                            <div className="w-20 h-20 mx-auto mb-4">
+                                <Image src={"/images/firework.png"} alt="firework" width={200} height={200} className="object-cover object-center w-full h-full" />
+                            </div>
+                            <h2 style={styles.successTitle}>Cập nhật thành công!</h2>
+                            <p style={styles.successText}>{message}</p>
+                            <p style={styles.successNote}>Đang chuyển hướng về trang đăng nhập...</p>
+                        </div>
+                    ) : (
+                        <form onSubmit={handleSubmit} style={styles.form}>
+                            <ValidatedInput
+                                label="Mật khẩu mới"
+                                name="password"
+                                type="password"
+                                value={password || ""}
+                                inputRef={registerRef("password")}
+                                error={errors.password}
+                                placeholder="Nhập mật khẩu của bạn"
+                                disabled={status === "loading" || !token}
+                                onChange={(e) => { setPassword(e.target.value); clearError("password"); }}
+                            />
+                            <ValidatedInput
+                                label="Nhập lại mật khẩu"
+                                name="confirm"
+                                type="password"
+                                value={confirm || ""}
+                                inputRef={registerRef("confirm")}
+                                error={errors.confirm}
+                                placeholder="Nhập mật khẩu của bạn"
+                                disabled={status === "loading" || !token}
+                                onChange={(e) => { setConfirm(e.target.value); clearError("confirm"); }}
+                            />
 
-                        <ButtonPrimary
-                            type="submit"
-                            disabled={status === "loading" || !token || !userId}
-                        >
-                            {status === "loading" ? <Loader size={20} /> : "Đặt lại mật khẩu"}
-                        </ButtonPrimary>
-                    </form>
-                )}
+                            {/* Error alert */}
+                            {status === "error" && message && (
+                                <div style={{ ...styles.alert, ...styles.alertError }}>{message}</div>
+                            )}
 
-                <p style={styles.footer}>
-                    <Link href="/forgot-password" className="font-medium text-primary">
-                        ← Yêu cầu link mới
-                    </Link>
-                </p>
+                            <ButtonPrimary
+                                type="submit"
+                                disabled={status === "loading" || !token || !userId}
+                            >
+                                {status === "loading" ? <Loader size={20} /> : "Đặt lại mật khẩu"}
+                            </ButtonPrimary>
+                        </form>
+                    )}
+
+                    <p style={styles.footer}>
+                        <Link href="/forgot-password" className="font-medium text-primary">
+                            ← Yêu cầu link mới
+                        </Link>
+                    </p>
+                </div>
             </div>
-        </div>
+        </Suspense>
     );
 }
 
