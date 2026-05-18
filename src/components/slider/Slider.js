@@ -20,7 +20,7 @@ export default function Slider({ listSlide = [] }) {
     return (
         <div className="relative">
             <Swiper
-                className='w-full h-[442px] overflow-hidden rounded-2xl'
+                className='w-full h-[240px] md:h-[442px] overflow-hidden rounded-2xl'
                 spaceBetween={30}
                 effect={'fade'}
                 fadeEffect={{ crossFade: true }}
@@ -51,7 +51,7 @@ export default function Slider({ listSlide = [] }) {
                 {listSlide.length > 0 && listSlide.map(listItem => (
                     <SwiperSlide key={listItem.name}>
                         <Link href={`#${listItem.name}`} >
-                            <Image src={listItem.url} alt={listItem.name} width={500} height={500} className='object-cover object-center w-full h-full' />
+                            <Image src={listItem.url} alt={listItem.name} fill className='absolute object-cover object-center w-full h-full' />
                         </Link>
                     </SwiperSlide>
                 )
@@ -59,16 +59,16 @@ export default function Slider({ listSlide = [] }) {
                 {/* Custom Buttons */}
                 <button
                     ref={prevRef}
-                    className="absolute z-10 flex items-center justify-center text-black -translate-y-1/2 bg-white rounded-full w-7 h-7 left-2 top-1/2"
+                    className="absolute z-10 flex items-center justify-center w-5 h-5 text-black -translate-y-1/2 bg-white rounded-full md:w-7 md:h-7 left-2 top-1/2"
                 >
-                    <ChevronLeft strokeWidth={3} />
+                    <ChevronLeft strokeWidth={3} className="w-4 h-4 md:w-6 md:h-6"/>
                 </button>
 
                 <button
                     ref={nextRef}
-                    className="absolute z-10 flex items-center justify-center text-black -translate-y-1/2 bg-white rounded-full w-7 h-7 right-2 top-1/2"
+                    className="absolute z-10 flex items-center justify-center w-5 h-5 text-black -translate-y-1/2 bg-white rounded-full md:w-7 md:h-7 right-2 top-1/2"
                 >
-                    <ChevronRight strokeWidth={3} />
+                    <ChevronRight strokeWidth={3} className="w-4 h-4 md:w-6 md:h-6"/>
                 </button>
             </Swiper>
         </div>

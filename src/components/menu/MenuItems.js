@@ -12,7 +12,7 @@ import { createPortal } from "react-dom";
 import { useDelivery } from "@/context/DeliveryContext";
 import DeliveryPickupModal from "@/modules/DeliveryPickupModal";
 
-const MenuItems = (menuItem) => {
+const MenuItems = ({ recomStyle, ...menuItem }) => {
   const { image, name, description, basePrice, sizes, extraIngredientPrices } = menuItem
   const [
     selectedSize, setSelectedSize
@@ -117,34 +117,32 @@ const MenuItems = (menuItem) => {
       {showPopup && createPortal(
         <div onClick={closePopup} className="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
           <div onClick={ev => ev.stopPropagation()}
-            className="flex max-w-screen-lg h-[560px] overflow-hidden bg-white rounded-xl relative">
+            className="flex flex-col w-full md:flex-row max-w-screen-lg h-full md:h-[560px] overflow-hidden bg-white md:rounded-xl relative overflow-y-auto">
             <button
-              className="absolute right-5 top-5"
+              className="absolute z-10 bg-white rounded-full right-11 top-5"
               onClick={closePopup}>
               <CloseIcon />
             </button>
-            <div className="w-[430px] h-full shrink-0 relative overflow-hidden">
+            <div className="w-full md:w-[430px] h-[310px] md:h-full shrink-0 relative overflow-hidden">
               <Image
                 src={image}
                 alt={name}
                 fill
-                className="object-cover"
+                className={`object-cover ${isPizza?"md:scale-150 left-0 md:!-left-[15%]":""}`}
                 style={isPizza ? {
-                  transform: 'scale(1.5)',
                   objectPosition: 'right center',
-                  left: '-15%'
                 } : {}}
               />
             </div>
             <div className="flex flex-col flex-1">
-              <div className="overflow-auto h-[calc(100%-80px)] p-5 w-[570px]">
+              <div className="overflow-auto h-[calc(100%-80px)] p-5 lg:w-[570px]">
                 <div>
-                  <h3 className="text-2xl leading-[30px] font-semibold break-words">{name}</h3>
-                  <p className="mt-2 break-words text-secondary">{description}</p>
+                  <h3 className="md:text-2xl leading-[30px] font-semibold break-words absolute md:static top-0 left-0 bg-white md:bg-none w-full md:w-max p-3 md:p-0">{name}</h3>
+                  <p className="text-sm break-words md:mt-2 md:text-base text-secondary">{description}</p>
                 </div>
                 {sizes?.length > 0 && (
-                  <div className="mt-7 ">
-                    <h3 className="font-semibold ">Kích thước</h3>
+                  <div className="mt-4 md:mt-7 ">
+                    <h3 className="font-medium md:font-semibold ">Kích thước</h3>
                     <div className="flex mt-2 overflow-hidden text-center border rounded-md">
                       {sizes.map(size => (
                         <InputRadio key={size._id} name={size.name} onClick={() => setSelectedSize(size)} selectedSize={selectedSize?.name} />
@@ -153,8 +151,8 @@ const MenuItems = (menuItem) => {
                   </div>
                 )}
                 {extraIngredientPrices?.length > 0 && (
-                  <div className="mt-6">
-                    <h3 className="font-semibold mb-7">Topping thêm</h3>
+                  <div className="mt-4 md:mt-6">
+                    <h3 className="mb-5 font-medium md:font-semibold md:mb-7">Topping thêm</h3>
                     {extraIngredientPrices.map(extraThing => {
                       const sel = selectedExtras.find(e => e._id === extraThing._id);
                       const isChecked = !!sel;
@@ -166,8 +164,8 @@ const MenuItems = (menuItem) => {
                 )}
                 <div className="mt-6">
                   <div className="flex items-center justify-between mb-5">
-                    <h3 className="font-semibold">Ghi chú (tùy chọn)</h3>
-                    <span className="text-sm whitespace-nowrap">{noteOrder?.length}/72</span>
+                    <h3 className="font-medium md:font-semibold">Ghi chú (tùy chọn)</h3>
+                    <span className="text-xs md:text-sm whitespace-nowrap">{noteOrder?.length}/72</span>
                   </div>
                   <div className="relative">
                     <input
@@ -182,11 +180,11 @@ const MenuItems = (menuItem) => {
                   </div>
                 </div>
               </div>
-              <div className="sticky flex items-center justify-between w-full px-5 bottom-2 gap-9">
-                <div className="flex items-center justify-center gap-6">
+              <div className="sticky flex flex-col items-center justify-between w-full gap-4 px-5 py-4 bg-white border-t-4 border-gray-300 md:border-t-0 md:flex-row bottom-2 lg:gap-9 md:py-0">
+                <div className="flex items-center justify-center gap-4 lg:gap-6">
                   <button onClick={() => handleQtyChange(-1)}
                     className="flex items-center justify-center w-10 h-10 text-2xl border rounded-md text-primary">−</button>
-                  <span className="w-5 font-medium text-center">{quantity}</span>
+                  <span className="w-5 text-sm font-medium text-center md:text-base">{quantity}</span>
                   <button onClick={() => handleQtyChange(1)}
                     className="flex items-center justify-center w-10 h-10 text-2xl border rounded-md text-primary">+</button>
                 </div>
@@ -258,7 +256,9 @@ const MenuItems = (menuItem) => {
         addToCartFn={doAddToCart}
         onClick={() => setShowPopup(true)}
         onAddToCart={handleAddToCartButtonClick}
-        {...menuItem} />
+         recomStyle={recomStyle}
+        {...menuItem}
+        />
       <DeliveryPickupModal
         isOpen={open}
         onClose={() => setOpen(false)}

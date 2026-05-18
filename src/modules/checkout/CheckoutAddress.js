@@ -20,7 +20,8 @@ export default function CheckoutAddress({ infoProps, setInfoProps, errors, regis
                 onClose={() => setOpen(false)}
             />
             <div className='mt-9'>
-                <p className='mb-2 text-lg font-medium'>{deliveryInfo?.address || deliveryInfo?.store.address || ""}</p>
+                <p className='mb-2 text-lg font-medium'>{deliveryInfo?.address || deliveryInfo?.store.name || ""}</p>
+                {deliveryInfo?.store&&<p className='text-lg '>{deliveryInfo?.store?.address}</p>}
                 <div className="flex items-center justify-between my-4">
                     <h3 className="text-sm font-medium">Ghi chú (tùy chọn)</h3>
                     <span className="text-sm whitespace-nowrap">{noteDelivery?.length}/200</span>
@@ -37,42 +38,6 @@ export default function CheckoutAddress({ infoProps, setInfoProps, errors, regis
                         clearError("noteDelivery");
                     }}
                 />
-                {/* <ValidatedInput
-                    label="Ghi chú"
-                    name="streetAddress"
-                    value={streetAddress || ""}
-                    inputRef={registerRef("streetAddress")}
-                    error={errors.streetAddress}
-                    placeholder="Ghi chú cho giao hàng, ví dụ: tầng phòng..."
-                    onChange={(e) => {
-                        setInfoProps('streetAddress', e.target.value);
-                        clearError("streetAddress");
-                    }}
-                /> */}
-                {/*   <ValidatedInput
-                    label="Quận"
-                    name="country"
-                    value={country || ""}
-                    inputRef={registerRef("country")}
-                    error={errors.country}
-                    placeholder="Nhập tên quận của bạn"
-                    onChange={(e) => {
-                        setInfoProps('country', e.target.value);
-                        clearError("country");
-                    }}
-                />
-                <ValidatedInput
-                    label="Thành phố"
-                    name="city"
-                    value={city || ""}
-                    inputRef={registerRef("city")}
-                    error={errors.city}
-                    placeholder="Nhập tên thành phố của bạn"
-                    onChange={(e) => {
-                        setInfoProps('city', e.target.value);
-                        clearError("city");
-                    }}
-                /> */}
             </div>
 
         </div>

@@ -3,7 +3,7 @@ import { RiDrinksLine } from "react-icons/ri";
 import { LuSalad } from "react-icons/lu";
 import { GiChickenLeg } from "react-icons/gi";
 import { AiOutlineLike } from "react-icons/ai";
-export function getCategoryIcon(name = "", className = "w-6 h-6") {
+export function getCategoryIcon(name = "", className = "w-4 h-4 md:w-6 md:h-6") {
     const lower = name.toLowerCase();
     if (lower.includes("pizza")) return <CiPizza className={className} />;
     if (lower.includes("drink") || lower.includes("thức uống")) return <RiDrinksLine className={className} />;

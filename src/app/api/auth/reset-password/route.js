@@ -4,6 +4,7 @@ import { User } from "@/models/User";
 import { SALT_ROUNDS } from "@/constant/constant";
 import { ResetToken } from "@/models/Resettoken";
 import { connectDB } from "@/libs/connectDB";
+import { validateForm, validators } from "@/libs/validators";
 
 export async function POST(req) {
     try {
@@ -13,12 +14,15 @@ export async function POST(req) {
         if (!token || !userId || !password) {
             return Response.json({ message: "Thiếu thông tin yêu cầu." }, { status: 400 });
         }
-
-        if (password.length < 6) {
-            return Response.json(
-                { message: "Mật khẩu phải có ít nhất 6 ký tự." },
-                { status: 400 }
-            );
+        const { isValid, errors } = validateForm({
+            password: {
+                value: body?.password,
+                rules: [validators.required("mật khẩu"), validators.minLength(6), validators.passwordStrength(2)],
+            },
+        })
+        
+        if (!isValid) {
+            return Response.json({ message: "Dữ liệu không hợp lệ", errors }, { status: 400 });
         }
 
         await connectDB();

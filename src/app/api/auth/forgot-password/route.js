@@ -5,18 +5,23 @@ import { User } from "@/models/User";
 import { ResetToken } from "@/models/Resettoken";
 import { connectDB } from "@/libs/connectDB";
 import { renderResetPasswordEmail } from "@/mail/ResetPasswordEmail";
+import { validateForm, validators } from "@/libs/validators";
 
 export async function POST(req) {
     try {
         const body = await req.json();
         const email = body?.email;
 
-        if (!email || typeof email !== "string") {
-            return Response.json(
-                { message: "Email không hợp lệ." },
-                { status: 400 }
-            );
+        const { isValid, errors } = validateForm({
+            email: {
+                value: body?.email,
+                rules: [validators.required("email"), validators.email],
+            },
+        })
+        if (!isValid) {
+            return Response.json({ message: "Dữ liệu không hợp lệ", errors }, { status: 400 });
         }
+
 
         await connectDB();
 

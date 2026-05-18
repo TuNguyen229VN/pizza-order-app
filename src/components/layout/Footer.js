@@ -5,8 +5,8 @@ import React from 'react'
 export default function Footer() {
     return (
         <footer className='max-w-6xl pb-4 mx-auto'>
-            <section className='grid grid-cols-3 gap-8 bg-[#F3F4F6] py-12 px-7 rounded-2xl mt-8'>
-                <div className='flex flex-col justify-between'>
+            <section className='grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-8 bg-[#F3F4F6] px-5 py-8 md:py-12 md:px-7 rounded-2xl mt-8'>
+                <div className='flex flex-col justify-between col-span-2 md:col-span-1'>
                     <Image src={"/logo.png"} alt='logofooter' width={200} height={200} />
                 </div>
                 <div>
@@ -29,7 +29,7 @@ export default function Footer() {
                     </div>
                 </div>
             </section>
-            <section className='flex items-center justify-between pb-4 mt-5'>
+            <section className='flex flex-col-reverse items-center justify-between gap-3 pb-4 mt-5 text-sm md:gap-0 md:flex-row md:text-base'>
                 <p>Phiên bản 1.0.0</p>
                 <div className='flex items-center justify-between gap-12'>
                     <p>Điều khoản và quyền lợi</p>

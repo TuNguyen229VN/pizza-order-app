@@ -5,16 +5,15 @@ const SectionHeader = ({ urlHeader, mainHeader }) => {
   return (
     <div>
       <div className="flex w-full">
-        <h2 className="flex relative text-2xl font-semibold uppercase leading-[30px] text-blackHeader w-full items-center gap-4 before:content-[''] before:w-full before:h-[1px] before:bg-[rgb(223,228,234)] before:flex-1 after:content-['']  after:w-full after:h-[1px] after:bg-[rgb(223,228,234)]    after:flex-1">{mainHeader}</h2>
+        <h2 className="flex relative text-lg md:text-2xl font-semibold uppercase leading-[30px] text-blackHeader w-full items-center gap-4 before:content-[''] before:w-full before:h-[1px] before:bg-[rgb(223,228,234)] before:flex-1 after:content-['']  after:w-full after:h-[1px] after:bg-[rgb(223,228,234)]    after:flex-1">{mainHeader}</h2>
       </div>
-      {urlHeader && <div className=" mt-3 w-full h-[146px]">
+      {urlHeader && <div className="relative mt-3 w-full h-[96px] md:h-[146px] overflow-hidden">
         <Image
           src={urlHeader || "/images/slide4.jpg"}
           alt={mainHeader}
-          width={1200}
-          height={300}
+          fill
           quality={100}
-          className="object-cover object-center w-full h-full"
+          className="absolute object-cover object-center w-full h-full"
         />
       </div>}
     </div>

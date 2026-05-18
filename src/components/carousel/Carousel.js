@@ -62,7 +62,7 @@ export default function Carousel({ carouselList = [], setHash, hash, isScrolling
                     }}
                 >
                     <div className='relative flex-1 min-w-0'>
-                        <input type="text" placeholder='Tìm kiếm mọi thứ bạn muốn' className='w-full py-3 pl-5 pr-4 border rounded-md focus:border-black' value={search} onChange={(ev) => setSearch(ev.target.value)} onKeyDown={(e) => {
+                        <input type="text" placeholder='Tìm kiếm mọi thứ bạn muốn' className='w-full py-3 pl-5 pr-4 text-sm border rounded-md focus:border-black md:text-base' value={search} onChange={(ev) => setSearch(ev.target.value)} onKeyDown={(e) => {
                             if (e.key === "Enter") handleSearch()
                         }} />
                         {search?.length > 0 && <button className="absolute p-[1px] border rounded-full right-3 top-2/4 -translate-y-2/4 cursor-pointer" onClick={() => {
@@ -70,8 +70,8 @@ export default function Carousel({ carouselList = [], setHash, hash, isScrolling
                             setActiveSearch("")
                         }}><CloseIcon className="w-4 h-4" /></button>}
                     </div>
-                    <button className='w-[180px] px-6 py-3 duration-300 font-medium text-white rounded-md bg-primary hover:bg-red-400' onClick={handleSearch}>Tìm kiếm</button>
-                    <button onClick={() => {
+                    <button className='md:w-[180px] px-6 py-3 duration-300 font-medium text-white rounded-md bg-primary hover:bg-red-400 text-sm md:text-base' onClick={handleSearch}>Tìm kiếm</button>
+                    <button className='text-sm md:text-base' onClick={() => {
                         setSearch("");
                         setActiveSearch("");
                         setOpenInputSearch(false);
@@ -95,9 +95,22 @@ export default function Carousel({ carouselList = [], setHash, hash, isScrolling
                     )}
 
                     <Swiper
-                        slidesPerView={7.7}
+                        slidesPerView={3.7}
                         slidesPerGroup={3}
-                        spaceBetween={30}
+                        spaceBetween={10}
+                        breakpoints={{
+                            480: {
+                                slidesPerView: 4.7,
+                            },
+                            640: {
+                                slidesPerView: 5.7,
+                                spaceBetween: 20,
+                            },
+                            768: {
+                                slidesPerView: 7.7,
+                                spaceBetween: 30,
+                            }
+                        }}
                         onSwiper={(swiper) => {
                             swiperRef.current = swiper
                             setIsBeginning(swiper.isBeginning)
@@ -114,8 +127,8 @@ export default function Carousel({ carouselList = [], setHash, hash, isScrolling
                         modules={[Navigation]}
                     >
                         <SwiperSlide>
-                            <div className='flex flex-col items-center justify-center gap-1 pb-3 cursor-pointer' onClick={() => setOpenInputSearch(true)}>
-                                <SearchIcon />
+                            <div className='flex flex-col items-center justify-center gap-1 pb-3 text-sm cursor-pointer md:text-base' onClick={() => setOpenInputSearch(true)}>
+                                <SearchIcon className="w-4 h-4 md:w-6 md:h-6" />
                                 <p>Tìm kiếm</p>
                             </div>
                         </SwiperSlide>
@@ -131,8 +144,8 @@ export default function Carousel({ carouselList = [], setHash, hash, isScrolling
                                     : ""
                                     }`}
                             >
-                                <AiOutlineLike className='w-6 h-6'/>
-                                <p>Bạn sẽ thích</p>
+                                <AiOutlineLike className="w-4 h-4 md:w-6 md:h-6" />
+                                <p className='text-sm md:text-base'>Bạn sẽ thích</p>
 
                                 <span
                                     className={`absolute bottom-0 left-0 h-[6px] w-full rounded-full bg-primary transition-all duration-300 ${"recommendations" === hash
@@ -156,7 +169,7 @@ export default function Carousel({ carouselList = [], setHash, hash, isScrolling
                                         }`}
                                 >
                                     {carouselItem.icons}
-                                    <p>{carouselItem.name}</p>
+                                    <p className='text-sm md:text-base'>{carouselItem.name}</p>
 
                                     <span
                                         className={`absolute bottom-0 left-0 h-[6px] w-full rounded-full bg-primary transition-all duration-300 ${carouselItem.slug === hash
@@ -171,16 +184,16 @@ export default function Carousel({ carouselList = [], setHash, hash, isScrolling
 
                     <button
                         ref={prevRef}
-                        className={`absolute z-20 flex items-center justify-center text-black -translate-y-1/2 bg-white rounded-full w-7 h-7 left-2 top-1/2 shadow transition-opacity ${isBeginning ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+                        className={`absolute z-20 flex items-center justify-center text-black -translate-y-1/2 bg-white rounded-full w-5 h-5 md:w-7 md:h-7 left-2 top-1/2 shadow transition-opacity ${isBeginning ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
                     >
-                        <ChevronLeft strokeWidth={3} />
+                        <ChevronLeft strokeWidth={3} className="w-4 h-4 md:w-6 md:h-6" />
                     </button>
 
                     <button
                         ref={nextRef}
-                        className={`absolute z-20 flex items-center justify-center text-black -translate-y-1/2 bg-white rounded-full w-7 h-7 right-2 top-1/2 shadow transition-opacity ${isEnd ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+                        className={`absolute z-20 flex items-center justify-center text-black -translate-y-1/2 bg-white rounded-full w-5 h-5 md:w-7 md:h-7 right-2 top-1/2 shadow transition-opacity ${isEnd ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
                     >
-                        <ChevronRight strokeWidth={3} />
+                        <ChevronRight strokeWidth={3} className="w-4 h-4 md:w-6 md:h-6" />
                     </button>
                 </div>
             </div>

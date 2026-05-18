@@ -36,7 +36,7 @@ const Header = () => {
             onClose={() => setOpen(false)}
           />
           <div onClick={() => setOpen(true)} className="cursor-pointer">
-            {deliveryInfo ? <> <p className="text-secondary">{deliveryInfo?.mode === "delivery" ? "Mua mang về" : "Giao hàng tới"}</p>
+            {deliveryInfo ? <> <p className="text-secondary">{deliveryInfo?.mode === "delivery" ? "Giao hàng tới" : "Mua mang về"}</p>
               <p className="font-medium truncate w-[400px]">{deliveryInfo?.address || deliveryInfo?.store.name}</p></>
               : <p className="">Bạn đang ở đâu? </p>
             }

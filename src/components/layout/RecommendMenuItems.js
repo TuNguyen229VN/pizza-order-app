@@ -10,7 +10,7 @@ import { Navigation } from "swiper/modules";
 import ChevronLeft from "../icons/ChevronLeft";
 import ChevronRight from "../icons/ChevronRight";
 
-const RecommendMenuItems = ({sectionRefs }) => {
+const RecommendMenuItems = ({ sectionRefs }) => {
   const [recommendMenuItems, setRecommendMenuItems] = useState([]);
   const { cartProducts } = useContext(CartContext);
   const [isBeginning, setIsBeginning] = useState(true);
@@ -44,7 +44,7 @@ const RecommendMenuItems = ({sectionRefs }) => {
   }, [])
 
   return (
-    <section id="recommendations" className="mt-3 mb-12" ref={el => sectionRefs.current["recommendations"] = el}>
+    <section id="recommendations" className="mt-3 mb-8 md:mb-12" ref={el => sectionRefs.current["recommendations"] = el}>
       <div className="mb-4 text-center">
         <SectionHeader subHeader={"check out"} mainHeader={"Bạn sẽ thích"} />
       </div>
@@ -56,9 +56,18 @@ const RecommendMenuItems = ({sectionRefs }) => {
           <div className="absolute top-0 right-0 z-10 w-16 h-full pointer-events-none bg-gradient-to-l from-white to-transparent" />
         )}
         <Swiper
-          slidesPerView={2.3}
-          slidesPerGroup={2}
-          spaceBetween={30}
+          slidesPerView={1.3}
+          slidesPerGroup={1}
+          spaceBetween={10}
+          breakpoints={{
+            640: {
+              slidesPerView: 2.3,
+              slidesPerGroup: 2
+            },
+            768: {
+              spaceBetween: 20
+            }
+          }}
           onSwiper={(swiper) => {
             swiperRef.current = swiper
             setIsBeginning(swiper.isBeginning)
@@ -76,22 +85,22 @@ const RecommendMenuItems = ({sectionRefs }) => {
 
           {recommendMenuItems.length > 0 && recommendMenuItems.map((item) => (
             <SwiperSlide key={item._id}>
-              <MenuItems  {...item} />
+              <MenuItems recomStyle={"recomStyle"}  {...item} />
             </SwiperSlide>
           ))}
         </Swiper>
         <button
           ref={prevRef}
-          className={`absolute z-20 flex items-center justify-center text-black -translate-y-1/2 bg-white rounded-full w-7 h-7 left-2 top-1/2 shadow transition-opacity ${isBeginning ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+          className={`absolute z-20 flex items-center justify-center text-black -translate-y-1/2 bg-white rounded-full w-5 h-5 md:w-7 md:h-7 left-2 top-1/2 shadow transition-opacity ${isBeginning ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
         >
-          <ChevronLeft strokeWidth={3} />
+          <ChevronLeft strokeWidth={3} className="w-4 h-4 md:w-6 md:h-6" />
         </button>
 
         <button
           ref={nextRef}
-          className={`absolute z-20 flex items-center justify-center text-black -translate-y-1/2 bg-white rounded-full w-7 h-7 right-2 top-1/2 shadow transition-opacity ${isEnd ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+          className={`absolute z-20 flex items-center justify-center text-black -translate-y-1/2 bg-white rounded-full w-5 h-5 md:w-7 md:h-7 right-2 top-1/2 shadow transition-opacity ${isEnd ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
         >
-          <ChevronRight strokeWidth={3} />
+          <ChevronRight strokeWidth={3} className="w-4 h-4 md:w-6 md:h-6" />
         </button>
 
       </div>

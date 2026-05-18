@@ -85,7 +85,8 @@ export default function OrderPage() {
                         <h4 className='mb-6 text-2xl font-semibold'>{order?.deliveryInfo?.mode === "delivery" ? "Giao đến" : "Mua mang về tại"}</h4>
                         <p><span className='font-medium'>Khách hàng:</span> {order?.userName}</p>
                         <p> {order?.phone}</p>
-                        <p> {order?.deliveryInfo?.address || order?.deliveryInfo.store.address} </p>
+                        <p className='font-medium'> {order?.deliveryInfo?.address || order?.deliveryInfo.store.name} </p>
+                        {order?.deliveryInfo.store && <p>{order?.deliveryInfo.store.address}</p>}
                         {order?.noteDelivery && <p className='text-sm italic text-secondary'>Ghi chú giao hàng: {order?.noteDelivery}</p>}
                     </div>
                     <div className='p-6 border rounded-lg'>
