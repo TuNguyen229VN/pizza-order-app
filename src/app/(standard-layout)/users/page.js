@@ -141,10 +141,10 @@ export default function UsersPage() {
 
     return (
         <section className=''>
-            <HeaderCart text="Quản lý người dùng" />
-            <div className="grid grid-cols-3 gap-6">
+            <HeaderCart text="Quản lý người dùng" className={"top-[70px]"}/>
+            <div className="grid gap-6 md:grid-cols-3">
                 <UserTabs isAdmin={profileData.admin}></UserTabs>
-                <div className='col-span-2'>
+                <div className='min-w-0 col-span-2'>
                     <ContainerProfileLeft >
                         <h3 class="font-label-bold text-secondary uppercase tracking-wider">Danh sách người dùng</h3>
 

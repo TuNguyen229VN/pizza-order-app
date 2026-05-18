@@ -8,8 +8,7 @@ import { HiArrowRight } from 'react-icons/hi2';
 export default function OrderTable({ orders, loadingForm = false }) {
     return (
         <>
-
-            <table className="w-full text-left">
+            <table className="text-left md:w-full">
                 <thead className="bg-surface border-b border-outline-variant text-[12px] font-bold text-secondary uppercase tracking-wider">
                     <tr>
                         <th className="px-5 py-4"><p className='w-max'>Mã đơn hàng</p></th>
@@ -65,7 +64,7 @@ export default function OrderTable({ orders, loadingForm = false }) {
                                 </td>
                                 <td className="px-5 py-4">
                                     <p className='w-[100px]'>
-                                       {order?.deliveryInfo?.mode === "delivery"?"Giao hàng" : "Mua mang về"}
+                                        {order?.deliveryInfo?.mode === "delivery" ? "Giao hàng" : "Mua mang về"}
                                     </p>
                                 </td>
                                 <td className="sticky right-0 z-10 px-6 py-4 text-right bg-white ">

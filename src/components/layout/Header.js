@@ -13,6 +13,8 @@ import { totalQuantity } from "@/libs/totalQuantity";
 import ConfirmPopup from "../popup/ConfirmPopup";
 import DeliveryPickupModal from "@/modules/DeliveryPickupModal";
 import { useDelivery } from "@/context/DeliveryContext";
+import CloseIcon from "../icons/CloseIcon";
+import MenuMobile from "./MenuMobile";
 
 
 
@@ -20,13 +22,12 @@ const Header = () => {
   const session = useSession();
   const status = session.status;
   const userData = session.data?.user;
-  let userName = userData?.name || userData?.email;
   const [open, setOpen] = useState(false);
   const { cartProducts } = useContext(CartContext);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const { deliveryInfo } = useDelivery();
   return (
-    <header className="sticky top-0 z-30 max-w-6xl p-4 mx-auto bg-white ">
+    <header className="sticky top-0 z-30 max-w-6xl p-3 mx-auto bg-white md:p-4 ">
       <div className="">
         <h1 className="sr-only">Pizza Teo ngon nhất TP.HCM</h1>
         <div className="grid items-center grid-cols-3">
@@ -35,37 +36,46 @@ const Header = () => {
             isOpen={open}
             onClose={() => setOpen(false)}
           />
-          <div onClick={() => setOpen(true)} className="cursor-pointer">
+          <div onClick={() => setOpen(true)} className="text-sm cursor-pointer md:text-base">
             {deliveryInfo ? <> <p className="text-secondary">{deliveryInfo?.mode === "delivery" ? "Giao hàng tới" : "Mua mang về"}</p>
-              <p className="font-medium truncate w-[400px]">{deliveryInfo?.address || deliveryInfo?.store.name}</p></>
+              <p className="font-medium truncate lg:w-[400px]">{deliveryInfo?.address || deliveryInfo?.store.name}</p></>
               : <p className="">Bạn đang ở đâu? </p>
             }
           </div>
 
           <div className="flex justify-center">
             <Link href={HOME_ROUTE}>
-              <Image src={"/logo.png"} width={180} height={180} alt="logo" />
+              <Image src={"/logo-small.png"} width={50} height={50} alt="logo" className="block object-cover object-center md:hidden" />
+              <Image src={"/logo.png"} width={180} height={180} alt="logo" className="hidden md:block" />
             </Link>
           </div>
-          <div className="flex items-center justify-end flex-1 min-w-0 gap-5">
-            <Bell />
-            <p className="text-base font-semibold text-primary">VI</p>
+          <div className="flex items-center justify-end flex-1 min-w-0 gap-3 md:gap-5">
+            <Bell className="hidden w-6 h-6 md:inline" />
+            <p className="hidden text-base font-semibold text-primary md:block">VI</p>
             <Link
               href={CART_ROUTE}
-              className={`w-[80px] flex justify-center items-center p-3 border rounded-[50px] transition-colors duration-200 ${cartProducts.length > 0 ? "bg-primary text-white" : "bg-white text-gray-700"
+              className={`md:w-[80px] h-[40px] md:h-[50px] flex justify-center items-center px-3 p-2 md:p-3 border rounded-[50px] transition-colors duration-200 ${cartProducts.length > 0 ? "bg-primary text-white" : "bg-white text-gray-700"
                 }`}
             >
               <div className="flex items-center gap-2 transition-transform hover:scale-105">
-                <span className="min-w-[1.2rem] text-center tabular-nums">
+                <span className="md:min-w-[1.2rem] text-center tabular-nums text-sm md:text-base">
                   {totalQuantity(cartProducts)}
                 </span>
-                <ShoppingCart />
+                <ShoppingCart className="w-4 h-4 md:w-6 md:h-6" />
               </div>
             </Link>
-            <div className={`group relative flex justify-center border items-center gap-2 p-3  rounded-[50px] cursor-pointer ${status === "authenticated" ? "border-primary " : ""}`}>
-              <Bars2 className={`${status === "authenticated" && "text-primary"} w-6 h-6`} />
+
+            {/* mobile menu */}
+            <div className={`flex md:hidden group relative justify-center border items-center px-4 p-2 md:p-3 h-[40px]  rounded-[50px] cursor-pointer ${status === "authenticated" ? "border-primary " : ""}`} onClick={() => setMobileNavOpen((prev) => !prev)}>
+              {!mobileNavOpen ? <Bars2 className={`${status === "authenticated" && "text-primary"} w-4 h-4 md:w-6 md:h-6`} /> : <CloseIcon className={`${status === "authenticated" && "text-primary"} w-4 h-4 md:w-6 md:h-6`} />}
+
+            </div>
+            {mobileNavOpen && <MenuMobile onClose={() => setMobileNavOpen(false)} isAdmin={userData?.admin} status={status} />}
+            {/* ============== */}
+            <div className={`hidden md:flex group relative justify-center border items-center gap-2 px-3 p-2 md:p-3 h-[50px]  rounded-[50px] cursor-pointer ${status === "authenticated" ? "border-primary " : ""}`}>
+              <Bars2 className={`${status === "authenticated" && "text-primary"} w-4 h-4 md:w-6 md:h-6`} />
               <UserIcon className={`${status === "authenticated" && "text-primary"} w-6 h-6`} />
-              <div className="absolute bg-white w-[210px] rounded-3xl top-[80%]  right-0 shadow-lg py-[10px] opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto duration-250 delay-200">
+              <div className="hidden md:block absolute bg-white w-[210px] rounded-3xl top-[80%]  right-0 shadow-lg py-[10px] opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto duration-250 delay-200">
                 {status === "unauthenticated" && (<>
                   <Link href={LOGIN_ROUTE} className="block py-3 pl-4 hover:font-medium hover:text-primary">Đăng nhập</Link>
                   <Link href={REGISTER_ROUTE} className="block py-3 pl-4 hover:font-medium hover:text-primary">Đăng ký</Link>
@@ -92,41 +102,7 @@ const Header = () => {
           </div>
         </div>
       </div>
-
-      {/* 
-      <div className="flex items-center justify-between md:hidden">
-        <Link className="text-2xl font-semibold text-primary" href={'/'}>
-          <Image src={"/logo.png"} width={100} height={200} alt="logo" />
-        </Link>
-        <div className="flex items-center gap-8">
-          <Link href={'/cart'} className="relative">
-            <ShoppingCart />
-            {cartProducts?.length > 0 && (
-              <span className="absolute px-1 py-1 text-xs leading-3 text-white rounded-full -top-2 -right-4 bg-primary">
-                {cartProducts.length}
-              </span>
-            )}
-          </Link>
-          <button
-            className="p-1 border"
-            onClick={() => setMobileNavOpen(prev => !prev)}>
-            <Bars2 />
-          </button>
-        </div>
-      </div>
-      {mobileNavOpen && (
-        <div
-          onClick={() => setMobileNavOpen(false)}
-          className="flex flex-col gap-2 p-4 mt-2 text-center bg-gray-200 rounded-lg md:hidden">
-          <Link href={'/'}>Home</Link>
-          <Link href={'/menu'}>Menu</Link>
-          <Link href={'/#about'}>About</Link>
-          <Link href={'/#contact'}>Contact</Link>
-          <AuthLinks status={status} userName={userName} />
-        </div>
-      )} */}
-    </header >
-
+    </header>
   );
 };
 

@@ -123,7 +123,7 @@ export default function EditUserPage() {
     return (
         <section>
             <HeaderCart text="Tài khoản" />
-            <div className="grid grid-cols-3 gap-6">
+            <div className="grid gap-6 md:grid-cols-3">
                 <UserTabs isAdmin={profileData.admin}></UserTabs>
                 <div className="relative col-span-2">
                     <div className='absolute right-4 top-4'>

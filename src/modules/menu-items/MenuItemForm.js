@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import EditTableImage from './EditTableImage'
-import MenuItemPriceProps from './MenuItemPriceProps';
+import EditTableImage from '../../components/layout/EditTableImage'
+import MenuItemPriceProps from '../../components/layout/MenuItemPriceProps';
 import { API_CATEGORIES } from '@/constant/constant';
-import ValidatedInput from '../input/ValidatedInput';
-import ValidatedSelectInput from '../input/ValidatedSelectInput';
-import ButtonPrimary from '../buttons/ButtonPrimary';
-import Loader from '../loading/Loader';
-import ButtonCancel from '../buttons/ButtonCancel';
+import ValidatedInput from '../../components/input/ValidatedInput';
+import ValidatedSelectInput from '../../components/input/ValidatedSelectInput';
+import ButtonPrimary from '../../components/buttons/ButtonPrimary';
+import Loader from '../../components/loading/Loader';
+import ButtonCancel from '../../components/buttons/ButtonCancel';
 
 export default function MenuItemForm({ onSubmit, menuItem, errors, registerRef, clearError, loadingForm }) {
     const STATUS_OPTIONS = [

@@ -3,7 +3,7 @@ import { HiCheck } from "react-icons/hi2";
 import { CiGrid2H, CiWarning } from "react-icons/ci";
 export default function TotalDashboard({ textAll = "Tổng", textOn = "Đang kinh doanh", textOff = "Tạm đóng", quantityAll = 0, quantityOn = 0, quantityOff = 0 }) {
     return (
-        <div className="grid grid-cols-3 gap-6 mt-6">
+        <div className="grid gap-4 mt-4 md:gap-6 md:mt-6 md:grid-cols-3">
             <div className="flex gap-4 px-4 py-4 border rounded-xl">
                 <div className='p-4 text-red-700 bg-red-200 rounded-2xl text-basefont-semibold'>
                     <CiGrid2H />

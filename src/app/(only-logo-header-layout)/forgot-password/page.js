@@ -59,7 +59,7 @@ export default function ForgotPasswordPage() {
   return (
     <>
       <HeaderCart text="Quên mật khẩu" urlLink={LOGIN_ROUTE}></HeaderCart>
-      <div className="p-4 w-[510px] mx-auto ">
+      <div className="p-4 md:w-[510px] mx-auto ">
         {/* Form */}
         {status !== "success" && (
           <form onSubmit={handleSubmit} className="p-4 mx-auto border shadow-sm rounded-2xl">

@@ -5,7 +5,7 @@ import React from 'react'
 
 export default function HeaderOnlyLogo() {
   return (
-     <header className="sticky top-0 z-20 max-w-6xl p-4 mx-auto bg-white ">
+     <header className="sticky top-0 z-20 hidden max-w-6xl p-4 mx-auto bg-white md:block">
          <div className="flex justify-center">
             <Link href={HOME_ROUTE}>
               <Image src={"/logo.png"}  width={180} height={180}  alt="logo" />

@@ -3,7 +3,7 @@ import DeleteButton from '@/components/buttons/DeleteButton';
 import ArrowLeft from '@/components/icons/ArrowLeft';
 import Left from '@/components/icons/Left';
 import EditTableImage from '@/components/layout/EditTableImage';
-import MenuItemForm from '@/components/layout/MenuItemForm';
+import MenuItemForm from '@/modules/menu-items/MenuItemForm';
 import UserTabs from '@/components/layout/UserTabs';
 import ConfirmPopup from '@/components/popup/ConfirmPopup';
 import UseProfile from '@/components/UseProfile';
@@ -197,7 +197,7 @@ export default function EditMenuItemPage() {
     return (
         <section className="">
             <HeaderCart text="Chỉnh sửa món ăn" />
-            <div className="grid grid-cols-3 gap-6">
+            <div className="grid gap-6 md:grid-cols-3">
                 <UserTabs isAdmin={profileData.admin}></UserTabs>
                 <div className="relative col-span-2">
                     <ContainerProfileLeft title={menuItem?.name || "Món ăn"}>

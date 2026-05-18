@@ -7,7 +7,7 @@ import React, { useState } from 'react'
 
 export default function CheckAcceptPolicy({ checked, setChecked, legit }) {
     return (
-        <div className='px-4 py-4 mt-6 border rounded-2xl'>
+        <div className='px-4 py-4 mt-4 md:mt-6 md:border md:rounded-2xl'>
             <div className='flex items-start justify-center gap-2' >
                 <InputCheckAccept id="cb-1" checked={checked} onChange={(e) => setChecked(e.target.checked)} />
                 <p onClick={() => setChecked((prev) => !prev)} className='text-sm cursor-pointer text-blackHeader'>Tôi đồng ý với <Link onClick={(e) => e.stopPropagation()} className='underline text-primary' href={"#"}>các điều khoản và điều kiện</Link> và tham gia <Link onClick={(e) => e.stopPropagation()} className='underline text-primary' href={"#"}>chương trình thành viên Hut Rewards </Link> để tích điểm và hưởng quyền lợi theo quy định của chương trình.</p>

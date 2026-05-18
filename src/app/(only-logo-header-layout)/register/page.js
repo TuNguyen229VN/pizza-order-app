@@ -90,10 +90,10 @@ const RegisterPage = () => {
   };
   return (
     <><HeaderCart text="Tạo tài khoản" urlLink={LOGIN_ROUTE}></HeaderCart>
-      <section className="p-4  w-[480px] mx-auto ">
+      <section className="p-4 md:w-[480px] mx-auto ">
 
         {userCreated && (
-          <div className="mt-8">
+          <div className="md:mt-8">
             <div className="w-20 h-20 mx-auto">
               <Image src={"/images/firework.png"} alt="firework" width={200} height={200} className="object-cover object-center w-full h-full" />
             </div>
@@ -114,7 +114,7 @@ const RegisterPage = () => {
         {!userCreated &&
 
 
-          <div className="p-4 mt-8 border rounded-2xl w-[510px] mx-auto shadow-sm">
+          <div className="p-4 md:mt-8 border rounded-2xl md:w-[510px] mx-auto shadow-sm">
             {error && <p className="px-20 mb-4 text-sm text-center text-primary">{error}</p>}
             <form className="mx-auto " onSubmit={handleFormSubmit}>
               <ValidatedInput

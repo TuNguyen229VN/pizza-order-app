@@ -22,13 +22,13 @@ export default function CartPage() {
   return (
     <section>
       <HeaderCart urlLink={HOME_ROUTE} />
-      <div className="grid grid-cols-3 gap-8 mt-8">
-        <div className='col-span-2'>
+      <div className="grid grid-cols-1 gap-4 mt-0 md:mt-8 md:gap-8 md:grid-cols-3">
+        <div className='md:col-span-2'>
           {cartProducts?.length === 0 && (
             <CartProductEmpty />
           )}
           {cartProducts?.length > 0 && <div className='px-4 border rounded-2xl'>
-            <p className='py-4 font-semibold text-blackHeader'>Có {totalQuantity(cartProducts)} sản phẩm trong giỏ hàng của bạn</p>
+            <p className='py-4 text-sm font-semibold text-blackHeader md:text-base'>Có {totalQuantity(cartProducts)} sản phẩm trong giỏ hàng của bạn</p>
             {cartProducts?.length > 0 && cartProducts.map((product, index) => (
               <CartProduct
                 key={index}
@@ -42,10 +42,12 @@ export default function CartPage() {
         </div>
         <div className="">
           <CartSubtotal subtotal={subtotal} deliveryFee={deliveryInfo?.shipFee} />
-          <Link href={cartProducts?.length > 0 ? CHECKOUT_ROUTE : '#'}
-            className={cartProducts?.length === 0 ? 'pointer-events-none' : ''}>
-            <ButtonPrimary className={"mt-6"} disabled={!cartProducts?.length}>Thanh toán</ButtonPrimary>
-          </Link>
+          <div className='px-4 md:px-0'>
+            <Link href={cartProducts?.length > 0 ? CHECKOUT_ROUTE : '#'}
+              className={cartProducts?.length === 0 ? 'pointer-events-none' : ''}>
+              <ButtonPrimary className={"mt-6"} disabled={!cartProducts?.length}>Thanh toán</ButtonPrimary>
+            </Link>
+          </div>
         </div>
       </div>
     </section>

@@ -136,8 +136,8 @@ export default function CheckoutPage() {
     return (
         <section>
             <HeaderCart text='Thanh toán' urlLink={CART_ROUTE} />
-            <div className="grid grid-cols-3 gap-8 mt-8">
-                <div className='col-span-2'>
+            <div className="grid gap-4 md:mt-8 md:gap-8 md:grid-cols-3">
+                <div className='md:col-span-2'>
                     <form id='checkout-form' onSubmit={proceedToCheckout}>
                         <CheckoutAddress infoProps={infoProfileCheckout}
                             setInfoProps={handleInfoChange} errors={errors} registerRef={registerRef}
@@ -150,16 +150,18 @@ export default function CheckoutPage() {
                 <div>
                     <CartSubtotal subtotal={subtotal} deliveryFee={deliveryInfo?.shipFee}>
                         <Link href={CART_ROUTE} className='flex items-center justify-between '>
-                            <p className='mb-1 text-2xl font-semibold'>Giỏ hàng của tôi</p>
-                            <ChevronRight />
+                            <p className='mb-1 font-semibold md:text-2xl'>Giỏ hàng của tôi</p>
+                            <ChevronRight className='w-4 h-4 md:w-6 md:h-6' />
                         </Link>
                         <p>Có {totalQuantity(cartProducts)} sản phẩm trong giỏ hàng của bạn</p>
-                        <div className='w-full h-[1px] bg-gray-200 my-4'></div>
+                        <div className='w-full h-[1px] bg-gray-200 my-3 md:my-4'></div>
                     </CartSubtotal>
                     <CheckAcceptPolicy checked={checked} setChecked={setChecked} legit={legit} />
-                    <ButtonPrimary form="checkout-form" type="submit" className={"mt-6"} disabled={!cartProducts?.length}>
-                        Đặt hàng
-                    </ButtonPrimary>
+                    <div className='px-4 md:px-0'>
+                        <ButtonPrimary form="checkout-form" type="submit" className={"mt-4 md:mt-6"} disabled={!cartProducts?.length}>
+                            Đặt hàng
+                        </ButtonPrimary>
+                    </div>
 
                 </div>
             </div>

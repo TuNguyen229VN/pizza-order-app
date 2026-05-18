@@ -9,20 +9,20 @@ export default function CartSubtotal({deliveryFee=0, subtotal, children, classNa
             {children}
             <div className='flex items-center justify-between'>
                 <p>Tạm tính</p>
-                <p className='font-semibold'>{(subtotal).toLocaleString('vi-VN')} <span className='underline'>đ</span></p>
+                <p className='text-sm font-semibold md:text-base'>{(subtotal).toLocaleString('vi-VN')} <span className='underline'>đ</span></p>
             </div>
             <div className='flex items-center justify-between mt-4'>
                 <p className='flex items-center gap-1'>Giảm giá thành viên <InfoIcon /></p>
-                <p className='font-semibold text-[#0a8020]'>{DISCOUNT_FEE.toLocaleString('vi-VN')} <span className='underline'>đ</span></p>
+                <p className='font-semibold text-[#0a8020] text-sm md:text-base'>{DISCOUNT_FEE.toLocaleString('vi-VN')} <span className='underline'>đ</span></p>
             </div>
             <div className='flex items-center justify-between pb-4 mt-4 border-b'>
                 <p className='flex items-center gap-1'>Phí giao hàng <InfoIcon /></p>
-                <p className='font-semibold'>{deliveryFee.toLocaleString('vi-VN')} <span className='underline'>đ</span></p>
+                <p className='text-sm font-semibold md:text-base'>{deliveryFee.toLocaleString('vi-VN')} <span className='underline'>đ</span></p>
             </div>
 
             <div className='flex items-center justify-between mt-4'>
                 <p>Tổng cộng</p>
-                <p className='text-3xl leading-[38px] font-bold'>{(subtotal + deliveryFee).toLocaleString('vi-VN')} <span className='underline'>đ</span></p>
+                <p className='text-lg md:text-3xl md:leading-[38px] font-bold'>{(subtotal + deliveryFee).toLocaleString('vi-VN')} <span className='underline'>đ</span></p>
             </div>
         </div>
     )

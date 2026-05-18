@@ -108,8 +108,8 @@ export default function ChangePasswordPage() {
     }
     return (
         <section>
-            <HeaderCart text="Tài khoản" />
-            <div className="grid grid-cols-3 gap-6">
+            <HeaderCart text="Tài khoản" className={"top-[70px]"} />
+            <div className="grid gap-6 md:grid-cols-3">
                 <UserTabs isAdmin={profile.admin}></UserTabs>
 
                 <div className="col-span-2">

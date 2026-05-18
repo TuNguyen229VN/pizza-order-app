@@ -12,15 +12,15 @@ export default function CheckoutAddress({ infoProps, setInfoProps, errors, regis
     return (
         <div className='px-4 py-4 border rounded-2xl'>
             <div className='flex justify-between cursor-pointer' onClick={() => setOpen(true)}>
-                <p className='text-2xl leading-[30px] font-semibold'>{deliveryInfo?.mode === "delivery" ? "Giao đến" : "Mua mang về tại"}</p>
-                <ChevronRight />
+                <p className='md:text-2xl md:leading-[30px] font-semibold'>{deliveryInfo?.mode === "delivery" ? "Giao đến" : "Mua mang về tại"}</p>
+                <ChevronRight className='w-4 h-4 md:w-6 md:h-6'/>
             </div>
             <DeliveryPickupModal
                 isOpen={open}
                 onClose={() => setOpen(false)}
             />
-            <div className='mt-9'>
-                <p className='mb-2 text-lg font-medium'>{deliveryInfo?.address || deliveryInfo?.store.name || ""}</p>
+            <div className='mt-5 md:mt-9'>
+                <p className='mb-2 font-medium md:text-lg'>{deliveryInfo?.address || deliveryInfo?.store.name || ""}</p>
                 {deliveryInfo?.store&&<p className='text-lg '>{deliveryInfo?.store?.address}</p>}
                 <div className="flex items-center justify-between my-4">
                     <h3 className="text-sm font-medium">Ghi chú (tùy chọn)</h3>

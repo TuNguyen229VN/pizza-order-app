@@ -10,12 +10,12 @@ export default function CartProduct({ index, product, onRemove, showEdit = false
   const [showPopup, setShowPopup] = useState(false)
   useLockBodyScroll(showPopup);
   return (
-    <div className="flex justify-between gap-4 py-4">
+    <div className="flex justify-between gap-4 py-4 text-sm md:text-base">
       <div className='flex gap-4'>
         <div className='w-[82px] h-[96px] overflow-hidden'>
           <Image width={240} height={240} src={product.image} alt={product.name} className='object-cover object-center w-full h-full' />
         </div>
-        <div className='w-[350px] break-words'>
+        <div className='lg:w-[350px] break-words'>
           <h4 className='font-medium'>{product.name}</h4>
           {product.size && (
             <div className="mt-1 text-secondary">
@@ -30,7 +30,7 @@ export default function CartProduct({ index, product, onRemove, showEdit = false
               ))}
             </div>
           )}
-          {product.noteOrder && <div className='text-sm text-secondary'>
+          {product.noteOrder && <div className='text-xs md:text-sm text-secondary'>
             Ghi chú: <p>{product.noteOrder}</p>
           </div>}
 
@@ -43,16 +43,18 @@ export default function CartProduct({ index, product, onRemove, showEdit = false
           )}
         </div>
       </div>
-      <div className='text-lg font-medium text-center'>
-        {product.quantity}
-      </div>
-      <div className='flex items-start text-lg font-medium w-[200px] justify-end gap-5'>
-        <p>{cartProductPrice(product).toLocaleString('vi-VN')} <span className='underline'>đ</span></p>
-        {!!onRemove && (
+      <div className='flex flex-col gap-2 md:flex-row'>
+        <div className='font-medium text-center md:text-lg'>
+          {product.quantity}
+        </div>
+        <div className='flex items-start md:text-lg font-medium w-[200px] justify-end gap-5'>
+          <p>{cartProductPrice(product).toLocaleString('vi-VN')} <span className='underline'>đ</span></p>
+          {!!onRemove && (
             <ConfirmPopup onDelete={() => onRemove(index)}>
               <TrashCircel />
             </ConfirmPopup>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );

@@ -16,7 +16,7 @@ import { signOut } from "next-auth/react";
 const UserTabs = ({ isAdmin }) => {
   const path = usePathname();
   return (
-    <div>
+    <div className="hidden md:block">
       <div className="flex flex-col border rounded-2xl">
         <Link className={`flex items-center p-4 gap-4 text-lg ${path === PROFILE_ROUTE ? "text-primary font-semibold" : ""}`} href={PROFILE_ROUTE}>
           <UserIcon />

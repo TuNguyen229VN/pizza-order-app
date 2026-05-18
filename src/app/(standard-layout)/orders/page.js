@@ -89,10 +89,10 @@ export default function OrdersPage() {
     }
     return (
         <section className="">
-            <HeaderCart text="Quản lý đơn hàng" />
-            <div className="grid grid-cols-3 gap-6">
+            <HeaderCart text="Quản lý đơn hàng" className={"top-[70px]"}/>
+            <div className="grid gap-6 md:grid-cols-3">
                 <UserTabs isAdmin={profile.admin}></UserTabs>
-                <div className="col-span-2">
+                <div className="min-w-0 col-span-2">
                     <ContainerProfileLeft>
                         <div className="">
                             <h3 class="font-label-bold text-secondary uppercase tracking-wider">Danh sách món ăn</h3>
@@ -112,7 +112,7 @@ export default function OrdersPage() {
                                     <p className='text-green-700'>Đã thanh toán</p>
                                 </div>
                             </div>
-                            <div className="overflow-x-auto">
+                            <div className="relative overflow-x-auto">
                                 <OrderTable orders={orders} loadingForm={loadingOrders} />
                             </div>
 

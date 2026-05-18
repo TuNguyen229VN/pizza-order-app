@@ -54,7 +54,7 @@ export default function OrderPage() {
     const isOwnOrder = profile.email === order?.userEmail;
     const showAdminLayout = profile.admin && !isOwnOrder;
     return (
-        <section className="max-w-3xl pb-6 mx-auto">
+        <section className="max-w-3xl mx-auto md:pb-6">
             {loadingOrder && (
                 <div>Đang tải đơn hàng...</div>
             )}
@@ -64,7 +64,7 @@ export default function OrderPage() {
 
                 }
                 <div className="text-center">
-                    <div className="font-bold text-3xl leading-[38px]">
+                    <div className="font-bold text-2xl md:text-3xl md:leading-[38px]">
                         {!showAdminLayout && from !== "orders" && <>
                             <p>Cảm ơn bạn {order?.userName} !</p>
                             <p>Đơn hàng của bạn đã được đặt thành công</p>
@@ -73,16 +73,16 @@ export default function OrderPage() {
                         <div></div>
                     </div>
                     {!showAdminLayout && from !== "orders" && <>
-                        <div className='my-6 w-[320px] h-[320px] mx-auto'>
+                        <div className='my-6 w-[200px] h-[200px] md:w-[320px] md:h-[320px] mx-auto'>
                             <Image src={"/images/thankyour.png"} alt='Thankyou' width={200} height={200} className='object-cover object-center w-full h-full' />
                         </div>
                         <Link href={HOME_ROUTE} className='inline-block w-full px-6 py-3 font-medium duration-300 border-2 rounded-lg border-primary text-primary hover:bg-red-100 hover:scale-105'>Đi đến trang chính</Link>
                     </>}
                 </div>
 
-                <div className='grid grid-cols-2 gap-6 mt-6'>
+                <div className='grid gap-4 mt-4 md:mt-6 md:gap-6 md:grid-cols-2'>
                     <div className='p-6 border rounded-lg'>
-                        <h4 className='mb-6 text-2xl font-semibold'>{order?.deliveryInfo?.mode === "delivery" ? "Giao đến" : "Mua mang về tại"}</h4>
+                        <h4 className='mb-4 font-semibold md:mb-6 md:text-2xl'>{order?.deliveryInfo?.mode === "delivery" ? "Giao đến" : "Mua mang về tại"}</h4>
                         <p><span className='font-medium'>Khách hàng:</span> {order?.userName}</p>
                         <p> {order?.phone}</p>
                         <p className='font-medium'> {order?.deliveryInfo?.address || order?.deliveryInfo.store.name} </p>
@@ -90,7 +90,7 @@ export default function OrderPage() {
                         {order?.noteDelivery && <p className='text-sm italic text-secondary'>Ghi chú giao hàng: {order?.noteDelivery}</p>}
                     </div>
                     <div className='p-6 border rounded-lg'>
-                        <h4 className='mb-6 text-2xl font-semibold'>Phương thức thanh toán</h4>
+                        <h4 className='mb-4 font-semibold md:mb-6 md:text-2xl'>Phương thức thanh toán</h4>
                         <p>Thanh toán STRIPE</p>
                         <p className={`mt-4 text-center rounded-lg w-[150px] p-2 line-clamp-1 break-all overflow-hidden font-medium ${order?.paid ? 'text-green-700 bg-green-200' : 'text-red-500 bg-red-200'}`} title={order?.paid ? 'Đã thanh toán' : 'Chưa thanh toán'}>
                             {order?.paid ? 'Đã thanh toán' : 'Chưa thanh toán'}
@@ -98,9 +98,9 @@ export default function OrderPage() {
                         </p>
                     </div>
                 </div>
-                <div className='grid grid-cols-2 p-6 mt-6 border rounded-lg'>
+                <div className='grid grid-cols-1 p-6 mt-4 border rounded-lg md:grid-cols-2 md:mt-6'>
                     <p className='font-semibold'>Có {totalQuantity(order?.cartProducts)} sản phẩm trong giỏ hàng của bạn</p>
-                    <div className='col-span-2'>
+                    <div className='md:col-span-2'>
                         <p className='text-secondary'>{dbTimeForHuman(order?.createdAt)}</p>
                         <div>
                             {order.cartProducts.map(product => (
@@ -109,11 +109,11 @@ export default function OrderPage() {
                         </div>
                     </div>
                     <div></div>
-                    <CartSubtotal subtotal={subtotal} deliveryFee={order?.deliveryInfo?.shipFee} className={"border-none"} />
+                    <CartSubtotal subtotal={subtotal} deliveryFee={order?.deliveryInfo?.shipFee} className={"md:border-none"} />
                 </div>
 
-                {!showAdminLayout && from !== "orders" && <div className='p-6 mt-6 border rounded-lg'>
-                    <p className='mb-6 text-2xl font-semibold'>Có câu hỏi về đơn hàng của bạn?</p>
+                {!showAdminLayout && from !== "orders" && <div className='p-6 mt-4 border rounded-lg md:mt-6'>
+                    <p className='mb-4 font-semibold md:mb-6 md:text-2xl'>Có câu hỏi về đơn hàng của bạn?</p>
                     <p>
                         Gọi đến Tổng đài Dịch vụ Khách hàng: <span className='text-primary'>19001822</span>
                     </p>

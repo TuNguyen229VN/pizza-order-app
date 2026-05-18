@@ -27,12 +27,12 @@ export default function NotificationPage() {
   return (
     <section>
       <HeaderCart text="Tài khoản" />
-      <div className="grid grid-cols-3 gap-6">
+      <div className="grid gap-6 md:grid-cols-3">
         <UserTabs isAdmin={profile.admin}></UserTabs>
 
         <div className="col-span-2">
           <ContainerProfileLeft title={"Thông báo"}>
-            <NotFindLayout title='Chúng tôi không có thông báo nào cho bạn vào lúc này.' content='Vui lòng kiểm tra lại sau' className={"mt-10"}/>
+            <NotFindLayout title='Chúng tôi không có thông báo nào cho bạn vào lúc này.' content='Vui lòng kiểm tra lại sau' className={"mt-4 md:mt-10"}/>
           </ContainerProfileLeft>
         </div>
       </div>

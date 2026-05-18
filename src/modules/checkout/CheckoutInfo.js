@@ -6,9 +6,9 @@ export default function CheckoutInfo({ infoProps, setInfoProps, errors, register
     return (
         <div className='px-4 py-4 mt-6 border rounded-2xl'>
             <div className='flex justify-between'>
-                <p className='text-2xl leading-[30px] font-semibold'>Người đặt hàng</p>
+                <p className='md:text-2xl md:leading-[30px] font-semibold'>Người đặt hàng</p>
             </div>
-            <div className='mt-9'>
+            <div className='mt-5 md:mt-9'>
                 <ValidatedInput
                     label="Họ tên"
                     name="name"

@@ -209,10 +209,10 @@ const CategoriesPage = () => {
 
   return (
     <section>
-      <HeaderCart text="Quản lý danh mục" />
-      <div className="grid grid-cols-3 gap-6">
+      <HeaderCart text="Quản lý danh mục" className={"top-[70px]"}/>
+      <div className="grid gap-6 md:grid-cols-3">
         <UserTabs isAdmin={profileData.admin} />
-        <div className="col-span-2">
+        <div className="min-w-0 col-span-2">
           <ContainerProfileLeft >
             <div className="relative w-full h-[100px] group mb-4 ">
               <EditTableImage

@@ -76,8 +76,8 @@ function ResetPasswordContent() {
     }
 
     return (
-        <div >
-            <div className="p-4 mx-auto border shadow-sm rounded-2xl w-[510px] mt-8">
+        <div className="p-4 md:p-0">
+            <div className="p-4 mx-auto border shadow-sm rounded-2xl md:w-[510px] md:mt-8">
                 <div style={styles.header}>
                     <h1 style={styles.title}>Tạo mật khẩu mới</h1>
                     <p style={styles.subtitle}>Nhập mật khẩu mới cho tài khoản của bạn.</p>

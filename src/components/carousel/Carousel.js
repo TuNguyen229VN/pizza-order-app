@@ -19,6 +19,17 @@ export default function Carousel({ carouselList = [], setHash, hash, isScrolling
     const [isEnd, setIsEnd] = useState(false)
 
     useEffect(() => {
+        if (!swiperRef.current || !hash) return;
+
+        // Tìm index của item đang active trong carouselList
+        const idx = carouselList.findIndex(item => item.slug === hash);
+        if (idx !== -1) {
+            // +2 vì có 2 slide cố định trước (Search + Recommendations)
+            swiperRef.current.slideTo(idx + 2);
+        }
+    }, [hash, carouselList]);
+
+    useEffect(() => {
         if (swiperRef.current && prevRef.current && nextRef.current) {
             const swiper = swiperRef.current
             swiper.params.navigation.prevEl = prevRef.current
@@ -50,7 +61,7 @@ export default function Carousel({ carouselList = [], setHash, hash, isScrolling
     };
 
     return (
-        <div className='sticky z-10 pt-6 top-[80px] bg-white'>
+        <div className='sticky z-10 pt-3 md:pt-6 top-[65px] md:top-[80px] bg-white'>
             <div className="relative flex items-center pb-3 overflow-hidden">
                 <div
                     className="flex items-center flex-shrink-0 gap-3 overflow-hidden transition-all duration-500 ease-in-out"
@@ -70,17 +81,17 @@ export default function Carousel({ carouselList = [], setHash, hash, isScrolling
                             setActiveSearch("")
                         }}><CloseIcon className="w-4 h-4" /></button>}
                     </div>
-                    <button className='md:w-[180px] px-6 py-3 duration-300 font-medium text-white rounded-md bg-primary hover:bg-red-400 text-sm md:text-base' onClick={handleSearch}>Tìm kiếm</button>
+                    <button className='md:w-[180px] px-6 py-3 duration-300 font-medium text-white rounded-md bg-primary hover:bg-red-400 text-sm md:text-base' onClick={handleSearch}><p className='hidden md:block'>Tìm kiếm</p><SearchIcon className='inline w-5 h-5 md:hidden'/></button>
                     <button className='text-sm md:text-base' onClick={() => {
                         setSearch("");
                         setActiveSearch("");
                         setOpenInputSearch(false);
-                    }}>Đóng</button>
+                    }}><p className='hidden md:block'>Đóng</p> <CloseIcon className='inline w-5 h-5 md:hidden' /></button>
                 </div>
 
 
                 <div
-                    className="relative w-full overflow-hidden transition-all duration-500 ease-in-out h-[72px]"
+                    className="relative w-full overflow-hidden transition-all duration-500 ease-in-out md:h-[72px]"
                     style={{
                         maxWidth: openInputSearch ? '0px' : '100%',
                         opacity: openInputSearch ? 0 : 1,
@@ -107,6 +118,9 @@ export default function Carousel({ carouselList = [], setHash, hash, isScrolling
                                 spaceBetween: 20,
                             },
                             768: {
+                                slidesPerView: 6.7,
+                            },
+                            1024: {
                                 slidesPerView: 7.7,
                                 spaceBetween: 30,
                             }
@@ -148,7 +162,7 @@ export default function Carousel({ carouselList = [], setHash, hash, isScrolling
                                 <p className='text-sm md:text-base'>Bạn sẽ thích</p>
 
                                 <span
-                                    className={`absolute bottom-0 left-0 h-[6px] w-full rounded-full bg-primary transition-all duration-300 ${"recommendations" === hash
+                                    className={`absolute bottom-0 left-0 h-1 md:h-[6px] w-full rounded-full bg-primary transition-all duration-300 ${"recommendations" === hash
                                         ? "opacity-100 scale-x-100"
                                         : "opacity-0 scale-x-0"
                                         }`}
@@ -172,7 +186,7 @@ export default function Carousel({ carouselList = [], setHash, hash, isScrolling
                                     <p className='text-sm md:text-base'>{carouselItem.name}</p>
 
                                     <span
-                                        className={`absolute bottom-0 left-0 h-[6px] w-full rounded-full bg-primary transition-all duration-300 ${carouselItem.slug === hash
+                                        className={`absolute bottom-0 left-0 h-1 md:h-[6px] w-full rounded-full bg-primary transition-all duration-300 ${carouselItem.slug === hash
                                             ? "opacity-100 scale-x-100"
                                             : "opacity-0 scale-x-0"
                                             }`}

@@ -131,10 +131,10 @@ export default function MenuItemsPage() {
   }
   return (
     <section className="">
-      <HeaderCart text="Quản lý món ăn" />
-      <div className="grid grid-cols-3 gap-6">
+      <HeaderCart text="Quản lý món ăn" className={"top-[70px]"} />
+      <div className="grid gap-6 md:grid-cols-3">
         <UserTabs isAdmin={profileData.admin}></UserTabs>
-        <div className="col-span-2">
+        <div className="min-w-0 col-span-2">
           <ContainerProfileLeft >
             <div className="flex justify-end">
               <Link className="w-max" href={MENU_ITEM_NEW_ROUTE}><ButtonPrimary className={"w-max p-4 flex items-center gap-2"}> <PlusIcon /> Tạo món ăn mới</ButtonPrimary></Link>
