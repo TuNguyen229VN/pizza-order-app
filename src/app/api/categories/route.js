@@ -111,13 +111,13 @@ export async function GET(req) {
 
   // không phân trang
   if (all) {
-    const categories = await Category.find(query).sort(sortOrder);
+    const categories = await Category.find(query).sort(sortOrder).collation({ locale: "en", strength: 2 });
     return Response.json({ categories, total: categories.length });
   }
 
   // Có phân trang
   const [categories, total, totalAll, totalOn, totalOff] = await Promise.all([
-    Category.find(query).sort(sortOrder).skip(skip).limit(limit),
+    Category.find(query).sort(sortOrder).collation({ locale: "en", strength: 2 }).skip(skip).limit(limit),
     Category.countDocuments(query),
     Category.countDocuments(),
     Category.countDocuments({ status: "on" }),

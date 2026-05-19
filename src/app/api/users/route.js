@@ -76,14 +76,14 @@ export async function GET(req) {
 
         // Không phân trang
         if (all) {
-            const users = await User.find(query).select("-password -__v").sort(sortOrder).lean();
+            const users = await User.find(query).select("-password -__v").sort(sortOrder).collation({ locale: "en", strength: 2 }).lean();
             const merged = await mergeWithUserInfo(users);
             return Response.json({ users: merged, total: merged.length });
         }
 
         // Có phân trang
         const [users, total, totalAll] = await Promise.all([
-            User.find(query).select("-password -__v").sort(sortOrder).skip(skip).limit(limit).lean(),
+            User.find(query).select("-password -__v").sort(sortOrder).collation({ locale: "en", strength: 2 }).skip(skip).limit(limit).lean(),
             User.countDocuments(query),
             User.countDocuments(),
         ]);

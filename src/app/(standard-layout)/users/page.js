@@ -5,7 +5,7 @@ import Paging from '@/components/layout/Paging';
 import TotalDashboard from '@/components/layout/TotalDashboard';
 import UserTabs from '@/components/layout/UserTabs'
 import UseProfile from '@/components/UseProfile';
-import { API_PROFILE, API_USERS } from '@/constant/constant';
+import { API_PROFILE, API_USERS, LIST_OPTION, USER_STATUS_OPTION } from '@/constant/constant';
 import { USERS_ROUTE } from '@/constant/routesApp';
 import ContainerProfileLeft from '@/container/ContainerProfileLeft';
 import { useDebounce } from '@/hooks/useDebounce';
@@ -16,19 +16,6 @@ import React, { useEffect, useState } from 'react'
 import toast from 'react-hot-toast';
 
 export default function UsersPage() {
-    const listOption = [
-        { value: "newest", label: "Mới nhất" },
-        { value: "oldest", label: "Cũ nhất" },
-        { value: "asc", label: "Tên A-Z" },
-        { value: "desc", label: "Tên Z-A" },
-    ];
-
-    const listStatusOption = [
-        { value: "", label: "Tất cả" },
-        { value: "off", label: "Đang hoạt động" },
-        { value: "on", label: "Bị chặn" },
-    ];
-
     const { loading: profileLoading, data: profileData } = UseProfile();
 
     const [users, setUsers] = useState([]);
@@ -141,7 +128,7 @@ export default function UsersPage() {
 
     return (
         <section className=''>
-            <HeaderCart text="Quản lý người dùng" className={"top-[70px]"}/>
+            <HeaderCart text="Quản lý người dùng" className={"top-[70px]"} />
             <div className="grid gap-6 md:grid-cols-3">
                 <UserTabs isAdmin={profileData.admin}></UserTabs>
                 <div className='min-w-0 col-span-2'>
@@ -150,13 +137,11 @@ export default function UsersPage() {
 
                         <div className="flex items-center gap-3 my-4">
                             <InputSearch search={search} setSearch={setSearch} placeholder="Nhập tên người dùng hoặc email" />
-                            <FilterSort sort={sort} setSort={setSort} listOption={listOption} />
-                            <FilterSort sort={status} setSort={setStatus} listOption={listStatusOption} />
+                            <FilterSort sort={sort} setSort={setSort} listOption={LIST_OPTION} />
+                            <FilterSort sort={status} setSort={setStatus} listOption={USER_STATUS_OPTION} />
                         </div>
 
-                        <div className="overflow-x-auto">
-                            <UserTable users={users} loadingForm={loadingForm} handleUserBlock={handleUserBlock} />
-                        </div>
+                        <UserTable users={users} loadingForm={loadingForm} handleUserBlock={handleUserBlock} />
 
                         <Paging
                             page={page}

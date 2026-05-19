@@ -10,7 +10,13 @@ import { Navigation } from "swiper/modules";
 import ChevronLeft from "../icons/ChevronLeft";
 import ChevronRight from "../icons/ChevronRight";
 
-const RecommendMenuItems = ({ sectionRefs }) => {
+const RecommendMenuItems = ({ sectionRefs = null, hasLine = true,
+  slidesConfig = {
+    mobile: 1.3,
+    tablet: 2.3,
+    desktop: 2.3,
+  }
+  , classNameTitle }) => {
   const [recommendMenuItems, setRecommendMenuItems] = useState([]);
   const { cartProducts } = useContext(CartContext);
   const [isBeginning, setIsBeginning] = useState(true);
@@ -44,9 +50,13 @@ const RecommendMenuItems = ({ sectionRefs }) => {
   }, [])
 
   return (
-    <section id="recommendations" className="mt-3 mb-8 md:mb-12" ref={el => sectionRefs.current["recommendations"] = el}>
+    <section id="recommendations" className="mt-3 mb-8 md:mb-12" ref={(el) => {
+      if (sectionRefs) {
+        sectionRefs.current["recommendations"] = el;
+      }
+    }}>
       <div className="mb-4 text-center">
-        <SectionHeader subHeader={"check out"} mainHeader={"Bạn sẽ thích"} />
+        <SectionHeader subHeader={"check out"} mainHeader={"Bạn sẽ thích"} hasLine={hasLine} classNameTitle={classNameTitle} />
       </div>
       <div className="relative w-full">
         {!isBeginning && (
@@ -56,15 +66,16 @@ const RecommendMenuItems = ({ sectionRefs }) => {
           <div className="absolute top-0 right-0 z-10 w-16 h-full pointer-events-none bg-gradient-to-l from-white to-transparent" />
         )}
         <Swiper
-          slidesPerView={1.3}
+          slidesPerView={slidesConfig.mobile}
           slidesPerGroup={1}
           spaceBetween={10}
           breakpoints={{
             640: {
-              slidesPerView: 2.3,
+              slidesPerView: slidesConfig.tablet,
               slidesPerGroup: 2
             },
             768: {
+              slidesPerView: slidesConfig.desktop,
               spaceBetween: 20
             }
           }}

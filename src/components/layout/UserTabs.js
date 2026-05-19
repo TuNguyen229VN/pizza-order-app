@@ -1,5 +1,5 @@
 "use client";
-import { CATEGORIES_ROUTE, CHANGEPASSWORD_ROUTE, MENU_ITEMS_ROUTE, NOTIFICATION_ROUTE, ORDERS_ROUTE, PROFILE_ROUTE, USERS_ROUTE } from "@/constant/routesApp";
+import { CATEGORIES_ROUTE, CHANGEPASSWORD_ROUTE, COMBO_ROUTE, COMBOTYPE_ROUTE, MENU_ITEMS_ROUTE, NOTIFICATION_ROUTE, ORDERS_ROUTE, PROFILE_ROUTE, USERS_ROUTE } from "@/constant/routesApp";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
@@ -12,6 +12,8 @@ import Bell from "../icons/Bell";
 import ConfirmPopup from "../popup/ConfirmPopup";
 import SignOutIcon from "../icons/SignOutIcon";
 import { signOut } from "next-auth/react";
+import { MdOutlineFastfood } from "react-icons/md";
+import { FiPackage } from "react-icons/fi";
 
 const UserTabs = ({ isAdmin }) => {
   const path = usePathname();
@@ -37,6 +39,21 @@ const UserTabs = ({ isAdmin }) => {
             >
               <PiPizzaLight className="w-6 h-6" />
               <span>Quản lý món ăn</span>
+            </Link>
+            <Link
+              className={`flex items-center p-4 gap-4 text-lg ${path.startsWith(COMBOTYPE_ROUTE) ? "text-primary font-semibold" : ""}`}
+              href={COMBOTYPE_ROUTE}
+            >
+              <FiPackage className="w-6 h-6" />
+              <span>Quản lý loại combo</span>
+            </Link>
+            <Link
+              className={`flex items-center p-4 gap-4 text-lg ${path.startsWith(COMBO_ROUTE) &&
+                !path.startsWith(COMBOTYPE_ROUTE) ? "text-primary font-semibold" : ""}`}
+              href={COMBO_ROUTE}
+            >
+              <MdOutlineFastfood className="w-6 h-6" />
+              <span>Quản lý combo</span>
             </Link>
             <Link className={`flex items-center p-4 gap-4 text-lg ${path.includes(USERS_ROUTE) ? "text-primary font-semibold" : ""}`} href={USERS_ROUTE}>
               <PiUserListLight className="w-6 h-6" />

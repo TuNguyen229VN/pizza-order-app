@@ -1,10 +1,10 @@
 import React from 'react'
 import InfoIcon from '../icons/InfoIcon';
 
-export default function ValidatedSelectInput({ label, name, error, inputRef, options = [], value, ...props }) {
+export default function ValidatedSelectInput({ important = true, label, name, error, inputRef, options = [], value, ...props }) {
   return (
     <div className="flex flex-col gap-1">
-      {label && <label className="my-2 text-sm font-medium">{label}</label>}
+      {label && <label className="my-2 text-sm font-medium">{label}{important && <span className="text-primary"> *</span>}</label>}
       <div className="relative">
         <select
           ref={inputRef}

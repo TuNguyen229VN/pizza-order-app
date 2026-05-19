@@ -2,38 +2,22 @@
 import ButtonPrimary from "@/components/buttons/ButtonPrimary";
 import FilterSort from "@/components/filter/FilterSort";
 import PlusIcon from "@/components/icons/PlusIcon";
-import Right from "@/components/icons/Right";
 import InputSearch from "@/components/input/InputSearch";
-import EditTableImage from "@/components/layout/EditTableImage";
 import Paging from "@/components/layout/Paging";
 import TotalDashboard from "@/components/layout/TotalDashboard";
 import UserTabs from "@/components/layout/UserTabs";
 import UseProfile from "@/components/UseProfile";
-import { API_CATEGORIES, API_MENU_ITEMS } from "@/constant/constant";
-import { MENU_ITEM_EDIT_ROUTE, MENU_ITEM_NEW_ROUTE } from "@/constant/routesApp";
+import { API_CATEGORIES, API_MENU_ITEMS, LIST_OPTION, STATUS_OPTIONS_FILTER } from "@/constant/constant";
+import { MENU_ITEM_NEW_ROUTE } from "@/constant/routesApp";
 import ContainerProfileLeft from "@/container/ContainerProfileLeft";
 import { useDebounce } from "@/hooks/useDebounce";
 import HeaderCart from "@/modules/cart/HeaderCart";
 import MenuItemsTable from "@/modules/menu-items/MenuItemsTable";
-import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 export default function MenuItemsPage() {
-  const listOption = [
-    { value: "newest", label: "Mới nhất" },
-    { value: "oldest", label: "Cũ nhất" },
-    { value: "asc", label: "Tên A-Z" },
-    { value: "desc", label: "Tên Z-A" },
-  ];
-
-  const statusOption = [
-    { value: "", label: "Tất cả" },
-    { value: "on", label: "Đang kinh doanh" },
-    { value: "off", label: "Tạm đóng" },
-  ];
-
   const [loadingForm, setLoadingForm] = useState(false);
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("newest");
@@ -144,14 +128,12 @@ export default function MenuItemsPage() {
 
               <div className="flex items-center gap-3 my-4">
                 <InputSearch search={search} setSearch={setSearch} placeholder="Nhập tên món ăn" />
-                <FilterSort sort={sort} setSort={setSort} listOption={listOption} />
-                <FilterSort sort={status} setSort={setStatus} listOption={statusOption} />
+                <FilterSort sort={sort} setSort={setSort} listOption={LIST_OPTION} />
+                <FilterSort sort={status} setSort={setStatus} listOption={STATUS_OPTIONS_FILTER} />
                 <FilterSort sort={category} setSort={setCategory} listOption={categoryOptions} />
               </div>
 
-              <div className="overflow-x-auto">
-                <MenuItemsTable menuItems={menuItems} handleMenuItemDelete={handleMenuItemDelete} loadingForm={loadingForm} categories={categories} />
-              </div>
+              <MenuItemsTable menuItems={menuItems} handleMenuItemDelete={handleMenuItemDelete} loadingForm={loadingForm} categories={categories} />
 
               <Paging
                 page={page}

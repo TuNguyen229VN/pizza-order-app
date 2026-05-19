@@ -15,6 +15,7 @@ import DeliveryPickupModal from "@/modules/DeliveryPickupModal";
 import { useDelivery } from "@/context/DeliveryContext";
 import CloseIcon from "../icons/CloseIcon";
 import MenuMobile from "./MenuMobile";
+import { useLockBodyScroll } from "@/hooks/useLockBodyScroll";
 
 
 
@@ -26,6 +27,7 @@ const Header = () => {
   const { cartProducts } = useContext(CartContext);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const { deliveryInfo } = useDelivery();
+  useLockBodyScroll(mobileNavOpen);
   return (
     <header className="sticky top-0 z-30 max-w-6xl p-3 mx-auto bg-white md:p-4 ">
       <div className="">

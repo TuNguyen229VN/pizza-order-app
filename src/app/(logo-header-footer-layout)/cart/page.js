@@ -10,6 +10,7 @@ import ButtonPrimary from '@/components/buttons/ButtonPrimary';
 import Link from 'next/link';
 import { CHECKOUT_ROUTE, HOME_ROUTE } from '@/constant/routesApp';
 import { useDelivery } from '@/context/DeliveryContext';
+import RecommendMenuItems from '@/components/layout/RecommendMenuItems';
 
 export default function CartPage() {
   const { cartProducts, removeCartProduct } = useContext(CartContext);
@@ -31,7 +32,7 @@ export default function CartPage() {
             <p className='py-4 text-sm font-semibold text-blackHeader md:text-base'>Có {totalQuantity(cartProducts)} sản phẩm trong giỏ hàng của bạn</p>
             {cartProducts?.length > 0 && cartProducts.map((product, index) => (
               <CartProduct
-                key={index}
+                key={product._id}
                 index={index}
                 product={product}
                 onRemove={removeCartProduct}
@@ -39,6 +40,13 @@ export default function CartPage() {
               />
             ))}
           </div>}
+          <div className='px-4 mt-4 border rounded-2xl '>
+            <RecommendMenuItems classNameTitle={"normal-case"} hasLine={false} slidesConfig={{
+              mobile: 2.3,
+              tablet: 1.3,
+              desktop: 1.3,
+            }} />
+          </div>
         </div>
         <div className="">
           <CartSubtotal subtotal={subtotal} deliveryFee={deliveryInfo?.shipFee} />

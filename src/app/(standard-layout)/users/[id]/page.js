@@ -1,6 +1,6 @@
 "use client";
 import ArrowLeft from '@/components/icons/ArrowLeft';
-import UserForm from '@/components/layout/UserForm';
+import UserForm from '@/modules/users/UserForm';
 import UserTabs from '@/components/layout/UserTabs'
 import UseProfile from '@/components/UseProfile';
 import { API_PROFILE, API_UPLOAD_IMAGE, API_USERS } from '@/constant/constant';
@@ -12,6 +12,7 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 import toast from 'react-hot-toast';
+import { uploadImage } from '@/libs/uploadImage';
 
 export default function EditUserPage() {
     const { loading: profileLoading, data: profileData } = UseProfile();
@@ -58,16 +59,13 @@ export default function EditUserPage() {
         // Bước 2: Upload ảnh nếu có file mới
         let finalImage = data.image;
         if (pendingFile) {
-            const formData = new FormData();
-            formData.set("file", pendingFile);
-            const uploadRes = await fetch(API_UPLOAD_IMAGE, { method: "POST", body: formData });
-            if (!uploadRes.ok) {
+            try {
+                finalImage = await uploadImage(pendingFile);
+            } catch (error) {
                 setLoadingForm(false);
-                toast.error("Upload ảnh thất bại");
+                toast.error(error.message);
                 return;
             }
-            const uploadData = await uploadRes.json();
-            finalImage = uploadData?.url;
         }
 
         const savingPromise = new Promise(async (resolve, reject) => {

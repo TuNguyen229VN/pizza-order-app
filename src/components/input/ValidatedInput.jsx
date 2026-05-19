@@ -3,13 +3,13 @@ import InfoIcon from "../icons/InfoIcon";
 import { VscEye, VscEyeClosed } from "react-icons/vsc";
 
 // components/ui/ValidatedInput.jsx
-const ValidatedInput = ({ label, name, error, inputRef, type, value, ...props }) => {
+const ValidatedInput = ({ important = true, label, name, error, inputRef, type, value, ...props }) => {
   const [showPassword, setShowPassword] = useState(false);
   const isPassword = type === "password";
   const inputType = isPassword ? (showPassword ? "text" : "password") : type;
   return (
     <div className="flex flex-col gap-1 ">
-      {label && <label className='my-2 text-sm font-medium'>{label}</label>}
+      {label && <label className='my-2 text-sm font-medium'>{label} {important && <span className="text-primary">*</span>}</label>}
       <div className="relative">
         <input
           ref={inputRef}

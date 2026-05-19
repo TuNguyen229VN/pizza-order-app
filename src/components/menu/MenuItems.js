@@ -11,6 +11,7 @@ import { useLockBodyScroll } from "@/hooks/useLockBodyScroll";
 import { createPortal } from "react-dom";
 import { useDelivery } from "@/context/DeliveryContext";
 import DeliveryPickupModal from "@/modules/DeliveryPickupModal";
+import { KEYWORDS } from "@/constant/constant";
 
 const MenuItems = ({ recomStyle, ...menuItem }) => {
   const { image, name, description, basePrice, sizes, extraIngredientPrices } = menuItem
@@ -95,7 +96,9 @@ const MenuItems = ({ recomStyle, ...menuItem }) => {
     }
   };
 
-  const isPizza = name?.toLowerCase().includes("pizza");
+  const isPizza = KEYWORDS.some(keyword =>
+    name?.toLowerCase().includes(keyword)
+  );
 
   // Choose option will increase the product price 
   // Ex: choose Size (Large,Medium, Small), Extra ingredient(Cheese, Pork,...) => Price Increase (basePrice + selectedPrice + ExtraIngredientPrice)
@@ -127,8 +130,9 @@ const MenuItems = ({ recomStyle, ...menuItem }) => {
               <Image
                 src={image}
                 alt={name}
+                quality={100}
                 fill
-                className={`object-cover ${isPizza?"md:scale-150 left-0 md:!-left-[15%]":""}`}
+                className={`object-cover ${isPizza ? "md:scale-150 left-0 md:!-left-[15%]" : ""}`}
                 style={isPizza ? {
                   objectPosition: 'right center',
                 } : {}}
@@ -256,9 +260,9 @@ const MenuItems = ({ recomStyle, ...menuItem }) => {
         addToCartFn={doAddToCart}
         onClick={() => setShowPopup(true)}
         onAddToCart={handleAddToCartButtonClick}
-         recomStyle={recomStyle}
+        recomStyle={recomStyle}
         {...menuItem}
-        />
+      />
       <DeliveryPickupModal
         isOpen={open}
         onClose={() => setOpen(false)}

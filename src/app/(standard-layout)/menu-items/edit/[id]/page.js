@@ -18,6 +18,7 @@ import Link from 'next/link';
 import { redirect, useParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 import toast from 'react-hot-toast';
+import { uploadImage } from '@/libs/uploadImage';
 
 export default function EditMenuItemPage() {
     const { id } = useParams();
@@ -128,18 +129,14 @@ export default function EditMenuItemPage() {
 
         let finalImage = formData.image;
         if (pendingFile) {
-            const formData_Image = new FormData();
-            formData_Image.set("file", pendingFile);
-            const uploadRes = await fetch(API_UPLOAD_IMAGE, { method: "POST", body: formData_Image });
-            if (!uploadRes.ok) {
+            try {
+                finalImage = await uploadImage(pendingFile);
+            } catch (error) {
                 setLoadingForm(false);
-                toast.error("Upload ảnh thất bại");
+                toast.error(error.message);
                 return;
             }
-            const uploadData = await uploadRes.json();
-            finalImage = uploadData?.url;
         }
-
 
         const data = { _id: id, ...formData };
         const savingPromise = new Promise(async (resolve, reject) => {

@@ -3,6 +3,8 @@ import { NextResponse } from "next/server";
 import {
     CATEGORIES_ROUTE,
     CHANGEPASSWORD_ROUTE,
+    COMBO_ROUTE,
+    COMBOTYPE_ROUTE,
     FORGOTPASSWORD_ROUTE,
     LOGIN_ROUTE,
     MENU_ITEMS_ROUTE,
@@ -31,6 +33,14 @@ const protectedRoutePatterns = [
     withId(MENU_ITEMS_ROUTE + "/edit"),      // /menu-items/edit/123
     exact(USERS_ROUTE),
     withId(USERS_ROUTE),         // /users/abc  | /users/abc/xyz  → 404
+    exact(COMBOTYPE_ROUTE),
+    exact(COMBOTYPE_ROUTE + "/new"),
+    exact(COMBOTYPE_ROUTE + "/edit"),
+    withId(COMBOTYPE_ROUTE + "/edit"),
+    exact(COMBO_ROUTE),
+    exact(COMBO_ROUTE + "/new"),
+    exact(COMBO_ROUTE + "/edit"),
+    withId(COMBO_ROUTE + "/edit"),
 ];
 
 // route chỉ dành cho role admin
@@ -44,6 +54,14 @@ const adminRoutePatterns = [
     withId(MENU_ITEMS_ROUTE + "/edit"),
     exact(USERS_ROUTE),
     withId(USERS_ROUTE),
+    exact(COMBOTYPE_ROUTE),
+    exact(COMBOTYPE_ROUTE + "/new"),
+    exact(COMBOTYPE_ROUTE + "/edit"),
+    withId(COMBOTYPE_ROUTE + "/edit"),
+    exact(COMBO_ROUTE),
+    exact(COMBO_ROUTE + "/new"),
+    exact(COMBO_ROUTE + "/edit"),
+    withId(COMBO_ROUTE + "/edit"),
 
 ];
 
@@ -101,5 +119,13 @@ export const config = {
         "/login",
         "/register",
         "/forgot-password",
+        "/combo",
+        "/combo/new",
+        "/combo/edit",
+        "/combo/edit/:id*",
+        "/combo-type",
+        "/combo-type/new",
+        "/combo-type/edit",
+        "/combo-type/edit/:id*",
     ],
 };

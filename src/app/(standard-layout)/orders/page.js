@@ -5,7 +5,7 @@ import Paging from '@/components/layout/Paging';
 import TotalDashboard from '@/components/layout/TotalDashboard';
 import UserTabs from '@/components/layout/UserTabs';
 import UseProfile from '@/components/UseProfile';
-import { API_ORDERS } from '@/constant/constant';
+import { API_ORDERS, LIST_OPTION, PAID_OPTION } from '@/constant/constant';
 import ContainerProfileLeft from '@/container/ContainerProfileLeft';
 import { useDebounce } from '@/hooks/useDebounce';
 import HeaderCart from '@/modules/cart/HeaderCart';
@@ -13,17 +13,6 @@ import OrderTable from '@/modules/orders/OrderTable';
 import React, { useEffect, useState } from 'react'
 
 export default function OrdersPage() {
-    const listOption = [
-        { value: "newest", label: "Mới nhất" },
-        { value: "oldest", label: "Cũ nhất" },
-        { value: "asc", label: "Tên A-Z" },
-        { value: "desc", label: "Tên Z-A" },
-    ];
-    const paidOption = [
-        { value: "", label: "Tất cả" },
-        { value: "true", label: "Đã thanh toán" },
-        { value: "false", label: "Chưa thanh toán" },
-    ];
     const [orders, setOrders] = useState([]);
     const [loadingOrders, setLoadingOrders] = useState(true);
     const { loading, data: profile } = UseProfile();
@@ -89,7 +78,7 @@ export default function OrdersPage() {
     }
     return (
         <section className="">
-            <HeaderCart text="Quản lý đơn hàng" className={"top-[70px]"}/>
+            <HeaderCart text="Quản lý đơn hàng" className={"top-[70px]"} />
             <div className="grid gap-6 md:grid-cols-3">
                 <UserTabs isAdmin={profile.admin}></UserTabs>
                 <div className="min-w-0 col-span-2">
@@ -99,8 +88,8 @@ export default function OrdersPage() {
 
                             <div className="flex items-center gap-3 my-4">
                                 <InputSearch search={search} setSearch={setSearch} placeholder="Nhập số điện thoại hoặc mã đơn hàng" />
-                                <FilterSort sort={sort} setSort={setSort} listOption={listOption} />
-                                <FilterSort sort={paid} setSort={setPaid} listOption={paidOption} />
+                                <FilterSort sort={sort} setSort={setSort} listOption={LIST_OPTION} />
+                                <FilterSort sort={paid} setSort={setPaid} listOption={PAID_OPTION} />
                             </div>
                             <div>
                                 <div className='flex items-center gap-4'>
@@ -112,9 +101,8 @@ export default function OrdersPage() {
                                     <p className='text-green-700'>Đã thanh toán</p>
                                 </div>
                             </div>
-                            <div className="relative overflow-x-auto">
-                                <OrderTable orders={orders} loadingForm={loadingOrders} />
-                            </div>
+
+                            <OrderTable orders={orders} loadingForm={loadingOrders} />
 
                             <Paging
                                 page={page}

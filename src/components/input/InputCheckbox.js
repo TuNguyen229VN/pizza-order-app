@@ -8,7 +8,7 @@ export default function InputCheckbox({ onClick, extraThing, isChecked }) {
                 ${isChecked ? 'border-gray-300 bg-primary' : 'border-gray-300'}`}>
             </div>
             <span className="flex-1 ml-2 text-sm font-medium md:text-base">{extraThing.name}</span>
-            <span className="text-sm md:text-base">{extraThing.price.toLocaleString('vi-VN')}đ</span>
+            <span className="text-sm md:text-base">{extraThing.price.toLocaleString('vi-VN')} <span className='underline'>đ</span></span>
         </label>
     )
 }

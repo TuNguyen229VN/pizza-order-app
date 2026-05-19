@@ -8,10 +8,11 @@ import TotalDashboard from "@/components/layout/TotalDashboard";
 import UserTabs from "@/components/layout/UserTabs";
 import ConfirmPopup from "@/components/popup/ConfirmPopup";
 import UseProfile from "@/components/UseProfile";
-import { API_CATEGORIES, API_UPLOAD_IMAGE } from "@/constant/constant";
+import { API_CATEGORIES, API_UPLOAD_IMAGE, LIST_OPTION, STATUS_OPTIONS, STATUS_OPTIONS_FILTER } from "@/constant/constant";
 import ContainerProfileLeft from "@/container/ContainerProfileLeft";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useFormValidate } from "@/hooks/useFormValidate";
+import { uploadImage } from "@/libs/uploadImage";
 import { validators } from "@/libs/validators";
 import HeaderCart from "@/modules/cart/HeaderCart";
 import CategoriesForm from "@/modules/categories/CategoriesForm";
@@ -20,21 +21,6 @@ import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 const CategoriesPage = () => {
-  const listOption = [
-    { value: "newest", label: "Mới nhất" },
-    { value: "oldest", label: "Cũ nhất" },
-    { value: "asc", label: "Tên A-Z" },
-    { value: "desc", label: "Tên Z-A" },
-  ];
-  const STATUS_OPTIONS = [
-    { value: "on", label: "Đang kinh doanh" },
-    { value: "off", label: "Tạm đóng" },
-  ];
-  const STATUS_OPTIONS_FILTER = [
-    { value: "", label: "Tất cả" },
-    { value: "on", label: "Đang kinh doanh" },
-    { value: "off", label: "Tạm đóng" },
-  ];
 
   const [categoryName, setCategoryName] = useState("");
   const [categories, setCategories] = useState("");
@@ -132,16 +118,13 @@ const CategoriesPage = () => {
     // Bước 2: Upload ảnh nếu có file mới
     let finalImage = pendingFile ? null : (editedCategory?.image ?? null);
     if (pendingFile) {
-      const formData = new FormData();
-      formData.set("file", pendingFile);
-      const uploadRes = await fetch(API_UPLOAD_IMAGE, { method: "POST", body: formData });
-      if (!uploadRes.ok) {
+      try {
+        finalImage = await uploadImage(pendingFile);
+      } catch (error) {
         setLoadingForm(false);
-        toast.error("Upload ảnh thất bại");
+        toast.error(error.message);
         return;
       }
-      const uploadData = await uploadRes.json();
-      finalImage = uploadData?.url;
     }
 
 
@@ -209,7 +192,7 @@ const CategoriesPage = () => {
 
   return (
     <section>
-      <HeaderCart text="Quản lý danh mục" className={"top-[70px]"}/>
+      <HeaderCart text="Quản lý danh mục" className={"top-[70px]"} />
       <div className="grid gap-6 md:grid-cols-3">
         <UserTabs isAdmin={profileData.admin} />
         <div className="min-w-0 col-span-2">
@@ -232,7 +215,7 @@ const CategoriesPage = () => {
             {/* ✅ Thanh tìm kiếm + sort */}
             <div className="flex items-center gap-3 my-4">
               <InputSearch search={search} setSearch={setSearch} />
-              <FilterSort sort={sort} setSort={setSort} listOption={listOption} />
+              <FilterSort sort={sort} setSort={setSort} listOption={LIST_OPTION} />
               <FilterSort sort={statusFilter} setSort={setstatusFilter} listOption={STATUS_OPTIONS_FILTER} />
             </div>
 

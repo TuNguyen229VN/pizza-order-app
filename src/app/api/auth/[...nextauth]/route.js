@@ -49,6 +49,15 @@ export const authOptions = {
       },
     }),
   ],
+  events: {
+    async createUser({ user }) {
+      // user vừa được adapter tạo, patch thêm createdAt
+      await User.findOneAndUpdate(
+        { email: user.email },
+        { $set: { createdAt: new Date() } }
+      );
+    },
+  },
   session: {
     strategy: "jwt", // "jwt" Hoặc 'database' nếu bạn lưu session vào MongoDB
   },
@@ -83,7 +92,7 @@ export const authOptions = {
       if (token.status === "on") {
         return null;
       }
-      
+
       session.user = {
         id: token.id,
         email: token.email,

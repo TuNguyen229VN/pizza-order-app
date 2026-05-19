@@ -1,6 +1,5 @@
 "use client";
-import EditTableImage from "@/components/layout/EditTableImage";
-import UserForm from "@/components/layout/UserForm";
+import UserForm from "@/modules/users/UserForm";
 import UserTabs from "@/components/layout/UserTabs";
 import { API_PROFILE, API_UPLOAD_IMAGE } from "@/constant/constant";
 import { LOGIN_ROUTE } from "@/constant/routesApp";

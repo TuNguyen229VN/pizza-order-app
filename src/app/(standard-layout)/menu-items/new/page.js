@@ -15,6 +15,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import React, { useState } from 'react'
 import toast from 'react-hot-toast';
+import { uploadImage } from '@/libs/uploadImage';
 
 export default function NewMenuItemPage() {
     const { loading: profileLoading, data: profileData } = UseProfile();
@@ -41,7 +42,7 @@ export default function NewMenuItemPage() {
             };
             dynamicFields[`sizes_${i}_price`] = {
                 value: item.price,
-                rules: [validators.required("giá"),validators.isNumber("giá cơ bản"), validators.isNumber("Giá"), validators.minValue(1000), validators.maxValue(100000000)],
+                rules: [validators.required("giá"), validators.isNumber("giá cơ bản"), validators.isNumber("Giá"), validators.minValue(1000), validators.maxValue(100000000)],
             };
         });
 
@@ -52,7 +53,7 @@ export default function NewMenuItemPage() {
             };
             dynamicFields[`extraIngredientPrices_${i}_price`] = {
                 value: item.price,
-                rules: [validators.required("giá"),validators.isNumber("giá cơ bản"), validators.isNumber("Giá"), validators.minValue(1000), validators.maxValue(100000000)],
+                rules: [validators.required("giá"), validators.isNumber("giá cơ bản"), validators.isNumber("Giá"), validators.minValue(1000), validators.maxValue(100000000)],
             };
         });
 
@@ -91,16 +92,13 @@ export default function NewMenuItemPage() {
 
         let finalImage = formData.image;
         if (pendingFile) {
-            const formData_Image = new FormData();
-            formData_Image.set("file", pendingFile);
-            const uploadRes = await fetch(API_UPLOAD_IMAGE, { method: "POST", body: formData_Image });
-            if (!uploadRes.ok) {
+            try {
+                finalImage = await uploadImage(pendingFile);
+            } catch (error) {
                 setLoadingForm(false);
-                toast.error("Upload ảnh thất bại");
+                toast.error(error.message);
                 return;
             }
-            const uploadData = await uploadRes.json();
-            finalImage = uploadData?.url;
         }
 
 

@@ -62,6 +62,7 @@ const LoginPage = () => {
           {error && <p className="px-20 mb-4 text-sm text-center text-primary">{error}</p>}
           <form className="mx-auto " method="post" onSubmit={handleFormSubmit}>
             <ValidatedInput
+              important={false}
               id="email"
               label="Email"
               name="email"
@@ -73,6 +74,7 @@ const LoginPage = () => {
               onChange={(e) => { setEmail(e.target.value); clearError("email"); }}
             />
             <ValidatedInput
+              important={false}
               label="Mật khẩu"
               name="password"
               type="password"

@@ -1,14 +1,14 @@
 "use client"
 import React, { useEffect, useState } from 'react'
-import EditTableImage from './EditTableImage';
-import UseProfile from '../UseProfile';
-import AddressInput from './AddressInput';
-import ValidatedInput from '../input/ValidatedInput';
-import ValidatedSelectInput from '../input/ValidatedSelectInput';
-import ValidatedDateInput from '../input/ValidatedDateInput';
-import Loader from '../loading/Loader';
+import EditTableImage from '../../components/layout/EditTableImage';
+import UseProfile from '../../components/UseProfile';
+import AddressInput from '../../components/layout/AddressInput';
+import ValidatedInput from '../../components/input/ValidatedInput';
+import ValidatedSelectInput from '../../components/input/ValidatedSelectInput';
+import ValidatedDateInput from '../../components/input/ValidatedDateInput';
+import Loader from '../../components/loading/Loader';
 import ContainerProfileLeft from '@/container/ContainerProfileLeft';
-import ButtonCancel from '../buttons/ButtonCancel';
+import ButtonCancel from '../../components/buttons/ButtonCancel';
 
 export default function UserForm({ title, user, onSave, errors, registerRef, clearError, loadingForm }) {
   const STATUS_OPTIONS = [
@@ -156,15 +156,9 @@ export default function UserForm({ title, user, onSave, errors, registerRef, cle
             clearError("phone");
           }}
         />
-        {/* <AddressInput
-          infoProps={{ phone, streetAddress, postalCode, city, country }}
-          setInfoProps={handleAddressChange}
-          errors={errors} registerRef={registerRef}
-          clearError={clearError}
-          disabled={loadingForm}
-        /> */}
 
         <ValidatedInput
+          important={false}
           label="Email"
           name="email"
           value={user?.email}

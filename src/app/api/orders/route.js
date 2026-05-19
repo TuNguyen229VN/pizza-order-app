@@ -80,13 +80,13 @@ export async function GET(req) {
 
         // 3. Không phân trang
         if (all) {
-            const orders = await Order.find(baseQuery).sort(sortOrder);
+            const orders = await Order.find(baseQuery).sort(sortOrder).collation({ locale: "en", strength: 2 });
             return Response.json({ orders, total: orders.length });
         }
 
         // 4. Có phân trang
         const [orders, total, totalAll, totalOn, totalOff] = await Promise.all([
-            Order.find(baseQuery).sort(sortOrder).skip(skip).limit(limit),
+            Order.find(baseQuery).sort(sortOrder).collation({ locale: "en", strength: 2 }).skip(skip).limit(limit),
             Order.countDocuments(baseQuery),
             Order.countDocuments(),
             Order.countDocuments({ paid: true }),

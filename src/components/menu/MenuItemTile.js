@@ -2,12 +2,15 @@ import React from 'react'
 import AddToCartButton from './AddToCartButton';
 import Image from 'next/image';
 import { useDelivery } from '@/context/DeliveryContext';
+import { KEYWORDS } from '@/constant/constant';
 
 export default function MenuItemTile({ onClick, onAddToCart, addToCartRef, addToCartFn, recomStyle, ...item }) {
     const { image, description, name, basePrice,
         sizes, extraIngredientPrices,
     } = item;
-    const isPizza = name?.toLowerCase().includes("pizza");
+    const isPizza = KEYWORDS.some(keyword =>
+        name?.toLowerCase().includes(keyword)
+    );
     const hasSizesOrExtras = sizes?.length > 1 || extraIngredientPrices?.length > 1;
     const { deliveryInfo } = useDelivery();
     return (
@@ -19,7 +22,7 @@ export default function MenuItemTile({ onClick, onAddToCart, addToCartRef, addTo
             }
             onClick();
         }}>
-            <div className={`${recomStyle === "recomStyle" ? "w-[111px] md:w-[161px]" : "w-[130px]  md:w-[220px]"} h-full shrink-0 overflow-hidden relative`}>
+            <div className={`${recomStyle === "recomStyle" ? "w-[111px] md:w-[161px]" : "w-[130px]  lg:w-[220px]"} h-full shrink-0 overflow-hidden relative`}>
                 {/* <Image src={image} alt={name} width={200} height={200} className='object-cover w-full h-full transition-transform duration-300 group-hover:scale-110' /> */}
                 <Image
                     src={image}
@@ -27,7 +30,7 @@ export default function MenuItemTile({ onClick, onAddToCart, addToCartRef, addTo
                     fill
                     className={`transition-transform duration-500 group-hover:scale-110 ${isPizza ? "object-contain scale-[1.4] group-hover:scale-[1.6]" : "object-cover scale-100"} `}
                     style={
-                        isPizza ? { objectPosition: "left center", top: recomStyle?"10%":"20%", left: recomStyle?"-20%":"-30%", } : {}
+                        isPizza ? { objectPosition: "left center", top: recomStyle ? "10%" : "20%", left: recomStyle ? "-20%" : "-30%", } : {}
                     }
                 />
             </div>
