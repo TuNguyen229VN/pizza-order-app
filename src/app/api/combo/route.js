@@ -4,6 +4,8 @@ import { ComboType } from "@/models/ComboType";
 import { MenuItem } from "@/models/MenuItem";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/route";
+import { LIMITPAGE } from "@/constant/constant";
+import { validateCombo } from "@/libs/validateCombo";
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -39,12 +41,11 @@ async function checkAdmin(req) {
 export async function POST(req) {
     try {
         await connectDB();
-        console.log("alo")
         const { error, status } = await checkAdmin(req);
         if (error) return Response.json({ message: error }, { status });
 
         const data = await req.json();
-        const { isValid, errors } = validateComboDetail(data);
+        const { isValid, errors } = validateCombo(data);
         if (!isValid) return Response.json({ message: "Dữ liệu không hợp lệ", errors }, { status: 400 });
 
         // Lấy ComboType để kiểm tra slots
@@ -132,11 +133,9 @@ export async function GET(req) {
     try {
         await connectDB();
         const url = new URL(req.url);
-        const _id = url.searchParams.get("_id");
-        const status = url.searchParams.get("status"); // "on" | "off" | ""
-        const comboType = url.searchParams.get("comboType");
 
         // Chi tiết 1 combo
+        const _id = url.searchParams.get("_id");
         if (_id) {
             const combo = await ComboDetail.findById(_id)
                 .populate("comboType")
@@ -145,18 +144,69 @@ export async function GET(req) {
             return Response.json(combo);
         }
 
-        // Danh sách
+        const all = url.searchParams.get("all") === "true";
+        const search = url.searchParams.get("search") || "";
+        const statusFilter = url.searchParams.get("status");
+        const comboType = url.searchParams.get("comboType");
+        const sort = url.searchParams.get("sort") || "newest";
+        const page = parseInt(url.searchParams.get("page") || "1");
+        const limit = LIMITPAGE;
+        const skip = (page - 1) * limit;
+
+        const statusQuery = statusFilter && ["on", "off"].includes(statusFilter)
+            ? { status: statusFilter }
+            : { status: { $in: ["on", "off"] } };
+
         const query = {
-            ...(status && { status }),
+            ...statusQuery,
+            ...(search && { name: { $regex: search, $options: "i" } }),
             ...(comboType && { comboType }),
         };
 
-        const combos = await ComboDetail.find(query)
-            .populate("comboType", "name slots")
-            .populate({ path: "items.menuItem", select: "name image basePrice sizes" })
-            .sort({ createdAt: -1 });
+        const sortMap = {
+            newest: { createdAt: -1 },
+            oldest: { createdAt: 1 },
+            asc: { name: 1 },
+            desc: { name: -1 },
+        };
+        const sortOrder = sortMap[sort] || sortMap.newest;
 
-        return Response.json({ combos, total: combos.length });
+        const populateItems = { path: "items.menuItem", select: "name image basePrice sizes" };
+
+        // Không phân trang
+        if (all) {
+            const combos = await ComboDetail.find(query)
+                .populate("comboType", "name slots")
+                .populate(populateItems)
+                .sort(sortOrder)
+                .collation({ locale: "en", strength: 2 });
+            return Response.json({ combos, total: combos.length });
+        }
+
+        // Có phân trang
+        const [combos, total, totalAll, totalOn, totalOff] = await Promise.all([
+            ComboDetail.find(query)
+                .populate("comboType", "name slots")
+                .populate(populateItems)
+                .sort(sortOrder)
+                .collation({ locale: "en", strength: 2 })
+                .skip(skip)
+                .limit(limit),
+            ComboDetail.countDocuments(query),
+            ComboDetail.countDocuments(),
+            ComboDetail.countDocuments({ status: "on" }),
+            ComboDetail.countDocuments({ status: "off" }),
+        ]);
+
+        return Response.json({
+            combos,
+            total,
+            totalAll,
+            totalOn,
+            totalOff,
+            totalPages: Math.ceil(total / limit),
+            page,
+        });
     } catch (error) {
         console.error(error);
         return Response.json({ message: "Không thể kết nối Database" }, { status: 500 });

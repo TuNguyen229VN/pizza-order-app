@@ -81,7 +81,7 @@ export default function ComboTypeForm({ onSuccess, editData = null, setRedirectT
     async function handleSubmit(e) {
         if (loading) return;
         e.preventDefault();
-
+        setLoading(true);
         const isValid = handleValidate({
             name: {
                 value: name,
@@ -117,9 +117,10 @@ export default function ComboTypeForm({ onSuccess, editData = null, setRedirectT
             setErrors((prev) => ({ ...prev, ...slotErrors }));
         }
 
-        if (!isValid || Object.keys(slotErrors).length > 0) return;
-
-        setLoading(true);
+        if (!isValid || Object.keys(slotErrors).length > 0) {
+            setLoading(false);
+            return;
+        }
 
         // Upload ảnh nếu có file mới
         let finalImage = image;
@@ -166,8 +167,8 @@ export default function ComboTypeForm({ onSuccess, editData = null, setRedirectT
 
             onSuccess?.(data);
             if (isEdit) {
-                setSavedData(data); // ✅ cập nhật savedData với data mới từ server
-                setImage(data.image || "");
+                setSavedData(prev => ({ ...prev, ...data, image: finalImage })); // ✅ cập nhật savedData với data mới từ server
+                setImage(finalImage || "");
                 setPendingFile(null);
                 setPreviewImage(null);
                 window.scrollTo({ top: 0, behavior: "smooth" });
@@ -222,7 +223,7 @@ export default function ComboTypeForm({ onSuccess, editData = null, setRedirectT
             <div className="relative w-full h-[120px] group mb-4 mt-12 md:mt-8">
                 <EditTableImage
                     classNameImage={"rounded-none"}
-                    link={editData?.image}
+                    link={image}
                     previewLink={previewImage}
                     onFileSelect={handleFileSelect}
                     loadingForm={loading} />
@@ -264,7 +265,7 @@ export default function ComboTypeForm({ onSuccess, editData = null, setRedirectT
                         type="button"
                         onClick={addSlot}
                         disabled={loading}
-                        className="flex items-center gap-1 text-sm font-semibold text-primary hover:text-red-700"
+                        className={`flex items-center gap-1 text-sm font-semibold text-primary hover:text-red-700 ${loading ? "pointer-events-none" : "cursor-pointer"}`}
                     >
                         + Thêm slot
                     </button>
@@ -295,7 +296,7 @@ export default function ComboTypeForm({ onSuccess, editData = null, setRedirectT
                                         type="button"
                                         onClick={() => moveSlot(idx, -1)}
                                         disabled={idx === 0}
-                                        className="p-1 text-xs text-gray-400 hover:text-gray-600 disabled:opacity-30"
+                                        className={`p-1 text-xs text-gray-400 hover:text-gray-600 disabled:opacity-30 ${loading ? "pointer-events-none" : "cursor-pointer"}`}
                                         title="Di chuyển lên"
                                     >
                                         ▲
@@ -304,7 +305,7 @@ export default function ComboTypeForm({ onSuccess, editData = null, setRedirectT
                                         type="button"
                                         onClick={() => moveSlot(idx, 1)}
                                         disabled={idx === slots.length - 1}
-                                        className="p-1 text-xs text-gray-400 hover:text-gray-600 disabled:opacity-30"
+                                        className={`p-1 text-xs text-gray-400 hover:text-gray-600 disabled:opacity-30 ${loading ? "pointer-events-none" : "cursor-pointer"}`}
                                         title="Di chuyển xuống"
                                     >
                                         ▼
@@ -312,7 +313,7 @@ export default function ComboTypeForm({ onSuccess, editData = null, setRedirectT
                                     <button
                                         type="button"
                                         onClick={() => removeSlot(idx)}
-                                        className="p-1 ml-1 text-xs text-primary hover:text-red-700"
+                                        className={`p-1 ml-1 text-xs text-primary hover:text-red-700 ${loading ? "pointer-events-none" : "cursor-pointer"}`}
                                         title="Xóa slot"
                                     >
                                         <CloseIcon />

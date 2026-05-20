@@ -9,6 +9,10 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 import { Navigation } from "swiper/modules";
 import ChevronLeft from "../icons/ChevronLeft";
 import ChevronRight from "../icons/ChevronRight";
+import 'swiper/css';
+import 'swiper/css/effect-fade';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
 
 const RecommendMenuItems = ({ sectionRefs = null, hasLine = true,
   slidesConfig = {

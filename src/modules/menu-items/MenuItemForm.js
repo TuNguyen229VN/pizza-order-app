@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import EditTableImage from '../../components/layout/EditTableImage'
 import MenuItemPriceProps from '../../components/layout/MenuItemPriceProps';
-import { API_CATEGORIES } from '@/constant/constant';
+import { API_CATEGORIES, STATUS_OPTIONS } from '@/constant/constant';
 import ValidatedInput from '../../components/input/ValidatedInput';
 import ValidatedSelectInput from '../../components/input/ValidatedSelectInput';
 import ButtonPrimary from '../../components/buttons/ButtonPrimary';
@@ -9,20 +9,15 @@ import Loader from '../../components/loading/Loader';
 import ButtonCancel from '../../components/buttons/ButtonCancel';
 
 export default function MenuItemForm({ onSubmit, menuItem, errors, registerRef, clearError, loadingForm }) {
-    const STATUS_OPTIONS = [
-        { value: "on", label: "Đang kinh doanh" },
-        { value: "off", label: "Tạm đóng" },
-    ];
     const [image, setImage] = useState(menuItem?.image || "");
     const [name, setName] = useState(menuItem?.name || "");
     const [description, setDescription] = useState(menuItem?.description || "");
     const [basePrice, setBasePrice] = useState(menuItem?.basePrice || "");
     const [sizes, setSizes] = useState(menuItem?.sizes || []);
     const [categories, setCategories] = useState([]);
-    const [category, setCategory] = useState(menuItem?.category || categories[0]?._id || "");
+    const [category, setCategory] = useState(menuItem?.category || "");
     const [extraIngredientPrices, setExtraIngredientPrices] = useState(menuItem?.extraIngredientPrices || []);
     const [status, setStatus] = useState(menuItem?.status || STATUS_OPTIONS[0].value);
-
     const [pendingFile, setPendingFile] = useState(null);     // file chờ upload
     const [previewImage, setPreviewImage] = useState(null);
 
@@ -37,7 +32,7 @@ export default function MenuItemForm({ onSubmit, menuItem, errors, registerRef, 
         setExtraIngredientPrices(menuItem.extraIngredientPrices || []);
         setStatus(menuItem.status || STATUS_OPTIONS[0].value);
     }, [menuItem]);
-    
+
     useEffect(() => {
         fetch(`${API_CATEGORIES}?all=true`).then(res => {
             res.json().then(data => {
@@ -52,7 +47,8 @@ export default function MenuItemForm({ onSubmit, menuItem, errors, registerRef, 
 
                 // create mode
                 if (!menuItem) {
-                    setCategory(fetchedCategories[0]._id);
+                    setCategory("");
+                    // setCategory(fetchedCategories[0]._id);
                     return;
                 }
 
@@ -144,7 +140,9 @@ export default function MenuItemForm({ onSubmit, menuItem, errors, registerRef, 
                         label="Danh mục"
                         name="category"
                         value={category}
-                        options={categories.map(c => ({ value: c._id, label: c.name }))}
+                        options={[
+                            { value: "", label: "-- Chọn loại combo --" },
+                            ...categories.map(c => ({ value: c._id, label: c.name }))]}
                         disabled={loadingForm}
                         inputRef={registerRef("category")}
                         error={errors.category}

@@ -42,8 +42,8 @@ export default function CartPage() {
           </div>}
           <div className='px-4 mt-4 border rounded-2xl '>
             <RecommendMenuItems classNameTitle={"normal-case"} hasLine={false} slidesConfig={{
-              mobile: 2.3,
-              tablet: 1.3,
+              mobile: 1.3,
+              tablet: 2.3,
               desktop: 1.3,
             }} />
           </div>

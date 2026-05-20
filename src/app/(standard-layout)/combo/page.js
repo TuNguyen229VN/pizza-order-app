@@ -1,7 +1,140 @@
-import React from 'react'
+"use client"
+import ButtonPrimary from '@/components/buttons/ButtonPrimary'
+import FilterSort from '@/components/filter/FilterSort'
+import PlusIcon from '@/components/icons/PlusIcon'
+import InputSearch from '@/components/input/InputSearch'
+import Paging from '@/components/layout/Paging'
+import TotalDashboard from '@/components/layout/TotalDashboard'
+import UserTabs from '@/components/layout/UserTabs'
+import UseProfile from '@/components/UseProfile'
+import { API_COMBO, API_MENU_ITEMS, LIST_OPTION, STATUS_OPTIONS_FILTER } from '@/constant/constant'
+import { COMBO_NEW_ROUTE } from '@/constant/routesApp'
+import ContainerProfileLeft from '@/container/ContainerProfileLeft'
+import { useDebounce } from '@/hooks/useDebounce'
+import HeaderCart from '@/modules/cart/HeaderCart'
+import ComboTable from '@/modules/combo/ComboTable'
+import Link from 'next/link'
+import React, { useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
 
 export default function ComboPage() {
+  const { loading: profileLoading, data: profileData } = UseProfile();
+  const [loadingForm, setLoadingForm] = useState(false);
+  const [search, setSearch] = useState("");
+  const [sort, setSort] = useState("newest");
+  const [status, setStatus] = useState("");
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
+  const [totalAll, setTotalAll] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalOn, setTotalOn] = useState(0);
+  const [totalOff, setTotalOff] = useState(0);
+
+  const [comboList, setComboList] = useState([]);
+  const [menuItems, setMenuItems] = useState([]);
+  const debouncedSearch = useDebounce(search, 400);
+  useEffect(() => {
+    if (page > totalPages && totalPages > 0) {
+      setPage(totalPages);
+    }
+  }, [page, totalPages]);
+
+  useEffect(() => {
+    if (page !== 1) {
+      setPage(1);
+    } else {
+      fetchCombo();
+    }
+  }, [debouncedSearch, sort, status]);
+
+  const fetchCombo = () => {
+    const params = new URLSearchParams({
+      search: debouncedSearch,
+      sort,
+      page,
+      status,
+    });
+
+    fetch(`${API_COMBO}?${params}`).then((res) =>
+      res.json().then((data) => {
+        setComboList(data.combos);
+        setTotal(data.total);
+        setTotalOn(data.totalOn);
+        setTotalOff(data.totalOff);
+        setTotalPages(data.totalPages);
+        setTotalAll(data.totalAll);
+      })
+    );
+  }
+
+
+  useEffect(() => {
+    fetchCombo();
+    fetch(`${API_MENU_ITEMS}?all=true`).then(res => {
+      res.json().then(data => {
+        setMenuItems(data?.menuItems);
+      })
+    })
+  }, [page]);
+
+  const handleComboDelete = async (id) => {
+    setLoadingForm(true);
+    const promise = new Promise(async (resolve, reject) => {
+      const response = await fetch(`${API_COMBO}?_id=${id}`, {
+        method: "DELETE",
+      })
+      if (response.ok) {
+        resolve();
+        fetchCombo();
+      } else {
+        reject();
+      }
+      await toast.promise(promise, {
+        loading: "Đang xóa...",
+        success: "Đã xóa",
+        error: "Lỗi",
+      });
+      setLoadingForm(false);
+    })
+  }
+
+  if (profileLoading) {
+    return "Loading combo info...";
+  }
+  if (!profileData.admin) {
+    return "Not an admin";
+  }
   return (
-    <div>ComboPage</div>
+    <section>
+      <HeaderCart text="Quản Combo" className={"top-[70px]"} />
+      <div className="grid gap-6 md:grid-cols-3">
+        <UserTabs isAdmin={profileData.admin} />
+        <div className="min-w-0 col-span-2">
+          <ContainerProfileLeft >
+            <div className="flex justify-end">
+              <Link className="w-max" href={COMBO_NEW_ROUTE}><ButtonPrimary className={"w-max p-4 flex items-center gap-2"}> <PlusIcon /> Tạo Combo mới</ButtonPrimary></Link>
+            </div>
+            <div className="">
+              <h3 class="font-label-bold text-secondary uppercase tracking-wider">Danh sách Combo</h3>
+
+              <div className="flex items-center gap-3 my-4">
+                <InputSearch search={search} setSearch={setSearch} placeholder="Nhập tên cobmo" />
+                <FilterSort sort={sort} setSort={setSort} listOption={LIST_OPTION} />
+                <FilterSort sort={status} setSort={setStatus} listOption={STATUS_OPTIONS_FILTER} />
+              </div>
+              <ComboTable comboList={comboList} loadingForm={loadingForm} handleComboDelete={handleComboDelete} menuItems={menuItems} />
+              <Paging
+                page={page}
+                setPage={setPage}
+                totalPages={totalPages}
+                total={total}
+                items={comboList}
+              />
+            </div>
+          </ContainerProfileLeft>
+        </div>
+      </div>
+      <TotalDashboard quantityAll={totalAll} textAll="Tổng combo" textOn="Combo đang kinh doanh" textOff="Combo tạm đóng" quantityOn={totalOn} quantityOff={totalOff} />
+    </section>
   )
 }

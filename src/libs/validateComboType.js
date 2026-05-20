@@ -17,21 +17,25 @@ export function validateComboType(data) {
         }
     }
 
+    const { isValid, errors } = validateForm({
+        name: {
+            value: data.name,
+            rules: [validators.required("tên loại combo"), validators.minLength(2), validators.maxLength(200)],
+        },
+        status: {
+            value: data.status,
+            rules: [validators.requiredSelect("trạng thái")],
+        },
+        image: {
+            value: data.image,
+            rules: [validators.required("ảnh loại combo")],
+        },
+    });
+
+    const mergedErrors = { ...errors, ...slotErrors };
+
     return {
-        ...validateForm({
-            name: {
-                value: data.name,
-                rules: [validators.required("tên loại combo"), validators.minLength(2), validators.maxLength(200)],
-            },
-            status: {
-                value: data.status,
-                rules: [validators.requiredSelect("trạng thái")],
-            },
-            image: {
-                value: data.image,
-                rules: [validators.required("ảnh loại combo")],
-            },
-        }),
-        ...slotErrors,
+        isValid: isValid && Object.keys(slotErrors).length === 0, // ✅ cả 2 phải valid
+        errors: mergedErrors,
     };
 }

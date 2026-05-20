@@ -119,7 +119,7 @@ export default function ComboTypePage() {
                             <h3 class="font-label-bold text-secondary uppercase tracking-wider">Danh sách loại combo</h3>
 
                             <div className="flex items-center gap-3 my-4">
-                                <InputSearch search={search} setSearch={setSearch} placeholder="Nhập tên món ăn" />
+                                <InputSearch search={search} setSearch={setSearch} placeholder="Nhập tên loại combo" />
                                 <FilterSort sort={sort} setSort={setSort} listOption={LIST_OPTION} />
                                 <FilterSort sort={status} setSort={setStatus} listOption={STATUS_OPTIONS_FILTER} />
                             </div>
