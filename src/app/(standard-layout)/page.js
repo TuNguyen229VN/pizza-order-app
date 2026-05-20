@@ -4,11 +4,12 @@ import NotFindLayout from "@/components/layout/NotFindLayout";
 import SectionHeader from "@/components/layout/SectionHeader";
 import MenuItems from "@/components/menu/MenuItems";
 import Slider from "@/components/slider/Slider";
-import { API_CATEGORIES, API_MENU_ITEMS } from "@/constant/constant";
+import { API_CATEGORIES, API_COMBO, API_MENU_ITEMS } from "@/constant/constant";
 import { getCategoryIcon } from "@/libs/getCategoryIcon";
 import { slugify } from "@/libs/slugify";
 import { useEffect, useRef, useState } from "react";
 import RecommendMenuItems from "@/components/layout/RecommendMenuItems";
+import ComboSelector from "@/modules/combo/ComboSelector";
 
 export default function Home() {
   const [categories, setCategories] = useState([]);
@@ -20,7 +21,7 @@ export default function Home() {
   const [activeSearch, setActiveSearch] = useState("");
   const [openInputSearch, setOpenInputSearch] = useState(false);
   const hashRef = useRef("");
-
+  const [comboList, setComboList] = useState([])
   useEffect(() => {
     fetch(`${API_CATEGORIES}?all=true`)
       .then(res => res.json())
@@ -29,6 +30,9 @@ export default function Home() {
     fetch(`${API_MENU_ITEMS}?all=true`)
       .then(res => res.json())
       .then(data => setMenuItems(data.menuItems))
+    fetch(`${API_COMBO}?all=true&status=on`)
+      .then(res => res.json())
+      .then(data => setComboList(data.combos))
   }, [])
 
   // data load xong: init hash từ URL + scroll đến đúng vị trí
@@ -163,6 +167,8 @@ export default function Home() {
         {activeSearch && filteredCategories.length === 0 && (
           <NotFindLayout />
         )}
+
+        <ComboSelector combo={comboList[0]}/>
       </section>
     </>
   );
