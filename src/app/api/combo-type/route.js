@@ -62,7 +62,7 @@ export async function GET(req) {
 
         const _id = url.searchParams.get("_id");
         if (_id) {
-            const comboType = await ComboType.findById(_id).populate("slots.category", "name status");
+            const comboType = await ComboType.findById(_id).populate("name status");
             if (!comboType) return Response.json({ message: "Không tìm thấy loại combo" }, { status: 404 });
             return Response.json(comboType);
         }
@@ -95,7 +95,7 @@ export async function GET(req) {
         // Không phân trang
         if (all) {
             const comboTypes = await ComboType.find(query)
-                .populate("slots.category", "name status")
+                .populate("name status")
                 .sort(sortOrder)
                 .collation({ locale: "en", strength: 2 });
             return Response.json({ comboTypes, total: comboTypes.length });
@@ -104,7 +104,7 @@ export async function GET(req) {
         // Có phân trang
         const [comboTypes, total, totalAll, totalOn, totalOff] = await Promise.all([
             ComboType.find(query)
-                .populate("slots.category", "name status")
+                .populate("name status")
                 .sort(sortOrder)
                 .collation({ locale: "en", strength: 2 })
                 .skip(skip)

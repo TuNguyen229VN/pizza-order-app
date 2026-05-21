@@ -4,7 +4,7 @@ import React, { createContext, useCallback, useEffect, useState } from "react";
 
 export const CartContext = createContext({});
 
-
+// ─── Tính giá 1 item thường ───
 export function cartProductPrice(cartProduct) {
   let price = cartProduct.basePrice;
   if (cartProduct.size) {
@@ -20,6 +20,19 @@ export function cartProductPrice(cartProduct) {
   }
   return price;
 }
+// ─── Tính giá 1 combo trong giỏ 
+export function cartComboPrice(comboCartItem) {
+  return (comboCartItem.price || 0) * (comboCartItem.quantity || 1);
+}
+
+// ─── Tính tổng giỏ hàng (cả món lẻ lẫn combo) ───────────────────────────────
+export function totalCartPrice(cartProducts) {
+  return cartProducts.reduce((sum, item) => {
+    if (item.type === "combo") return sum + cartComboPrice(item);
+    return sum + cartProductPrice(item);
+  }, 0);
+}
+
 
 const AppProvider = ({ children }) => {
   const [cartProducts, setCartProducts] = useState([]);
@@ -78,6 +91,28 @@ const AppProvider = ({ children }) => {
     })
   }
 
+
+  function addComboToCart(comboDetail, selectedItems, quantity = 1, noteOrder = "") {
+    setCartProducts((prevProducts) => {
+      const comboCartItem = {
+        type: "combo",
+        _id: comboDetail._id,
+        name: comboDetail.name,
+        image: comboDetail.image,
+        price: comboDetail.price,
+        comboType: comboDetail.comboType,
+        items: selectedItems,
+        quantity,
+        noteOrder,
+      };
+
+      const newProducts = [...prevProducts, comboCartItem];
+      saveCartProductToLocalStorage(newProducts);
+      return newProducts;
+    });
+  }
+
+  // ── Update món lẻ ────────────
   function updateCart(product, size, extras, quantity, noteOrder) {
     setCartProducts(prevProducts => {
       const currentIndex = prevProducts.findIndex(p => {
@@ -141,10 +176,23 @@ const AppProvider = ({ children }) => {
     });
   }
 
- const clearCart = useCallback(() => {
+  // ── Update combo (chỉ quantity + note) ──────────────
+  function updateComboInCart(cartIndex, quantity, noteOrder) {
+    setCartProducts((prevProducts) => {
+      const newProducts = prevProducts.map((p, i) => {
+        if (i !== cartIndex || p.type !== "combo") return p;
+        return { ...p, quantity, noteOrder };
+      });
+      saveCartProductToLocalStorage(newProducts);
+      return newProducts;
+    });
+  }
+
+
+  const clearCart = useCallback(() => {
     setCartProducts([]);
     saveCartProductToLocalStorage([]);
-}, []);
+  }, []);
 
   function removeCartProduct(indexToRemove) {
     setCartProducts(prevCartProducts => {
@@ -158,7 +206,7 @@ const AppProvider = ({ children }) => {
   return (
     <SessionProvider>
       <CartContext.Provider value={{
-        cartProducts, setCartProducts, addToCart, clearCart, removeCartProduct, updateCart
+        cartProducts, setCartProducts, addToCart, clearCart, removeCartProduct, updateCart, addComboToCart, updateComboInCart,
       }}>
         {children}
       </CartContext.Provider>

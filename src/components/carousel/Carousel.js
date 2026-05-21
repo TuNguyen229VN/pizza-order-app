@@ -73,7 +73,7 @@ export default function Carousel({ carouselList = [], setHash, hash, isScrolling
                     }}
                 >
                     <div className='relative flex-1 min-w-0'>
-                        <input type="text" placeholder='Tìm kiếm mọi thứ bạn muốn' className='w-full py-3 pl-5 pr-4 text-sm border rounded-md focus:border-black md:text-base' value={search} onChange={(ev) => setSearch(ev.target.value)} onKeyDown={(e) => {
+                        <input type="text" placeholder='Tìm kiếm mọi thứ bạn muốn' className='w-full py-3 pl-5 pr-4 border rounded-md focus:border-black md:text-base' value={search} onChange={(ev) => setSearch(ev.target.value)} onKeyDown={(e) => {
                             if (e.key === "Enter") handleSearch()
                         }} />
                         {search?.length > 0 && <button className="absolute p-[1px] border rounded-full right-3 top-2/4 -translate-y-2/4 cursor-pointer" onClick={() => {

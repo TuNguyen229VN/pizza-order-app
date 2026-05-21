@@ -4,12 +4,13 @@ import NotFindLayout from "@/components/layout/NotFindLayout";
 import SectionHeader from "@/components/layout/SectionHeader";
 import MenuItems from "@/components/menu/MenuItems";
 import Slider from "@/components/slider/Slider";
-import { API_CATEGORIES, API_COMBO, API_MENU_ITEMS } from "@/constant/constant";
+import { API_CATEGORIES, API_COMBO, API_COMBO_TYPES, API_MENU_ITEMS } from "@/constant/constant";
 import { getCategoryIcon } from "@/libs/getCategoryIcon";
 import { slugify } from "@/libs/slugify";
 import { useEffect, useRef, useState } from "react";
 import RecommendMenuItems from "@/components/layout/RecommendMenuItems";
 import ComboSelector from "@/modules/combo/ComboSelector";
+import MenuCombo from "@/components/menu/MenuCombo";
 
 export default function Home() {
   const [categories, setCategories] = useState([]);
@@ -22,17 +23,21 @@ export default function Home() {
   const [openInputSearch, setOpenInputSearch] = useState(false);
   const hashRef = useRef("");
   const [comboList, setComboList] = useState([])
+  const [comboTypeList, setComboTypeList] = useState([])
   useEffect(() => {
-    fetch(`${API_CATEGORIES}?all=true`)
+    fetch(`${API_CATEGORIES}?all=true&statusFilter=on`)
       .then(res => res.json())
       .then(data => setCategories(data.categories))
 
-    fetch(`${API_MENU_ITEMS}?all=true`)
+    fetch(`${API_MENU_ITEMS}?all=true&status=on`)
       .then(res => res.json())
       .then(data => setMenuItems(data.menuItems))
     fetch(`${API_COMBO}?all=true&status=on`)
       .then(res => res.json())
       .then(data => setComboList(data.combos))
+    fetch(`${API_COMBO_TYPES}?all=true&status=on`)
+      .then(res => res.json())
+      .then(data => setComboTypeList(data.comboTypes))
   }, [])
 
   // data load xong: init hash từ URL + scroll đến đúng vị trí
@@ -62,7 +67,7 @@ export default function Home() {
 
   //Scroll listener để update hash khi cuộn
   useEffect(() => {
-    if (!categories.length || !menuItems.length) return;
+    if (!categories.length || !menuItems.length || !comboList.length || !comboTypeList.length) return;
 
     const handleScroll = () => {
       if (isScrollingTo.current) return;
@@ -90,7 +95,7 @@ export default function Home() {
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [categories, menuItems]);
+  }, [categories, menuItems, comboList, comboTypeList]);
 
   const listSlide = [
     { name: "slide1", url: "/images/slide1.webp" },
@@ -113,6 +118,18 @@ export default function Home() {
     })
   }
 
+  const filteredComboItems = (comboTypeId) => {
+    return comboList.filter(item => {
+      const matchComboType = item.comboType._id == comboTypeId && item.status === "on"
+      const matchSearch = activeSearch === "" ||
+        item.name.toLowerCase().includes(activeSearch.toLowerCase())
+      return matchComboType && matchSearch
+    })
+  }
+  const filteredComboType = comboTypeList.filter(c => {
+    if (c.status !== "on") return false
+    return filteredComboItems(c._id).length > 0
+  })
   // filteredCategories vẫn dùng activeSearch để ẩn cả section nếu không có item nào
   const filteredCategories = categories.filter(c => {
     if (c.status !== "on") return false
@@ -144,6 +161,26 @@ export default function Home() {
       />
       {!openInputSearch && <RecommendMenuItems sectionRefs={sectionRefs} />}
       <section className='mt-8'>
+        {filteredComboType.map(c => {
+          const items = filteredComboItems(c._id)
+          return (
+            <div
+              key={c._id}
+              id={slugify(c.name)}
+              ref={el => sectionRefs.current[c._id] = el}
+            >
+              <div className="text-center">
+                <SectionHeader mainHeader={c.name} urlHeader={c?.image} />
+              </div>
+              <div className="grid px-4 mt-4 mb-8 md:px-0 md:mb-12 md:mt-6 md:gap-6 md:grid-cols-2">
+                {items.map(item => (
+                  <MenuCombo key={item._id} {...item} />
+                ))}
+              </div>
+            </div>
+          );
+        })}
+
         {filteredCategories.map(c => {
           const items = filteredMenuItems(c._id)
           return (
@@ -164,11 +201,11 @@ export default function Home() {
           );
         })}
 
-        {activeSearch && filteredCategories.length === 0 && (
+        {activeSearch && filteredComboType.length === 0 && filteredCategories.length === 0 && (
           <NotFindLayout />
         )}
 
-        <ComboSelector combo={comboList[0]}/>
+        {/* <ComboSelector combo={comboList[0]}/> */}
       </section>
     </>
   );

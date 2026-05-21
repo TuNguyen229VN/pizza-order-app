@@ -39,7 +39,7 @@ export default function EditComboTypePage() {
   }
   return (
     <section className="">
-      <HeaderCart text="Tạo loại combo mới" />
+      <HeaderCart text="Cập nhật loại combo" />
       <div className="grid gap-6 md:grid-cols-3">
         <UserTabs isAdmin={profileData.admin}></UserTabs>
         <div className="relative col-span-2">

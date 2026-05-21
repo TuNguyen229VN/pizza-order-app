@@ -7,7 +7,7 @@ import Paging from '@/components/layout/Paging'
 import TotalDashboard from '@/components/layout/TotalDashboard'
 import UserTabs from '@/components/layout/UserTabs'
 import UseProfile from '@/components/UseProfile'
-import { API_COMBO, API_MENU_ITEMS, LIST_OPTION, STATUS_OPTIONS_FILTER } from '@/constant/constant'
+import { API_CATEGORIES, API_COMBO, API_COMBO_TYPES, API_MENU_ITEMS, LIST_OPTION, STATUS_OPTIONS_FILTER } from '@/constant/constant'
 import { COMBO_NEW_ROUTE } from '@/constant/routesApp'
 import ContainerProfileLeft from '@/container/ContainerProfileLeft'
 import { useDebounce } from '@/hooks/useDebounce'
@@ -31,6 +31,7 @@ export default function ComboPage() {
   const [totalOff, setTotalOff] = useState(0);
 
   const [comboList, setComboList] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [menuItems, setMenuItems] = useState([]);
   const debouncedSearch = useDebounce(search, 400);
   useEffect(() => {
@@ -70,9 +71,16 @@ export default function ComboPage() {
 
   useEffect(() => {
     fetchCombo();
+
     fetch(`${API_MENU_ITEMS}?all=true`).then(res => {
       res.json().then(data => {
         setMenuItems(data?.menuItems);
+      })
+    })
+
+    fetch(`${API_CATEGORIES}?all=true`).then(res => {
+      res.json().then(data => {
+        setCategories(data?.categories);
       })
     })
   }, [page]);
@@ -122,7 +130,7 @@ export default function ComboPage() {
                 <FilterSort sort={sort} setSort={setSort} listOption={LIST_OPTION} />
                 <FilterSort sort={status} setSort={setStatus} listOption={STATUS_OPTIONS_FILTER} />
               </div>
-              <ComboTable comboList={comboList} loadingForm={loadingForm} handleComboDelete={handleComboDelete} menuItems={menuItems} />
+              <ComboTable comboList={comboList} loadingForm={loadingForm} handleComboDelete={handleComboDelete} menuItems={menuItems} categories={categories} />
               <Paging
                 page={page}
                 setPage={setPage}

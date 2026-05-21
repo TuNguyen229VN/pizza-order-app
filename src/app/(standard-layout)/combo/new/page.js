@@ -7,6 +7,7 @@ import ContainerProfileLeft from '@/container/ContainerProfileLeft'
 import HeaderCart from '@/modules/cart/HeaderCart'
 import ComboForm from '@/modules/combo/ComboForm'
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 import React, { useState } from 'react'
 
 export default function NewComboPage() {

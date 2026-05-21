@@ -17,7 +17,7 @@ export default function ComboTypeTable({ comboTypes, loadingForm, handleMenuItem
                         <tr>
                             <th className="px-5 py-4"><p className='w-max'>Hình ảnh</p></th>
                             <th className="px-5 py-4">Tên combo</th>
-                            <th className="px-5 py-4">Thành phần</th>
+                            {/* <th className="px-5 py-4">Thành phần</th> */}
                             <th className="px-5 py-4">Trạng thái</th>
                             <th className="px-5 py-4">Ngày tạo</th>
                             <th className="sticky right-0 z-10 px-5 py-4 text-right bg-white "><p className='w-max'>Thao tác</p></th>
@@ -41,7 +41,7 @@ export default function ComboTypeTable({ comboTypes, loadingForm, handleMenuItem
                                             ID: {item._id}
                                         </p>
                                     </td>
-                                    <td className="px-5 py-4">
+                                    {/* <td className="px-5 py-4">
                                         <p className='w-[160px]'>
                                             {item.slots
                                                 ?.map(slot =>
@@ -50,7 +50,7 @@ export default function ComboTypeTable({ comboTypes, loadingForm, handleMenuItem
                                                 .filter(Boolean)
                                                 .join(", ") || "Chưa có"}
                                         </p>
-                                    </td>
+                                    </td> */}
                                     <td className="px-5 py-4">
                                         <div className='w-[180px]'>
 

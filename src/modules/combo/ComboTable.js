@@ -8,7 +8,7 @@ import React from 'react'
 import { HiArrowRight } from 'react-icons/hi2'
 import { MdOutlineModeEdit } from 'react-icons/md'
 
-export default function ComboTable({ comboList, loadingForm, handleComboDelete, menuItems }) {
+export default function ComboTable({ comboList, loadingForm, handleComboDelete, menuItems, categories }) {
     const getItemsForMenu = (items) => {
         return items?.map((slot) => {
             const menuItem = menuItems.find(
@@ -20,6 +20,19 @@ export default function ComboTable({ comboList, loadingForm, handleComboDelete, 
             .filter(Boolean)
             .join(", ") || "Chưa có"
     }
+
+    const getItemsForSlots = (items) => {
+        return items
+            ?.map(slot => {
+               const category= categories.find(c => c._id === slot.category)
+            if(!category) return null;
+            return `${category.name} x${slot.quantity}`
+            }
+            )
+            .filter(Boolean)
+            .join(", ") || "Chưa có"
+
+    }
     return (
         <>
             <div className="overflow-x-auto">
@@ -29,7 +42,8 @@ export default function ComboTable({ comboList, loadingForm, handleComboDelete, 
                             <th className="px-5 py-4"><p className='w-max'>Hình ảnh</p></th>
                             <th className="px-5 py-4">Tên combo</th>
                             <th className="px-5 py-4">Giá</th>
-                            <th className="px-5 py-4">Thành phần</th>
+                            <th className="px-5 py-4">Mô tả</th>
+                            <th className="px-5 py-4">Loại combo</th>
                             <th className="px-5 py-4">Trạng thái</th>
                             <th className="px-5 py-4">Ngày tạo</th>
                             <th className="sticky right-0 z-10 px-5 py-4 text-right bg-white "><p className='w-max'>Thao tác</p></th>
@@ -60,8 +74,13 @@ export default function ComboTable({ comboList, loadingForm, handleComboDelete, 
                                         </p>
                                     </td>
                                     <td className="px-5 py-4">
-                                        <p className='w-[160px] text-secondary text-xs line-clamp-3' title={getItemsForMenu(item?.items)}>
-                                            {getItemsForMenu(item?.items)}
+                                        <p className='w-[160px] text-secondary text-xs line-clamp-3' title={getItemsForSlots(item?.slots)}>
+                                            {getItemsForSlots(item?.slots)}
+                                        </p>
+                                    </td>
+                                    <td className="px-5 py-4">
+                                        <p className='w-[160px] ' title={item?.comboType?.name}>
+                                            {item?.comboType?.name}
                                         </p>
                                     </td>
                                     <td className="px-5 py-4">
