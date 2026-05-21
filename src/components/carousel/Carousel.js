@@ -159,7 +159,7 @@ export default function Carousel({ carouselList = [], setHash, hash, isScrolling
                                     }`}
                             >
                                 <AiOutlineLike className="w-4 h-4 md:w-6 md:h-6" />
-                                <p className='text-sm md:text-base'>Bạn sẽ thích</p>
+                                <p className='text-sm md:text-base w-max'>Bạn sẽ thích</p>
 
                                 <span
                                     className={`absolute bottom-0 left-0 h-1 md:h-[6px] w-full rounded-full bg-primary transition-all duration-300 ${"recommendations" === hash
@@ -183,7 +183,7 @@ export default function Carousel({ carouselList = [], setHash, hash, isScrolling
                                         }`}
                                 >
                                     {carouselItem.icons}
-                                    <p className='text-sm md:text-base'>{carouselItem.name}</p>
+                                    <p className='text-sm md:text-base w-max'>{carouselItem.name}</p>
 
                                     <span
                                         className={`absolute bottom-0 left-0 h-1 md:h-[6px] w-full rounded-full bg-primary transition-all duration-300 ${carouselItem.slug === hash

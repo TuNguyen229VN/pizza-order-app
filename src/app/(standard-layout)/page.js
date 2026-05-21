@@ -136,12 +136,13 @@ export default function Home() {
     return filteredMenuItems(c._id).length > 0
   })
 
-  const carouselList = filteredCategories.map(c => ({
+  const allSections = [...filteredComboType, ...filteredCategories];
+
+  const carouselList = allSections.map(c => ({
     name: c.name,
     icons: getCategoryIcon(c.name),
     slug: slugify(c.name)
   }));
-
 
   return (
     <>
@@ -174,7 +175,7 @@ export default function Home() {
               </div>
               <div className="grid px-4 mt-4 mb-8 md:px-0 md:mb-12 md:mt-6 md:gap-6 md:grid-cols-2">
                 {items.map(item => (
-                  <MenuCombo key={item._id} {...item} />
+                  <MenuCombo key={item._id} {...item} categories={categories} />
                 ))}
               </div>
             </div>
