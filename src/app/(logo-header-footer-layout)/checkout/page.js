@@ -26,10 +26,9 @@ export default function CheckoutPage() {
     const [noteDelivery, setNoteDelivery] = useState("")
     const [legit, setLegit] = useState(false)
     const { data: profileData } = UseProfile();
-    const [open, setOpen] = useState(false)
 
     const { cartProducts } = useContext(CartContext);
-    const { deliveryInfo } = useDelivery();
+    const { deliveryInfo, openDeliveryModal } = useDelivery();
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -62,7 +61,7 @@ export default function CheckoutPage() {
         ev.preventDefault();
         // address and shopping cart products
         if (!deliveryInfo) {
-            setOpen(true);
+            openDeliveryModal();
             return;
         }
         const isValid = handleValidate({
@@ -141,7 +140,7 @@ export default function CheckoutPage() {
                     <form id='checkout-form' onSubmit={proceedToCheckout}>
                         <CheckoutAddress infoProps={infoProfileCheckout}
                             setInfoProps={handleInfoChange} errors={errors} registerRef={registerRef}
-                            clearError={clearError} open={open} setOpen={setOpen} noteDelivery={noteDelivery} setNoteDelivery={setNoteDelivery}></CheckoutAddress>
+                            clearError={clearError} noteDelivery={noteDelivery} setNoteDelivery={setNoteDelivery}></CheckoutAddress>
                         <CheckoutInfo infoProps={infoProfileCheckout}
                             setInfoProps={handleInfoChange} errors={errors} registerRef={registerRef}
                             clearError={clearError} ></CheckoutInfo>

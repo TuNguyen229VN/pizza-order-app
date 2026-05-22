@@ -24,9 +24,8 @@ const MenuItems = ({ recomStyle, ...menuItem }) => {
   const [pendingAdd, setPendingAdd] = useState(false);
 
   const { addToCart } = useContext(CartContext);
-  const { deliveryInfo } = useDelivery();
+  const { deliveryInfo, openDeliveryModal } = useDelivery();
   const [showPopup, setShowPopup] = useState(false);
-  const [open, setOpen] = useState(false)
 
   useLockBodyScroll(showPopup);
 
@@ -58,7 +57,7 @@ const MenuItems = ({ recomStyle, ...menuItem }) => {
   const handleAddToCartButtonClick = async () => {
     if (!deliveryInfo) {
       setPendingAdd(true);
-      setOpen(true);
+      openDeliveryModal();
       return;
     }
     const hasOptions = sizes.length > 1 || extraIngredientPrices.length > 1;
@@ -262,10 +261,6 @@ const MenuItems = ({ recomStyle, ...menuItem }) => {
         onAddToCart={handleAddToCartButtonClick}
         recomStyle={recomStyle}
         {...menuItem}
-      />
-      <DeliveryPickupModal
-        isOpen={open}
-        onClose={() => setOpen(false)}
       />
     </>
   );

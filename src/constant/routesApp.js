@@ -20,6 +20,7 @@ const COMBOTYPE_EDIT_ROUTE = '/combo-type/edit';
 const COMBO_ROUTE="/combo";
 const COMBO_NEW_ROUTE = '/combo/new';
 const COMBO_EDIT_ROUTE = '/combo/edit';
+const COMBO_ORDER_ROUTE = '/combo-order';
 
 export {
   HOME_ROUTE,
@@ -44,4 +45,5 @@ export {
   COMBO_ROUTE,
   COMBO_NEW_ROUTE,
   COMBO_EDIT_ROUTE,
+  COMBO_ORDER_ROUTE
 }

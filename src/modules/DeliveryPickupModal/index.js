@@ -34,7 +34,8 @@ async function reverseGeocode(lat, lng) {
     return { label, lat: +r.lat, lng: +r.lon, address: r.address || {} };
 }
 
-export default function DeliveryPickupModal({ isOpen, onClose, onConfirm }) {
+export default function DeliveryPickupModal({ onConfirm }) {
+
     // ── Tab ─────────────────────────────────────────────────
     const [mode, setMode] = useState("delivery");
 
@@ -50,7 +51,7 @@ export default function DeliveryPickupModal({ isOpen, onClose, onConfirm }) {
 
     // ── Misc ─────────────────────────────────────────────────
     const [success, setSuccess] = useState(false);
-    const { saveDelivery, deliveryInfo: savedInfo } = useDelivery();
+    const { isDeliveryModalOpen, closeDeliveryModal, saveDelivery, deliveryInfo: savedInfo } = useDelivery();
 
     const inputRef = useRef(null);
     const dropRef = useRef(null);
@@ -67,7 +68,7 @@ export default function DeliveryPickupModal({ isOpen, onClose, onConfirm }) {
 
     // ── Load savedInfo khi modal mở, reset khi đóng ──────────
     useEffect(() => {
-        if (isOpen) {
+        if (isDeliveryModalOpen) {
             if (savedInfo) {
                 setMode(savedInfo.mode);
                 if (savedInfo.mode === "delivery") {
@@ -86,7 +87,7 @@ export default function DeliveryPickupModal({ isOpen, onClose, onConfirm }) {
             setLocError("");
             setSuccess(false);
         }
-    }, [isOpen]);
+    }, [isDeliveryModalOpen]);
 
     // ── Reset chỉ UI phụ khi đổi tab (KHÔNG reset addr/store) ─
     useEffect(() => {
@@ -177,10 +178,10 @@ export default function DeliveryPickupModal({ isOpen, onClose, onConfirm }) {
 
         try { saveDelivery(data); } catch { }
         setSuccess(true);
-        setTimeout(() => { setSuccess(false); onConfirm?.(data); onClose?.(); }, 500);
+        setTimeout(() => { setSuccess(false); onConfirm?.(data); closeDeliveryModal(); }, 500);
     };
 
-    const handleClose = () => onClose?.();
+    const handleClose = () => closeDeliveryModal();
 
     const confirmLabel = () => {
         if (success) return "✓ Đã lưu thành công!";
@@ -191,7 +192,7 @@ export default function DeliveryPickupModal({ isOpen, onClose, onConfirm }) {
         return `Xác nhận – Phí ship ${deliveryInfo.feeText}`;
     };
 
-    if (!isOpen) return null;
+    if (!isDeliveryModalOpen) return null;
 
     return createPortal(
         <>

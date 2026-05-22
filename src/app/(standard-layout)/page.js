@@ -206,7 +206,6 @@ export default function Home() {
           <NotFindLayout />
         )}
 
-        {/* <ComboSelector combo={comboList[0]}/> */}
       </section>
     </>
   );

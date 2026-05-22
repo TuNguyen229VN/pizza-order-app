@@ -64,7 +64,7 @@ export default function Carousel({ carouselList = [], setHash, hash, isScrolling
         <div className='sticky z-10 pt-3 md:pt-6 top-[65px] md:top-[80px] bg-white'>
             <div className="relative flex items-center pb-3 overflow-hidden">
                 <div
-                    className="flex items-center flex-shrink-0 gap-3 overflow-hidden transition-all duration-500 ease-in-out"
+                    className="flex items-center flex-shrink-0 gap-3 px-4 overflow-hidden transition-all duration-500 ease-in-out md:p-0"
                     style={{
                         maxWidth: openInputSearch ? '100%' : '0px',
                         opacity: openInputSearch ? 1 : 0,
@@ -72,7 +72,7 @@ export default function Carousel({ carouselList = [], setHash, hash, isScrolling
                         pointerEvents: openInputSearch ? 'auto' : 'none',
                     }}
                 >
-                    <div className='relative flex-1 min-w-0'>
+                    <div className='relative flex-1 min-w-0 '>
                         <input type="text" placeholder='Tìm kiếm mọi thứ bạn muốn' className='w-full py-3 pl-5 pr-4 border rounded-md focus:border-black md:text-base' value={search} onChange={(ev) => setSearch(ev.target.value)} onKeyDown={(e) => {
                             if (e.key === "Enter") handleSearch()
                         }} />
