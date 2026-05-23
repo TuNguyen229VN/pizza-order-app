@@ -101,7 +101,7 @@ const AppProvider = ({ children }) => {
         image: comboDetail.image,
         price: comboDetail.price,
         comboType: comboDetail.comboType,
-        items: selectedItems,
+        slots: selectedItems,
         quantity,
         noteOrder,
       };

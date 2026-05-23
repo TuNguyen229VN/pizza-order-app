@@ -120,7 +120,7 @@ export default function Home() {
 
   const filteredComboItems = (comboTypeId) => {
     return comboList.filter(item => {
-      const matchComboType = item.comboType._id == comboTypeId && item.status === "on"
+      const matchComboType = item?.comboType?._id == comboTypeId && item.status === "on"
       const matchSearch = activeSearch === "" ||
         item.name.toLowerCase().includes(activeSearch.toLowerCase())
       return matchComboType && matchSearch

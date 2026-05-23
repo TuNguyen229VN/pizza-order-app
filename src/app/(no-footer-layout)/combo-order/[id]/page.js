@@ -4,35 +4,53 @@ import NotFindLayout from '@/components/layout/NotFindLayout';
 import { API_CATEGORIES, API_COMBO } from '@/constant/constant';
 import { HOME_ROUTE } from '@/constant/routesApp';
 import HeaderCart from '@/modules/cart/HeaderCart';
+import ComboSelector from '@/modules/combo/ComboSelector';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 
 export default function ComboOrderPage() {
     const { id } = useParams();
-    const [combos, setCombos] = useState([])
-    const [categories, setCategories] = useState([])
+    const [combos, setCombos] = useState(null);
+    const [categories, setCategories] = useState(null);
+    const [open, setOpen] = useState(false);
+    const [loading, setLoading] = useState(true);
     useEffect(() => {
-        fetch(`${API_COMBO}?all=true&status=on`).then(response => {
-            response.json().then(items => {
-                const item = items.combos.find(i => i._id === id);
-                if (item) {
-                    console.log(item)
-                    setCombos(item);
-                }
-            })
-        })
-        fetch(`${API_CATEGORIES}?all=true&statusFilter=on`)
-            .then(res => res.json())
-            .then(data => setCategories(data.categories))
-    }, [id])
+        setLoading(true);
 
+        Promise.all([
+            fetch(`${API_COMBO}?all=true&status=on`)
+                .then(res => res.json()),
+
+            fetch(`${API_CATEGORIES}?all=true&statusFilter=on`)
+                .then(res => res.json())
+        ])
+            .then(([comboData, categoryData]) => {
+
+                const item = comboData.combos.find(i => i._id === id);
+
+                setCombos(item || null);
+                setCategories(categoryData.categories || []);
+            })
+            .catch(() => {
+                setCombos(null);
+                setCategories(null);
+            })
+            .finally(() => {
+                setLoading(false);
+            });
+
+    }, [id]);
+    if (loading) {
+        return <div>Loading...</div>
+    }
     if (!combos || !categories) {
         return <NotFindLayout title='Xin lỗi, không có combo này' />
     }
     return (
         <section>
             <HeaderCart urlLink={HOME_ROUTE} text='' />
+
             <div className='flex flex-col-reverse mb-4 md:flex-row'>
                 <div className='w-full p-4 md:w-1/2 '>
                     <h4 className='mb-4 text-lg font-bold capitalize md:text-3xl'>{combos?.name}</h4>
@@ -53,8 +71,9 @@ export default function ComboOrderPage() {
                     <Image src={combos?.image} alt={combos?.name} fill className='object-cover object-center ' />
                 </div>
             </div>
+            {open && <ComboSelector categories={categories} combo={combos} onClose={() => setOpen(false)} />}
             <div className='px-4'>
-                <ButtonPrimary className={"hover:scale-100"}>Bắt đầu</ButtonPrimary>
+                <ButtonPrimary className={"hover:scale-100"} onClick={() => setOpen(true)}>Bắt đầu</ButtonPrimary>
             </div>
         </section>
     )

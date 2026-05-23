@@ -1,5 +1,5 @@
 "use client"
-import { CartContext, cartProductPrice } from '@/components/AppContext';
+import { CartContext, cartProductPrice, totalCartPrice } from '@/components/AppContext';
 import CartProduct from '@/modules/cart/CartProduct';
 import HeaderCart from '@/modules/cart/HeaderCart';
 import React, { useContext, useEffect, useState } from 'react'
@@ -32,7 +32,7 @@ export default function CartPage() {
             <p className='py-4 text-sm font-semibold text-blackHeader md:text-base'>Có {totalQuantity(cartProducts)} sản phẩm trong giỏ hàng của bạn</p>
             {cartProducts?.length > 0 && cartProducts.map((product, index) => (
               <CartProduct
-                key={product._id}
+                key={index}
                 index={index}
                 product={product}
                 onRemove={removeCartProduct}
@@ -49,7 +49,7 @@ export default function CartPage() {
           </div>
         </div>
         <div className="">
-          <CartSubtotal subtotal={subtotal} deliveryFee={deliveryInfo?.shipFee} />
+          <CartSubtotal subtotal={totalCartPrice(cartProducts)} deliveryFee={deliveryInfo?.shipFee} />
           <div className='px-4 md:px-0'>
             <Link href={cartProducts?.length > 0 ? CHECKOUT_ROUTE : '#'}
               className={cartProducts?.length === 0 ? 'pointer-events-none' : ''}>

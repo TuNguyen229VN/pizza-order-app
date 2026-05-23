@@ -43,7 +43,7 @@ export default function MenuItemTile({ onClick, onAddToCart, addToCartRef, addTo
                 <div className='flex items-center justify-between w-full'>
                     <div>
                         {hasSizesOrExtras && <p className='text-xs leading-5 md:text-xs text-secondary'>Chỉ từ</p>}
-                        <p className={`${recomStyle === "recomStyle" ? "font-medium  md:text-xl lg:text-2xl" : "font-semibold"} mt-1 text-sm md:text-2xl text-[#374151]  md:leading=[30px]`}>{(basePrice + (sizes[0]?.price || 0)).toLocaleString('vi-VN')}<span className='ml-2 underline'>đ</span></p>
+                        <p className={`${recomStyle === "recomStyle" ? "font-medium  md:text-xl lg:text-2xl" : "font-semibold"} mt-1 text-sm md:text-2xl text-[#374151]  md:leading=[30px]`}>{(basePrice + (sizes?.[0]?.price || 0)).toLocaleString('vi-VN')}<span className='ml-2 underline'>đ</span></p>
                     </div>
                     <AddToCartButton
                         ref={addToCartRef}
