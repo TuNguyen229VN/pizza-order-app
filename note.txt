@@ -37,6 +37,15 @@ loading button
 
 confirm delete, confirm dang xuat
 
+order cancel nghien cuu lại
+làm notification khi dat hàng thành công, 
+trang theo doi don hàng chỉ account mói dc check
+làm thanh toán tien mat, paypal
+làm combo box
+quản lý banner
+i18n (english, vn)
+
+
 dia chỉ xa de test: Aeon Mall Bình Tân, 1 Đường Số 17A, Bình Trị Đông B, Bình Tân
 
 Khu du lịch Suối Tiên, Xa lộ Hà Nội, TP. Thủ Đức
