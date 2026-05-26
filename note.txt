@@ -35,6 +35,7 @@ res trả ve bị lôi pass (dafix) admin check phan network
 bỏ postal code field 
 loading button
 
+loadding button khi bam thanh toan
 confirm delete, confirm dang xuat
 
 order cancel nghien cuu lại
