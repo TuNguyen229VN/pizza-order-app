@@ -53,6 +53,16 @@
 
 - Authentication
 - Edit Account Information
+- CRUD Categories (*Create,Read,Update,Delete*)
+- CRUD Menu Items
+- CRUD Combo Type
+- CRUD Combobox
+- CRUD Users
+- Reset/ Change Password (*Send to email*)
+- Search Menu For User
+- Add to Cart (Items, Combobox)
+- Checkout by Stripe
+
 
 ## Development Rules:
 
