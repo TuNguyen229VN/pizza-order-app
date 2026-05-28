@@ -31,7 +31,22 @@
 
 - Home Page
 - Login Page
+- Register Page
+- Forget Password Page
+- Reset Password Page
+- Cart Page
+- Checkout Page
 - Profile Page
+- Manage Categories Page
+- Manage Combobox Page
+- Create/Update Combobox Page
+- Manage Menu Items Page
+- Create/Update Menu Items Page
+- Mange Combo Type Page
+- Manage User Page
+- Update User Page
+- Change Password Page
+
 
 ## Main Features:
 
