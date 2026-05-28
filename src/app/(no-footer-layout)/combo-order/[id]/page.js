@@ -63,7 +63,7 @@ export default function ComboOrderPage() {
                         )
                         || "Chưa có"}</ul>
                     <div>
-                        <p className='text-sm text-[rgb(55,65,81)]'>Chỉ từ:</p>
+                        <p className='text-sm text-[rgb(55,65,81)]'>Chỉ từ:test</p>
                         <p className='font-semibold md:text-2xl'>{combos?.price?.toLocaleString('vi-VN')} <span className='underline'>đ</span></p>
                     </div>
                 </div>
