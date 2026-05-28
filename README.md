@@ -46,6 +46,7 @@
 - Manage User Page
 - Update User Page
 - Change Password Page
+- Combobox User Page
 
 
 ## Main Features:
