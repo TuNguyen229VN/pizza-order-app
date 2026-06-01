@@ -1,5 +1,5 @@
 "use client";
-import { CART_ROUTE, HOME_ROUTE, LOGIN_ROUTE, MENU_ROUTE, PROFILE_ROUTE, REGISTER_ROUTE } from "@/constant/routesApp";
+import { CART_ROUTE, HOME_ROUTE, LOGIN_ROUTE, MENU_ROUTE, ORDER_TRACKING_ROUTE, PROFILE_ROUTE, REGISTER_ROUTE } from "@/constant/routesApp";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useContext, useState } from "react";
@@ -78,7 +78,9 @@ const Header = ({ className }) => {
                   <Link href={REGISTER_ROUTE} className="block py-3 pl-4 hover:font-medium hover:text-primary">Đăng ký</Link>
                   <div className="w-full h-[1px] bg-gray-200"></div>
                 </>)}
-                <p className="py-3 pl-4 hover:font-medium hover:text-primary">Theo dõi đơn hàng</p>
+                <Link href={ORDER_TRACKING_ROUTE} className="inline-block py-3 pl-4 hover:font-medium hover:text-primary">
+                  Theo dõi đơn hàng
+                </Link>
                 {status === "authenticated" && (
                   <>
                     <div className="w-full h-[1px] bg-gray-200"></div>

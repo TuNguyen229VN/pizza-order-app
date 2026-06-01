@@ -21,6 +21,7 @@ const COMBO_ROUTE="/combo";
 const COMBO_NEW_ROUTE = '/combo/new';
 const COMBO_EDIT_ROUTE = '/combo/edit';
 const COMBO_ORDER_ROUTE = '/combo-order';
+const ORDER_TRACKING_ROUTE = '/order-tracking';
 
 export {
   HOME_ROUTE,
@@ -45,5 +46,6 @@ export {
   COMBO_ROUTE,
   COMBO_NEW_ROUTE,
   COMBO_EDIT_ROUTE,
-  COMBO_ORDER_ROUTE
+  COMBO_ORDER_ROUTE,
+  ORDER_TRACKING_ROUTE
 }

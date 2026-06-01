@@ -41,6 +41,7 @@ const protectedRoutePatterns = [
     exact(COMBO_ROUTE + "/new"),
     exact(COMBO_ROUTE + "/edit"),
     withId(COMBO_ROUTE + "/edit"),
+    exact(ORDERS_ROUTE),
 ];
 
 // route chỉ dành cho role admin
@@ -127,5 +128,6 @@ export const config = {
         "/combo-type/new",
         "/combo-type/edit",
         "/combo-type/edit/:id*",
+        "/order-tracking",
     ],
 };

@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation';
 import React from 'react'
 import ConfirmPopup from '../popup/ConfirmPopup';
 import { signOut } from 'next-auth/react';
-import { CATEGORIES_ROUTE, CHANGEPASSWORD_ROUTE, COMBO_ROUTE, COMBOTYPE_ROUTE, LOGIN_ROUTE, MENU_ITEMS_ROUTE, NOTIFICATION_ROUTE, ORDERS_ROUTE, PROFILE_ROUTE, REGISTER_ROUTE, USERS_ROUTE } from '@/constant/routesApp';
+import { CATEGORIES_ROUTE, CHANGEPASSWORD_ROUTE, COMBO_ROUTE, COMBOTYPE_ROUTE, LOGIN_ROUTE, MENU_ITEMS_ROUTE, NOTIFICATION_ROUTE, ORDER_TRACKING_ROUTE, ORDERS_ROUTE, PROFILE_ROUTE, REGISTER_ROUTE, USERS_ROUTE } from '@/constant/routesApp';
 
 export default function MenuMobile({ isAdmin, status, onClose }) {
     const path = usePathname();
@@ -17,7 +17,9 @@ export default function MenuMobile({ isAdmin, status, onClose }) {
                 </div>
             )}
             <div className={`${status === "unauthenticated" ? "border-b" : ""}`}>
-                <p className='p-3'>Theo dõi đơn hàng</p>
+                <Link href={ORDER_TRACKING_ROUTE} className='inline-blockp-3' onClick={onClose}>
+                    Theo dõi đơn hàng
+                </Link>
                 <p className='p-3'>Thông báo</p>
                 <div className='flex items-center justify-between p-3'>
                     <p>Ngôn ngữ / Language </p>
