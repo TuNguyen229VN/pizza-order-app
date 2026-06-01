@@ -2,7 +2,6 @@
 import { CartContext } from "@/components/AppContext";
 import MenuItemTile from "@/components/menu/MenuItemTile";
 import { API_MENU_ITEMS } from "@/constant/constant";
-import Image from "next/image";
 import { useContext, useEffect, useState } from "react";
 import { FaCheck } from "react-icons/fa6";
 /**
