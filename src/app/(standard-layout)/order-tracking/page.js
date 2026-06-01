@@ -5,6 +5,9 @@ export default function OrderTrackingPage() {
   return (
     <section>
         <HeaderCart text="Theo dõi đơn hàng" />
+        <div>
+          
+        </div>
     </section>
   )
 }
