@@ -9,6 +9,7 @@ import {
     LOGIN_ROUTE,
     MENU_ITEMS_ROUTE,
     NOTIFICATION_ROUTE,
+    ORDER_TRACKING_ROUTE,
     ORDERS_ROUTE,
     PROFILE_ROUTE,
     REGISTER_ROUTE,
@@ -41,7 +42,7 @@ const protectedRoutePatterns = [
     exact(COMBO_ROUTE + "/new"),
     exact(COMBO_ROUTE + "/edit"),
     withId(COMBO_ROUTE + "/edit"),
-    exact(ORDERS_ROUTE),
+    exact(ORDER_TRACKING_ROUTE),
 ];
 
 // route chỉ dành cho role admin
