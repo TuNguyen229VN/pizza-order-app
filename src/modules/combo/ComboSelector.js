@@ -369,7 +369,7 @@ export default function ComboSelector({
                                                             }`}
                                                     >
                                                         {sz.name}
-                                                        {sz.price > 0 && <span className="ml-1 opacity-80">+{sz.price?.toLocaleString("vi-VN")}₫</span>}
+                                                        {sz.price > 0 && <span className="ml-1 underline opacity-80">+{sz.price?.toLocaleString("vi-VN")}₫</span>}
                                                     </button>
                                                 );
                                             })}
