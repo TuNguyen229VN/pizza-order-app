@@ -275,7 +275,7 @@ export default function ComboSelector({
                                     const total = totalChosenInSlot(slotIdx);
                                     return (
                                         <div key={slotIdx} className="flex items-center gap-2 cursor-pointer" onClick={() => setChooseTabIndex(slotIdx)}>
-                                            <div className={`flex items-center justify-center w-8 h-8 text-sm rounded-full border ${chooseTabIndex===slotIdx?"bg-primary text-white ":"border-primary text-primary"}`}> <p className="font-semibold">{total>0&&chooseTabIndex!==slotIdx?<FaCheck />:slotIdx+1}</p></div>
+                                            <div className={`flex items-center justify-center w-8 h-8 text-sm rounded-full border ${chooseTabIndex === slotIdx ? "bg-primary text-white " : "border-primary text-primary"}`}> <p className="font-semibold">{total > 0 && chooseTabIndex !== slotIdx ? <FaCheck /> : slotIdx + 1}</p></div>
                                             <div>
                                                 <p className="font-semibold">Chọn  {category?.name}  {slot.quantity > 0 && `${total}/${slot.quantity}`}</p>
                                                 <p className="text-sm font-semibold text-secondary">Yêu cầu</p>
@@ -290,133 +290,98 @@ export default function ComboSelector({
                                     const entry = getEntry(chooseTabIndex, mi._id);
                                     const qty = entry?.quantity || 0;
                                     const isChosen = qty > 0;
+                                    console.log(mi.sizes)
 
-                                 return(
-                                    <MenuItemTile key={mi._id} {...mi} recomStyle={"recomStyle"}/>
-                                 )
+                                    return (
+                                        <div
+                                            key={mi._id}
+                                            className={`flex items-center gap-2 p-2 rounded-xl border transition-all ${isChosen
+                                                ? "border-orange-500 bg-orange-50 ring-1 ring-orange-400"
+                                                : "border-gray-200 bg-white"
+                                                }`}
+                                        >
+                                            {/* Ảnh */}
+                                            {mi.image ? (
+                                                <img src={mi.image} alt={mi.name} className="flex-shrink-0 object-cover w-10 h-10 rounded-lg" />
+                                            ) : (
+                                                <div className="flex items-center justify-center flex-shrink-0 w-10 h-10 text-lg bg-gray-100 rounded-lg">🍽️</div>
+                                            )}
+
+                                            {/* Tên + giá */}
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-xs font-medium leading-tight text-gray-800 line-clamp-2">{mi.name}</p>
+                                                {mi.sizes?.length > 0 ? (
+                                                    <p className="text-[10px] text-orange-500 mt-0.5">Chọn size ↓</p>
+                                                ) : (
+                                                    <p className="text-[10px] text-gray-400 mt-0.5">{mi.basePrice?.toLocaleString("vi-VN")}₫</p>
+                                                )}
+                                            </div>
+
+                                            {/* Nút +/− quantity */}
+                                            <div className="flex flex-col items-center gap-0.5 flex-shrink-0">
+                                                {/* Nút + luôn hiển thị */}
+                                                <button
+                                                    type="button"
+                                                    onClick={() => incrementItem(chooseTabIndex, mi)}
+                                                    className="flex items-center justify-center w-6 h-6 text-base font-bold leading-none text-white transition-colors bg-orange-500 rounded-full hover:bg-orange-600"
+                                                >
+                                                    +
+                                                </button>
+
+                                                {/* Số lượng + nút − chỉ hiện khi đã chọn */}
+                                                {isChosen && (
+                                                    <>
+                                                        <span className="text-xs font-bold leading-none text-orange-600">{qty}</span>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => decrementItem(chooseTabIndex, mi)}
+                                                            className="flex items-center justify-center w-6 h-6 text-base font-bold leading-none text-gray-600 transition-colors bg-gray-200 rounded-full hover:bg-gray-300"
+                                                        >
+                                                            −
+                                                        </button>
+                                                    </>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )
                                 })}
                             </div>
+                            {/* Size picker cho từng entry đã chọn mà có sizes */}
+                            {Array.from((selections[chooseTabIndex] || new Map()).values())
+                                .filter((sel) => sel.menuItem?.sizes?.length > 0)
+                                .map((sel, i) => (
+                                    <div key={i} className="mt-3 ml-1">
+                                        <p className="text-xs text-orange-600 font-medium mb-1.5">
+                                            ⚠️ Chọn size cho <strong>{sel.menuItem.name}</strong>
+                                            {sel.quantity > 1 && <span className="text-gray-400"> (x{sel.quantity})</span>}
+                                        </p>
+                                        <div className="flex flex-wrap gap-2">
+                                            {sel.menuItem.sizes.map((sz) => {
+                                                const isActive = sel.selectedSize?.name === sz.name;
+                                                return (
+                                                    <button
+                                                        key={sz.name}
+                                                        type="button"
+                                                        onClick={() => selectSize(chooseTabIndex, sel.menuItem._id, { name: sz.name, price: sz.price })}
+                                                        className={`px-3 py-1.5 rounded-lg text-xs border font-medium transition-all ${isActive
+                                                            ? "bg-orange-500 text-white border-orange-500"
+                                                            : "bg-white text-gray-600 border-gray-300 hover:border-orange-400"
+                                                            }`}
+                                                    >
+                                                        {sz.name}
+                                                        {sz.price > 0 && <span className="ml-1 opacity-80">+{sz.price?.toLocaleString("vi-VN")}₫</span>}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                ))}
                         </>
                     )
                     }
 
                 </div>
-
-                <div className="flex-1 px-4 py-4 space-y-5 overflow-y-auto">
-                    {loadingSlots ? (
-                        <div className="flex items-center justify-center py-12">
-                            <div className="border-orange-400 rounded-full w-7 h-7 border-3 border-t-transparent animate-spin" />
-                            <span className="ml-3 text-sm text-gray-400">Đang tải món...</span>
-                        </div>
-                    ) : (
-                        slots.map((slot, slotIdx) => {
-                            const slotItems = menuItemsBySlot[slotIdx] || [];
-                            const slotLabel = slot.label || slot.category?.name || `Slot ${slotIdx + 1}`;
-                            const total = totalChosenInSlot(slotIdx);
-
-                            return (
-                                <div key={slotIdx}>
-
-                                    {/* Grid chọn món */}
-                                    <div className="grid grid-cols-2 gap-2">
-                                        {slotItems.map((mi) => {
-                                            const entry = getEntry(slotIdx, mi._id);
-                                            const qty = entry?.quantity || 0;
-                                            const isChosen = qty > 0;
-
-                                            return (
-                                                <div
-                                                    key={mi._id}
-                                                    className={`flex items-center gap-2 p-2 rounded-xl border transition-all ${isChosen
-                                                        ? "border-orange-500 bg-orange-50 ring-1 ring-orange-400"
-                                                        : "border-gray-200 bg-white"
-                                                        }`}
-                                                >
-                                                    {/* Ảnh */}
-                                                    {mi.image ? (
-                                                        <img src={mi.image} alt={mi.name} className="flex-shrink-0 object-cover w-10 h-10 rounded-lg" />
-                                                    ) : (
-                                                        <div className="flex items-center justify-center flex-shrink-0 w-10 h-10 text-lg bg-gray-100 rounded-lg">🍽️</div>
-                                                    )}
-
-                                                    {/* Tên + giá */}
-                                                    <div className="flex-1 min-w-0">
-                                                        <p className="text-xs font-medium leading-tight text-gray-800 line-clamp-2">{mi.name}</p>
-                                                        {mi.sizes?.length > 0 ? (
-                                                            <p className="text-[10px] text-orange-500 mt-0.5">Chọn size ↓</p>
-                                                        ) : (
-                                                            <p className="text-[10px] text-gray-400 mt-0.5">{mi.basePrice?.toLocaleString("vi-VN")}₫</p>
-                                                        )}
-                                                    </div>
-
-                                                    {/* Nút +/− quantity */}
-                                                    <div className="flex flex-col items-center gap-0.5 flex-shrink-0">
-                                                        {/* Nút + luôn hiển thị */}
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => incrementItem(slotIdx, mi)}
-                                                            className="flex items-center justify-center w-6 h-6 text-base font-bold leading-none text-white transition-colors bg-orange-500 rounded-full hover:bg-orange-600"
-                                                        >
-                                                            +
-                                                        </button>
-
-                                                        {/* Số lượng + nút − chỉ hiện khi đã chọn */}
-                                                        {isChosen && (
-                                                            <>
-                                                                <span className="text-xs font-bold leading-none text-orange-600">{qty}</span>
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={() => decrementItem(slotIdx, mi)}
-                                                                    className="flex items-center justify-center w-6 h-6 text-base font-bold leading-none text-gray-600 transition-colors bg-gray-200 rounded-full hover:bg-gray-300"
-                                                                >
-                                                                    −
-                                                                </button>
-                                                            </>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-
-                                    {/* Size picker cho từng entry đã chọn mà có sizes */}
-                                    {Array.from((selections[slotIdx] || new Map()).values())
-                                        .filter((sel) => sel.menuItem?.sizes?.length > 0)
-                                        .map((sel, i) => (
-                                            <div key={i} className="mt-3 ml-1">
-                                                <p className="text-xs text-orange-600 font-medium mb-1.5">
-                                                    ⚠️ Chọn size cho <strong>{sel.menuItem.name}</strong>
-                                                    {sel.quantity > 1 && <span className="text-gray-400"> (x{sel.quantity})</span>}
-                                                </p>
-                                                <div className="flex flex-wrap gap-2">
-                                                    {sel.menuItem.sizes.map((sz) => {
-                                                        const isActive = sel.selectedSize?.name === sz.name;
-                                                        return (
-                                                            <button
-                                                                key={sz.name}
-                                                                type="button"
-                                                                onClick={() => selectSize(slotIdx, sel.menuItem._id, { name: sz.name, price: sz.price })}
-                                                                className={`px-3 py-1.5 rounded-lg text-xs border font-medium transition-all ${isActive
-                                                                    ? "bg-orange-500 text-white border-orange-500"
-                                                                    : "bg-white text-gray-600 border-gray-300 hover:border-orange-400"
-                                                                    }`}
-                                                            >
-                                                                {sz.name}
-                                                                {sz.price > 0 && <span className="ml-1 opacity-80">+{sz.price?.toLocaleString("vi-VN")}₫</span>}
-                                                            </button>
-                                                        );
-                                                    })}
-                                                </div>
-                                            </div>
-                                        ))}
-                                </div>
-                            );
-                        })
-                    )}
-
-                </div>
             </div>
-
         </div>
     );
 }
