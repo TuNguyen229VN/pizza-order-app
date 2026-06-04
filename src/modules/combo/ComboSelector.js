@@ -1,7 +1,10 @@
 "use client";
 import { CartContext } from "@/components/AppContext";
+import ButtonAdd from "@/components/buttons/ButtonAdd";
+import ButtonPrimary from "@/components/buttons/ButtonPrimary";
 import MenuItemTile from "@/components/menu/MenuItemTile";
-import { API_MENU_ITEMS } from "@/constant/constant";
+import { API_MENU_ITEMS, KEYWORDS } from "@/constant/constant";
+import Image from "next/image";
 import { useContext, useEffect, useState } from "react";
 import { FaCheck } from "react-icons/fa6";
 /**
@@ -39,7 +42,7 @@ export default function ComboSelector({
 
     // 
 
-    const [chooseTabIndex, setChooseTabIndex] = useState(1);
+    const [chooseTabIndex, setChooseTabIndex] = useState(0);
 
     /**
      * selections[slotIdx] = Map<itemId, { menuItem, selectedSize, quantity }>
@@ -128,6 +131,9 @@ export default function ComboSelector({
      * Nếu chưa có thì thêm mới với qty = 1.
      */
     function incrementItem(slotIdx, menuItem) {
+        if(totalChosenInSlot(slotIdx) >= combo.slots[slotIdx].quantity) {
+            return;
+        }
         setSelections((prev) => {
             const map = new Map(prev[slotIdx] || []);
             const key = menuItem._id;
@@ -182,7 +188,7 @@ export default function ComboSelector({
             const slot = slots[slotIdx];
             const total = totalChosenInSlot(slotIdx);
 
-            if (total < slot.quantity) {
+            if (chooseTabIndex === slotIdx && total < slot.quantity) {
                 const label = slot.label || slot.category?.name || `Slot ${slotIdx + 1}`;
                 return `"${label}": cần chọn đủ ${slot.quantity} món (đã chọn ${total})`;
             }
@@ -239,17 +245,26 @@ export default function ComboSelector({
         }, 900);
     }
 
+    const handleChooseCombo = () => {
+        const err = validate();
+        if (err) { setValidationError(err); return; }
+        if (chooseTabIndex < combo.slots.length - 1) {
+            setChooseTabIndex(chooseTabIndex + 1);
+            return;
+        }
+    }
+
     if (!combo) return null;
     const slots = combo?.slots || [];
     const isEdit = mode === "edit";
 
     // ── Render ─────────────────────────────────────────────────────────────
     return (
-        <div className="fixed inset-0 z-50 flex items-end justify-center p-0 sm:items-center sm:p-4">
+        <div className="fixed inset-0 z-50 flex items-end justify-center p-0 sm:items-center md:p-4">
             {/* Backdrop */}
             <div className="absolute inset-0 bg-black/80" onClick={onClose} />
 
-            <div className="relative w-[960px] p-4 bg-white rounded-md shadow-2xl h-[100vh] overflow-y-auto">
+            <div className="relative w-[960px] p-4 bg-white rounded-md shadow-2xl h-[100vh] flex flex-col">
                 {/* Header */}
                 <div className="relative mb-4">
                     <h4 className="text-2xl font-medium"> {isEdit ? "Chỉnh sửa combo" : "Tạo mới combo"}</h4>
@@ -260,7 +275,7 @@ export default function ComboSelector({
                 </div>
 
                 {/* Step choose menu items */}
-                <div>
+                <div className="flex-1 overflow-y-auto ">
                     {loadingSlots ? (
                         <div className="flex items-center justify-center py-12 ">
                             <div className="border-orange-400 rounded-full w-7 h-7 border-3 border-t-transparent animate-spin" />
@@ -274,7 +289,7 @@ export default function ComboSelector({
                                     const category = categories.find(c => c._id === slot.category)
                                     const total = totalChosenInSlot(slotIdx);
                                     return (
-                                        <div key={slotIdx} className="flex items-center gap-2 cursor-pointer" onClick={() => setChooseTabIndex(slotIdx)}>
+                                        <div key={slotIdx} className={`flex items-center gap-2  ${total === 0 && chooseTabIndex !== slotIdx ? "opacity-50 pointer-events-none" : "cursor-pointer"}`} onClick={() => setChooseTabIndex(slotIdx)}>
                                             <div className={`flex items-center justify-center w-8 h-8 text-sm rounded-full border ${chooseTabIndex === slotIdx ? "bg-primary text-white " : "border-primary text-primary"}`}> <p className="font-semibold">{total > 0 && chooseTabIndex !== slotIdx ? <FaCheck /> : slotIdx + 1}</p></div>
                                             <div>
                                                 <p className="font-semibold">Chọn  {category?.name}  {slot.quantity > 0 && `${total}/${slot.quantity}`}</p>
@@ -285,63 +300,48 @@ export default function ComboSelector({
                                     )
                                 })}
                             </div>
-                            <div className="grid grid-cols-2 gap-2 mt-4 ">
+                            <div className="grid gap-2 mt-4 md:grid-cols-2 ">
                                 {menuItemsBySlot[chooseTabIndex].map((mi) => {
                                     const entry = getEntry(chooseTabIndex, mi._id);
                                     const qty = entry?.quantity || 0;
                                     const isChosen = qty > 0;
-                                    console.log(mi.sizes)
-
                                     return (
                                         <div
                                             key={mi._id}
-                                            className={`flex items-center gap-2 p-2 rounded-xl border transition-all ${isChosen
-                                                ? "border-orange-500 bg-orange-50 ring-1 ring-orange-400"
-                                                : "border-gray-200 bg-white"
-                                                }`}
+                                            className={`flex h-[156px] border md:rounded-2xl cursor-pointer overflow-hidden group transition duration-300  rounded-2xl  `}
                                         >
                                             {/* Ảnh */}
-                                            {mi.image ? (
-                                                <img src={mi.image} alt={mi.name} className="flex-shrink-0 object-cover w-10 h-10 rounded-lg" />
-                                            ) : (
-                                                <div className="flex items-center justify-center flex-shrink-0 w-10 h-10 text-lg bg-gray-100 rounded-lg">🍽️</div>
-                                            )}
-
-                                            {/* Tên + giá */}
-                                            <div className="flex-1 min-w-0">
-                                                <p className="text-xs font-medium leading-tight text-gray-800 line-clamp-2">{mi.name}</p>
-                                                {mi.sizes?.length > 0 ? (
-                                                    <p className="text-[10px] text-orange-500 mt-0.5">Chọn size ↓</p>
-                                                ) : (
-                                                    <p className="text-[10px] text-gray-400 mt-0.5">{mi.basePrice?.toLocaleString("vi-VN")}₫</p>
-                                                )}
+                                            <div className={`w-[111px] md:w-[161px] h-full shrink-0 overflow-hidden relative`}>
+                                                <Image
+                                                    src={mi.image}
+                                                    alt={mi.name}
+                                                    fill
+                                                    className={`transition-transform duration-500  ${KEYWORDS.some(keyword =>
+                                                        mi.name?.toLowerCase().includes(keyword)
+                                                    ) ? "object-contain scale-[1.4] " : "object-cover scale-100"} `}
+                                                    style={
+                                                        KEYWORDS.some(keyword =>
+                                                            mi.name?.toLowerCase().includes(keyword)
+                                                        ) ? { objectPosition: "left center", top: "10%", left: "-20%" } : {}
+                                                    }
+                                                />
                                             </div>
-
-                                            {/* Nút +/− quantity */}
-                                            <div className="flex flex-col items-center gap-0.5 flex-shrink-0">
-                                                {/* Nút + luôn hiển thị */}
-                                                <button
-                                                    type="button"
-                                                    onClick={() => incrementItem(chooseTabIndex, mi)}
-                                                    className="flex items-center justify-center w-6 h-6 text-base font-bold leading-none text-white transition-colors bg-orange-500 rounded-full hover:bg-orange-600"
-                                                >
-                                                    +
-                                                </button>
-
-                                                {/* Số lượng + nút − chỉ hiện khi đã chọn */}
-                                                {isChosen && (
-                                                    <>
-                                                        <span className="text-xs font-bold leading-none text-orange-600">{qty}</span>
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => decrementItem(chooseTabIndex, mi)}
-                                                            className="flex items-center justify-center w-6 h-6 text-base font-bold leading-none text-gray-600 transition-colors bg-gray-200 rounded-full hover:bg-gray-300"
-                                                        >
-                                                            −
-                                                        </button>
-                                                    </>
-                                                )}
+                                            <div className='flex flex-col justify-between flex-1 w-full p-4 pl-2'>
+                                                <div>
+                                                    <h4 className={`md:text-lg text-sm md:leading-[26px] capitalize  line-clamp-2 font-bold`}>{mi.name}</h4>
+                                                    <p className='text-sm text-secondary line-clamp-1'>{mi.description}</p>
+                                                </div>
+                                                <div className='flex items-center justify-between w-full'>
+                                                    <div>
+                                                        <p className={`font-medium  md:text-base mt-1 text-sm `}>{(mi.basePrice + (mi.sizes?.[0]?.price || 0)).toLocaleString('vi-VN')}<span className='ml-2 underline'>đ</span></p>
+                                                    </div>
+                                                    <ButtonAdd
+                                                        className="add-to-cart-zone"
+                                                        onClick={() => incrementItem(chooseTabIndex, mi)}
+                                                    />
+                                                </div>
                                             </div>
+                                         
                                         </div>
                                     )
                                 })}
@@ -363,10 +363,10 @@ export default function ComboSelector({
                                                         key={sz.name}
                                                         type="button"
                                                         onClick={() => selectSize(chooseTabIndex, sel.menuItem._id, { name: sz.name, price: sz.price })}
-                                                        className={`px-3 py-1.5 rounded-lg text-xs border font-medium transition-all ${isActive
+                                                        className={`px-3 py-1.5 rounded - lg text - xs border font - medium transition - all ${isActive
                                                             ? "bg-orange-500 text-white border-orange-500"
                                                             : "bg-white text-gray-600 border-gray-300 hover:border-orange-400"
-                                                            }`}
+                                                            } `}
                                                     >
                                                         {sz.name}
                                                         {sz.price > 0 && <span className="ml-1 underline opacity-80">+{sz.price?.toLocaleString("vi-VN")}₫</span>}
@@ -379,8 +379,14 @@ export default function ComboSelector({
                         </>
                     )
                     }
-
                 </div>
+                {validationError && (
+                    <div className="px-3 py-2 text-xs text-red-600 border border-red-200 rounded-lg bg-red-50">
+                        {validationError}
+                    </div>
+                )}
+
+                <ButtonPrimary disabled={totalChosenInSlot(chooseTabIndex) === 0} className={"w-full hover:scale-[1.0]"} onClick={handleChooseCombo}><p>Tiếp tục</p></ButtonPrimary>
             </div>
         </div>
     );
