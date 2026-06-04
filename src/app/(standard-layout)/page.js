@@ -9,7 +9,7 @@ import { getCategoryIcon } from "@/libs/getCategoryIcon";
 import { slugify } from "@/libs/slugify";
 import { useEffect, useRef, useState } from "react";
 import RecommendMenuItems from "@/components/layout/RecommendMenuItems";
-import ComboSelector from "@/modules/combo/ComboSelector";
+import ComboSelector from "@/modules/combo-order/ComboSelector";
 import MenuCombo from "@/components/menu/MenuCombo";
 
 export default function Home() {

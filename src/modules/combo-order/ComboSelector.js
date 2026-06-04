@@ -1,8 +1,11 @@
 "use client";
 import { CartContext } from "@/components/AppContext";
 import ButtonAdd from "@/components/buttons/ButtonAdd";
+import ButtonDecrement from "@/components/buttons/ButtonDecrement";
+import ButtonIncrement from "@/components/buttons/ButtonIncrement";
 import ButtonPrimary from "@/components/buttons/ButtonPrimary";
 import MenuItemTile from "@/components/menu/MenuItemTile";
+import ConfirmPopup from "@/components/popup/ConfirmPopup";
 import { API_MENU_ITEMS, KEYWORDS } from "@/constant/constant";
 import Image from "next/image";
 import { useContext, useEffect, useState } from "react";
@@ -25,6 +28,8 @@ import { FaCheck } from "react-icons/fa6";
  *  - onUpdate(cartItemId, selectedItems, quantity, note) – callback khi lưu edit
  */
 export default function ComboSelector({
+    comboChooseList,
+    setComboChooseList,
     categories = [],
     combo,
     onClose,
@@ -48,6 +53,7 @@ export default function ComboSelector({
      * selections[slotIdx] = Map<itemId, { menuItem, selectedSize, quantity }>
      * Dùng Map để dễ tăng/giảm quantity theo itemId
      */
+
     const [selections, setSelections] = useState({});
     const [quantity, setQuantity] = useState(initialQuantity);
     const [noteOrder, setNoteOrder] = useState(initialNote);
@@ -56,6 +62,7 @@ export default function ComboSelector({
     const [validationError, setValidationError] = useState("");
     const [showSuccess, setShowSuccess] = useState(false);
 
+    const [editingItems, setEditingItems] = useState(new Set());
     // ── Khởi tạo selections và load menu items ─────────────────────────────
     useEffect(() => {
         if (!combo?.slots) return;
@@ -131,7 +138,7 @@ export default function ComboSelector({
      * Nếu chưa có thì thêm mới với qty = 1.
      */
     function incrementItem(slotIdx, menuItem) {
-        if(totalChosenInSlot(slotIdx) >= combo.slots[slotIdx].quantity) {
+        if (totalChosenInSlot(slotIdx) >= combo.slots[slotIdx].quantity) {
             return;
         }
         setSelections((prev) => {
@@ -250,8 +257,11 @@ export default function ComboSelector({
         if (err) { setValidationError(err); return; }
         if (chooseTabIndex < combo.slots.length - 1) {
             setChooseTabIndex(chooseTabIndex + 1);
+            setEditingItems(new Set());
             return;
         }
+        onClose();
+        setComboChooseList(buildSelectedItems());
     }
 
     if (!combo) return null;
@@ -262,16 +272,20 @@ export default function ComboSelector({
     return (
         <div className="fixed inset-0 z-50 flex items-end justify-center p-0 sm:items-center md:p-4">
             {/* Backdrop */}
-            <div className="absolute inset-0 bg-black/80" onClick={onClose} />
-
+            {comboChooseList.length > 0 ? <div className="absolute inset-0 bg-black/50" onClick={onClose} /> : <ConfirmPopup onDelete={onClose} label="Thoát tạo mới combo" labelDesc="Lựa chọn của bạn sẽ bị mất nếu bạn thoát khỏi combo. Bạn có chắc chắn muốn thoát" labelConfirm="Thoát">
+                <div className="absolute inset-0 bg-black/80" />
+            </ConfirmPopup>}
             <div className="relative w-[960px] p-4 bg-white rounded-md shadow-2xl h-[100vh] flex flex-col">
                 {/* Header */}
                 <div className="relative mb-4">
-                    <h4 className="text-2xl font-medium"> {isEdit ? "Chỉnh sửa combo" : "Tạo mới combo"}</h4>
-                    <button
-                        onClick={onClose}
-                        className="absolute top-0 text-2xl transition right-3"
-                    >✕</button>
+                    <h4 className="text-2xl font-semibold"> {isEdit ? "Chỉnh sửa combo" : "Tạo mới combo"}</h4>
+                    {comboChooseList.length > 0 ? <button
+                        className="absolute top-0 text-2xl transition right-3" onClick={onClose}
+                    >✕</button> : <ConfirmPopup onDelete={onClose} label="Thoát tạo mới combo" labelDesc="Lựa chọn của bạn sẽ bị mất nếu bạn thoát khỏi combo. Bạn có chắc chắn muốn thoát" labelConfirm="Thoát">
+                        <button
+                            className="absolute top-0 text-2xl transition right-3"
+                        >✕</button>
+                    </ConfirmPopup>}
                 </div>
 
                 {/* Step choose menu items */}
@@ -289,7 +303,7 @@ export default function ComboSelector({
                                     const category = categories.find(c => c._id === slot.category)
                                     const total = totalChosenInSlot(slotIdx);
                                     return (
-                                        <div key={slotIdx} className={`flex items-center gap-2  ${total === 0 && chooseTabIndex !== slotIdx ? "opacity-50 pointer-events-none" : "cursor-pointer"}`} onClick={() => setChooseTabIndex(slotIdx)}>
+                                        <div key={slotIdx} className={`flex items-center gap-2  ${total === 0 && chooseTabIndex !== slotIdx ? "opacity-50 pointer-events-none" : "cursor-pointer"}`} onClick={() => { setChooseTabIndex(slotIdx); setEditingItems(new Set()); }}>
                                             <div className={`flex items-center justify-center w-8 h-8 text-sm rounded-full border ${chooseTabIndex === slotIdx ? "bg-primary text-white " : "border-primary text-primary"}`}> <p className="font-semibold">{total > 0 && chooseTabIndex !== slotIdx ? <FaCheck /> : slotIdx + 1}</p></div>
                                             <div>
                                                 <p className="font-semibold">Chọn  {category?.name}  {slot.quantity > 0 && `${total}/${slot.quantity}`}</p>
@@ -335,13 +349,51 @@ export default function ComboSelector({
                                                     <div>
                                                         <p className={`font-medium  md:text-base mt-1 text-sm `}>{(mi.basePrice + (mi.sizes?.[0]?.price || 0)).toLocaleString('vi-VN')}<span className='ml-2 underline'>đ</span></p>
                                                     </div>
-                                                    <ButtonAdd
-                                                        className="add-to-cart-zone"
-                                                        onClick={() => incrementItem(chooseTabIndex, mi)}
-                                                    />
+
+                                                    {(() => {
+                                                        const slotFull = totalChosenInSlot(chooseTabIndex) >= combo.slots[chooseTabIndex].quantity;
+                                                        const isEditing = editingItems.has(mi._id);
+
+                                                        if (isChosen && (!slotFull || isEditing)) {
+                                                            // Đang chọn chưa đủ slot, HOẶC đã bấm edit → hiện +/-
+                                                            return (
+                                                                <>
+                                                                    <ButtonDecrement onClick={() => decrementItem(chooseTabIndex, mi)} />
+                                                                    <span className="text-sm font-medium md:text-lg">{qty}</span>
+                                                                    <ButtonIncrement onClick={() => incrementItem(chooseTabIndex, mi)} />
+                                                                </>
+                                                            );
+                                                        }
+
+                                                        if (isChosen && slotFull) {
+                                                            // Đã chọn & slot đủ → hiện nút check, bấm để mở edit
+                                                            return (
+                                                                <ButtonAdd
+                                                                    className="add-to-cart-zone"
+                                                                    onClick={() => {
+                                                                        setEditingItems(prev => {
+                                                                            const next = new Set(prev);
+                                                                            next.add(mi._id);
+                                                                            return next;
+                                                                        });
+                                                                    }}
+                                                                    forCombo={combo.slots[chooseTabIndex].quantity > 1 ? qty : "check"}
+                                                                />
+                                                            );
+                                                        }
+
+                                                        // Chưa chọn → nút add bình thường
+                                                        return (
+                                                            <ButtonAdd
+                                                                className="add-to-cart-zone"
+                                                                onClick={() => incrementItem(chooseTabIndex, mi)}
+                                                                forCombo="add"
+                                                            />
+                                                        );
+                                                    })()}
                                                 </div>
                                             </div>
-                                         
+
                                         </div>
                                     )
                                 })}

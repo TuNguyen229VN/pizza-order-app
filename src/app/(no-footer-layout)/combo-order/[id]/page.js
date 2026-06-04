@@ -3,18 +3,22 @@ import ButtonPrimary from '@/components/buttons/ButtonPrimary';
 import NotFindLayout from '@/components/layout/NotFindLayout';
 import { API_CATEGORIES, API_COMBO } from '@/constant/constant';
 import { HOME_ROUTE } from '@/constant/routesApp';
+import { useDelivery } from '@/context/DeliveryContext';
 import HeaderCart from '@/modules/cart/HeaderCart';
-import ComboSelector from '@/modules/combo/ComboSelector';
+import ComboChoosedList from '@/modules/combo-order/ComboChoosedList';
+import ComboSelector from '@/modules/combo-order/ComboSelector';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 
 export default function ComboOrderPage() {
     const { id } = useParams();
+    const [comboChooseList, setComboChooseList] = useState([]);
     const [combos, setCombos] = useState(null);
     const [categories, setCategories] = useState(null);
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(true);
+    const { deliveryInfo, openDeliveryModal } = useDelivery();
     useEffect(() => {
         setLoading(true);
 
@@ -62,19 +66,34 @@ export default function ComboOrderPage() {
                         }
                         )
                         || "Chưa có"}</ul>
-                    <div>
-                        <p className='text-sm text-[rgb(55,65,81)]'>Chỉ từ:</p>
-                        <p className='font-semibold md:text-2xl'>{combos?.price?.toLocaleString('vi-VN')} <span className='underline'>đ</span></p>
+                    <div className='flex flex-col gap-2 md:items-center md:gap-32 md:flex-row'>
+                        <div>
+                            <p className='text-sm text-[rgb(55,65,81)]'>Chỉ từ:</p>
+                            <p className='font-semibold md:text-2xl'>{combos?.price?.toLocaleString('vi-VN')} <span className='underline'>đ</span></p>
+                        </div>
+                        {deliveryInfo?.shipFee && (
+                            <div>
+                                <p className='text-sm text-[rgb(55,65,81)]'>Chi phí giao hàng:</p>
+                                <p className='font-semibold md:text-2xl'>{deliveryInfo.shipFee?.toLocaleString('vi-VN')} <span className='underline'>đ</span></p>
+                            </div>
+                        )}
                     </div>
                 </div>
                 <div className='relative w-full md:w-1/2 md:h-[286px] h-[187px]'>
-                    <Image src={combos?.image} alt={combos?.name} fill className='object-cover object-center ' />
+                    <Image src={combos?.image} alt={combos?.name} fill className='object-cover object-center w-full h-full ' />
                 </div>
             </div>
-            {open && <ComboSelector categories={categories} combo={combos} onClose={() => setOpen(false)} />}
-            <div className='px-4'>
-                <ButtonPrimary className={"hover:scale-100"} onClick={() => setOpen(true)}>Bắt đầu</ButtonPrimary>
-            </div>
+            {open && <ComboSelector comboChooseList={comboChooseList} setComboChooseList={setComboChooseList} categories={categories} combo={combos} onClose={() => setOpen(false)} />}
+            {comboChooseList.length === 0 && (
+                <div className='px-4'>
+                    <ButtonPrimary className={"hover:scale-100"} onClick={() => setOpen(true)}>Bắt đầu</ButtonPrimary>
+                </div>
+            )}
+            {comboChooseList.length > 0 && (
+                <>
+                    <ComboChoosedList  comboChooseList={comboChooseList} />
+                </>
+            )}
         </section>
     )
 }

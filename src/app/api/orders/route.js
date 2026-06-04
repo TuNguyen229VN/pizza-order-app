@@ -5,7 +5,7 @@ import { getServerSession } from "next-auth";
 import { LIMITPAGE } from "@/constant/constant";
 import mongoose from "mongoose";
 
-const buildSearchQuery = (search) => {
+const buildSearchQuery = (search, admin) => {
     if (!search) return {};
 
     // const isValidId = mongoose.Types.ObjectId.isValid(search);
@@ -16,20 +16,45 @@ const buildSearchQuery = (search) => {
     //         { phone: { $regex: search, $options: "i" } },
     //     ]
     // };
+    // return {
+    //     $or: [
+    //         {
+    //             $expr: {
+    //                 $regexMatch: {
+    //                     input: { $toString: "$_id" },
+    //                     regex: search,
+    //                     options: "i"
+    //                 }
+    //             }
+    //         },
+    //         { phone: { $regex: search, $options: "i" } },
+    //     ]
+    // };
+
+    if (admin) {
+        return {
+            $or: [
+                {
+                    $expr: {
+                        $regexMatch: {
+                            input: { $toString: "$_id" },
+                            regex: search,
+                            options: "i"
+                        }
+                    }
+                },
+                { phone: { $regex: search, $options: "i" } }
+            ]
+        };
+    }
+
     return {
         $or: [
-            {
-                $expr: {
-                    $regexMatch: {
-                        input: { $toString: "$_id" },
-                        regex: search,
-                        options: "i"
-                    }
-                }
-            },
-            { phone: { $regex: search, $options: "i" } },
+            { _id: mongoose.Types.ObjectId.isValid(search) ? search : null },
+            { phone: search }
         ]
     };
+
 };
 
 export async function GET(req) {
@@ -75,8 +100,8 @@ export async function GET(req) {
 
         // Base query theo quyền
         const baseQuery = admin
-            ? { ...buildSearchQuery(search), ...paidFilter }
-            : { userEmail, ...buildSearchQuery(search), ...paidFilter };
+            ? { ...buildSearchQuery(search, true), ...paidFilter }
+            : { userEmail, "deliveryInfo.mode": "delivery", ...buildSearchQuery(search, false), ...paidFilter };
 
         // 3. Không phân trang
         if (all) {

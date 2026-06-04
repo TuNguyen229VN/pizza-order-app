@@ -7,7 +7,7 @@ import { useLockBodyScroll } from '@/hooks/useLockBodyScroll';
 import ConfirmPopup from '@/components/popup/ConfirmPopup';
 import { useSwipeDelete } from '@/hooks/useSwipeDelete';
 import Trash from '@/components/icons/Trash';
-import ComboSelector from '../combo/ComboSelector';
+import ComboSelector from '../combo-order/ComboSelector';
 
 export default function CartProduct({ index, product, onRemove, onUpdateCombo, showEdit = false }) {
   const [showPopup, setShowPopup] = useState(false);
