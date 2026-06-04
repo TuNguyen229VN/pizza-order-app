@@ -71,34 +71,50 @@ export default function ComboSelector({
         // initialSelections[slotIdx] có thể là:
         //   - Map (đã chuẩn) → dùng thẳng
         //   - Array [{menuItem, selectedSize, quantity}] → convert → Map
-        const initSelections = {};
-        combo.slots.forEach((slot, idx) => {
-            if (mode === "edit" && initialSelections[idx] != null) {
-                const raw = initialSelections[idx];
-                if (raw instanceof Map) {
-                    // Đã đúng format
-                    initSelections[idx] = new Map(raw);
-                } else if (Array.isArray(raw)) {
-                    // Convert mảng → Map, gộp trùng _id
-                    const map = new Map();
-                    raw.forEach((entry) => {
-                        if (!entry?.menuItem) return;
-                        const key = entry.menuItem._id;
-                        if (map.has(key)) {
-                            map.get(key).quantity += (entry.quantity || 1);
-                        } else {
-                            map.set(key, { ...entry, quantity: entry.quantity || 1 });
-                        }
-                    });
-                    initSelections[idx] = map;
+        // Nếu comboChooseList đã có data → gán thẳng vào selections, bỏ qua initSelections
+        if (comboChooseList?.length > 0) {
+            const mapFromList = {};
+            combo.slots.forEach((_, idx) => { mapFromList[idx] = new Map(); });
+            comboChooseList.forEach(({ slotIndex, menuItem, selectedSize, quantity }) => {
+                if (menuItem == null || slotIndex == null) return;
+                const map = mapFromList[slotIndex] ?? new Map();
+                map.set(menuItem._id, {
+                    menuItem,
+                    selectedSize: selectedSize ?? null,
+                    quantity: quantity ?? 1,
+                });
+                mapFromList[slotIndex] = map;
+            });
+            setSelections(mapFromList);
+        } else {
+            // Logic cũ
+            const initSelections = {};
+            combo.slots.forEach((slot, idx) => {
+                if (mode === "edit" && initialSelections[idx] != null) {
+                    const raw = initialSelections[idx];
+                    if (raw instanceof Map) {
+                        initSelections[idx] = new Map(raw);
+                    } else if (Array.isArray(raw)) {
+                        const map = new Map();
+                        raw.forEach((entry) => {
+                            if (!entry?.menuItem) return;
+                            const key = entry.menuItem._id;
+                            if (map.has(key)) {
+                                map.get(key).quantity += (entry.quantity || 1);
+                            } else {
+                                map.set(key, { ...entry, quantity: entry.quantity || 1 });
+                            }
+                        });
+                        initSelections[idx] = map;
+                    } else {
+                        initSelections[idx] = new Map();
+                    }
                 } else {
                     initSelections[idx] = new Map();
                 }
-            } else {
-                initSelections[idx] = new Map();
-            }
-        });
-        setSelections(initSelections);
+            });
+            setSelections(initSelections);
+        }
 
         const promises = combo.slots.map(async (slot, idx) => {
             const catId = slot.category?._id || slot.category;

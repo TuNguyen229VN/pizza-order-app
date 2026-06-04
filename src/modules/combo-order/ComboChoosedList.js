@@ -1,15 +1,16 @@
+import ChevronRight from '@/components/icons/ChevronRight';
 import { KEYWORDS } from '@/constant/constant';
 import Image from 'next/image';
 import React from 'react'
 
-export default function ComboChoosedList({ comboChooseList }) {
-    console.log("comboChooseList: ", comboChooseList);
+export default function ComboChoosedList({ comboChooseList, onClick }) {
     return (
         <div className="grid grid-cols-1 gap-4 p-4 bg-gray-100 rounded-2xl md:grid-cols-2">
             {comboChooseList.map((item, index) => (
                 <div
                     key={item._id}
                     className={`flex h-[156px] md:h-[182px] border md:rounded-2xl cursor-pointer overflow-hidden group transition duration-300  rounded-2xl bg-white `}
+                    onClick={onClick}
                 >
                     {/* Ảnh */}
                     <div className={`w-[130px]  lg:w-[220px] h-full shrink-0 overflow-hidden relative`}>
@@ -36,6 +37,7 @@ export default function ComboChoosedList({ comboChooseList }) {
                             <div>
                                 <p className={`font-medium  md:text-base mt-1 text-sm `}>{(item.menuItem.basePrice + (item.menuItem.sizes?.[0]?.price || 0)).toLocaleString('vi-VN')}<span className='ml-2 underline'>đ</span></p>
                             </div>
+                            <ChevronRight className='w-5 h-5 text-gray-400 ' />
                         </div>
                     </div>
                 </div>
