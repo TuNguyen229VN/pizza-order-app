@@ -350,7 +350,7 @@ export default function ComboSelector({
                             {Array.from((selections[chooseTabIndex] || new Map()).values())
                                 .filter((sel) => sel.menuItem?.sizes?.length > 0)
                                 .map((sel, i) => (
-                                    <div key={i} className="mt-3 ml-1">
+                                    <div key={i} className="my-3 ml-1">
                                         <p className="text-xs text-orange-600 font-medium mb-1.5">
                                             ⚠️ Chọn size cho <strong>{sel.menuItem.name}</strong>
                                             {sel.quantity > 1 && <span className="text-gray-400"> (x{sel.quantity})</span>}
