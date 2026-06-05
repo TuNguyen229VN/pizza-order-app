@@ -5,6 +5,7 @@ import { MenuItem } from "@/models/MenuItem";
 import { getServerSession } from "next-auth";
 import { validateForm, validators } from "@/libs/validators";
 import { calcDeliveryInfo } from "@/utils/utils";
+import { ComboDetail } from "@/models/ComboDetail";
 
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY)
 
@@ -55,7 +56,34 @@ export async function POST(req) {
 
         const stripeLineItems = [];
         for (const cartProduct of cartProducts) {
+            // combobox
+            if (cartProduct.type === "combo") {
+                const comboInfo = await ComboDetail.findById(cartProduct._id);
+                if (!comboInfo) {
+                    return Response.json({ message: 'Combo không tồn tại' }, { status: 400 });
+                }
+                if (comboInfo.status !== "on") {
+                    return Response.json({ message: 'Combo không còn bán' }, { status: 400 });
+                }
+                const quantity = cartProduct.quantity;
+                if (!Number.isInteger(quantity) || quantity < 1) {
+                    return Response.json({ message: 'Số lượng không hợp lệ' }, { status: 400 });
+                }
 
+                stripeLineItems.push({
+                    quantity,
+                    price_data: {
+                        currency: 'vnd',
+                        product_data: {
+                            name: cartProduct.name,
+                        },
+                        unit_amount: Math.round(cartProduct.price),
+                    },
+                });
+                continue;
+            }
+
+            // món đơn
             const productInfo = await MenuItem.findById(cartProduct._id);
             if (!productInfo) {
                 return Response.json({ message: 'Sản phẩm trong giỏ hàng không tồn tại' }, { status: 400 });

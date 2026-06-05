@@ -173,7 +173,7 @@ export default function Home() {
               <div className="text-center">
                 <SectionHeader mainHeader={c.name} urlHeader={c?.image} />
               </div>
-              <div className="grid px-4 mt-4 mb-8 md:px-0 md:mb-12 md:mt-6 md:gap-6 md:grid-cols-2">
+              <div className="grid gap-4 px-4 mt-4 mb-8 md:px-0 md:mb-12 md:mt-6 md:gap-6 md:grid-cols-2">
                 {items.map(item => (
                   <MenuCombo key={item._id} {...item} categories={categories} />
                 ))}

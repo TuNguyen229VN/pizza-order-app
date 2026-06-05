@@ -1,4 +1,5 @@
 "use client"
+import { CartContext } from '@/components/AppContext';
 import ButtonPrimary from '@/components/buttons/ButtonPrimary';
 import FlyingButton from '@/components/buttons/FlyingButton';
 import NotFindLayout from '@/components/layout/NotFindLayout';
@@ -11,11 +12,15 @@ import ComboNote from '@/modules/combo-order/ComboNote';
 import ComboQuantity from '@/modules/combo-order/ComboQuantity';
 import ComboSelector from '@/modules/combo-order/ComboSelector';
 import Image from 'next/image';
-import { useParams } from 'next/navigation';
-import React, { useEffect, useRef, useState } from 'react'
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import React, { useContext, useEffect, useRef, useState } from 'react'
 
 export default function ComboOrderPage() {
+    const router = useRouter();
     const { id } = useParams();
+    const searchParams = useSearchParams();
+    const comboCartId = searchParams.get("cartComboId");
+    const { addComboToCart, updateComboInCart, cartProducts } = useContext(CartContext);
     const [comboChooseList, setComboChooseList] = useState([]);
     const [combos, setCombos] = useState(null);
     const [categories, setCategories] = useState(null);
@@ -24,8 +29,28 @@ export default function ComboOrderPage() {
     const { deliveryInfo, openDeliveryModal } = useDelivery();
     const [noteOrder, setNoteOrder] = useState("");
     const [quantity, setQuantity] = useState(1);
-
+    const [chooseTabIndex, setChooseTabIndex] = useState(0);
     const flyingBtnRef = useRef(null);
+    const [shouldFly, setShouldFly] = useState(false);
+
+    useEffect(() => {
+        if (comboCartId) {
+            const item = cartProducts.find(combo => combo.cartComboId === comboCartId);
+            if (item) {
+                setComboChooseList(item.slots);
+                setQuantity(item.quantity);
+                setNoteOrder(item.noteOrder);
+            }
+        }
+    }, [comboCartId, cartProducts]);
+
+    useEffect(() => {
+        if (shouldFly && flyingBtnRef.current) {
+            flyingBtnRef.current.triggerFly();
+            setShouldFly(false);
+        }
+    }, [shouldFly]);
+
     useEffect(() => {
         setLoading(true);
 
@@ -58,6 +83,36 @@ export default function ComboOrderPage() {
         if (newQuantity < 1) return;
         setQuantity(newQuantity);
     }
+
+    function handleSubmit() {
+        if (!deliveryInfo) {
+            openDeliveryModal();
+            return;
+        }
+        if (quantity < 1) return;
+        if (comboChooseList.reduce((sum, item) => sum + item.quantity, 0) !== combos.slots.reduce((sum, item) => sum + item.quantity, 0)) {
+            const firstIncompleteSlot = combos.slots.findIndex((slot, idx) => {
+                const selectedQty = comboChooseList
+                    .filter(item => item.slotIndex === idx)
+                    .reduce((sum, item) => sum + item.quantity, 0);
+
+                return selectedQty < slot.quantity;
+            });
+
+            setChooseTabIndex(firstIncompleteSlot);
+            setOpen(true);
+            return;
+        }
+        if (comboCartId) {
+            updateComboInCart(comboCartId, comboChooseList, quantity, noteOrder);
+            router.back(); 
+            return;
+        }
+
+        setShouldFly(true);
+        router.push(HOME_ROUTE); // quay về trang chủ để thấy hiệu ứng bay, đồng thời có thể tiếp tục mua sắm
+    }
+
     if (loading) {
         return <div>Loading...</div>
     }
@@ -96,7 +151,7 @@ export default function ComboOrderPage() {
                     <Image src={combos?.image} alt={combos?.name} fill className='object-cover object-center ' sizes="(max-width: 768px) 100vw, 50vw" quality={90} />
                 </div>
             </div>
-            {open && <ComboSelector comboChooseList={comboChooseList} setComboChooseList={setComboChooseList} categories={categories} combo={combos} onClose={() => setOpen(false)} />}
+            {open && <ComboSelector chooseTabIndex={chooseTabIndex} setChooseTabIndex={setChooseTabIndex} comboChooseList={comboChooseList} setComboChooseList={setComboChooseList} categories={categories} combo={combos} onClose={() => setOpen(false)} />}
             {comboChooseList.length === 0 && (
                 <div className='px-4'>
                     <ButtonPrimary className={"hover:scale-100"} onClick={() => setOpen(true)}>Bắt đầu</ButtonPrimary>
@@ -104,13 +159,22 @@ export default function ComboOrderPage() {
             )}
             {comboChooseList.length > 0 && (
                 <>
-                    <ComboChoosedList comboChooseList={comboChooseList} onClick={() => setOpen(true)} />
+                    <ComboChoosedList chooseTabIndex={chooseTabIndex} setChooseTabIndex={setChooseTabIndex} combos={combos} categories={categories} comboChooseList={comboChooseList} onClick={() => setOpen(true)} />
                     <ComboNote noteOrder={noteOrder} setNoteOrder={setNoteOrder} />
                     <ComboQuantity quantity={quantity} handleQtyChange={handleQtyChange} />
                     <div className='px-4 md:px-0'>
-                        <FlyingButton className={"w-full"} ref={flyingBtnRef} targetTop={'6%'}
-                            targetLeft={'80%'} src={combos?.image} onClick={()=>{console.log("Add to cart") }}>
-                            <ButtonPrimary className={"mb-4"}>
+                        <FlyingButton
+                            ref={flyingBtnRef}
+                            className={"w-full"}
+                            targetTop={'6%'}
+                            targetLeft={'80%'}
+                            src={combos?.image}
+                            onClick={() => addComboToCart(combos, comboChooseList, quantity, noteOrder)}
+                        >
+                            <ButtonPrimary
+                                className={"mb-4"}
+                                onClick={(e) => { e.stopPropagation(); handleSubmit(); }}
+                            >
                                 <div className="mb-4 text-center text-white">
                                     Thêm vào giỏ hàng{" "}
                                     <span className="inline-block w-2 h-2 mx-2 bg-white rounded-full" />{" "}

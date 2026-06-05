@@ -1,5 +1,5 @@
 "use client"
-import { CartContext, cartProductPrice } from '@/components/AppContext';
+import { CartContext, cartProductPrice, totalCartPrice } from '@/components/AppContext';
 import AddressInput from '@/components/layout/AddressInput';
 import SectionHeader from '@/components/layout/SectionHeader';
 import CartProduct from '@/modules/cart/CartProduct';
@@ -109,7 +109,7 @@ export default function OrderPage() {
                         </div>
                     </div>
                     <div></div>
-                    <CartSubtotal subtotal={subtotal} deliveryFee={order?.deliveryInfo?.shipFee} className={"md:border-none"} />
+                    <CartSubtotal subtotal={totalCartPrice(order?.cartProducts)} deliveryFee={order?.deliveryInfo?.shipFee} className={"md:border-none"} />
                 </div>
 
                 {!showAdminLayout && from !== "orders" && <div className='p-6 mt-4 border rounded-lg md:mt-6'>

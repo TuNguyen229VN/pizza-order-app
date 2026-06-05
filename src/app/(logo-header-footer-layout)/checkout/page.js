@@ -1,5 +1,5 @@
 "use client"
-import { CartContext, cartProductPrice } from '@/components/AppContext';
+import { CartContext, cartProductPrice, totalCartPrice } from '@/components/AppContext';
 import ButtonPrimary from '@/components/buttons/ButtonPrimary';
 import ChevronRight from '@/components/icons/ChevronRight';
 import AddressInput from '@/components/layout/AddressInput'
@@ -147,7 +147,7 @@ export default function CheckoutPage() {
                     </form>
                 </div>
                 <div>
-                    <CartSubtotal subtotal={subtotal} deliveryFee={deliveryInfo?.shipFee}>
+                    <CartSubtotal subtotal={totalCartPrice(cartProducts)} deliveryFee={deliveryInfo?.shipFee}>
                         <Link href={CART_ROUTE} className='flex items-center justify-between '>
                             <p className='mb-1 font-semibold md:text-2xl'>Giỏ hàng của tôi</p>
                             <ChevronRight className='w-4 h-4 md:w-6 md:h-6' />

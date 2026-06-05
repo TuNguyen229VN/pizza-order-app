@@ -32,7 +32,7 @@ export default function CartPage() {
             <p className='py-4 text-sm font-semibold text-blackHeader md:text-base'>Có {totalQuantity(cartProducts)} sản phẩm trong giỏ hàng của bạn</p>
             {cartProducts?.length > 0 && cartProducts.map((product, index) => (
               <CartProduct
-                key={index}
+                key={product.cartId||product.cartComboId||index}
                 index={index}
                 product={product}
                 onRemove={removeCartProduct}

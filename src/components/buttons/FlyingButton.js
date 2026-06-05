@@ -4,7 +4,7 @@ import { useRef, useImperativeHandle, forwardRef } from "react";
 const FlyingButton = forwardRef(function FlyingButton({
     targetTop = "6%",
     targetLeft = "80%",
-    src,
+    src="/images/red.png",
     children,
     className = "",
     onClick

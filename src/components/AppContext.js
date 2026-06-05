@@ -1,7 +1,7 @@
 "use client";
 import { SessionProvider } from "next-auth/react";
 import React, { createContext, useCallback, useEffect, useState } from "react";
-
+import uniqid from "uniqid";
 export const CartContext = createContext({});
 
 // ─── Tính giá 1 item thường ───
@@ -83,7 +83,7 @@ const AppProvider = ({ children }) => {
         );
       } else {
         // Chưa có → thêm mới
-        const cartProduct = { ...product, size, extras, quantity, noteOrder };
+        const cartProduct = { ...product, cartId: uniqid(), size, extras, quantity, noteOrder };
         newProducts = [...prevProducts, cartProduct];
       }
       saveCartProductToLocalStorage(newProducts);
@@ -94,19 +94,46 @@ const AppProvider = ({ children }) => {
 
   function addComboToCart(comboDetail, selectedItems, quantity = 1, noteOrder = "") {
     setCartProducts((prevProducts) => {
-      const comboCartItem = {
-        type: "combo",
-        _id: comboDetail._id,
-        name: comboDetail.name,
-        image: comboDetail.image,
-        price: comboDetail.price,
-        comboType: comboDetail.comboType,
-        slots: selectedItems,
-        quantity,
-        noteOrder,
-      };
+      const existingIndex = prevProducts.findIndex(p => {
+        if (p.type !== "combo") return false;
+        if (p._id !== comboDetail._id) return false;
 
-      const newProducts = [...prevProducts, comboCartItem];
+        // Cùng noteOrder
+        if ((p.noteOrder ?? "") !== (noteOrder ?? "")) return false;
+
+        // Cùng selectedItems (so sánh theo slotIndex + _id + quantity)
+        if (p.slots.length !== selectedItems.length) return false;
+        const sortFn = (a, b) => `${a.slotIndex}-${a._id}`.localeCompare(`${b.slotIndex}-${b._id}`);
+        const pSorted = [...p.slots].sort(sortFn);
+        const newSorted = [...selectedItems].sort(sortFn);
+        return JSON.stringify(pSorted) === JSON.stringify(newSorted);
+      });
+
+      let newProducts;
+      if (existingIndex !== -1) {
+        // Trùng → cộng dồn quantity
+        newProducts = prevProducts.map((p, i) =>
+          i === existingIndex
+            ? { ...p, quantity: p.quantity + quantity }
+            : p
+        );
+      } else {
+        // Chưa có → thêm mới
+        const comboCartItem = {
+          cartComboId: uniqid(),
+          type: "combo",
+          _id: comboDetail._id,
+          name: comboDetail.name,
+          image: comboDetail.image,
+          price: comboDetail.price,
+          comboType: comboDetail.comboType,
+          slots: selectedItems,
+          quantity,
+          noteOrder,
+        };
+        newProducts = [...prevProducts, comboCartItem];
+      }
+
       saveCartProductToLocalStorage(newProducts);
       return newProducts;
     });
@@ -177,17 +204,49 @@ const AppProvider = ({ children }) => {
   }
 
   // ── Update combo (chỉ quantity + note) ──────────────
-  function updateComboInCart(cartIndex, quantity, noteOrder) {
+function updateComboInCart(cartComboId, slots, quantity, noteOrder) {
     setCartProducts((prevProducts) => {
-      const newProducts = prevProducts.map((p, i) => {
-        if (i !== cartIndex || p.type !== "combo") return p;
-        return { ...p, quantity, noteOrder };
-      });
-      saveCartProductToLocalStorage(newProducts);
-      return newProducts;
-    });
-  }
+        const currentIndex = prevProducts.findIndex(p => p.cartComboId === cartComboId && p.type === "combo");
+        if (currentIndex === -1) return prevProducts;
 
+        const current = prevProducts[currentIndex];
+
+        // Tìm item trùng (khác chính nó, cùng _id + slots + noteOrder)
+        const existingIndex = prevProducts.findIndex((p, i) => {
+            if (i === currentIndex) return false;
+            if (p.type !== "combo" || p._id !== current._id) return false;
+            if ((p.noteOrder ?? "") !== (noteOrder ?? "")) return false;
+
+            if (p.slots.length !== slots.length) return false;
+            const sortFn = (a, b) => `${a.slotIndex}-${a._id}`.localeCompare(`${b.slotIndex}-${b._id}`);
+            const pSorted = [...p.slots].sort(sortFn);
+            const newSorted = [...slots].sort(sortFn);
+            return JSON.stringify(pSorted) === JSON.stringify(newSorted);
+        });
+
+        let newProducts;
+        if (existingIndex !== -1) {
+            // Trùng → gộp quantity, xóa item đang edit
+            newProducts = prevProducts
+                .map((p, i) =>
+                    i === existingIndex
+                        ? { ...p, quantity: p.quantity + quantity }
+                        : p
+                )
+                .filter((_, i) => i !== currentIndex);
+        } else {
+            // Không trùng → update bình thường
+            newProducts = prevProducts.map((p, i) =>
+                i === currentIndex
+                    ? { ...p, slots, quantity, noteOrder }
+                    : p
+            );
+        }
+
+        saveCartProductToLocalStorage(newProducts);
+        return newProducts;
+    });
+}
 
   const clearCart = useCallback(() => {
     setCartProducts([]);

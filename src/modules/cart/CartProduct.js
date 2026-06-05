@@ -7,48 +7,20 @@ import { useLockBodyScroll } from '@/hooks/useLockBodyScroll';
 import ConfirmPopup from '@/components/popup/ConfirmPopup';
 import { useSwipeDelete } from '@/hooks/useSwipeDelete';
 import Trash from '@/components/icons/Trash';
-import ComboSelector from '../combo-order/ComboSelector';
+import { useRouter } from 'next/navigation';
 
-export default function CartProduct({ index, product, onRemove, onUpdateCombo, showEdit = false }) {
+export default function CartProduct({ index, product, onRemove, showEdit = false }) {
   const [showPopup, setShowPopup] = useState(false);
-  const [showComboEdit, setShowComboEdit] = useState(false);
-  useLockBodyScroll(showPopup || showComboEdit);
+  useLockBodyScroll(showPopup);
   const { wrapperRef, itemRef, bgRef } = useSwipeDelete(() => onRemove?.(index));
-
+  const router = useRouter();
   const isCombo = product?.type === "combo";
 
-  /**
-   * Chuyển product.slots (đã lưu trong cart) về shape initialSelections của ComboSelector:
-   *   initialSelections[slotIdx] = Array<{ menuItem, selectedSize, quantity }>
-   *
-   * Cart lưu slots dạng:
-   *   product.slots = [{ menuItem, selectedSize, quantity, slotIndex }, ...]
-   *
-   * ComboSelector nhận mảng hoặc Map – ở đây trả mảng, useEffect trong ComboSelector
-   * sẽ tự convert sang Map.
-   */
-  function buildInitialSelections() {
-    // Ưu tiên product.slots (field mà addComboToCart lưu vào cart)
-    const source = product?.slots?.length ? product.slots
-      : product?.items?.length ? product.items   // fallback nếu cấu trúc cũ dùng items
-      : [];
-
-    if (!source.length) return {};
-
-    const map = {};
-    source.forEach((item) => {
-      // slotIndex phải có; nếu không thì mặc định 0
-      const idx = item.slotIndex ?? 0;
-      if (!map[idx]) map[idx] = [];
-      map[idx].push({
-        menuItem: item.menuItem,
-        selectedSize: item.selectedSize || null,
-        quantity: item.quantity || 1,
-      });
-    });
-    return map;
-  }
-
+  const handleEditCombo = () => {
+    if (isCombo) {
+      router.push(`/combo-order/${product._id}?cartComboId=${product?.cartComboId}`);
+    }
+  };
   return (
     <div ref={wrapperRef} className="relative overflow-hidden rounded-md md:rounded-none">
 
@@ -101,7 +73,7 @@ export default function CartProduct({ index, product, onRemove, onUpdateCombo, s
                   <span key={i} className="block">
                     • {item.menuItem?.name}
                     {item.selectedSize?.name && ` (${item.selectedSize.name})`}
-                    {item.quantity > 1 && ` x${item.quantity}`}
+                    {item.quantity > 0 && ` x${item.quantity}`}
                   </span>
                 ))}
               </div>
@@ -117,7 +89,7 @@ export default function CartProduct({ index, product, onRemove, onUpdateCombo, s
               <>
                 <div
                   className='mt-1 cursor-pointer text-primary'
-                  onClick={() => isCombo ? setShowComboEdit(true) : setShowPopup(true)}
+                  onClick={() => isCombo ? handleEditCombo() : setShowPopup(true)}
                 >
                   Chỉnh sửa
                 </div>
@@ -127,22 +99,6 @@ export default function CartProduct({ index, product, onRemove, onUpdateCombo, s
                   <CartProductDetail menuItem={product} showPopup={showPopup} setShowPopup={setShowPopup} />
                 )}
 
-                {/* Edit modal cho combo */}
-                {isCombo && showComboEdit && (
-                  <ComboSelector
-                    combo={product.comboDetail ?? product}
-                    mode="edit"
-                    initialSelections={buildInitialSelections()}
-                    initialQuantity={product.quantity}
-                    initialNote={product.noteOrder}
-                    cartItemId={product.cartId}
-                    onUpdate={(cartItemId, selectedItems, qty, note) => {
-                      onUpdateCombo?.(cartItemId, selectedItems, qty, note);
-                      setShowComboEdit(false);
-                    }}
-                    onClose={() => setShowComboEdit(false)}
-                  />
-                )}
               </>
             )}
           </div>

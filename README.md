@@ -13,8 +13,8 @@
 - **mongoose**
 - **bcrypt**
 - **mongodb-adapter mongodb**
-<!-- - **@aws-sdk/client-s3**
-- **uniqid**:random name upload hình avatar -->
+<!-- - **@aws-sdk/client-s3**-->
+- **uniqid**:random cartComboId đối với combo
 - **axios**
 - **form-data**
 - **react-hot-toast**

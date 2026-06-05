@@ -11,5 +11,10 @@ const OrderSchema = new Schema({
     totalOrder: Number,
 }, { timestamps: true });
 
+// Tự xóa sau 24h nếu chưa paid
+OrderSchema.index(
+    { createdAt: 1 },
+    { expireAfterSeconds: 86400, partialFilterExpression: { paid: false } }
+);
 
 export const Order = models?.Order || model('Order', OrderSchema);

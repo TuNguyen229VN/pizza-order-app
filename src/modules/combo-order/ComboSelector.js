@@ -33,35 +33,16 @@ export default function ComboSelector({
     categories = [],
     combo,
     onClose,
-    onAdded,
     mode = "add",
     initialSelections = {},
-    initialQuantity = 1,
-    initialNote = "",
-    cartItemId,
-    onUpdate,
+    chooseTabIndex,
+    setChooseTabIndex,
 }) {
-    const { addComboToCart } = useContext(CartContext);
-
     const [menuItemsBySlot, setMenuItemsBySlot] = useState({});
 
-    // 
-
-    const [chooseTabIndex, setChooseTabIndex] = useState(0);
-
-    /**
-     * selections[slotIdx] = Map<itemId, { menuItem, selectedSize, quantity }>
-     * Dùng Map để dễ tăng/giảm quantity theo itemId
-     */
-
     const [selections, setSelections] = useState({});
-    const [quantity, setQuantity] = useState(initialQuantity);
-    const [noteOrder, setNoteOrder] = useState(initialNote);
     const [loadingSlots, setLoadingSlots] = useState(true);
-    const [adding, setAdding] = useState(false);
     const [validationError, setValidationError] = useState("");
-    const [showSuccess, setShowSuccess] = useState(false);
-
     const [editingItems, setEditingItems] = useState(new Set());
     // ── Khởi tạo selections và load menu items ─────────────────────────────
     useEffect(() => {
@@ -241,31 +222,10 @@ export default function ComboSelector({
                 });
             });
         });
-        return result;
-    }
-
-    // ── Add / Update ───────────────────────────────────────────────────────
-    function handleSubmit() {
-        const err = validate();
-        if (err) { setValidationError(err); return; }
-
-        setAdding(true);
-        const selectedItems = buildSelectedItems();
-
-        if (mode === "edit" && cartItemId && onUpdate) {
-            onUpdate(cartItemId, selectedItems, quantity, noteOrder);
-        } else {
-            // addComboToCart nên merge quantity nếu combo+items giống nhau
-            addComboToCart(combo, selectedItems, quantity, noteOrder);
-        }
-
-        setShowSuccess(true);
-        setTimeout(() => {
-            setAdding(false);
-            setShowSuccess(false);
-            onAdded?.();
-            onClose?.();
-        }, 900);
+        return result.sort((a, b) => {
+            if (a.slotIndex !== b.slotIndex) return a.slotIndex - b.slotIndex;
+            return a.menuItem._id.localeCompare(b.menuItem._id);
+        });
     }
 
     const handleChooseCombo = () => {
@@ -449,7 +409,7 @@ export default function ComboSelector({
                     }
                 </div>
                 {validationError && (
-                    <div className="px-3 py-2 mt-4 text-xs text-red-600 border border-red-200 rounded-lg bg-red-50">
+                    <div className="px-3 py-2 my-4 text-xs text-red-600 border border-red-200 rounded-lg bg-red-50">
                         {validationError}
                     </div>
                 )}
