@@ -13,10 +13,32 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import ChevronRight from '../icons/ChevronRight';
 import ChevronLeft from '../icons/ChevronLeft';
+import { slugify } from '@/libs/slugify';
 
-export default function Slider({ listSlide = [] }) {
+export default function Slider({ banners = [], hash, setHash, isScrollingTo }) {
     const prevRef = useRef(null);
     const nextRef = useRef(null);
+
+    const handleClick = (slug) => {
+        setHash(slug);
+        window.history.replaceState(null, "", `#${slug}`);
+
+        // Bật flag, scroll xong thì tắt
+        isScrollingTo.current = true;
+
+        const target = document.getElementById(slug);
+        if (target) {
+            const headerOffset = 190;
+            const top = target.getBoundingClientRect().top + window.scrollY - headerOffset;
+            window.scrollTo({ top, behavior: "smooth" });
+        }
+
+        // Tắt flag sau khi scroll xong (~800ms)
+        setTimeout(() => {
+            isScrollingTo.current = false;
+        }, 800);
+    };
+
     return (
         <div className="relative">
             <Swiper
@@ -48,10 +70,13 @@ export default function Slider({ listSlide = [] }) {
                 }}
                 modules={[Autoplay, EffectFade, Navigation, Pagination]}
             >
-                {listSlide.length > 0 && listSlide.map(listItem => (
-                    <SwiperSlide key={listItem.name}>
-                        <Link href={`#${listItem.name}`} >
-                            <Image src={listItem.url} alt={listItem.name} fill className='absolute object-cover object-center w-full h-full' />
+                {banners.length > 0 && banners.map(banner => (
+                    <SwiperSlide key={banner._id}>
+                        <Link href={`#${slugify(banner.name)}`} onClick={(e) => {
+                            e.preventDefault();
+                            handleClick(slugify(banner.name));
+                        }} >
+                            <Image src={banner.image} alt={banner.name} fill className='absolute object-cover object-center w-full h-full' />
                         </Link>
                     </SwiperSlide>
                 )
@@ -61,14 +86,14 @@ export default function Slider({ listSlide = [] }) {
                     ref={prevRef}
                     className="absolute z-10 flex items-center justify-center w-5 h-5 text-black -translate-y-1/2 bg-white rounded-full md:w-7 md:h-7 left-2 top-1/2"
                 >
-                    <ChevronLeft strokeWidth={3} className="w-4 h-4 md:w-6 md:h-6"/>
+                    <ChevronLeft strokeWidth={3} className="w-4 h-4 md:w-6 md:h-6" />
                 </button>
 
                 <button
                     ref={nextRef}
                     className="absolute z-10 flex items-center justify-center w-5 h-5 text-black -translate-y-1/2 bg-white rounded-full md:w-7 md:h-7 right-2 top-1/2"
                 >
-                    <ChevronRight strokeWidth={3} className="w-4 h-4 md:w-6 md:h-6"/>
+                    <ChevronRight strokeWidth={3} className="w-4 h-4 md:w-6 md:h-6" />
                 </button>
             </Swiper>
         </div>

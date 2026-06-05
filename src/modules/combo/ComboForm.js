@@ -77,7 +77,7 @@ export default function ComboForm({ onSuccess, editData = null,setRedirectToItem
             },
             selectedComboType: {
                 value: selectedComboType,
-                rules: [validators.requiredSelect("trạng thái")],
+                rules: [validators.requiredSelect("loại combo")],
             },
             image: {
                 value: pendingFile || image,

@@ -22,11 +22,13 @@ const COMBO_NEW_ROUTE = '/combo/new';
 const COMBO_EDIT_ROUTE = '/combo/edit';
 const COMBO_ORDER_ROUTE = '/combo-order';
 const ORDER_TRACKING_ROUTE = '/order-tracking';
+const BANNER_ROUTE = '/banners';
 
 export {
   HOME_ROUTE,
   PROFILE_ROUTE,
   CATEGORIES_ROUTE,
+  BANNER_ROUTE,
   MENU_ITEMS_ROUTE,
   MENU_ITEM_NEW_ROUTE,
   MENU_ITEM_EDIT_ROUTE,

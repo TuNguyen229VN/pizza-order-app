@@ -10,7 +10,7 @@ export default function CategoriesForm({ editedCategory, categoryName, setCatego
         <form className="" onSubmit={handleCategorySubmit}>
             <div className="">
                 <ValidatedInput
-                    label={editedCategory ? <p>Cập nhật danh mục <span className="font-semibold">{editedCategory.name}</span></p> : "Tên danh mục mới"}
+                    label={editedCategory ? <span>Cập nhật danh mục <span className="font-semibold">{editedCategory.name}</span></span> : "Tên danh mục mới"}
                     name="categoryName"
                     value={categoryName || ""}
                     inputRef={registerRef("categoryName")}

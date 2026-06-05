@@ -4,7 +4,7 @@ import NotFindLayout from "@/components/layout/NotFindLayout";
 import SectionHeader from "@/components/layout/SectionHeader";
 import MenuItems from "@/components/menu/MenuItems";
 import Slider from "@/components/slider/Slider";
-import { API_CATEGORIES, API_COMBO, API_COMBO_TYPES, API_MENU_ITEMS } from "@/constant/constant";
+import { API_BANNERS, API_CATEGORIES, API_COMBO, API_COMBO_TYPES, API_MENU_ITEMS } from "@/constant/constant";
 import { getCategoryIcon } from "@/libs/getCategoryIcon";
 import { slugify } from "@/libs/slugify";
 import { useEffect, useRef, useState } from "react";
@@ -15,6 +15,7 @@ import MenuCombo from "@/components/menu/MenuCombo";
 export default function Home() {
   const [categories, setCategories] = useState([]);
   const [menuItems, setMenuItems] = useState([]);
+  const [banners, setBanners] = useState([])
   const [hash, setHash] = useState("");
   const sectionRefs = useRef({});
   const isScrollingTo = useRef(false);
@@ -25,6 +26,10 @@ export default function Home() {
   const [comboList, setComboList] = useState([])
   const [comboTypeList, setComboTypeList] = useState([])
   useEffect(() => {
+    fetch(`${API_BANNERS}?all=true&statusFilter=on`)
+      .then(res => res.json())
+      .then(data => setBanners(data.banners))
+
     fetch(`${API_CATEGORIES}?all=true&statusFilter=on`)
       .then(res => res.json())
       .then(data => setCategories(data.categories))
@@ -32,9 +37,11 @@ export default function Home() {
     fetch(`${API_MENU_ITEMS}?all=true&status=on`)
       .then(res => res.json())
       .then(data => setMenuItems(data.menuItems))
+
     fetch(`${API_COMBO}?all=true&status=on`)
       .then(res => res.json())
       .then(data => setComboList(data.combos))
+      
     fetch(`${API_COMBO_TYPES}?all=true&status=on`)
       .then(res => res.json())
       .then(data => setComboTypeList(data.comboTypes))
@@ -97,13 +104,6 @@ export default function Home() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [categories, menuItems, comboList, comboTypeList]);
 
-  const listSlide = [
-    { name: "slide1", url: "/images/slide1.webp" },
-    { name: "slide2", url: "/images/slide2.webp" },
-    { name: "slide3", url: "/images/slide3.webp" },
-    { name: "slide4", url: "/images/slide4.jpg" }
-  ]
-
   const handleSearch = () => {
     setActiveSearch(search.trim())
   }
@@ -146,7 +146,8 @@ export default function Home() {
 
   return (
     <>
-      <Slider listSlide={listSlide} />
+      <Slider banners={banners} setHash={setHash}
+        hash={hash} isScrollingTo={isScrollingTo} />
       <Carousel
         carouselList={carouselList}
         openInputSearch={openInputSearch}

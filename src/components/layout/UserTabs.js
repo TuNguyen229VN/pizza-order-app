@@ -1,11 +1,11 @@
 "use client";
-import { CATEGORIES_ROUTE, CHANGEPASSWORD_ROUTE, COMBO_ROUTE, COMBOTYPE_ROUTE, MENU_ITEMS_ROUTE, NOTIFICATION_ROUTE, ORDERS_ROUTE, PROFILE_ROUTE, USERS_ROUTE } from "@/constant/routesApp";
+import { BANNER_ROUTE, CATEGORIES_ROUTE, CHANGEPASSWORD_ROUTE, COMBO_ROUTE, COMBOTYPE_ROUTE, MENU_ITEMS_ROUTE, NOTIFICATION_ROUTE, ORDERS_ROUTE, PROFILE_ROUTE, USERS_ROUTE } from "@/constant/routesApp";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
 import UserIcon from "../icons/UserIcon";
 import CategoryIcon from "../icons/CategoryIcon";
-import { PiPizzaLight, PiUserListLight } from "react-icons/pi";
+import { PiFlagBanner, PiPizzaLight, PiUserListLight } from "react-icons/pi";
 import { BsCartCheck } from "react-icons/bs";
 import { TbLockPassword } from "react-icons/tb";
 import Bell from "../icons/Bell";
@@ -26,6 +26,13 @@ const UserTabs = ({ isAdmin }) => {
         </Link>
         {isAdmin && (
           <>
+            <Link
+              className={`flex items-center p-4 gap-4 text-lg ${path === BANNER_ROUTE ? "text-primary font-semibold" : ""}`}
+              href={BANNER_ROUTE}
+            >
+             <PiFlagBanner className="w-6 h-6"/>
+              <span>Quản lý banner</span>
+            </Link>
             <Link
               className={`flex items-center p-4 gap-4 text-lg ${path === CATEGORIES_ROUTE ? "text-primary font-semibold" : ""}`}
               href={CATEGORIES_ROUTE}

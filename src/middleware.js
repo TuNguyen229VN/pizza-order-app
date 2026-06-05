@@ -1,6 +1,7 @@
 import { getToken } from "next-auth/jwt";
 import { NextResponse } from "next/server";
 import {
+    BANNER_ROUTE,
     CATEGORIES_ROUTE,
     CHANGEPASSWORD_ROUTE,
     COMBO_ROUTE,
@@ -43,6 +44,7 @@ const protectedRoutePatterns = [
     exact(COMBO_ROUTE + "/edit"),
     withId(COMBO_ROUTE + "/edit"),
     exact(ORDER_TRACKING_ROUTE),
+    exact(BANNER_ROUTE),
 ];
 
 // route chỉ dành cho role admin
@@ -64,6 +66,7 @@ const adminRoutePatterns = [
     exact(COMBO_ROUTE + "/new"),
     exact(COMBO_ROUTE + "/edit"),
     withId(COMBO_ROUTE + "/edit"),
+    exact(BANNER_ROUTE),
 
 ];
 
@@ -130,5 +133,6 @@ export const config = {
         "/combo-type/edit",
         "/combo-type/edit/:id*",
         "/order-tracking",
+        "/banners"
     ],
 };

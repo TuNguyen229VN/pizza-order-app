@@ -52,7 +52,8 @@ const LoginPage = () => {
       return
     }
     setLoginInProgress(false);
-    router.push(callbackUrl);
+    // router.push(callbackUrl);
+    window.location.href = callbackUrl;
   }
   return (
     <section className="mb-8">

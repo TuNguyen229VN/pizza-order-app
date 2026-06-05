@@ -5,17 +5,21 @@ import NotFindLayout from '@/components/layout/NotFindLayout'
 import Paging from '@/components/layout/Paging'
 import UseProfile from '@/components/UseProfile'
 import { API_ORDERS } from '@/constant/constant'
-import { ORDERS_ROUTE } from '@/constant/routesApp'
+import { LOGIN_ROUTE, ORDERS_ROUTE } from '@/constant/routesApp'
 import { useDebounce } from '@/hooks/useDebounce'
 import { dbTimeForHuman } from '@/libs/datetime'
 import HeaderCart from '@/modules/cart/HeaderCart'
 import OrderTable from '@/modules/orders/OrderTable'
+import { useSession } from 'next-auth/react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 import { HiDotsHorizontal } from 'react-icons/hi'
 import { HiArrowRight } from 'react-icons/hi2'
 
 export default function OrderTrackingPage() {
+  const session = useSession();
+  const router = useRouter();
   const [orders, setOrders] = useState([]);
   const [loadingOrders, setLoadingOrders] = useState(true);
   const [sort, setSort] = useState("newest");
@@ -23,6 +27,7 @@ export default function OrderTrackingPage() {
   const [paid, setPaid] = useState(null);
   const [page, setPage] = useState(1);
   const { loading, data: profile } = UseProfile();
+  const { status } = session;
   const [total, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [totalAll, setTotalAll] = useState(0);
@@ -46,7 +51,9 @@ export default function OrderTrackingPage() {
   }, [sort, paid]);
 
   useEffect(() => {
-    searchOrders();
+    if (status === "authenticated") {
+      searchOrders();
+    }
   }, [page]);
   const searchOrders = () => {
     // if (!searched && search.trim() === "") {
@@ -73,7 +80,14 @@ export default function OrderTrackingPage() {
       })
     })
   }
+  if (status === "unauthenticated") {
+    router.push(LOGIN_ROUTE);
+  }
 
+  // if (status === "authenticated" && statusAccount === "on") {
+  //   router.push(LOGIN_ROUTE);
+  //   return null;
+  // }
   if (loading) {
     return "Đang tải...";
   }
