@@ -24,9 +24,9 @@ export default function ComboTable({ comboList, loadingForm, handleComboDelete, 
     const getItemsForSlots = (items) => {
         return items
             ?.map(slot => {
-               const category= categories.find(c => c._id === slot.category)
-            if(!category) return null;
-            return `${category.name} x${slot.quantity}`
+                const category = categories.find(c => c._id === slot.category)
+                if (!category) return null;
+                return `${category.name} ${slot?.size ? `(${slot.size.name})` : ''} x${slot.quantity}`
             }
             )
             .filter(Boolean)

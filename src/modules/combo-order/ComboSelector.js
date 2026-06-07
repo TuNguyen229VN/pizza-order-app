@@ -10,6 +10,11 @@ import { API_MENU_ITEMS, KEYWORDS } from "@/constant/constant";
 import Image from "next/image";
 import { useContext, useEffect, useState } from "react";
 import { FaCheck } from "react-icons/fa6";
+import { Swiper, SwiperSlide } from 'swiper/react'
+import 'swiper/css';
+import 'swiper/css/navigation';
+import { Navigation } from 'swiper/modules'
+import { useRef } from "react";
 /**
  * ComboSelector
  * Dùng cho cả 2 trường hợp:
@@ -34,16 +39,24 @@ export default function ComboSelector({
     combo,
     onClose,
     mode = "add",
-    initialSelections = {},
     chooseTabIndex,
     setChooseTabIndex,
 }) {
+    const [indicatorLeft, setIndicatorLeft] = useState(0);
+    const [indicatorWidth, setIndicatorWidth] = useState(0);
+    const tabsContainerRef = useRef(null);
+
     const [menuItemsBySlot, setMenuItemsBySlot] = useState({});
 
     const [selections, setSelections] = useState({});
     const [loadingSlots, setLoadingSlots] = useState(true);
     const [validationError, setValidationError] = useState("");
     const [editingItems, setEditingItems] = useState(new Set());
+    const prevRef = useRef(null);
+    const nextRef = useRef(null);
+    const swiperRef = useRef(null);
+    const [isBeginning, setIsBeginning] = useState(true)
+    const [isEnd, setIsEnd] = useState(false)
     // ── Khởi tạo selections và load menu items ─────────────────────────────
     useEffect(() => {
         if (!combo?.slots) return;
@@ -68,31 +81,9 @@ export default function ComboSelector({
             });
             setSelections(mapFromList);
         } else {
-            // Logic cũ
             const initSelections = {};
-            combo.slots.forEach((slot, idx) => {
-                if (mode === "edit" && initialSelections[idx] != null) {
-                    const raw = initialSelections[idx];
-                    if (raw instanceof Map) {
-                        initSelections[idx] = new Map(raw);
-                    } else if (Array.isArray(raw)) {
-                        const map = new Map();
-                        raw.forEach((entry) => {
-                            if (!entry?.menuItem) return;
-                            const key = entry.menuItem._id;
-                            if (map.has(key)) {
-                                map.get(key).quantity += (entry.quantity || 1);
-                            } else {
-                                map.set(key, { ...entry, quantity: entry.quantity || 1 });
-                            }
-                        });
-                        initSelections[idx] = map;
-                    } else {
-                        initSelections[idx] = new Map();
-                    }
-                } else {
-                    initSelections[idx] = new Map();
-                }
+            combo.slots.forEach((_, idx) => {
+                initSelections[idx] = new Map();
             });
             setSelections(initSelections);
         }
@@ -108,7 +99,21 @@ export default function ComboSelector({
 
         Promise.all(promises).then((results) => {
             const bySlot = {};
-            results.forEach(({ idx, items }) => { bySlot[idx] = items; });
+            results.forEach(({ idx, items }) => {
+                const slotSize = combo.slots[idx].size;
+                if (slotSize?.name) {
+                    // Chỉ giữ items có size khớp (case-insensitive)
+                    bySlot[idx] = items.filter((item) =>
+                        item.sizes?.some(
+                            (s) => s.name.trim().toLowerCase() === slotSize.name.trim().toLowerCase()
+                                && String(s.price || 0) === String(slotSize.price || 0)
+                        )
+                    );
+                } else {
+                    // Category không có size → show hết
+                    bySlot[idx] = items;
+                }
+            });
             setMenuItemsBySlot(bySlot);
             setLoadingSlots(false);
         });
@@ -135,24 +140,46 @@ export default function ComboSelector({
      * Nếu chưa có thì thêm mới với qty = 1.
      */
     function incrementItem(slotIdx, menuItem) {
-        if (totalChosenInSlot(slotIdx) >= combo.slots[slotIdx].quantity) {
-            return;
-        }
+        if (totalChosenInSlot(slotIdx) >= combo.slots[slotIdx].quantity) return;
+
         setSelections((prev) => {
             const map = new Map(prev[slotIdx] || []);
             const key = menuItem._id;
+            const slotSize = combo.slots[slotIdx].size ?? null;
             if (map.has(key)) {
                 const entry = { ...map.get(key) };
                 entry.quantity = (entry.quantity || 1) + 1;
                 map.set(key, entry);
             } else {
-                map.set(key, { menuItem, selectedSize: null, quantity: 1 });
+                map.set(key, { menuItem, selectedSize: slotSize, quantity: 1 });
             }
-            return { ...prev, [slotIdx]: map };
+            const newSelections = { ...prev, [slotIdx]: map };
+
+            if (mode === "edit") {
+                const result = [];
+                combo.slots.forEach((_, idx) => {
+                    const m = newSelections[idx] || new Map();
+                    m.forEach((entry) => {
+                        if (!entry.menuItem) return;
+                        result.push({
+                            menuItem: entry.menuItem,
+                            selectedSize: entry.selectedSize || undefined,
+                            slotIndex: idx,
+                            quantity: entry.quantity || 1,
+                        });
+                    });
+                });
+                setComboChooseList(result.sort((a, b) =>
+                    a.slotIndex !== b.slotIndex
+                        ? a.slotIndex - b.slotIndex
+                        : a.menuItem._id.localeCompare(b.menuItem._id)
+                ));
+            }
+
+            return newSelections;
         });
         setValidationError("");
     }
-
     /**
      * Giảm quantity của 1 item trong slot.
      * Nếu qty về 0 thì xoá khỏi Map.
@@ -174,17 +201,6 @@ export default function ComboSelector({
         setValidationError("");
     }
 
-    function selectSize(slotIdx, itemId, size) {
-        setSelections((prev) => {
-            const map = new Map(prev[slotIdx] || []);
-            if (!map.has(itemId)) return prev;
-            const entry = { ...map.get(itemId), selectedSize: size };
-            map.set(itemId, entry);
-            return { ...prev, [slotIdx]: map };
-        });
-        setValidationError("");
-    }
-
     // ── Validate ───────────────────────────────────────────────────────────
     function validate() {
         const slots = combo.slots;
@@ -197,12 +213,12 @@ export default function ComboSelector({
                 return `"${label}": cần chọn đủ ${slot.quantity} món (đã chọn ${total})`;
             }
 
-            const map = selections[slotIdx] || new Map();
-            for (const [, entry] of map) {
-                if (entry.menuItem?.sizes?.length > 0 && !entry.selectedSize) {
-                    return `Món "${entry.menuItem.name}" cần chọn size`;
-                }
-            }
+            // const map = selections[slotIdx] || new Map();
+            // for (const [, entry] of map) {
+            //     if (entry.menuItem?.sizes?.length > 0 && !entry.selectedSize) {
+            //         return `Món "${entry.menuItem.name}" cần chọn size`;
+            //     }
+            // }
         }
         return null;
     }
@@ -236,22 +252,52 @@ export default function ComboSelector({
             setEditingItems(new Set());
             return;
         }
-        onClose();
         setComboChooseList(buildSelectedItems());
+        onClose();
     }
+
+    // useEffect(() => {
+    //     if (swiperRef.current) {
+    //         swiperRef.current.slideTo(chooseTabIndex);
+    //     }
+    // }, [chooseTabIndex]);
+
+    const updateIndicator = () => {
+        if (!swiperRef.current) return;
+        const swiper = swiperRef.current;
+        const activeSlide = swiper.slides?.[chooseTabIndex];
+        if (!activeSlide || !swiper.el) return;
+        const containerRect = swiper.el.getBoundingClientRect();
+        const slideRect = activeSlide.getBoundingClientRect();
+        setIndicatorLeft(slideRect.left - containerRect.left);
+        setIndicatorWidth(slideRect.width);
+    };
+
+    useEffect(() => {
+        updateIndicator();
+    }, [chooseTabIndex, menuItemsBySlot]);
+    useEffect(() => {
+        if (swiperRef.current) {
+            swiperRef.current.slideTo(chooseTabIndex, 300);
+            // Đợi animation xong mới tính indicator
+            setTimeout(updateIndicator, 350);
+        }
+    }, [chooseTabIndex]);
 
     if (!combo) return null;
     const slots = combo?.slots || [];
     const isEdit = mode === "edit";
-
+    const totalRequired = combo?.slots?.reduce((sum, s) => sum + (s.quantity || 1), 0) ?? 0;
+    const totalChosen = comboChooseList.reduce((sum, item) => sum + (item.quantity || 1), 0);
+    const isComboComplete = totalChosen >= totalRequired;
     // ── Render ─────────────────────────────────────────────────────────────
     return (
         <div className="fixed inset-0 z-50 flex items-end justify-center p-0 sm:items-center md:p-4">
             {/* Backdrop */}
-            {comboChooseList.length > 0 ? <div className="absolute inset-0 bg-black/50" onClick={onClose} /> : <ConfirmPopup onDelete={onClose} label="Thoát tạo mới combo" labelDesc="Lựa chọn của bạn sẽ bị mất nếu bạn thoát khỏi combo. Bạn có chắc chắn muốn thoát" labelConfirm="Thoát">
+            {isComboComplete ? <div className="absolute inset-0 bg-black/50" onClick={onClose} /> : <ConfirmPopup onDelete={onClose} label="Thoát tạo mới combo" labelDesc="Lựa chọn của bạn sẽ bị mất nếu bạn thoát khỏi combo. Bạn có chắc chắn muốn thoát" labelConfirm="Thoát">
                 <div className="absolute inset-0 bg-black/80" />
             </ConfirmPopup>}
-            <div className="relative w-[960px] p-4 bg-white rounded-md shadow-2xl h-[100vh] flex flex-col">
+            <div className="relative w-full lg:w-[960px] p-4 bg-white rounded-md shadow-2xl h-[100vh] flex flex-col">
                 {/* Header */}
                 <div className="relative mb-4">
                     <h4 className="text-2xl font-semibold"> {isEdit ? "Chỉnh sửa combo" : "Tạo mới combo"}</h4>
@@ -273,25 +319,62 @@ export default function ComboSelector({
                         </div>) : (
                         <>
 
-                            <div className="flex items-center gap-10">
-                                {slots.map((slot, slotIdx) => {
-                                    const slotItems = menuItemsBySlot[slotIdx] || [];
-                                    const category = categories.find(c => c._id === slot.category)
-                                    const total = totalChosenInSlot(slotIdx);
-                                    return (
-                                        <div key={slotIdx} className={`flex items-center gap-2  ${total === 0 && chooseTabIndex !== slotIdx ? "opacity-50 pointer-events-none" : "cursor-pointer"}`} onClick={() => { setChooseTabIndex(slotIdx); setEditingItems(new Set()); }}>
-                                            <div className={`flex items-center justify-center w-8 h-8 text-sm rounded-full border ${chooseTabIndex === slotIdx ? "bg-primary text-white " : "border-primary text-primary"}`}> <p className="font-semibold">{total > 0 && chooseTabIndex !== slotIdx ? <FaCheck /> : slotIdx + 1}</p></div>
-                                            <div>
-                                                <p className="font-semibold">Chọn  {category?.name}  {slot.quantity > 0 && `${total}/${slot.quantity}`}</p>
-                                                <p className="text-sm font-semibold text-secondary">Yêu cầu</p>
-                                            </div>
-
-                                        </div>
-                                    )
-                                })}
+                            <div className="relative w-full min-w-0 ">
+                                <Swiper
+                                    slidesPerView={1.4}
+                                    spaceBetween={10}
+                                    slidesPerGroup={2}
+                                    breakpoints={{
+                                        480: {
+                                            slidesPerView: 2.4,
+                                        },
+                                        640: {
+                                            slidesPerView: 3.4,
+                                        },
+                                    }}
+                                    onSwiper={(swiper) => {
+                                        swiperRef.current = swiper;
+                                        swiper.slideTo(chooseTabIndex);
+                                        setIsBeginning(swiper.isBeginning)
+                                        setIsEnd(swiper.isEnd)
+                                    }}
+                                    onSlideChange={(swiper) => {
+                                        setIsBeginning(swiper.isBeginning)
+                                        setIsEnd(swiper.isEnd)
+                                        updateIndicator();
+                                    }}
+                                    onTransitionEnd={() => updateIndicator()}
+                                    modules={[Navigation]}
+                                >
+                                    {slots.map((slot, slotIdx) => {
+                                        const slotItems = menuItemsBySlot[slotIdx] || [];
+                                        const category = categories.find(c => c._id === slot.category)
+                                        const total = totalChosenInSlot(slotIdx);
+                                        return (
+                                            <SwiperSlide key={slotIdx}>
+                                                <div key={slotIdx} className={`flex items-center gap-2  ${total === 0 && chooseTabIndex !== slotIdx ? "opacity-50 pointer-events-none" : "cursor-pointer"}`} onClick={() => { setChooseTabIndex(slotIdx); setEditingItems(new Set()); }}>
+                                                    <div className={`flex flex-shrink-0 items-center justify-center w-8 h-8 text-sm rounded-full border ${chooseTabIndex === slotIdx ? "bg-primary text-white " : "border-primary text-primary"}`}> <p className="font-semibold">{total > 0 && chooseTabIndex !== slotIdx ? <FaCheck /> : slotIdx + 1}</p></div>
+                                                    <div>
+                                                        <p className="text-sm font-semibold whitespace-nowrap md:text-base">Chọn  {category?.name} {slot.quantity > 0 && `(${total}/${slot.quantity})`}</p>
+                                                        <p className="text-sm font-semibold text-secondary">Yêu cầu</p>
+                                                    </div>
+                                                </div>
+                                            </SwiperSlide>
+                                        )
+                                    })}
+                                </Swiper>
+                                <div className="md:hidden relative bottom-0 w-full h-0.5 bg-gray-100 mt-2 rounded-full">
+                                    <div
+                                        className="absolute bottom-0 h-full transition-all duration-300 ease-out rounded-full bg-primary"
+                                        style={{
+                                            left: indicatorLeft,
+                                            width: indicatorWidth,
+                                        }}
+                                    />
+                                </div>
                             </div>
                             <div className="grid gap-2 mt-4 md:grid-cols-2 ">
-                                {menuItemsBySlot[chooseTabIndex].map((mi) => {
+                                {menuItemsBySlot[chooseTabIndex]?.map((mi, index) => {
                                     const entry = getEntry(chooseTabIndex, mi._id);
                                     const qty = entry?.quantity || 0;
                                     const isChosen = qty > 0;
@@ -320,12 +403,16 @@ export default function ComboSelector({
                                                 <div>
                                                     <h4 className={`md:text-lg text-sm md:leading-[26px] capitalize  line-clamp-2 font-bold`}>{mi.name}</h4>
                                                     <p className='text-sm text-secondary line-clamp-1'>{mi.description}</p>
+                                                    {combo.slots[chooseTabIndex].size?.name && (
+                                                        <span className="text-xs font-medium ">
+                                                            Kích thước: {combo.slots[chooseTabIndex].size.name}
+                                                        </span>
+                                                    )}
                                                 </div>
                                                 <div className='flex items-center justify-between w-full'>
                                                     <div>
                                                         <p className={`font-medium  md:text-base mt-1 text-sm `}>{(mi.basePrice + (mi.sizes?.[0]?.price || 0)).toLocaleString('vi-VN')}<span className='ml-2 underline'>đ</span></p>
                                                     </div>
-
                                                     {(() => {
                                                         const slotFull = totalChosenInSlot(chooseTabIndex) >= combo.slots[chooseTabIndex].quantity;
                                                         const isEditing = editingItems.has(mi._id);
@@ -374,36 +461,6 @@ export default function ComboSelector({
                                     )
                                 })}
                             </div>
-                            {/* Size picker cho từng entry đã chọn mà có sizes */}
-                            {Array.from((selections[chooseTabIndex] || new Map()).values())
-                                .filter((sel) => sel.menuItem?.sizes?.length > 0)
-                                .map((sel, i) => (
-                                    <div key={i} className="my-3 ml-1">
-                                        <p className="text-xs text-orange-600 font-medium mb-1.5">
-                                            ⚠️ Chọn size cho <strong>{sel.menuItem.name}</strong>
-                                            {sel.quantity > 1 && <span className="text-gray-400"> (x{sel.quantity})</span>}
-                                        </p>
-                                        <div className="flex flex-wrap gap-2">
-                                            {sel.menuItem.sizes.map((sz) => {
-                                                const isActive = sel.selectedSize?.name === sz.name;
-                                                return (
-                                                    <button
-                                                        key={sz.name}
-                                                        type="button"
-                                                        onClick={() => selectSize(chooseTabIndex, sel.menuItem._id, { name: sz.name, price: sz.price })}
-                                                        className={`px-3 py-1.5 rounded - lg text - xs border font - medium transition - all ${isActive
-                                                            ? "bg-orange-500 text-white border-orange-500"
-                                                            : "bg-white text-gray-600 border-gray-300 hover:border-orange-400"
-                                                            } `}
-                                                    >
-                                                        {sz.name}
-                                                        {sz.price > 0 && <span className="ml-1 underline opacity-80">+{sz.price?.toLocaleString("vi-VN")}₫</span>}
-                                                    </button>
-                                                );
-                                            })}
-                                        </div>
-                                    </div>
-                                ))}
                         </>
                     )
                     }
@@ -414,7 +471,8 @@ export default function ComboSelector({
                     </div>
                 )}
 
-                <ButtonPrimary disabled={totalChosenInSlot(chooseTabIndex) === 0} className={"w-full hover:scale-[1.0]"} onClick={handleChooseCombo}><p>Tiếp tục</p></ButtonPrimary>
+                <ButtonPrimary disabled={totalChosenInSlot(chooseTabIndex) === 0} className={"w-full hover:scale-[1.0]"} onClick={handleChooseCombo}>Tiếp tục{" "}<span className="inline-block w-2 h-2 mx-2 bg-white rounded-full" />{" "}
+                    {combo?.price?.toLocaleString('vi-VN')} <span className="underline">đ</span></ButtonPrimary>
             </div>
         </div>
     );

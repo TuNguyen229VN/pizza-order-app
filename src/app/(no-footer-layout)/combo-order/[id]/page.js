@@ -105,7 +105,7 @@ export default function ComboOrderPage() {
         }
         if (comboCartId) {
             updateComboInCart(comboCartId, comboChooseList, quantity, noteOrder);
-            router.back(); 
+            router.back();
             return;
         }
 
@@ -127,10 +127,10 @@ export default function ComboOrderPage() {
                 <div className='w-full p-4 md:w-1/2 '>
                     <h4 className='mb-4 text-lg font-bold capitalize md:text-3xl'>{combos?.name}</h4>
                     <ul className='pl-5 mb-4 text-sm list-disc'>{combos?.slots
-                        ?.map(slot => {
+                        ?.map((slot, index) => {
                             const category = categories.find(c => c._id === slot.category)
                             if (!category) return null;
-                            return <li key={slot.category}>{String(slot.quantity).padStart(2, "0")} {category.name}</li>
+                            return <li key={`${slot.category}-${index}`}>{String(slot.quantity).padStart(2, "0")} {category.name} {slot?.size ? `(${slot.size.name.toLowerCase()})` : ''}</li>
                         }
                         )
                         || "Chưa có"}</ul>
@@ -151,7 +151,10 @@ export default function ComboOrderPage() {
                     <Image src={combos?.image} alt={combos?.name} fill className='object-cover object-center ' sizes="(max-width: 768px) 100vw, 50vw" quality={90} />
                 </div>
             </div>
-            {open && <ComboSelector chooseTabIndex={chooseTabIndex} setChooseTabIndex={setChooseTabIndex} comboChooseList={comboChooseList} setComboChooseList={setComboChooseList} categories={categories} combo={combos} onClose={() => setOpen(false)} />}
+            {open && <ComboSelector mode={comboCartId?"edit":"add"} chooseTabIndex={chooseTabIndex} setChooseTabIndex={setChooseTabIndex} comboChooseList={comboChooseList} setComboChooseList={setComboChooseList} categories={categories} combo={combos} onClose={() => {
+                setOpen(false);
+                setChooseTabIndex(0);
+            }} />}
             {comboChooseList.length === 0 && (
                 <div className='px-4'>
                     <ButtonPrimary className={"hover:scale-100"} onClick={() => setOpen(true)}>Bắt đầu</ButtonPrimary>
@@ -176,7 +179,7 @@ export default function ComboOrderPage() {
                                 onClick={(e) => { e.stopPropagation(); handleSubmit(); }}
                             >
                                 <div className="mb-4 text-center text-white">
-                                    Thêm vào giỏ hàng{" "}
+                                   {comboCartId?"Cập nhật giỏ hàng" :"Thêm vào giỏ hàng"}{" "}
                                     <span className="inline-block w-2 h-2 mx-2 bg-white rounded-full" />{" "}
                                     {combos?.price?.toLocaleString('vi-VN')} <span className="underline">đ</span>
                                 </div>

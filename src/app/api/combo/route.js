@@ -25,55 +25,12 @@ export async function POST(req) {
         if (error) return Response.json({ message: error }, { status });
 
         const data = await req.json();
-        const { isValid, errors } = validateCombo(data);
+        const { isValid, errors } = validateCombo(data,{});
         if (!isValid) return Response.json({ message: "Dữ liệu không hợp lệ", errors }, { status: 400 });
 
         // Lấy ComboType để kiểm tra slots
         const comboType = await ComboType.findById(data.comboType);
         if (!comboType) return Response.json({ message: "Không tìm thấy loại combo" }, { status: 404 });
-
-        // Kiểm tra từng item: phải on, nếu có sizes thì phải chọn size
-        // for (let i = 0; i < data.items.length; i++) {
-        //     const item = data.items[i];
-        //     const menuItem = await MenuItem.findById(item.menuItem);
-
-        //     if (!menuItem) {
-        //         return Response.json({ message: `Không tìm thấy món #${i + 1}` }, { status: 404 });
-        //     }
-        //     if (menuItem.status !== "on") {
-        //         return Response.json(
-        //             { message: `Món "${menuItem.name}" hiện đang tắt, không thể thêm vào combo` },
-        //             { status: 400 }
-        //         );
-        //     }
-        //     // Nếu món có sizes → bắt buộc phải chọn size
-        //     if (menuItem.sizes && menuItem.sizes.length > 0) {
-        //         if (!item.selectedSize?.name) {
-        //             return Response.json(
-        //                 { message: `Món "${menuItem.name}" có nhiều size, vui lòng chọn 1 size` },
-        //                 { status: 400 }
-        //             );
-        //         }
-        //         // Kiểm tra size có tồn tại trong món không
-        //         const validSize = menuItem.sizes.find((s) => s.name === item.selectedSize.name);
-        //         if (!validSize) {
-        //             return Response.json(
-        //                 { message: `Size "${item.selectedSize.name}" không tồn tại trong món "${menuItem.name}"` },
-        //                 { status: 400 }
-        //             );
-        //         }
-        //         // Gán đúng price từ DB
-        //         item.selectedSize = { name: validSize.name, price: validSize.price };
-        //     } else {
-        //         // Món không có size → xóa selectedSize nếu có
-        //         item.selectedSize = undefined;
-        //     }
-
-        //     // Kiểm tra slotIndex hợp lệ
-        //     if (item.slotIndex >= comboType.slots.length) {
-        //         return Response.json({ message: `slotIndex ${item.slotIndex} không hợp lệ` }, { status: 400 });
-        //     }
-        // }
 
         const combo = await ComboDetail.create(data);
         return Response.json(combo);
@@ -94,7 +51,7 @@ export async function PUT(req) {
         const { _id, ...data } = await req.json();
         if (!_id) return Response.json({ message: "Thiếu _id" }, { status: 400 });
 
-        const { isValid, errors } = validateCombo(data);
+        const { isValid, errors } = validateCombo(data,{});
         if (!isValid) return Response.json({ message: "Dữ liệu không hợp lệ", errors }, { status: 400 });
 
         const updated = await ComboDetail.findByIdAndUpdate(_id, data, { new: true });

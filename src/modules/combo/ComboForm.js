@@ -5,17 +5,20 @@ import ValidatedInput from "@/components/input/ValidatedInput";
 import ValidatedSelectInput from "@/components/input/ValidatedSelectInput";
 import EditTableImage from "@/components/layout/EditTableImage";
 import Loader from "@/components/loading/Loader";
-import { API_CATEGORIES, API_COMBO, API_COMBO_TYPES, STATUS_OPTIONS } from "@/constant/constant";
+import { API_CATEGORIES, API_COMBO, API_COMBO_TYPES, API_MENU_ITEMS, STATUS_OPTIONS } from "@/constant/constant";
 import { useFormValidate } from "@/hooks/useFormValidate";
 import { uploadImage } from "@/libs/uploadImage";
 import { validators } from "@/libs/validators";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 
 
-export default function ComboForm({ onSuccess, editData = null,setRedirectToItems }) {
+export default function ComboForm({ onSuccess, editData = null, setRedirectToItems }) {
     const isEdit = !!editData;
     const { errors, setErrors, registerRef, handleValidate, clearError } = useFormValidate();
+
+    const slotRefs = useRef([]);
+    const [slotErrors, setSlotErrors] = useState([]);
     // ── State cơ bản ───────────────────────────────────────────────────────
     const [name, setName] = useState(editData?.name || "");
     const [image, setImage] = useState(editData?.image || "");
@@ -33,10 +36,12 @@ export default function ComboForm({ onSuccess, editData = null,setRedirectToItem
             category: s.category?._id || s.category || "",
             quantity: s.quantity || 1,
             label: s.label || "",
+            size: s.size ?? null,
         })) || []
     );
 
     const [categories, setCategories] = useState([]);
+    const [categorySizes, setCategorySizes] = useState({});
     // ── Dữ liệu từ API ─────────────────────────────────────────────────────
     const [comboTypes, setComboTypes] = useState([]);
 
@@ -49,7 +54,33 @@ export default function ComboForm({ onSuccess, editData = null,setRedirectToItem
             .then((d) => setComboTypes(d.comboTypes || []));
     }, []);
 
+    async function fetchSizesForCategory(categoryId) {
+        if (!categoryId || categorySizes[categoryId]) return; // đã cache rồi thì thôi
+        try {
+            const res = await fetch(`${API_MENU_ITEMS}?category=${categoryId}&status=on&all=true`);
+            const data = await res.json();
+            const items = data.menuItems || data || [];
 
+            // Gom sizes unique theo name
+            const sizeMap = new Map();
+            for (const item of items) {
+                for (const s of item.sizes || []) {
+                    if (s.name) {
+                        const key = `${s.name.trim().toLowerCase()}_${s.price || 0}`;
+                        if (!sizeMap.has(key)) {
+                            sizeMap.set(key, { name: s.name.trim(), price: s.price || 0 });
+                        }
+                    }
+                }
+            }
+            setCategorySizes((prev) => ({
+                ...prev,
+                [categoryId]: Array.from(sizeMap.values()),
+            }));
+        } catch {
+            setCategorySizes((prev) => ({ ...prev, [categoryId]: [] }));
+        }
+    }
 
     function handleFileSelect(file, localPreview) {
         if (loading) return;
@@ -85,27 +116,34 @@ export default function ComboForm({ onSuccess, editData = null,setRedirectToItem
             },
         });
 
-        const slotErrors = {};
+        let hasSlotError = false;
         if (slots.length === 0) {
-            slotErrors.slots = "Phải có ít nhất 1 slot";
+            setErrors((prev) => ({ ...prev, slots: "Phải có ít nhất 1 slot" }));
+            hasSlotError = true;
         } else {
-            for (let i = 0; i < slots.length; i++) {
-                if (!slots[i].category) {
-                    slotErrors.slots = `Slot ${i + 1}: chưa chọn danh mục`;
-                    break;
-                }
-                if (!slots[i].quantity || slots[i].quantity < 1) {
-                    slotErrors.slots = `Slot ${i + 1}: số lượng phải >= 1`;
-                    break;
-                }
+            const errs = slots.map((slot) => {
+                const e = {};
+                if (!slot.category) e.category = "Chưa chọn danh mục";
+                if (!slot.quantity || slot.quantity < 1) e.quantity = "Số lượng phải >= 1";
+                if (!slot.size?.name && categorySizes[slot.category]?.length > 0) e.size = "Chưa chọn size";
+                return e;
+            });
+
+            const anyError = errs.some((e) => Object.keys(e).length > 0);
+            if (anyError) {
+                setSlotErrors(errs);
+                hasSlotError = true;
+                // Scroll tới slot đầu tiên có lỗi
+                setTimeout(() => {
+                    const firstErrIdx = errs.findIndex((e) => Object.keys(e).length > 0);
+                    slotRefs.current[firstErrIdx]?.scrollIntoView({ behavior: "smooth", block: "center" });
+                }, 50);
+            } else {
+                setSlotErrors([]);
             }
         }
 
-        if (Object.keys(slotErrors).length > 0) {
-            setErrors((prev) => ({ ...prev, ...slotErrors }));
-        }
-
-        if (!isValid || Object.keys(slotErrors).length > 0) {
+        if (!isValid || hasSlotError) {
             setLoading(false);
             return;
         };
@@ -206,14 +244,27 @@ export default function ComboForm({ onSuccess, editData = null,setRedirectToItem
     function removeSlot(idx) {
         if (loading) return;
         setSlots((prev) => prev.filter((_, i) => i !== idx));
+        setSlotErrors((prev) => prev.filter((_, i) => i !== idx));
     }
 
     function updateSlot(idx, field, value) {
         if (loading) {
             return
         }
+        // setSlots((prev) =>
+        //     prev.map((slot, i) => (i === idx ? { ...slot, [field]: value } : slot))
+        // );
         setSlots((prev) =>
-            prev.map((slot, i) => (i === idx ? { ...slot, [field]: value } : slot))
+            prev.map((slot, i) => {
+                if (i !== idx) return slot;
+                const updated = { ...slot, [field]: value };
+                // Reset size khi đổi category
+                if (field === "category") {
+                    updated.size = null;
+                    fetchSizesForCategory(value); // ← fetch sizes mới
+                }
+                return updated;
+            })
         );
         clearError("slots");
     }
@@ -241,8 +292,13 @@ export default function ComboForm({ onSuccess, editData = null,setRedirectToItem
             category: s.category?._id || s.category || "",
             quantity: s.quantity || 1,
             label: s.label || "",
+            size: s.size ?? null,
         })) || []);
         setSelectedComboType(savedData?.comboType || null);
+        editData?.slots?.forEach((s) => {
+            const catId = s.category?._id || s.category;
+            if (catId) fetchSizesForCategory(catId);
+        });
         // setSelections(savedData?.items || []);
     }, [editData]);
 
@@ -258,7 +314,7 @@ export default function ComboForm({ onSuccess, editData = null,setRedirectToItem
         setSelectedComboType(savedData?.comboType || null);
         setSlots((savedData?.slots || []).map((s) => ({
             category: s.category?._id || s.category || "",
-            quantity: s.quantity || 1, label: s.label || "",
+            quantity: s.quantity || 1, label: s.label || "", size: s.size || null,
         })));
         // setSelections(savedData?._resolvedSelections || []);
         clearError("name"); clearError("status"); clearError("price");
@@ -356,12 +412,10 @@ export default function ComboForm({ onSuccess, editData = null,setRedirectToItem
                 )}
 
                 <div className="space-y-3">
-                    {errors.slots && (
-                        <span className="block mt-1 text-xs text-primary">{errors.slots}</span>
-                    )}
                     {slots.map((slot, idx) => (
                         <div
                             key={idx}
+                            ref={(el) => (slotRefs.current[idx] = el)}
                             className="relative p-4 border border-gray-200 rounded-xl"
                         >
                             {/* Header slot */}
@@ -418,8 +472,52 @@ export default function ComboForm({ onSuccess, editData = null,setRedirectToItem
                                             </option>
                                         ))}
                                     </select>
+                                    {slotErrors[idx]?.category && (
+                                        <span className="block mt-1 text-xs text-primary">{slotErrors[idx].category}</span>
+                                    )}
                                 </div>
 
+                                {/* Size */}
+                                {slot.category && (
+                                    <div className="col-span-2">
+                                        <label className="block mb-1 text-xs text-gray-500">
+                                            Size <span className="text-red-400">*</span>
+                                        </label>
+                                        {categorySizes[slot.category] === undefined ? (
+                                            <p className="text-xs italic text-gray-400">Đang tải sizes...</p>
+                                        ) : categorySizes[slot.category].length === 0 ? (
+                                            <p className="text-xs italic text-gray-400">
+                                                Danh mục này không có size nào
+                                            </p>
+                                        ) : (
+                                            <select
+                                                className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                                                value={slot.size ? `${slot.size.name}||${slot.size.price || 0}` : ""}
+                                                disabled={loading}
+                                                onChange={(e) => {
+                                                    const lastIdx = e.target.value.lastIndexOf("||");
+                                                    const name = e.target.value.slice(0, lastIdx);
+                                                    const price = e.target.value.slice(lastIdx + 2);
+                                                    const picked = categorySizes[slot.category]?.find(
+                                                        (s) => s.name.trim().toLowerCase() === name.trim().toLowerCase()
+                                                            && String(s.price || 0) === price
+                                                    );
+                                                    updateSlot(idx, "size", picked || null); // ← THÊM
+                                                }}
+                                            >
+                                                <option value="">-- Chọn size --</option>
+                                                {categorySizes[slot.category].map((s) => (
+                                                    <option key={`${s.name}||${s.price}`} value={`${s.name}||${s.price}`}>
+                                                        {s.name}{s.price > 0 ? ` (+${s.price.toLocaleString("vi-VN")}đ)` : ""}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        )}
+                                        {slotErrors[idx]?.size && (
+                                            <span className="block mt-1 text-xs text-primary">{slotErrors[idx].size}</span>
+                                        )}
+                                    </div>
+                                )}
                                 {/* Label */}
                                 <div>
                                     <label className="block mb-1 text-xs text-gray-500">
@@ -462,6 +560,9 @@ export default function ComboForm({ onSuccess, editData = null,setRedirectToItem
                                             +
                                         </button>
                                     </div>
+                                    {slotErrors[idx]?.quantity && (
+                                        <span className="block mt-1 text-xs text-primary">{slotErrors[idx].quantity}</span>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -479,7 +580,7 @@ export default function ComboForm({ onSuccess, editData = null,setRedirectToItem
                             const cat = categories.find((c) => c._id === slot.category);
                             return (
                                 <li key={idx}>
-                                    <strong>{slot.label || cat?.name || "?"}</strong> — {slot.quantity} món
+                                    <strong>{slot.label || cat?.name || "?"}</strong>  {slot.size?.name ? ` [${slot.size.name}]` : ""} — {slot.quantity} món
                                     {cat && slot.label && cat.name !== slot.label ? ` (${cat.name})` : ""}
                                 </li>
                             );

@@ -1,6 +1,6 @@
 import { validateForm, validators } from "./validators";
 
-export function validateCombo(data) {
+export function validateCombo(data, categorySizes = {}) {
     const { isValid, errors } = validateForm({
         name: {
             value: data.name,
@@ -24,19 +24,24 @@ export function validateCombo(data) {
         },
     });
 
-    const slotErrors = {};
+    let slotErrors = {};
     if (!data.slots || data.slots.length === 0) {
         slotErrors.slots = "Phải có ít nhất 1 slot";
     } else {
-        for (let i = 0; i < data.slots.length; i++) {
-            if (!data.slots[i].category) {
-                slotErrors.slots = `Slot ${i + 1}: chưa chọn danh mục`;
-                break;
+        const perSlotErrors = data.slots.map((slot) => {
+            const e = {};
+            if (!slot.category) e.category = "Chưa chọn danh mục";
+            if (!slot.quantity || slot.quantity < 1) e.quantity = "Số lượng phải >= 1";
+            // Chỉ bắt buộc size nếu category đó có sizes
+            if (!slot.size?.name && categorySizes[slot.category]?.length > 0) {
+                e.size = "Chưa chọn size";
             }
-            if (!data.slots[i].quantity || data.slots[i].quantity < 1) {
-                slotErrors.slots = `Slot ${i + 1}: số lượng phải >= 1`;
-                break;
-            }
+            return e;
+        });
+
+        const hasError = perSlotErrors.some((e) => Object.keys(e).length > 0);
+        if (hasError) {
+            slotErrors.perSlot = perSlotErrors; // mảng lỗi theo index
         }
     }
 
@@ -46,28 +51,5 @@ export function validateCombo(data) {
         isValid: isValid && Object.keys(slotErrors).length === 0, // ✅ cả 2 phải valid
         errors: mergedErrors,
     };
-
-    // Validate selections
-    // const selectionErrors = {};
-    // if (!Array.isArray(data.items) || data.items.length === 0) {
-    //     selectionErrors.selections = "Vui lòng chọn đủ món cho tất cả các slot";
-    // } else {
-    //     for (const item of data.items) {
-    //         if (!item.menuItem) {
-    //             selectionErrors.selections = "Vui lòng chọn đủ món cho tất cả các slot";
-    //             break;
-    //         }
-    //         if (item.slotIndex === undefined || item.slotIndex === null) {
-    //             selectionErrors.selections = "Thiếu slotIndex";
-    //             break;
-    //         }
-    //     }
-    // }
-
-    // const mergedErrors = { ...errors, ...selectionErrors };
-    // return {
-    //     isValid: isValid && Object.keys(selectionErrors).length === 0,
-    //     errors: mergedErrors,
-    // };
 
 }

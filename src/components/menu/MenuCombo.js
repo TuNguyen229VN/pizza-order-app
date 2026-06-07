@@ -28,7 +28,7 @@ export default function MenuCombo({ categories, ...item }) {
                         ?.map(slot => {
                             const category = categories.find(c => c._id === slot.category)
                             if (!category) return null;
-                            return `${String(slot.quantity).padStart(2, "0")} ${category.name}`
+                            return `${String(slot.quantity).padStart(2, "0")} ${category.name} ${slot?.size ? `(${slot.size.name.toLowerCase()})` : ''}`
                         }
                         )
                         .filter(Boolean)

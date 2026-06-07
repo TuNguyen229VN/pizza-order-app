@@ -70,6 +70,54 @@ export async function POST(req) {
                     return Response.json({ message: 'Số lượng không hợp lệ' }, { status: 400 });
                 }
 
+
+                // Check menuItem tồn tại và đang bán
+                const menuItemInfo = await MenuItem.findById(selected.menuItem?._id || selected.menuItem);
+                if (!menuItemInfo) {
+                    return Response.json({ message: `Combo: món không tồn tại` }, { status: 400 });
+                }
+                if (menuItemInfo.status !== "on") {
+                    return Response.json({ message: `Combo: món "${menuItemInfo.name}" không còn bán` }, { status: 400 });
+                }
+
+                // Check menuItem đúng category của slot
+                if (menuItemInfo.category.toString() !== slot.category._id?.toString()) {
+                    return Response.json({ message: `Combo: món "${menuItemInfo.name}" không thuộc danh mục của slot ${slotIdx + 1}` }, { status: 400 });
+                }
+                
+                // Nếu slot có size cố định → check selectedSize khớp
+                if (slot.size?.name) {
+                    const selectedSizeName = selected.selectedSize?.name?.trim().toLowerCase();
+                    const slotSizeName = slot.size.name.trim().toLowerCase();
+                    const slotSizePrice = slot.size.price || 0;
+
+                    if (selectedSizeName !== slotSizeName) {
+                        return Response.json({ message: `Combo: món "${menuItemInfo.name}" phải chọn size "${slot.size.name}"` }, { status: 400 });
+                    }
+
+                    // Check size thực sự tồn tại trong menuItem với đúng giá
+                    const matchedSize = menuItemInfo.sizes?.find(
+                        (s) => s.name.trim().toLowerCase() === slotSizeName
+                            && String(s.price || 0) === String(slotSizePrice)
+                    );
+                    if (!matchedSize) {
+                        return Response.json({ message: `Combo: size "${slot.size.name}" không hợp lệ cho món "${menuItemInfo.name}"` }, { status: 400 });
+                    }
+                }
+
+                // Check tổng quantity từng slot đúng với slot.quantity
+                for (let i = 0; i < comboInfo.slots.length; i++) {
+                    const slot = comboInfo.slots[i];
+                    const totalInSlot = selectedItems
+                        .filter((s) => s.slotIndex === i)
+                        .reduce((sum, s) => sum + (s.quantity || 1), 0);
+                    if (totalInSlot !== slot.quantity) {
+                        const label = slot.label || slot.category?.name || `Slot ${i + 1}`;
+                        return Response.json({
+                            message: `Combo: "${label}" cần đúng ${slot.quantity} món (nhận được ${totalInSlot})`
+                        }, { status: 400 });
+                    }
+                }
                 stripeLineItems.push({
                     quantity,
                     price_data: {

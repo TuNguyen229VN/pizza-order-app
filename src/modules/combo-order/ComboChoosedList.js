@@ -10,7 +10,7 @@ export default function ComboChoosedList({ chooseTabIndex, setChooseTabIndex, co
         <div className="grid grid-cols-1 gap-4 p-4 bg-gray-100 rounded-2xl md:grid-cols-2">
             {combos.slots.map((item, index) => {
                 const selectedItems = comboChooseList.filter(
-                    choose => choose.menuItem.category === item.category
+                    choose => choose.slotIndex === index && choose.menuItem.category === item.category
                 );
                 const totalQuantity = selectedItems.reduce(
                     (sum, item) => sum + item.quantity,
@@ -46,7 +46,7 @@ export default function ComboChoosedList({ chooseTabIndex, setChooseTabIndex, co
                                 <h4 className={`md:text-2xl text-sm md:leading-[30px] capitalize  line-clamp-2 font-bold`}>Chọn <span className='lowercase'>{categories.find(c => c._id === item.category)?.name}</span>  ({totalQuantity}/{item.quantity})</h4>
                                 <p className='text-sm text-secondary line-clamp-1'>
                                     {
-                                        selectedItems.map((choose, idx) => (<span key={choose._id}>{choose.menuItem.name} x {choose.quantity}{idx < selectedItems.length - 1 ? ", " : ""} </span>))
+                                        selectedItems.map((choose, idx) => (<span key={`${choose.slotIndex}-${choose.menuItem._id}-${idx}`}>{choose.menuItem.name} x {choose.quantity}{idx < selectedItems.length - 1 ? ", " : ""} </span>))
                                     }
                                 </p>
                             </div>

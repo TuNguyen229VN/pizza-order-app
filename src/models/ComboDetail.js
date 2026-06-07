@@ -13,22 +13,12 @@ const ComboDetailSchema = new Schema(
                 category: { type: Schema.Types.ObjectId, ref: "Category", required: true },
                 quantity: { type: Number, required: true, default: 1 }, // số lượng món từ category này
                 label: { type: String }, // VD: "Pizza", "Đồ uống"
+                size: {          
+                    name: { type: String },
+                    price: { type: Number },
+                },
             },
         ],
-        // Danh sách items được chọn vào combo
-        // items: [
-        //     {
-        //         menuItem: { type: Schema.Types.ObjectId, ref: "MenuItem", required: true },
-        //         // Size đã chọn (bắt buộc nếu món có sizes)
-        //         selectedSize: {
-        //             name: { type: String },
-        //             price: { type: Number },
-        //         },
-        //         quantity: { type: Number, default: 1 },
-        //         // slot index tương ứng với ComboType.slots
-        //         slotIndex: { type: Number, required: true },
-        //     },
-        // ],
     },
     { timestamps: true }
 );
