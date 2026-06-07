@@ -207,7 +207,6 @@ export default function ComboSelector({
         for (let slotIdx = 0; slotIdx < slots.length; slotIdx++) {
             const slot = slots[slotIdx];
             const total = totalChosenInSlot(slotIdx);
-
             if (chooseTabIndex === slotIdx && total < slot.quantity) {
                 const label = slot.label || slot.category?.name || `Slot ${slotIdx + 1}`;
                 return `"${label}": cần chọn đủ ${slot.quantity} món (đã chọn ${total})`;
@@ -245,17 +244,39 @@ export default function ComboSelector({
     }
 
     const handleChooseCombo = () => {
-        const err = validate();
-        if (err) { setValidationError(err); return; }
+        // Check tất cả slots từ 0 đến chooseTabIndex
+        for (let i = 0; i <= chooseTabIndex; i++) {
+            const slot = combo.slots[i];
+            const total = totalChosenInSlot(i);
+            if (total < slot.quantity) {
+                const category= categories.find(c => c._id === slot.category)
+                const label = slot.label || category.name || `Slot ${i + 1}`;
+                setValidationError(`"${label}": cần chọn đủ ${slot.quantity} món (đã chọn ${total})`);
+                setChooseTabIndex(i); // Nhảy về slot lỗi
+                return;
+            }
+        }
+
         if (chooseTabIndex < combo.slots.length - 1) {
             setChooseTabIndex(chooseTabIndex + 1);
             setEditingItems(new Set());
             return;
         }
+
+        // Slot cuối → check toàn bộ tất cả slots
+        const err = validate();
+        if (err) {
+            if (mode === "edit") {
+                onClose();
+                return;
+            }
+            setValidationError(err);
+            return;
+        }
+
         setComboChooseList(buildSelectedItems());
         onClose();
     }
-
     // useEffect(() => {
     //     if (swiperRef.current) {
     //         swiperRef.current.slideTo(chooseTabIndex);
