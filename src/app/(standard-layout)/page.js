@@ -80,37 +80,57 @@ export default function Home() {
   const dataReady = categories.length > 0 && menuItems.length > 0;
   const sectionsRendered = dataReady && !loadingSections;
 
-  useEffect(() => {
-    if (!sectionsRendered) return;
-    const urlHash = window.location.hash.replace("#", "");
-    if (!urlHash) return;
-    setHash(urlHash);
-    hashRef.current = urlHash;
+ useEffect(() => {
+  if (!sectionsRendered) return;
+  const urlHash = window.location.hash.replace("#", "");
+  if (!urlHash) return;
+  setHash(urlHash);
+  hashRef.current = urlHash;
 
-    let attempts = 0;
-    const MAX = 20; // thử tối đa 20 lần × 100ms = 2s
+  let attempts = 0;
+  const MAX = 20;
 
-    const tryScroll = () => {
-      const target = document.getElementById(urlHash);
-      if (!target) {
-        if (++attempts < MAX) setTimeout(tryScroll, 100);
-        return;
-      }
-      const carousel = document.querySelector(".sticky");
-      const offset = 100 + (carousel?.offsetHeight ?? 0);
-      const top = target.getBoundingClientRect().top + window.scrollY - offset;
+  const tryScroll = () => {
+    const target = document.getElementById(urlHash);
+    if (!target) {
+      if (++attempts < MAX) setTimeout(tryScroll, 100);
+      return;
+    }
+    const carousel = document.querySelector(".sticky");
+    const offset = 100 + (carousel?.offsetHeight ?? 0);
+    const top = target.getBoundingClientRect().top + window.scrollY - offset;
 
-      // Block scroll listener TRƯỚC khi scroll
-      isScrollingTo.current = true;
-      window.scrollTo({ top, behavior: "smooth" });
+    isScrollingTo.current = true;
+    window.scrollTo({ top, behavior: "smooth" });
 
-      // Unblock sau khi smooth scroll xong (~600ms)
-      setTimeout(() => { isScrollingTo.current = false; }, 800);
+    // Detect scroll dừng thật sự thay vì hardcode timeout
+    let scrollEndTimer;
+    const onScrollEnd = () => {
+      clearTimeout(scrollEndTimer);
+      scrollEndTimer = setTimeout(() => {
+        window.removeEventListener("scroll", onScrollEnd);
+        // Giữ hash đúng sau khi dừng
+        hashRef.current = urlHash;
+        setHash(urlHash);
+        // Unblock listener SAU khi đã set hash đúng
+        isScrollingTo.current = false;
+      }, 150); // 150ms không có scroll event = đã dừng
     };
 
-    // Dùng rAF để đảm bảo DOM đã paint
-    requestAnimationFrame(() => setTimeout(tryScroll, 50));
-  }, [sectionsRendered]);
+    window.addEventListener("scroll", onScrollEnd, { passive: true });
+
+    // Fallback nếu không scroll (đã ở đúng vị trí)
+    setTimeout(() => {
+      window.removeEventListener("scroll", onScrollEnd);
+      clearTimeout(scrollEndTimer);
+      hashRef.current = urlHash;
+      setHash(urlHash);
+      isScrollingTo.current = false;
+    }, 2000);
+  };
+
+  requestAnimationFrame(() => setTimeout(tryScroll, 50));
+}, [sectionsRendered]);
 
   const allDataReady = dataReady && comboList.length > 0 && comboTypeList.length > 0;
   useEffect(() => {
