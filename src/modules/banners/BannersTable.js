@@ -19,7 +19,7 @@ export default function BannersTable({ banners, setEditedBanner, setBannerName, 
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-outline-variant font-body-md">
-                    {banners?.length > 0 &&
+                    {banners?.length > 0 ?
                         banners.map((banner) => (
                             <tr className="transition-colors hover:bg-surface-container-low group" key={banner._id}>
                                 <td className="px-4 py-4 md:px-6">
@@ -34,9 +34,9 @@ export default function BannersTable({ banners, setEditedBanner, setBannerName, 
                                     </p>
                                 </td>
                                 <td className="px-4 py-4 md:px-6">
-                                  <div className='flex items-center'>
-                                      <span className={`hidden md:inline-block w-2 h-2 mr-2 rounded-full ${banner.status === "on" ? "bg-green-500" : "bg-red-500"}`}></span> <span className='truncate'>{banner?.status === "on" ? "Đang kinh doanh" : "Tạm đóng"}</span>
-                                  </div>
+                                    <div className='flex items-center'>
+                                        <span className={`hidden md:inline-block w-2 h-2 mr-2 rounded-full ${banner.status === "on" ? "bg-green-500" : "bg-red-500"}`}></span> <span className='truncate'>{banner?.status === "on" ? "Đang kinh doanh" : "Tạm đóng"}</span>
+                                    </div>
                                 </td>
                                 <td className="px-4 py-4 md:px-6">
                                     <p className="w-[200px] line-clamp-1 break-all overflow-hidden" title={dbTimeForHuman(banner.createdAt)}>
@@ -63,7 +63,13 @@ export default function BannersTable({ banners, setEditedBanner, setBannerName, 
                                     </div>
                                 </td>
                             </tr>
-                        ))}
+                        )) : (
+                            <tr>
+                                <td colSpan={5} className="py-4 italic text-center text-secondary">
+                                    Không có dữ liệu
+                                </td>
+                            </tr>
+                        )}
                 </tbody>
             </table>
         </div>

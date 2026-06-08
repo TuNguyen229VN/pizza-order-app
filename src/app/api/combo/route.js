@@ -82,6 +82,7 @@ export async function GET(req) {
         }
 
         const all = url.searchParams.get("all") === "true";
+        const useOrderSort = url.searchParams.get("useOrder") === "true";
         const search = url.searchParams.get("search") || "";
         const statusFilter = url.searchParams.get("status");
         const comboType = url.searchParams.get("comboType");
@@ -105,7 +106,7 @@ export async function GET(req) {
             asc: { name: 1 },
             desc: { name: -1 },
         };
-        const sortOrder = sortMap[sort] || sortMap.newest;
+        const sortOrder = useOrderSort ? { order: 1 } : (sortMap[sort] || sortMap.newest);
 
         // const populateItems = { path: "items.menuItem", select: "name image basePrice sizes" };
 
@@ -113,7 +114,7 @@ export async function GET(req) {
         if (all) {
             const combos = await ComboDetail.find(query)
                 .populate("comboType", "name")
-                .sort({ order: 1, ...sortOrder })
+                .sort(sortOrder)
                 .collation({ locale: "en", strength: 2 });
             return Response.json({ combos, total: combos.length });
         }
@@ -122,7 +123,7 @@ export async function GET(req) {
         const [combos, total, totalAll, totalOn, totalOff] = await Promise.all([
             ComboDetail.find(query)
                 .populate("comboType", "name")
-                .sort({ order: 1, ...sortOrder })
+                .sort(sortOrder)
                 .collation({ locale: "en", strength: 2 })
                 .skip(skip)
                 .limit(limit),

@@ -24,7 +24,7 @@ export default function ComboTypeTable({ comboTypes, loadingForm, handleMenuItem
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-outline-variant font-body-md">
-                        {comboTypes?.length > 0 &&
+                        {comboTypes?.length > 0 ?
                             comboTypes.map((item) => (
                                 <tr className="transition-colors hover:bg-surface-container-low group" key={item._id}>
                                     <td className="px-5 py-4">
@@ -41,16 +41,6 @@ export default function ComboTypeTable({ comboTypes, loadingForm, handleMenuItem
                                             ID: {item._id}
                                         </p>
                                     </td>
-                                    {/* <td className="px-5 py-4">
-                                        <p className='w-[160px]'>
-                                            {item.slots
-                                                ?.map(slot =>
-                                                    categories.find(c => c._id === slot.category?._id)?.name
-                                                )
-                                                .filter(Boolean)
-                                                .join(", ") || "Chưa có"}
-                                        </p>
-                                    </td> */}
                                     <td className="px-5 py-4">
                                         <div className='w-[180px]'>
 
@@ -73,7 +63,13 @@ export default function ComboTypeTable({ comboTypes, loadingForm, handleMenuItem
                                         </div>
                                     </td>
                                 </tr>
-                            ))}
+                            )) : (
+                                <tr>
+                                    <td colSpan={5} className="py-4 italic text-center text-secondary">
+                                        Không có dữ liệu
+                                    </td>
+                                </tr>
+                            )}
                     </tbody>
                 </table>
             </div>

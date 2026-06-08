@@ -50,7 +50,7 @@ export default function ComboTable({ comboList, loadingForm, handleComboDelete, 
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-outline-variant font-body-md">
-                        {comboList?.length > 0 &&
+                        {comboList?.length > 0 ?
                             comboList.map((item) => (
                                 <tr className="transition-colors hover:bg-surface-container-low group" key={item._id}>
                                     <td className="px-5 py-4">
@@ -105,7 +105,13 @@ export default function ComboTable({ comboList, loadingForm, handleComboDelete, 
                                         </div>
                                     </td>
                                 </tr>
-                            ))}
+                            )) : (
+                                <tr>
+                                    <td colSpan={8} className="py-4 italic text-center text-secondary">
+                                        Không có dữ liệu
+                                    </td>
+                                </tr>
+                            )}
                     </tbody>
                 </table>
             </div>

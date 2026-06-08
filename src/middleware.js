@@ -13,6 +13,7 @@ import {
     ORDER_TRACKING_ROUTE,
     ORDERS_ROUTE,
     PROFILE_ROUTE,
+    REARRANGE_ROUTE,
     REGISTER_ROUTE,
     USERS_ROUTE,
 } from "./constant/routesApp";
@@ -45,6 +46,7 @@ const protectedRoutePatterns = [
     withId(COMBO_ROUTE + "/edit"),
     exact(ORDER_TRACKING_ROUTE),
     exact(BANNER_ROUTE),
+    exact(REARRANGE_ROUTE),
 ];
 
 // route chỉ dành cho role admin
@@ -67,7 +69,8 @@ const adminRoutePatterns = [
     exact(COMBO_ROUTE + "/edit"),
     withId(COMBO_ROUTE + "/edit"),
     exact(BANNER_ROUTE),
-
+    exact(REARRANGE_ROUTE),
+    
 ];
 
 // chưa login thì route này
@@ -133,6 +136,7 @@ export const config = {
         "/combo-type/edit",
         "/combo-type/edit/:id*",
         "/order-tracking",
-        "/banners"
+        "/banners",
+        "/rearrange",
     ],
 };

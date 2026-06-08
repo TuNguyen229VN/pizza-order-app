@@ -24,7 +24,7 @@ export default function UserTable({ users, loadingForm = false, handleUserBlock 
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-outline-variant font-body-md">
-                        {users?.length > 0 &&
+                        {users?.length > 0 ?
                             users.map((user) => (
                                 <tr className="transition-colors hover:bg-surface-container-low group" key={user?._id}>
                                     <td className="px-5 py-4">
@@ -74,7 +74,13 @@ export default function UserTable({ users, loadingForm = false, handleUserBlock 
                                         </div>
                                     </td>
                                 </tr>
-                            ))}
+                            )) : (
+                                <tr>
+                                    <td colSpan={6} className="py-4 italic text-center text-secondary">
+                                        Không có dữ liệu
+                                    </td>
+                                </tr>
+                            )}
                     </tbody>
                 </table>
             </div>

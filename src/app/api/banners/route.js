@@ -95,7 +95,7 @@ export async function GET(req) {
     const url = new URL(req.url);
 
     const all = url.searchParams.get("all") === "true";
-
+    const useOrderSort = url.searchParams.get("useOrder") === "true";
     const search = url.searchParams.get("search") || "";
     const status = url.searchParams.get("statusFilter"); // "on" | "off" | ""
     const sort = url.searchParams.get("sort") || "newest";
@@ -114,17 +114,17 @@ export async function GET(req) {
         desc: { name: -1 },
     };
 
-    const sortOrder = sortMap[sort] || sortMap.newest;
+    const sortOrder = useOrderSort ? { order: 1 } :( sortMap[sort] || sortMap.newest);
 
     // không phân trang
     if (all) {
-        const banners = await Banner.find(query).sort({ order: 1, ...sortOrder }).collation({ locale: "en", strength: 2 });
+        const banners = await Banner.find(query).sort(sortOrder).collation({ locale: "en", strength: 2 });
         return Response.json({ banners, total: banners.length });
     }
 
     // Có phân trang
     const [banners, total, totalAll, totalOn, totalOff] = await Promise.all([
-        Banner.find(query).sort({ order: 1, ...sortOrder }).collation({ locale: "en", strength: 2 }).skip(skip).limit(limit),
+        Banner.find(query).sort(sortOrder).collation({ locale: "en", strength: 2 }).skip(skip).limit(limit),
         Banner.countDocuments(query),
         Banner.countDocuments(),
         Banner.countDocuments({ status: "on" }),

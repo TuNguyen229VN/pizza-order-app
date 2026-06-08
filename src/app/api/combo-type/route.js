@@ -68,6 +68,7 @@ export async function GET(req) {
         }
 
         const all = url.searchParams.get("all") === "true";
+        const useOrderSort = url.searchParams.get("useOrder") === "true";
         const search = url.searchParams.get("search") || "";
         const statusFilter = url.searchParams.get("status");
         const sort = url.searchParams.get("sort") || "newest";
@@ -90,13 +91,13 @@ export async function GET(req) {
             asc: { name: 1 },
             desc: { name: -1 },
         };
-        const sortOrder = sortMap[sort] || sortMap.newest;
+        const sortOrder = useOrderSort ? { order: 1 } : (sortMap[sort] || sortMap.newest);
 
         // Không phân trang
         if (all) {
             const comboTypes = await ComboType.find(query)
                 .populate("name status")
-                .sort({ order: 1, ...sortOrder })
+                .sort(sortOrder)
                 .collation({ locale: "en", strength: 2 });
             return Response.json({ comboTypes, total: comboTypes.length });
         }
@@ -105,7 +106,7 @@ export async function GET(req) {
         const [comboTypes, total, totalAll, totalOn, totalOff] = await Promise.all([
             ComboType.find(query)
                 .populate("name status")
-                .sort({ order: 1, ...sortOrder })
+                .sort(sortOrder)
                 .collation({ locale: "en", strength: 2 })
                 .skip(skip)
                 .limit(limit),

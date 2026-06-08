@@ -22,6 +22,12 @@ export default function Carousel({ carouselList = [], setHash, hash, isScrolling
         if (!swiperRef.current || !hash) return;
 
         // Tìm index của item đang active trong carouselList
+
+        if (hash === "recommendations") {
+            swiperRef.current.slideTo(1); // slide index 1 = "Bạn sẽ thích"
+            return;
+        }
+
         const idx = carouselList.findIndex(item => item.slug === hash);
         if (idx !== -1) {
             // +2 vì có 2 slide cố định trước (Search + Recommendations)
@@ -40,6 +46,7 @@ export default function Carousel({ carouselList = [], setHash, hash, isScrolling
         }
     }, [])
 
+    const carouselRef = useRef(null);
     const handleClick = (slug) => {
         setHash(slug);
         window.history.replaceState(null, "", `#${slug}`);
@@ -49,7 +56,9 @@ export default function Carousel({ carouselList = [], setHash, hash, isScrolling
 
         const target = document.getElementById(slug);
         if (target) {
-            const headerOffset = 190;
+            const headerOffset = carouselRef.current
+                ? carouselRef.current.getBoundingClientRect().bottom
+                : 190;
             const top = target.getBoundingClientRect().top + window.scrollY - headerOffset;
             window.scrollTo({ top, behavior: "smooth" });
         }
@@ -61,7 +70,7 @@ export default function Carousel({ carouselList = [], setHash, hash, isScrolling
     };
 
     return (
-        <div className='sticky z-10 pt-3 md:pt-6 top-[65px] md:top-[80px] bg-white'>
+        <div ref={carouselRef} className='sticky z-10 pt-3 md:pt-6 top-[65px] md:top-[80px] bg-white'>
             <div className="relative flex items-center pb-3 overflow-hidden">
                 <div
                     className="flex items-center flex-shrink-0 gap-3 px-4 overflow-hidden transition-all duration-500 ease-in-out md:p-0"
@@ -81,7 +90,7 @@ export default function Carousel({ carouselList = [], setHash, hash, isScrolling
                             setActiveSearch("")
                         }}><CloseIcon className="w-4 h-4" /></button>}
                     </div>
-                    <button className='md:w-[180px] px-6 py-3 duration-300 font-medium text-white rounded-md bg-primary hover:bg-red-400 text-sm md:text-base' onClick={handleSearch}><p className='hidden md:block'>Tìm kiếm</p><SearchIcon className='inline w-5 h-5 md:hidden'/></button>
+                    <button className='md:w-[180px] px-6 py-3 duration-300 font-medium text-white rounded-md bg-primary hover:bg-red-400 text-sm md:text-base' onClick={handleSearch}><p className='hidden md:block'>Tìm kiếm</p><SearchIcon className='inline w-5 h-5 md:hidden' /></button>
                     <button className='text-sm md:text-base' onClick={() => {
                         setSearch("");
                         setActiveSearch("");
@@ -106,23 +115,20 @@ export default function Carousel({ carouselList = [], setHash, hash, isScrolling
                     )}
 
                     <Swiper
-                        slidesPerView={3.7}
-                        slidesPerGroup={3}
+                        slidesPerView={'auto'}
+                        slidesPerGroup={2}
                         spaceBetween={10}
                         breakpoints={{
                             480: {
-                                slidesPerView: 4.7,
                             },
                             640: {
-                                slidesPerView: 5.7,
+                                // slidesPerView: 5.7,
                                 spaceBetween: 20,
                             },
                             768: {
-                                slidesPerView: 6.7,
                             },
                             1024: {
-                                slidesPerView: 7.7,
-                                spaceBetween: 30,
+                                spaceBetween: 60,
                             }
                         }}
                         onSwiper={(swiper) => {
@@ -139,27 +145,28 @@ export default function Carousel({ carouselList = [], setHash, hash, isScrolling
                             nextEl: nextRef.current,
                         }}
                         modules={[Navigation]}
+                        className="w-full"
                     >
-                        <SwiperSlide>
-                            <div className='flex flex-col items-center justify-center gap-1 pb-3 text-sm cursor-pointer md:text-base' onClick={() => setOpenInputSearch(true)}>
+                        <SwiperSlide className="!w-auto">
+                            <div className='flex flex-col items-center justify-center w-full gap-1 pb-3 text-sm text-center cursor-pointer md:text-base' onClick={() => setOpenInputSearch(true)}>
                                 <SearchIcon className="w-4 h-4 md:w-6 md:h-6" />
                                 <p>Tìm kiếm</p>
                             </div>
                         </SwiperSlide>
-                        <SwiperSlide>
+                        <SwiperSlide className="!w-auto">
                             <Link
                                 href={`#recommendations`}
                                 onClick={(e) => {
                                     e.preventDefault(); // chặn href scroll mặc định, dùng scrollIntoView thay thế
                                     handleClick("recommendations");
                                 }}
-                                className={`relative flex flex-col items-center justify-center gap-1 pb-3 uppercase transition-colors duration-300 ${"recommendations" === hash
+                                className={`w-full text-center relative flex flex-col items-center justify-center gap-1 pb-3 uppercase transition-colors duration-300 ${"recommendations" === hash
                                     ? "text-primary"
                                     : ""
                                     }`}
                             >
                                 <AiOutlineLike className="w-4 h-4 md:w-6 md:h-6" />
-                                <p className='text-sm md:text-base w-max'>Bạn sẽ thích</p>
+                                <p className='w-full text-sm whitespace-nowrap md:text-base'>Bạn sẽ thích</p>
 
                                 <span
                                     className={`absolute bottom-0 left-0 h-1 md:h-[6px] w-full rounded-full bg-primary transition-all duration-300 ${"recommendations" === hash
@@ -170,20 +177,20 @@ export default function Carousel({ carouselList = [], setHash, hash, isScrolling
                             </Link>
                         </SwiperSlide>
                         {carouselList.length > 0 && carouselList.map(carouselItem => (
-                            <SwiperSlide key={carouselItem.name}>
+                            <SwiperSlide key={carouselItem.name} className="!w-auto">
                                 <Link
                                     href={`#${carouselItem.slug}`}
                                     onClick={(e) => {
                                         e.preventDefault(); // chặn href scroll mặc định, dùng scrollIntoView thay thế
                                         handleClick(carouselItem.slug);
                                     }}
-                                    className={`relative flex flex-col items-center justify-center gap-1 pb-3 uppercase transition-colors duration-300 ${carouselItem.slug === hash
+                                    className={`relative flex flex-col items-center justify-center gap-1 pb-3 uppercase transition-colors duration-300 w-full text-center ${carouselItem.slug === hash
                                         ? "text-primary"
                                         : ""
                                         }`}
                                 >
                                     {carouselItem.icons}
-                                    <p className='text-sm md:text-base w-max'>{carouselItem.name}</p>
+                                    <p className='w-full text-sm md:text-base whitespace-nowrap'>{carouselItem.name}</p>
 
                                     <span
                                         className={`absolute bottom-0 left-0 h-1 md:h-[6px] w-full rounded-full bg-primary transition-all duration-300 ${carouselItem.slug === hash

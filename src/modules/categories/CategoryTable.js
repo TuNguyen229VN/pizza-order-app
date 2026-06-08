@@ -19,7 +19,7 @@ export default function CategoryTable({ categories, setEditedCategory, setCatego
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-outline-variant font-body-md">
-                    {categories?.length > 0 &&
+                    {categories?.length > 0 ?
                         categories.map((category) => (
                             <tr className="transition-colors hover:bg-surface-container-low group" key={category._id}>
                                 <td className="px-4 py-4 md:px-6">
@@ -63,7 +63,13 @@ export default function CategoryTable({ categories, setEditedCategory, setCatego
                                     </div>
                                 </td>
                             </tr>
-                        ))}
+                        )) : (
+                            <tr>
+                                <td colSpan={5} className="py-4 italic text-center text-secondary">
+                                    Không có dữ liệu
+                                </td>
+                            </tr>
+                        )}
                 </tbody>
             </table>
         </div>

@@ -1,5 +1,5 @@
 "use client";
-import { BANNER_ROUTE, CATEGORIES_ROUTE, CHANGEPASSWORD_ROUTE, COMBO_ROUTE, COMBOTYPE_ROUTE, MENU_ITEMS_ROUTE, NOTIFICATION_ROUTE, ORDERS_ROUTE, PROFILE_ROUTE, USERS_ROUTE } from "@/constant/routesApp";
+import { BANNER_ROUTE, CATEGORIES_ROUTE, CHANGEPASSWORD_ROUTE, COMBO_ROUTE, COMBOTYPE_ROUTE, MENU_ITEMS_ROUTE, NOTIFICATION_ROUTE, ORDERS_ROUTE, PROFILE_ROUTE, REARRANGE_ROUTE, USERS_ROUTE } from "@/constant/routesApp";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
@@ -14,6 +14,7 @@ import SignOutIcon from "../icons/SignOutIcon";
 import { signOut } from "next-auth/react";
 import { MdOutlineFastfood } from "react-icons/md";
 import { FiPackage } from "react-icons/fi";
+import { GrSystem } from "react-icons/gr";
 
 const UserTabs = ({ isAdmin }) => {
   const path = usePathname();
@@ -69,6 +70,10 @@ const UserTabs = ({ isAdmin }) => {
             <Link className={`flex items-center p-4 gap-4 text-lg ${path === ORDERS_ROUTE ? "text-primary font-semibold" : ""}`} href={ORDERS_ROUTE}>
               <BsCartCheck className="w-6 h-6" />
               <span>Quản lý đơn hàng</span>
+            </Link>
+            <Link className={`flex items-center p-4 gap-4 text-lg ${path === REARRANGE_ROUTE ? "text-primary font-semibold" : ""}`} href={REARRANGE_ROUTE}>
+              <GrSystem   className="w-6 h-6" />
+              <span>Sắp xếp hiển thị sản phẩm</span>
             </Link>
           </>
         )}

@@ -61,7 +61,7 @@ export async function GET(req) {
     await connectDB();
     const url = new URL(req.url);
     const all = url.searchParams.get("all") === "true";
-
+    const useOrderSort = url.searchParams.get("useOrder") === "true";
     const search = url.searchParams.get("search") || "";
     const status = url.searchParams.get("status"); // "on" | "off" | ""
     const sort = url.searchParams.get("sort") || "newest";
@@ -69,10 +69,6 @@ export async function GET(req) {
     const page = parseInt(url.searchParams.get("page") || "1");
     const limit = LIMITPAGE;
     const skip = (page - 1) * limit;
-
-    // const query = search
-    //     ? { name: { $regex: search, $options: "i" }, status: status || { $in: ["on", "off"] } }
-    //     : { status: status || { $in: ["on", "off"] } };
 
     const query = {
         ...(search && { name: { $regex: search, $options: "i" } }),
@@ -88,17 +84,17 @@ export async function GET(req) {
         desc: { name: -1 },
     };
 
-    const sortOrder = sortMap[sort] || sortMap.newest;
+    const sortOrder = useOrderSort ? { order: 1 } : (sortMap[sort] || sortMap.newest);
 
     // không phân trang
     if (all) {
-        const menuItems = await MenuItem.find(query).sort({ order: 1, ...sortOrder }).collation({ locale: "en", strength: 2 });
+        const menuItems = await MenuItem.find(query).sort(sortOrder).collation({ locale: "en", strength: 2 });
         return Response.json({ menuItems, total: menuItems.length });
     }
 
     // Có phân trang
     const [menuItems, total, totalAll, totalOn, totalOff] = await Promise.all([
-        MenuItem.find(query).sort({ order: 1, ...sortOrder }).collation({ locale: "en", strength: 2 }).skip(skip).limit(limit),
+        MenuItem.find(query).sort(sortOrder).collation({ locale: "en", strength: 2 }).skip(skip).limit(limit),
         MenuItem.countDocuments(query),
         MenuItem.countDocuments(),
         MenuItem.countDocuments({ status: "on" }),

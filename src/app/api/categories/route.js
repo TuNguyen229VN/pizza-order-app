@@ -86,7 +86,7 @@ export async function GET(req) {
   const url = new URL(req.url);
 
   const all = url.searchParams.get("all") === "true";
-
+  const useOrderSort = url.searchParams.get("useOrder") === "true";
   const search = url.searchParams.get("search") || "";
   const status = url.searchParams.get("statusFilter"); // "on" | "off" | ""
   const sort = url.searchParams.get("sort") || "newest";
@@ -105,17 +105,17 @@ export async function GET(req) {
     desc: { name: -1 },
   };
 
-  const sortOrder = sortMap[sort] || sortMap.newest;
+  const sortOrder = useOrderSort ? { order: 1 } : (sortMap[sort] || sortMap.newest);
 
   // không phân trang
   if (all) {
-    const categories = await Category.find(query).sort({ order: 1, ...sortOrder }).collation({ locale: "en", strength: 2 });
+    const categories = await Category.find(query).sort(sortOrder).collation({ locale: "en", strength: 2 });
     return Response.json({ categories, total: categories.length });
   }
 
   // Có phân trang
   const [categories, total, totalAll, totalOn, totalOff] = await Promise.all([
-    Category.find(query).sort({ order: 1, ...sortOrder }).collation({ locale: "en", strength: 2 }).skip(skip).limit(limit),
+    Category.find(query).sort(sortOrder).collation({ locale: "en", strength: 2 }).skip(skip).limit(limit),
     Category.countDocuments(query),
     Category.countDocuments(),
     Category.countDocuments({ status: "on" }),

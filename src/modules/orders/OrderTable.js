@@ -23,7 +23,7 @@ export default function OrderTable({ orders, loadingForm = false }) {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-outline-variant font-body-md">
-                        {orders?.length > 0 &&
+                        {orders?.length > 0 ?
                             orders.map((order) => (
                                 <tr className="transition-colors hover:bg-surface-container-low group" key={order?._id}>
                                     <td className="px-5 py-4">
@@ -74,7 +74,13 @@ export default function OrderTable({ orders, loadingForm = false }) {
                                         </div>
                                     </td>
                                 </tr>
-                            ))}
+                            )): (
+                            <tr>
+                                <td colSpan={8} className="py-4 italic text-center text-secondary">
+                                    Không có dữ liệu
+                                </td>
+                            </tr>
+                        )}
                     </tbody>
                 </table>
             </div>

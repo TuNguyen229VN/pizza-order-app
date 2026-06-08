@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation';
 import React from 'react'
 import ConfirmPopup from '../popup/ConfirmPopup';
 import { signOut } from 'next-auth/react';
-import { BANNER_ROUTE, CATEGORIES_ROUTE, CHANGEPASSWORD_ROUTE, COMBO_ROUTE, COMBOTYPE_ROUTE, LOGIN_ROUTE, MENU_ITEMS_ROUTE, NOTIFICATION_ROUTE, ORDER_TRACKING_ROUTE, ORDERS_ROUTE, PROFILE_ROUTE, REGISTER_ROUTE, USERS_ROUTE } from '@/constant/routesApp';
+import { BANNER_ROUTE, CATEGORIES_ROUTE, CHANGEPASSWORD_ROUTE, COMBO_ROUTE, COMBOTYPE_ROUTE, LOGIN_ROUTE, MENU_ITEMS_ROUTE, NOTIFICATION_ROUTE, ORDER_TRACKING_ROUTE, ORDERS_ROUTE, PROFILE_ROUTE, REARRANGE_ROUTE, REGISTER_ROUTE, USERS_ROUTE } from '@/constant/routesApp';
 
 export default function MenuMobile({ isAdmin, status, onClose }) {
     const path = usePathname();
@@ -80,6 +80,9 @@ export default function MenuMobile({ isAdmin, status, onClose }) {
                             </Link>
                             <Link className={`flex items-center p-3 hover:text-primary ${path === ORDERS_ROUTE ? "text-primary font-semibold" : ""}`} href={ORDERS_ROUTE} onClick={onClose} >
                                 <span>Quản lý đơn hàng</span>
+                            </Link>
+                            <Link className={`flex items-center p-3 hover:text-primary ${path === REARRANGE_ROUTE ? "text-primary font-semibold" : ""}`} href={REARRANGE_ROUTE} onClick={onClose} >
+                                <span>Sắp xếp hiển thị sản phẩm</span>
                             </Link>
                         </>
                     )}
