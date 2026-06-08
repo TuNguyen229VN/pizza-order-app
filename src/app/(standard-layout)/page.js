@@ -90,44 +90,47 @@ export default function Home() {
   let attempts = 0;
   const MAX = 20;
 
-  const tryScroll = () => {
-    const target = document.getElementById(urlHash);
-    if (!target) {
-      if (++attempts < MAX) setTimeout(tryScroll, 100);
-      return;
-    }
-    const carousel = document.querySelector(".sticky");
-    const offset = 100 + (carousel?.offsetHeight ?? 0);
-    const top = target.getBoundingClientRect().top + window.scrollY - offset;
+ const tryScroll = () => {
+  const target = document.getElementById(urlHash);
+  if (!target) {
+    if (++attempts < MAX) setTimeout(tryScroll, 100);
+    return;
+  }
+  const carousel = document.querySelector(".sticky");
+  const offset = 100 + (carousel?.offsetHeight ?? 0);
+  const top = target.getBoundingClientRect().top + window.scrollY - offset;
 
-    isScrollingTo.current = true;
-    window.scrollTo({ top, behavior: "smooth" });
+  isScrollingTo.current = true;
+  window.scrollTo({ top, behavior: "smooth" });
 
-    // Detect scroll dừng thật sự thay vì hardcode timeout
-    let scrollEndTimer;
-    const onScrollEnd = () => {
-      clearTimeout(scrollEndTimer);
-      scrollEndTimer = setTimeout(() => {
-        window.removeEventListener("scroll", onScrollEnd);
-        // Giữ hash đúng sau khi dừng
-        hashRef.current = urlHash;
-        setHash(urlHash);
-        // Unblock listener SAU khi đã set hash đúng
-        isScrollingTo.current = false;
-      }, 150); // 150ms không có scroll event = đã dừng
-    };
-
-    window.addEventListener("scroll", onScrollEnd, { passive: true });
-
-    // Fallback nếu không scroll (đã ở đúng vị trí)
-    setTimeout(() => {
+  let scrollEndTimer;
+  const onScrollEnd = () => {
+    clearTimeout(scrollEndTimer);
+    scrollEndTimer = setTimeout(() => {
       window.removeEventListener("scroll", onScrollEnd);
-      clearTimeout(scrollEndTimer);
+      // Force đúng hash + URL
       hashRef.current = urlHash;
       setHash(urlHash);
-      isScrollingTo.current = false;
-    }, 2000);
+      window.history.replaceState(null, "", `#${urlHash}`);
+      requestAnimationFrame(() => {
+        isScrollingTo.current = false;
+      });
+    }, 150);
   };
+
+  window.addEventListener("scroll", onScrollEnd, { passive: true });
+
+  setTimeout(() => {
+    window.removeEventListener("scroll", onScrollEnd);
+    clearTimeout(scrollEndTimer);
+    hashRef.current = urlHash;
+    setHash(urlHash);
+    window.history.replaceState(null, "", `#${urlHash}`);
+    requestAnimationFrame(() => {
+      isScrollingTo.current = false;
+    });
+  }, 2000);
+};
 
   requestAnimationFrame(() => setTimeout(tryScroll, 50));
 }, [sectionsRendered]);
