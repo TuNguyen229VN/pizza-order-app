@@ -87,21 +87,29 @@ export default function Home() {
     setHash(urlHash);
     hashRef.current = urlHash;
 
-    const doScroll = () => {
+    let attempts = 0;
+    const MAX = 20; // thử tối đa 20 lần × 100ms = 2s
+
+    const tryScroll = () => {
       const target = document.getElementById(urlHash);
-      if (!target) return;
+      if (!target) {
+        if (++attempts < MAX) setTimeout(tryScroll, 100);
+        return;
+      }
       const carousel = document.querySelector(".sticky");
       const offset = 100 + (carousel?.offsetHeight ?? 0);
       const top = target.getBoundingClientRect().top + window.scrollY - offset;
+
+      // Block scroll listener TRƯỚC khi scroll
+      isScrollingTo.current = true;
       window.scrollTo({ top, behavior: "smooth" });
+
+      // Unblock sau khi smooth scroll xong (~600ms)
+      setTimeout(() => { isScrollingTo.current = false; }, 800);
     };
 
-    // Nếu tất cả resources đã load xong thì scroll ngay, không thì chờ
-    if (document.readyState === "complete") {
-      setTimeout(doScroll, 100); // nhỏ để tránh rAF race
-    } else {
-      window.addEventListener("load", doScroll, { once: true });
-    }
+    // Dùng rAF để đảm bảo DOM đã paint
+    requestAnimationFrame(() => setTimeout(tryScroll, 50));
   }, [sectionsRendered]);
 
   const allDataReady = dataReady && comboList.length > 0 && comboTypeList.length > 0;
