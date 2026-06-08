@@ -63,7 +63,6 @@ export async function POST(req) {
 
         return Response.json({ message: "Mật khẩu đã được cập nhật thành công!" });
     } catch (error) {
-        console.log("Reset Password Error:", error);
         return Response.json({ message: "Không thể kết nối Database" }, { status: 500 });
     }
 }

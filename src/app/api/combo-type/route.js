@@ -96,7 +96,7 @@ export async function GET(req) {
         if (all) {
             const comboTypes = await ComboType.find(query)
                 .populate("name status")
-                .sort(sortOrder)
+                .sort({ order: 1, ...sortOrder })
                 .collation({ locale: "en", strength: 2 });
             return Response.json({ comboTypes, total: comboTypes.length });
         }
@@ -105,7 +105,7 @@ export async function GET(req) {
         const [comboTypes, total, totalAll, totalOn, totalOff] = await Promise.all([
             ComboType.find(query)
                 .populate("name status")
-                .sort(sortOrder)
+                .sort({ order: 1, ...sortOrder })
                 .collation({ locale: "en", strength: 2 })
                 .skip(skip)
                 .limit(limit),

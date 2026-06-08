@@ -11,6 +11,7 @@ export default function CheckoutInfo({ infoProps, setInfoProps, errors, register
             <div className='mt-5 md:mt-9'>
                 <ValidatedInput
                     label="Họ tên"
+                    id="name"
                     name="name"
                     value={name || ""}
                     inputRef={registerRef("name")}
@@ -23,6 +24,7 @@ export default function CheckoutInfo({ infoProps, setInfoProps, errors, register
                 />
                 <ValidatedInput
                     label="Số điện thoại"
+                    id="phone"
                     name="phone"
                     value={phone || ""}
                     inputRef={registerRef("phone")}
@@ -35,6 +37,7 @@ export default function CheckoutInfo({ infoProps, setInfoProps, errors, register
                 />
                 <ValidatedInput
                     label="Email"
+                    id="email"
                     name="email"
                     value={email || ""}
                     inputRef={registerRef("email")}

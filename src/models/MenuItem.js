@@ -14,6 +14,7 @@ const MenuItemSchema = new Schema(
         sizes: { type: [ExtraPriceSchema] },
         extraIngredientPrices: { type: [ExtraPriceSchema] },
         status: { type: String, enum: ["on", "off"], default: "on" },
+        order: { type: Number, default: 0 }
     },
     { timestamps: true },
 );

@@ -56,7 +56,6 @@ export async function PUT(req) {
     });
     return Response.json(true);
   } catch (error) {
-    console.log("Database Error:", error);
 
     return Response.json({ message: "Không thể kết nối Database" }, { status: 500 });
   }

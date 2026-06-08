@@ -148,7 +148,7 @@ export default function ComboOrderPage() {
                     </div>
                 </div>
                 <div className='relative w-full md:w-1/2 md:h-[286px] h-[187px]'>
-                    <Image src={combos?.image} alt={combos?.name} fill className='object-cover object-center ' sizes="(max-width: 768px) 100vw, 50vw" quality={90} />
+                    <Image src={combos?.image} alt={combos?.name} fill className='object-cover object-center w-full h-full ' sizes="(max-width: 768px) 100vw, 50vw" quality={90} />
                 </div>
             </div>
             {open && <ComboSelector mode={comboCartId?"edit":"add"} chooseTabIndex={chooseTabIndex} setChooseTabIndex={setChooseTabIndex} comboChooseList={comboChooseList} setComboChooseList={setComboChooseList} categories={categories} combo={combos} onClose={() => {

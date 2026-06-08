@@ -5,6 +5,7 @@ import ValidatedInput from "@/components/input/ValidatedInput";
 import ValidatedSelectInput from "@/components/input/ValidatedSelectInput";
 import EditTableImage from "@/components/layout/EditTableImage";
 import Loader from "@/components/loading/Loader";
+import ConfirmPopup from "@/components/popup/ConfirmPopup";
 import { API_CATEGORIES, API_COMBO, API_COMBO_TYPES, API_MENU_ITEMS, STATUS_OPTIONS } from "@/constant/constant";
 import { useFormValidate } from "@/hooks/useFormValidate";
 import { uploadImage } from "@/libs/uploadImage";
@@ -442,14 +443,16 @@ export default function ComboForm({ onSuccess, editData = null, setRedirectToIte
                                     >
                                         ▼
                                     </button>
-                                    <button
+                                    <ConfirmPopup onDelete={() => removeSlot(idx)}>
+                                        <button
                                         type="button"
-                                        onClick={() => removeSlot(idx)}
+                                        
                                         className={`p-1 ml-1 text-xs text-primary hover:text-red-700 ${loading ? "pointer-events-none" : "cursor-pointer"}`}
                                         title="Xóa slot"
                                     >
                                         <CloseIcon />
                                     </button>
+                                    </ConfirmPopup>
                                 </div>
                             </div>
 

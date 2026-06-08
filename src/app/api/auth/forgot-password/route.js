@@ -78,7 +78,6 @@ export async function POST(req) {
             message: "Đã gửi email đặt lại mật khẩu.",
         });
     } catch (error) {
-        console.log("Forgot Password Error:", error);
 
         return Response.json(
             { message: "Lỗi server." },

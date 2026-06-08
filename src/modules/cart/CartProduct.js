@@ -38,13 +38,13 @@ export default function CartProduct({ index, product, onRemove, showEdit = false
         className="flex justify-between gap-4 py-4 text-sm bg-white md:text-base dark:bg-background touch-pan-y"
       >
         <div className='flex gap-4'>
-          <div className='w-[82px] h-[96px] overflow-hidden'>
+          <div className='w-[82px] h-[96px] overflow-hidden flex-shrink-0'>
             <Image
               width={240}
               height={240}
               src={product.image}
               alt={product.name}
-              className={`object-center w-full h-full ${isCombo ? "object-fill" : "object-cover"}`}
+              className={`object-center object-cover`}
             />
           </div>
 
@@ -108,7 +108,7 @@ export default function CartProduct({ index, product, onRemove, showEdit = false
           <div className='font-medium text-center md:text-lg'>
             {product.quantity}
           </div>
-          <div className='flex items-center md:items-start md:text-lg font-medium w-[200px] justify-center md:justify-end gap-5'>
+          <div className='flex items-center md:items-start md:text-lg font-medium w-max md:w-[200px] justify-center md:justify-end gap-5'>
             <p>
               {isCombo
                 ? cartComboPrice(product).toLocaleString('vi-VN')

@@ -27,6 +27,10 @@
 - **leafletjs**
 - **nodemailer**
 - **motion**
+- **@dnd-kit/core**
+- **@dnd-kit/sortable**
+- **@dnd-kit/utilities**
+
 ## Pages:
 
 - Home Page
@@ -48,23 +52,20 @@
 - Change Password Page
 - Combobox User Page
 
-
 ## Main Features:
 
 - Authentication
 - Edit Account Information
-- CRUD Categories (*Create,Read,Update,Delete*)
+- CRUD Categories (_Create,Read,Update,Delete_)
 - CRUD Menu Items
 - CRUD Combo Type
 - CRUD Combobox
 - CRUD Users
-- Reset/ Change Password (*Send to email*)
+- Reset/ Change Password (_Send to email_)
 - Search Menu For User
 - Add to Cart (Items, Combobox)
 - Checkout by Stripe
 
-
 ## Development Rules:
 
 ##
-

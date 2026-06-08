@@ -51,7 +51,6 @@ export async function POST(req) {
         { status: 409 }
       );
     }
-    console.log("Database Error:", error);
     return Response.json({ message: "Không thể kết nối Database" }, { status: 500 });
   }
 }

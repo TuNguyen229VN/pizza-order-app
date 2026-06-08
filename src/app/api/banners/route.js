@@ -41,7 +41,6 @@ export async function POST(req) {
         const bannerDoc = await Banner.create({ name, status, image });
         return Response.json(bannerDoc);
     } catch (error) {
-        console.log("Database Error:", error);
 
         return Response.json({ message: "Không thể kết nối Database" }, { status: 500 });
     }
@@ -86,7 +85,6 @@ export async function PUT(req) {
         return Response.json(true);
 
     } catch (error) {
-        console.log("Database Error:", error);
         return Response.json({ message: "Không thể kết nối Database" }, { status: 500 });
     }
 }
@@ -120,13 +118,13 @@ export async function GET(req) {
 
     // không phân trang
     if (all) {
-        const banners = await Banner.find(query).sort(sortOrder).collation({ locale: "en", strength: 2 });
+        const banners = await Banner.find(query).sort({ order: 1, ...sortOrder }).collation({ locale: "en", strength: 2 });
         return Response.json({ banners, total: banners.length });
     }
 
     // Có phân trang
     const [banners, total, totalAll, totalOn, totalOff] = await Promise.all([
-        Banner.find(query).sort(sortOrder).collation({ locale: "en", strength: 2 }).skip(skip).limit(limit),
+        Banner.find(query).sort({ order: 1, ...sortOrder }).collation({ locale: "en", strength: 2 }).skip(skip).limit(limit),
         Banner.countDocuments(query),
         Banner.countDocuments(),
         Banner.countDocuments({ status: "on" }),

@@ -7,86 +7,74 @@ import Slider from "@/components/slider/Slider";
 import { API_BANNERS, API_CATEGORIES, API_COMBO, API_COMBO_TYPES, API_MENU_ITEMS } from "@/constant/constant";
 import { getCategoryIcon } from "@/libs/getCategoryIcon";
 import { slugify } from "@/libs/slugify";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import RecommendMenuItems from "@/components/layout/RecommendMenuItems";
-import ComboSelector from "@/modules/combo-order/ComboSelector";
 import MenuCombo from "@/components/menu/MenuCombo";
 
 export default function Home() {
   const [categories, setCategories] = useState([]);
   const [menuItems, setMenuItems] = useState([]);
-  const [banners, setBanners] = useState([])
+  const [banners, setBanners] = useState([]);
   const [hash, setHash] = useState("");
-  const sectionRefs = useRef({});
-  const isScrollingTo = useRef(false);
   const [search, setSearch] = useState("");
   const [activeSearch, setActiveSearch] = useState("");
   const [openInputSearch, setOpenInputSearch] = useState(false);
+  const [comboList, setComboList] = useState([]);
+  const [comboTypeList, setComboTypeList] = useState([]);
+
+  const sectionRefs = useRef({});
+  const isScrollingTo = useRef(false);
   const hashRef = useRef("");
-  const [comboList, setComboList] = useState([])
-  const [comboTypeList, setComboTypeList] = useState([])
+
+  // Fetch data
   useEffect(() => {
-    fetch(`${API_BANNERS}?all=true&statusFilter=on`)
-      .then(res => res.json())
-      .then(data => setBanners(data.banners))
+    Promise.all([
+      fetch(`${API_BANNERS}?all=true&statusFilter=on`).then(r => r.json()),
+      fetch(`${API_CATEGORIES}?all=true&statusFilter=on`).then(r => r.json()),
+      fetch(`${API_MENU_ITEMS}?all=true&status=on`).then(r => r.json()),
+      fetch(`${API_COMBO}?all=true&status=on`).then(r => r.json()),
+      fetch(`${API_COMBO_TYPES}?all=true&status=on`).then(r => r.json()),
+    ])
+      .then(([banners, categories, menuItems, combos, comboTypes]) => {
+        setBanners(banners.banners ?? []);
+        setCategories(categories.categories ?? []);
+        setMenuItems(menuItems.menuItems ?? []);
+        setComboList(combos.combos ?? []);
+        setComboTypeList(comboTypes.comboTypes ?? []);
+      })
+      .catch(err => console.error("Failed to fetch home data:", err));
+  }, []);
 
-    fetch(`${API_CATEGORIES}?all=true&statusFilter=on`)
-      .then(res => res.json())
-      .then(data => setCategories(data.categories))
-
-    fetch(`${API_MENU_ITEMS}?all=true&status=on`)
-      .then(res => res.json())
-      .then(data => setMenuItems(data.menuItems))
-
-    fetch(`${API_COMBO}?all=true&status=on`)
-      .then(res => res.json())
-      .then(data => setComboList(data.combos))
-      
-    fetch(`${API_COMBO_TYPES}?all=true&status=on`)
-      .then(res => res.json())
-      .then(data => setComboTypeList(data.comboTypes))
-  }, [])
-
-  // data load xong: init hash từ URL + scroll đến đúng vị trí
+  // Scroll đến hash khi data load xong
+  const dataReady = categories.length > 0 && menuItems.length > 0;
   useEffect(() => {
-    if (!categories.length || !menuItems.length) return;
-
+    if (!dataReady) return;
     const urlHash = window.location.hash.replace("#", "");
+    if (!urlHash) return;
 
-    if (urlHash) {
-      // Set active ngay
-      setHash(urlHash);
-      hashRef.current = urlHash;
+    setHash(urlHash);
+    hashRef.current = urlHash;
 
-      // Scroll đến đúng vị trí có tính offset
-      const target = document.getElementById(urlHash);
-      const carousel = document.querySelector(".sticky");
-
-      if (target) {
-        const carouselHeight = carousel?.offsetHeight ?? 0;
-        const navbarHeight = 80;
-        const offset = navbarHeight + carouselHeight;
-        const top = target.getBoundingClientRect().top + window.scrollY - offset;
-        window.scrollTo({ top, behavior: "smooth" });
-      }
+    const target = document.getElementById(urlHash);
+    const carousel = document.querySelector(".sticky");
+    if (target) {
+      const offset = 80 + (carousel?.offsetHeight ?? 0);
+      const top = target.getBoundingClientRect().top + window.scrollY - offset;
+      window.scrollTo({ top, behavior: "smooth" });
     }
-  }, [categories, menuItems]);
+  }, [dataReady]);
 
-  //Scroll listener để update hash khi cuộn
+  // Scroll listener
+  const allDataReady = dataReady && comboList.length > 0 && comboTypeList.length > 0;
   useEffect(() => {
-    if (!categories.length || !menuItems.length || !comboList.length || !comboTypeList.length) return;
+    if (!allDataReady) return;
 
     const handleScroll = () => {
       if (isScrollingTo.current) return;
-
       const els = Object.values(sectionRefs.current).filter(Boolean);
-
       const current = els.reduce((closest, el) => {
-        const rect = el.getBoundingClientRect();
-        const offset = rect.top - window.innerHeight * 0.3;
-        if (offset <= 0 && offset > (closest?.offset ?? -Infinity)) {
-          return { el, offset };
-        }
+        const offset = el.getBoundingClientRect().top - window.innerHeight * 0.3;
+        if (offset <= 0 && offset > (closest?.offset ?? -Infinity)) return { el, offset };
         return closest;
       }, null);
 
@@ -102,52 +90,64 @@ export default function Home() {
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [categories, menuItems, comboList, comboTypeList]);
+  }, [allDataReady]);
 
-  const handleSearch = () => {
-    setActiveSearch(search.trim())
-  }
+  const handleSearch = useCallback(() => {
+    setActiveSearch(search.trim());
+  }, [search]);
 
-  // Lọc theo activeSearch thay vì search
-  const filteredMenuItems = (categoryId) => {
-    return menuItems.filter(item => {
-      const matchCategory = item.category == categoryId && item.status === "on"
-      const matchSearch = activeSearch === "" ||
-        item.name.toLowerCase().includes(activeSearch.toLowerCase())
-      return matchCategory && matchSearch
-    })
-  }
+  // Memo toàn bộ derived data
+  const filteredCategories = useMemo(() => {
+    return categories.filter(c => {
+      if (c.status !== "on") return false;
+      return menuItems.some(item =>
+        item.category == c._id &&
+        item.status === "on" &&
+        (activeSearch === "" || item.name.toLowerCase().includes(activeSearch.toLowerCase()))
+      );
+    });
+  }, [categories, menuItems, activeSearch]);
 
-  const filteredComboItems = (comboTypeId) => {
-    return comboList.filter(item => {
-      const matchComboType = item?.comboType?._id == comboTypeId && item.status === "on"
-      const matchSearch = activeSearch === "" ||
-        item.name.toLowerCase().includes(activeSearch.toLowerCase())
-      return matchComboType && matchSearch
-    })
-  }
-  const filteredComboType = comboTypeList.filter(c => {
-    if (c.status !== "on") return false
-    return filteredComboItems(c._id).length > 0
-  })
-  // filteredCategories vẫn dùng activeSearch để ẩn cả section nếu không có item nào
-  const filteredCategories = categories.filter(c => {
-    if (c.status !== "on") return false
-    return filteredMenuItems(c._id).length > 0
-  })
+  const filteredComboType = useMemo(() => {
+    return comboTypeList.filter(c => {
+      if (c.status !== "on") return false;
+      return comboList.some(item =>
+        item?.comboType?._id == c._id &&
+        item.status === "on" &&
+        (activeSearch === "" || item.name.toLowerCase().includes(activeSearch.toLowerCase()))
+      );
+    });
+  }, [comboTypeList, comboList, activeSearch]);
 
-  const allSections = [...filteredComboType, ...filteredCategories];
+  const getMenuItemsByCategory = useCallback((categoryId) => {
+    return menuItems.filter(item =>
+      item.category == categoryId &&
+      item.status === "on" &&
+      (activeSearch === "" || item.name.toLowerCase().includes(activeSearch.toLowerCase()))
+    );
+  }, [menuItems, activeSearch]);
 
-  const carouselList = allSections.map(c => ({
-    name: c.name,
-    icons: getCategoryIcon(c.name),
-    slug: slugify(c.name)
-  }));
+  const getCombosByType = useCallback((comboTypeId) => {
+    return comboList.filter(item =>
+      item?.comboType?._id == comboTypeId &&
+      item.status === "on" &&
+      (activeSearch === "" || item.name.toLowerCase().includes(activeSearch.toLowerCase()))
+    );
+  }, [comboList, activeSearch]);
+
+  const carouselList = useMemo(() => {
+    return [...filteredComboType, ...filteredCategories].map(c => ({
+      name: c.name,
+      icons: getCategoryIcon(c.name),
+      slug: slugify(c.name),
+    }));
+  }, [filteredComboType, filteredCategories]);
+
+  const noResults = activeSearch && filteredComboType.length === 0 && filteredCategories.length === 0;
 
   return (
     <>
-      <Slider banners={banners} setHash={setHash}
-        hash={hash} isScrollingTo={isScrollingTo} />
+      <Slider banners={banners} setHash={setHash} hash={hash} isScrollingTo={isScrollingTo} />
       <Carousel
         carouselList={carouselList}
         openInputSearch={openInputSearch}
@@ -162,51 +162,35 @@ export default function Home() {
         setActiveSearch={setActiveSearch}
       />
       {!openInputSearch && <RecommendMenuItems sectionRefs={sectionRefs} />}
+
       <section className='mt-8'>
-        {filteredComboType.map(c => {
-          const items = filteredComboItems(c._id)
-          return (
-            <div
-              key={c._id}
-              id={slugify(c.name)}
-              ref={el => sectionRefs.current[c._id] = el}
-            >
-              <div className="text-center">
-                <SectionHeader mainHeader={c.name} urlHeader={c?.image} />
-              </div>
-              <div className="grid gap-4 px-4 mt-4 mb-8 md:px-0 md:mb-12 md:mt-6 md:gap-6 md:grid-cols-2">
-                {items.map(item => (
-                  <MenuCombo key={item._id} {...item} categories={categories} />
-                ))}
-              </div>
+        {filteredComboType.map(c => (
+          <div key={c._id} id={slugify(c.name)} ref={el => sectionRefs.current[c._id] = el}>
+            <div className="text-center">
+              <SectionHeader mainHeader={c.name} urlHeader={c?.image} />
             </div>
-          );
-        })}
-
-        {filteredCategories.map(c => {
-          const items = filteredMenuItems(c._id)
-          return (
-            <div
-              key={c._id}
-              id={slugify(c.name)}
-              ref={el => sectionRefs.current[c._id] = el}
-            >
-              <div className="text-center">
-                <SectionHeader mainHeader={c.name} urlHeader={c?.image} />
-              </div>
-              <div className="grid mt-4 mb-8 md:mb-12 md:mt-6 md:gap-6 md:grid-cols-2">
-                {items.map(item => (
-                  <MenuItems key={item._id} {...item} />
-                ))}
-              </div>
+            <div className="grid gap-4 px-4 mt-4 mb-8 md:px-0 md:mb-12 md:mt-6 md:gap-6 md:grid-cols-2">
+              {getCombosByType(c._id).map(item => (
+                <MenuCombo key={item._id} {...item} categories={categories} />
+              ))}
             </div>
-          );
-        })}
+          </div>
+        ))}
 
-        {activeSearch && filteredComboType.length === 0 && filteredCategories.length === 0 && (
-          <NotFindLayout />
-        )}
+        {filteredCategories.map(c => (
+          <div key={c._id} id={slugify(c.name)} ref={el => sectionRefs.current[c._id] = el}>
+            <div className="text-center">
+              <SectionHeader mainHeader={c.name} urlHeader={c?.image} />
+            </div>
+            <div className="grid mt-4 mb-8 md:mb-12 md:mt-6 md:gap-6 md:grid-cols-2">
+              {getMenuItemsByCategory(c._id).map(item => (
+                <MenuItems key={item._id} {...item} />
+              ))}
+            </div>
+          </div>
+        ))}
 
+        {noResults && <NotFindLayout />}
       </section>
     </>
   );

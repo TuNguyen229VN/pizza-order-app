@@ -86,10 +86,12 @@ export default function OrdersPage() {
                         <div className="">
                             <h3 class="font-label-bold text-secondary uppercase tracking-wider">Danh sách món ăn</h3>
 
-                            <div className="flex items-center gap-3 my-4">
-                                <InputSearch search={search} setSearch={setSearch} placeholder="Nhập số điện thoại hoặc mã đơn hàng" />
-                                <FilterSort sort={sort} setSort={setSort} listOption={LIST_OPTION} />
+                            <div className="flex flex-wrap items-center gap-3 my-4">
+                               <div className='w-full'>
+                                 <InputSearch search={search} setSearch={setSearch} placeholder="Nhập số điện thoại hoặc mã đơn hàng" />
+                               </div>
                                 <FilterSort sort={paid} setSort={setPaid} listOption={PAID_OPTION} />
+                                <FilterSort sort={sort} setSort={setSort} listOption={LIST_OPTION} />
                             </div>
                             <div>
                                 <div className='flex items-center gap-4'>

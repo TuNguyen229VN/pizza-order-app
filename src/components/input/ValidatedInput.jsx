@@ -8,7 +8,7 @@ const ValidatedInput = ({ important = true, label, name, error, inputRef, type, 
   const isPassword = type === "password";
   const inputType = isPassword ? (showPassword ? "text" : "password") : type;
   return (
-    <div className="flex flex-col gap-1 ">
+    <div className="flex flex-col w-full gap-1">
       {label && <label className='my-2 text-sm font-medium'>{label} {important && <span className="text-primary">*</span>}</label>}
       <div className="relative">
         <input

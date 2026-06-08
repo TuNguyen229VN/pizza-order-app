@@ -5,6 +5,7 @@ import ChevronDown from '../icons/ChevronDown';
 import ChevronUp from '../icons/ChevronUp';
 import ValidatedInput from '../input/ValidatedInput';
 import ConfirmPopup from '../popup/ConfirmPopup';
+import CloseIcon from '../icons/CloseIcon';
 
 export default function MenuItemPriceProps({ name, addLabel, props, setProps, errors, clearError, registerRef, fieldKey, disabled }) {
 
@@ -29,6 +30,17 @@ export default function MenuItemPriceProps({ name, addLabel, props, setProps, er
         errors[`${fieldKey}_${i}_name`] || errors[`${fieldKey}_${i}_price`]
     );
 
+    function moveSlot(idx, dir) {
+        if (disabled) return
+        setProps((prev) => {
+            const arr = [...prev];
+            const target = idx + dir;
+            if (target < 0 || target >= arr.length) return arr;
+            [arr[idx], arr[target]] = [arr[target], arr[idx]];
+            return arr;
+        });
+    }
+
     const removeProps = (indexToRemove) => {
         setProps(prev => prev.filter((v, index) => index !== indexToRemove))
     }
@@ -49,7 +61,7 @@ export default function MenuItemPriceProps({ name, addLabel, props, setProps, er
 
             <div className={isOpen ? "block" : "hidden"}>
                 {props?.length > 0 && props.map((item, index) => (
-                    <div key={index} className="relative flex items-start gap-2 mt-2">
+                    <div key={index} className="relative flex flex-col items-start gap-2 p-4 mt-2 border-b-2 sm:border-b-0 sm:p-0 sm:flex-row">
                         <ValidatedInput
                             label="Tên"
                             name={`${fieldKey}_${index}_name`}
@@ -70,9 +82,31 @@ export default function MenuItemPriceProps({ name, addLabel, props, setProps, er
                             placeholder="Nhập giá"
                             onChange={(e) => editProps(e, index, "price")}
                         />
-                        <ConfirmPopup onDelete={() => removeProps(index)} label='Xóa' classNameButton='px-2 mt-5  w-[50px] absolute top-[30px] right-20' disabled={disabled}>
-                            <Trash />
-                        </ConfirmPopup>
+                        <div className='absolute top-0 flex items-center gap-2 sm:top-1/2 right-4'>
+                            <button
+                                type="button"
+                                onClick={() => moveSlot(index, -1)}
+                                disabled={index === 0}
+                                className={`p-1 text-lg text-gray-400 hover:text-gray-600 disabled:opacity-30 ${disabled ? "pointer-events-none" : "cursor-pointer"}`}
+                                title="Di chuyển lên"
+                            >
+                                ▲
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => moveSlot(index, 1)}
+                                disabled={index === props.length - 1}
+                                className={`p-1 text-lg text-gray-400 hover:text-gray-600 disabled:opacity-30 ${disabled ? "pointer-events-none" : "cursor-pointer"}`}
+                                title="Di chuyển xuống"
+                            >
+                                ▼
+                            </button>
+                            <ConfirmPopup onDelete={() => removeProps(index)} label='Xóa' disabled={disabled}>
+                                <p title='Xóa'>
+                                    <CloseIcon className='w-6 h-6 text-primary' />
+                                </p>
+                            </ConfirmPopup>
+                        </div>
                     </div>
                 ))}
 

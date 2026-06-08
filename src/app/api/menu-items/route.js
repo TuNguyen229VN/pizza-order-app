@@ -92,13 +92,13 @@ export async function GET(req) {
 
     // không phân trang
     if (all) {
-        const menuItems = await MenuItem.find(query).sort(sortOrder).collation({ locale: "en", strength: 2 });
+        const menuItems = await MenuItem.find(query).sort({ order: 1, ...sortOrder }).collation({ locale: "en", strength: 2 });
         return Response.json({ menuItems, total: menuItems.length });
     }
 
     // Có phân trang
     const [menuItems, total, totalAll, totalOn, totalOff] = await Promise.all([
-        MenuItem.find(query).sort(sortOrder).collation({ locale: "en", strength: 2 }).skip(skip).limit(limit),
+        MenuItem.find(query).sort({ order: 1, ...sortOrder }).collation({ locale: "en", strength: 2 }).skip(skip).limit(limit),
         MenuItem.countDocuments(query),
         MenuItem.countDocuments(),
         MenuItem.countDocuments({ status: "on" }),

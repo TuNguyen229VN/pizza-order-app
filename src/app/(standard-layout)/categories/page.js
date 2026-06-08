@@ -213,10 +213,12 @@ const CategoriesPage = () => {
             <h3 className="tracking-wider uppercase font-label-bold text-secondary">Danh sách chi tiết</h3>
 
             {/* ✅ Thanh tìm kiếm + sort */}
-            <div className="flex items-center gap-3 my-4">
+            <div className="flex flex-wrap items-center gap-3 my-4">
+            <div className="w-full">
               <InputSearch search={search} setSearch={setSearch} />
-              <FilterSort sort={sort} setSort={setSort} listOption={LIST_OPTION} />
+            </div>
               <FilterSort sort={statusFilter} setSort={setstatusFilter} listOption={STATUS_OPTIONS_FILTER} />
+              <FilterSort sort={sort} setSort={setSort} listOption={LIST_OPTION} />
             </div>
 
             <CategoryTable categories={categories} setEditedCategory={setEditedCategory} setCategoryName={setCategoryName} setStatus={setStatus} clearError={clearError} loadingForm={loadingForm} setPendingFile={setPendingFile} setPreviewImage={setPreviewImage} handleCategoryDelete={handleCategoryDelete} />

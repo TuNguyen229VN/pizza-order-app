@@ -36,7 +36,6 @@ export async function POST(req) {
     const categoryDoc = await Category.create({ name, status, image });
     return Response.json(categoryDoc);
   } catch (error) {
-    console.log("Database Error:", error);
 
     return Response.json({ message: "Không thể kết nối Database" }, { status: 500 });
   }
@@ -77,7 +76,6 @@ export async function PUT(req) {
     return Response.json(true);
 
   } catch (error) {
-    console.log("Database Error:", error);
     return Response.json({ message: "Không thể kết nối Database" }, { status: 500 });
   }
 }
@@ -111,13 +109,13 @@ export async function GET(req) {
 
   // không phân trang
   if (all) {
-    const categories = await Category.find(query).sort(sortOrder).collation({ locale: "en", strength: 2 });
+    const categories = await Category.find(query).sort({ order: 1, ...sortOrder }).collation({ locale: "en", strength: 2 });
     return Response.json({ categories, total: categories.length });
   }
 
   // Có phân trang
   const [categories, total, totalAll, totalOn, totalOff] = await Promise.all([
-    Category.find(query).sort(sortOrder).collation({ locale: "en", strength: 2 }).skip(skip).limit(limit),
+    Category.find(query).sort({ order: 1, ...sortOrder }).collation({ locale: "en", strength: 2 }).skip(skip).limit(limit),
     Category.countDocuments(query),
     Category.countDocuments(),
     Category.countDocuments({ status: "on" }),

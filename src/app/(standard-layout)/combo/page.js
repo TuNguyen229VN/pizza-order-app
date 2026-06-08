@@ -31,6 +31,8 @@ export default function ComboPage() {
   const [totalOff, setTotalOff] = useState(0);
 
   const [comboList, setComboList] = useState([]);
+  const [comboTypeList, setComboTypeList] = useState([]);
+  const [comboType, setComboType] = useState("");
   const [categories, setCategories] = useState([]);
   const [menuItems, setMenuItems] = useState([]);
   const debouncedSearch = useDebounce(search, 400);
@@ -46,7 +48,7 @@ export default function ComboPage() {
     } else {
       fetchCombo();
     }
-  }, [debouncedSearch, sort, status]);
+  }, [debouncedSearch, sort, status,comboType]);
 
   const fetchCombo = () => {
     const params = new URLSearchParams({
@@ -54,6 +56,7 @@ export default function ComboPage() {
       sort,
       page,
       status,
+      comboType
     });
 
     fetch(`${API_COMBO}?${params}`).then((res) =>
@@ -71,6 +74,12 @@ export default function ComboPage() {
 
   useEffect(() => {
     fetchCombo();
+
+    fetch(`${API_COMBO_TYPES}?all=true`).then(res => {
+      res.json().then(data => {
+        setComboTypeList(data?.comboTypes);
+      })
+    })
 
     fetch(`${API_MENU_ITEMS}?all=true`).then(res => {
       res.json().then(data => {
@@ -106,6 +115,11 @@ export default function ComboPage() {
     })
   }
 
+  const comboTypeOptions = [
+    { value: "", label: "Tất cả loại combo" },
+    ...comboTypeList.map((cbTypes) => ({ value: cbTypes._id, label: cbTypes.name })),
+  ];
+
   if (profileLoading) {
     return "Loading combo info...";
   }
@@ -125,10 +139,13 @@ export default function ComboPage() {
             <div className="">
               <h3 class="font-label-bold text-secondary uppercase tracking-wider">Danh sách Combo</h3>
 
-              <div className="flex items-center gap-3 my-4">
-                <InputSearch search={search} setSearch={setSearch} placeholder="Nhập tên cobmo" />
-                <FilterSort sort={sort} setSort={setSort} listOption={LIST_OPTION} />
+              <div className="flex flex-wrap items-center gap-3 my-4">
+                <div className='w-full'>
+                  <InputSearch search={search} setSearch={setSearch} placeholder="Nhập tên cobmo" />
+                </div>
                 <FilterSort sort={status} setSort={setStatus} listOption={STATUS_OPTIONS_FILTER} />
+                <FilterSort sort={comboType} setSort={setComboType} listOption={comboTypeOptions} />
+                <FilterSort sort={sort} setSort={setSort} listOption={LIST_OPTION} />
               </div>
               <ComboTable comboList={comboList} loadingForm={loadingForm} handleComboDelete={handleComboDelete} menuItems={menuItems} categories={categories} />
               <Paging

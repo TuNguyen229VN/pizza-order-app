@@ -25,7 +25,7 @@ export async function POST(req) {
         if (error) return Response.json({ message: error }, { status });
 
         const data = await req.json();
-        const { isValid, errors } = validateCombo(data,{});
+        const { isValid, errors } = validateCombo(data, {});
         if (!isValid) return Response.json({ message: "Dữ liệu không hợp lệ", errors }, { status: 400 });
 
         // Lấy ComboType để kiểm tra slots
@@ -51,7 +51,7 @@ export async function PUT(req) {
         const { _id, ...data } = await req.json();
         if (!_id) return Response.json({ message: "Thiếu _id" }, { status: 400 });
 
-        const { isValid, errors } = validateCombo(data,{});
+        const { isValid, errors } = validateCombo(data, {});
         if (!isValid) return Response.json({ message: "Dữ liệu không hợp lệ", errors }, { status: 400 });
 
         const updated = await ComboDetail.findByIdAndUpdate(_id, data, { new: true });
@@ -76,7 +76,7 @@ export async function GET(req) {
         if (_id) {
             const combo = await ComboDetail.findById(_id)
                 .populate("comboType")
-                // .populate({ path: "items.menuItem", select: "name image basePrice sizes category status" });
+            // .populate({ path: "items.menuItem", select: "name image basePrice sizes category status" });
             if (!combo) return Response.json({ message: "Không tìm thấy combo" }, { status: 404 });
             return Response.json(combo);
         }
@@ -89,7 +89,6 @@ export async function GET(req) {
         const page = parseInt(url.searchParams.get("page") || "1");
         const limit = LIMITPAGE;
         const skip = (page - 1) * limit;
-
         const statusQuery = statusFilter && ["on", "off"].includes(statusFilter)
             ? { status: statusFilter }
             : { status: { $in: ["on", "off"] } };
@@ -114,8 +113,7 @@ export async function GET(req) {
         if (all) {
             const combos = await ComboDetail.find(query)
                 .populate("comboType", "name")
-                // .populate(populateItems)
-                .sort(sortOrder)
+                .sort({ order: 1, ...sortOrder })
                 .collation({ locale: "en", strength: 2 });
             return Response.json({ combos, total: combos.length });
         }
@@ -124,8 +122,7 @@ export async function GET(req) {
         const [combos, total, totalAll, totalOn, totalOff] = await Promise.all([
             ComboDetail.find(query)
                 .populate("comboType", "name")
-                // .populate(populateItems)
-                .sort(sortOrder)
+                .sort({ order: 1, ...sortOrder })
                 .collation({ locale: "en", strength: 2 })
                 .skip(skip)
                 .limit(limit),

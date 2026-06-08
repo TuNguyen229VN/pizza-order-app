@@ -126,11 +126,14 @@ export default function MenuItemsPage() {
             <div className="">
               <h3 class="font-label-bold text-secondary uppercase tracking-wider">Danh sách món ăn</h3>
 
-              <div className="flex items-center gap-3 my-4">
-                <InputSearch search={search} setSearch={setSearch} placeholder="Nhập tên món ăn" />
-                <FilterSort sort={sort} setSort={setSort} listOption={LIST_OPTION} />
+              <div className="flex flex-wrap items-center gap-3 my-4">
+                <div className="w-full">
+                  <InputSearch search={search} setSearch={setSearch} placeholder="Nhập tên món ăn" />
+                </div>
                 <FilterSort sort={status} setSort={setStatus} listOption={STATUS_OPTIONS_FILTER} />
                 <FilterSort sort={category} setSort={setCategory} listOption={categoryOptions} />
+                <FilterSort sort={sort} setSort={setSort} listOption={LIST_OPTION} />
+
               </div>
 
               <MenuItemsTable menuItems={menuItems} handleMenuItemDelete={handleMenuItemDelete} loadingForm={loadingForm} categories={categories} />

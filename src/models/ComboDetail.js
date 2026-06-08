@@ -19,6 +19,7 @@ const ComboDetailSchema = new Schema(
                 },
             },
         ],
+        order: { type: Number, default: 0 }
     },
     { timestamps: true }
 );

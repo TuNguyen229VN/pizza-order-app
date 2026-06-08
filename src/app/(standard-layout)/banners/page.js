@@ -218,17 +218,19 @@ export default function BannersPage() {
             {errors.image && (
               <span className="block mx-auto mt-2 text-xs text-center text-primary w-max">{errors.image}</span>
             )}
-            <BannersForm categories={[...comboTypeList,...categories]} bannerName={bannerName} clearError={clearError} editedBanner={editedBanner} errors={errors} handleBannerSubmit={handleBannerSubmit} loadingForm={loadingForm} pendingFile={pendingFile} previewImage={previewImage} setBannerName={setBannerName} setEditedBanner={setEditedBanner} setPendingFile={setPendingFile} setPreviewImage={setPreviewImage} setStatus={setStatus} status={status} registerRef={registerRef} STATUS_OPTIONS={STATUS_OPTIONS} />
+            <BannersForm categories={[...comboTypeList, ...categories]} bannerName={bannerName} clearError={clearError} editedBanner={editedBanner} errors={errors} handleBannerSubmit={handleBannerSubmit} loadingForm={loadingForm} pendingFile={pendingFile} previewImage={previewImage} setBannerName={setBannerName} setEditedBanner={setEditedBanner} setPendingFile={setPendingFile} setPreviewImage={setPreviewImage} setStatus={setStatus} status={status} registerRef={registerRef} STATUS_OPTIONS={STATUS_OPTIONS} />
 
           </ContainerProfileLeft>
           <ContainerProfileLeft className={"mt-6"}>
             <h3 className="tracking-wider uppercase font-label-bold text-secondary">Danh sách chi tiết</h3>
 
             {/* ✅ Thanh tìm kiếm + sort */}
-            <div className="flex items-center gap-3 my-4">
-              <InputSearch search={search} setSearch={setSearch} />
-              <FilterSort sort={sort} setSort={setSort} listOption={LIST_OPTION} />
+            <div className="flex flex-wrap items-center gap-3 my-4">
+              <div className='w-full'>
+                <InputSearch search={search} setSearch={setSearch} />
+              </div>
               <FilterSort sort={statusFilter} setSort={setstatusFilter} listOption={STATUS_OPTIONS_FILTER} />
+              <FilterSort sort={sort} setSort={setSort} listOption={LIST_OPTION} />
             </div>
 
             <BannersTable banners={banners} setEditedBanner={setEditedBanner} setBannerName={setBannerName} setStatus={setStatus} clearError={clearError} loadingForm={loadingForm} setPendingFile={setPendingFile} setPreviewImage={setPreviewImage} handleBannerDelete={handleBannerDelete} />
