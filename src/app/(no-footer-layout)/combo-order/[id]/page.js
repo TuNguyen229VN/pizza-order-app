@@ -3,6 +3,7 @@ import { CartContext } from '@/components/AppContext';
 import ButtonPrimary from '@/components/buttons/ButtonPrimary';
 import FlyingButton from '@/components/buttons/FlyingButton';
 import NotFindLayout from '@/components/layout/NotFindLayout';
+import SkeletonLoadingBox from '@/components/skeleton/SkeletonLoadingBox';
 import { API_CATEGORIES, API_COMBO } from '@/constant/constant';
 import { HOME_ROUTE } from '@/constant/routesApp';
 import { useDelivery } from '@/context/DeliveryContext';
@@ -33,6 +34,7 @@ export default function ComboOrderPage() {
     const flyingBtnRef = useRef(null);
     const [shouldFly, setShouldFly] = useState(false);
 
+    const [loadingImage, setLoadingImage] = useState(true);
     useEffect(() => {
         if (comboCartId) {
             const item = cartProducts.find(combo => combo.cartComboId === comboCartId);
@@ -148,10 +150,11 @@ export default function ComboOrderPage() {
                     </div>
                 </div>
                 <div className='relative w-full md:w-1/2 md:h-[286px] h-[187px]'>
-                    <Image src={combos?.image} alt={combos?.name} fill className='object-cover object-center w-full h-full ' sizes="(max-width: 768px) 100vw, 50vw" quality={90} />
+                    {loadingImage && <SkeletonLoadingBox className='w-full h-full' />}
+                    <Image onLoad={() => setLoadingImage(false)} src={combos?.image} alt={combos?.name} fill className={`object-cover object-center w-full h-full ${loadingImage ? "opacity-0" : "opacity-100"}`} sizes="(max-width: 768px) 100vw, 50vw" quality={90} />
                 </div>
             </div>
-            {open && <ComboSelector mode={comboCartId?"edit":"add"} chooseTabIndex={chooseTabIndex} setChooseTabIndex={setChooseTabIndex} comboChooseList={comboChooseList} setComboChooseList={setComboChooseList} categories={categories} combo={combos} onClose={() => {
+            {open && <ComboSelector mode={comboCartId ? "edit" : "add"} chooseTabIndex={chooseTabIndex} setChooseTabIndex={setChooseTabIndex} comboChooseList={comboChooseList} setComboChooseList={setComboChooseList} categories={categories} combo={combos} onClose={() => {
                 setOpen(false);
                 setChooseTabIndex(0);
             }} />}
@@ -179,7 +182,7 @@ export default function ComboOrderPage() {
                                 onClick={(e) => { e.stopPropagation(); handleSubmit(); }}
                             >
                                 <div className="mb-4 text-center text-white">
-                                   {comboCartId?"Cập nhật giỏ hàng" :"Thêm vào giỏ hàng"}{" "}
+                                    {comboCartId ? "Cập nhật giỏ hàng" : "Thêm vào giỏ hàng"}{" "}
                                     <span className="inline-block w-2 h-2 mx-2 bg-white rounded-full" />{" "}
                                     {combos?.price?.toLocaleString('vi-VN')} <span className="underline">đ</span>
                                 </div>

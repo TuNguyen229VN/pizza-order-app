@@ -1,14 +1,16 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import React from 'react'
+import React, { useState } from 'react'
 import PlusIcon from '../icons/PlusIcon'
 import ButtonAdd from '../buttons/ButtonAdd'
 import { COMBO_ORDER_ROUTE } from '@/constant/routesApp'
 import { useDelivery } from '@/context/DeliveryContext'
+import SkeletonLoadingBox from '../skeleton/SkeletonLoadingBox'
 
 export default function MenuCombo({ categories, ...item }) {
     const { _id, image, name, price, slots } = item;
     const { deliveryInfo, openDeliveryModal } = useDelivery();
+    const [loadingImage, setLoadingImage] = useState(true)
     return (
         <Link href={`${COMBO_ORDER_ROUTE}/${_id}`} onClick={(e) => {
             if (!deliveryInfo) {
@@ -17,8 +19,9 @@ export default function MenuCombo({ categories, ...item }) {
                 return;
             }
         }} className={`flex flex-row h-[132px] md:h-full border rounded-2xl cursor-pointer overflow-hidden group transition duration-300 md:hover:shadow-[0_3px_8px_rgba(0,0,0,0.1)] md:flex-col }`}>
-            <div className='relative h-full md:h-[285px] w-[130px] md:w-full overflow-hidden bg-red-500 shrink-0'>
-                <Image src={image} alt={name} fill quality={100} className='object-fill object-center w-full h-full transition-transform duration-500 md:object-cover group-hover:scale-105' />
+            <div className='relative h-full md:h-[285px] w-[130px] md:w-full overflow-hidden shrink-0'>
+                {loadingImage && <SkeletonLoadingBox className='w-full h-full' />}
+                <Image src={image} alt={name} fill quality={100} className={`object-fill object-center w-full h-full transition-transform duration-500 md:object-cover group-hover:scale-105 ${loadingImage ? "opacity-0" : "opacity-100"}`} onLoad={() => setLoadingImage(false)} />
             </div>
             <div className='flex flex-col justify-center w-full gap-2 p-2 md:p-4'>
                 <h4 className='text-sm capitalize text-[#374151]  md:text-[28px] font-semibold md:leading-[40px]'>{name}</h4>

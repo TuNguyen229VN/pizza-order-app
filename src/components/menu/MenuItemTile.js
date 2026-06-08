@@ -1,8 +1,9 @@
-import React from 'react'
+import React, { useState } from 'react'
 import AddToCartButton from './AddToCartButton';
 import Image from 'next/image';
 import { useDelivery } from '@/context/DeliveryContext';
 import { KEYWORDS } from '@/constant/constant';
+import SkeletonLoadingBox from '../skeleton/SkeletonLoadingBox';
 
 export default function MenuItemTile({ onClick, onAddToCart, addToCartRef, addToCartFn, recomStyle, ...item }) {
     const { image, description, name, basePrice,
@@ -11,6 +12,7 @@ export default function MenuItemTile({ onClick, onAddToCart, addToCartRef, addTo
     const isPizza = KEYWORDS.some(keyword =>
         name?.toLowerCase().includes(keyword)
     );
+    const [loadingImage, setLoadingImage] = useState(true)
     const hasSizesOrExtras = sizes?.length > 1 || extraIngredientPrices?.length > 1;
     const { deliveryInfo } = useDelivery();
     return (
@@ -23,12 +25,13 @@ export default function MenuItemTile({ onClick, onAddToCart, addToCartRef, addTo
             onClick();
         }}>
             <div className={`${recomStyle === "recomStyle" ? "w-[111px] md:w-[161px]" : "w-[130px]  lg:w-[220px]"} h-full shrink-0 overflow-hidden relative`}>
-                {/* <Image src={image} alt={name} width={200} height={200} className='object-cover w-full h-full transition-transform duration-300 group-hover:scale-110' /> */}
+                {loadingImage && <SkeletonLoadingBox className='w-full h-full' />}
                 <Image
                     src={image}
                     alt={name}
+                    onLoad={() => setLoadingImage(false)}
                     fill
-                    className={`transition-transform duration-500 group-hover:scale-110 ${isPizza ? "object-contain scale-[1.4] group-hover:scale-[1.6]" : "object-cover scale-100"} `}
+                    className={`transition-transform duration-500 group-hover:scale-110 ${isPizza ? "object-contain scale-[1.4] group-hover:scale-[1.6]" : "object-cover scale-100"} ${loadingImage ? "opacity-0" : "opacity-100"}`}
                     style={
                         isPizza ? { objectPosition: "left center", top: recomStyle ? "10%" : "20%", left: recomStyle ? "-20%" : "-30%", } : {}
                     }

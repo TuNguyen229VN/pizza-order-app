@@ -12,6 +12,7 @@ import { createPortal } from "react-dom";
 import { useDelivery } from "@/context/DeliveryContext";
 import DeliveryPickupModal from "@/modules/DeliveryPickupModal";
 import { KEYWORDS } from "@/constant/constant";
+import SkeletonLoadingBox from "../skeleton/SkeletonLoadingBox";
 
 const MenuItems = ({ recomStyle, ...menuItem }) => {
   const { image, name, description, basePrice, sizes, extraIngredientPrices } = menuItem
@@ -26,7 +27,7 @@ const MenuItems = ({ recomStyle, ...menuItem }) => {
   const { addToCart } = useContext(CartContext);
   const { deliveryInfo, openDeliveryModal } = useDelivery();
   const [showPopup, setShowPopup] = useState(false);
-
+  const [loadingImage, setLoadingImage] = useState(true);
   useLockBodyScroll(showPopup);
 
   const flyingBtnRef = useRef(null);
@@ -126,12 +127,14 @@ const MenuItems = ({ recomStyle, ...menuItem }) => {
               <CloseIcon />
             </button>
             <div className="w-full md:w-[430px] h-[310px] md:h-full shrink-0 relative overflow-hidden">
+              {loadingImage && <SkeletonLoadingBox className='w-full h-full' />}
               <Image
                 src={image}
                 alt={name}
                 quality={100}
+                onLoad={() => setLoadingImage(false)}
                 fill
-                className={`object-cover ${isPizza ? "md:scale-150 left-0 md:!-left-[15%]" : ""}`}
+                className={`object-cover ${isPizza ? "md:scale-150 left-0 md:!-left-[15%]" : ""}  ${loadingImage ? "opacity-0" : "opacity-100"}`}
                 style={isPizza ? {
                   objectPosition: 'right center',
                 } : {}}

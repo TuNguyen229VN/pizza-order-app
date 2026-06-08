@@ -10,6 +10,10 @@ import { slugify } from "@/libs/slugify";
 import { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import RecommendMenuItems from "@/components/layout/RecommendMenuItems";
 import MenuCombo from "@/components/menu/MenuCombo";
+import SkeletonLoadingSlider from "@/components/skeleton/SkeletonLoadingSlider";
+import SkeletonLoadingCarousel from "@/components/skeleton/SkeletonLoadingCarousel";
+import SkeletonLoadingSection from "@/components/skeleton/SkeletonLoadingSection";
+
 
 export default function Home() {
   const [categories, setCategories] = useState([]);
@@ -17,7 +21,13 @@ export default function Home() {
   const [banners, setBanners] = useState([]);
   const [comboList, setComboList] = useState([]);
   const [comboTypeList, setComboTypeList] = useState([]);
-  const [sectionOrder, setSectionOrder] = useState([]); // DisplayOrder.sections
+  const [sectionOrder, setSectionOrder] = useState([]);
+
+  // Chỉ 2 cái này block skeleton — categories + menuItems là đủ render sections đầu tiên
+  // combo/comboTypes/order về sau thì orderedSections tự update thêm
+  const [loadingBanners, setLoadingBanners] = useState(true);
+  const [loadingCategories, setLoadingCategories] = useState(true);
+  const [loadingMenuItems, setLoadingMenuItems] = useState(true);
 
   const [hash, setHash] = useState("");
   const [search, setSearch] = useState("");
@@ -29,40 +39,70 @@ export default function Home() {
   const hashRef = useRef("");
 
   useEffect(() => {
-    Promise.all([
-      fetch(`${API_BANNERS}?all=true&statusFilter=on&useOrder=true`).then(r => r.json()),
-      fetch(`${API_CATEGORIES}?all=true&statusFilter=on&useOrder=true`).then(r => r.json()),
-      fetch(`${API_MENU_ITEMS}?all=true&status=on&useOrder=true`).then(r => r.json()),
-      fetch(`${API_COMBO}?all=true&status=on&useOrder=true`).then(r => r.json()),
-      fetch(`${API_COMBO_TYPES}?all=true&status=on&useOrder=true`).then(r => r.json()),
-      fetch(`${API_REARRANGE}?type=sections`).then(r => r.json()),
-    ])
-      .then(([bannersData, catsData, itemsData, combosData, typesData, orderData]) => {
-        setBanners(bannersData.banners ?? []);
-        setCategories(catsData.categories ?? []);
-        setMenuItems(itemsData.menuItems ?? []);
-        setComboList(combosData.combos ?? []);
-        setComboTypeList(typesData.comboTypes ?? []);
-        setSectionOrder(orderData.sections ?? []);
-      })
-      .catch(err => console.error("Failed to fetch home data:", err));
+    // Mỗi fetch set state ngay khi về — không chờ nhau
+    fetch(`${API_BANNERS}?all=true&statusFilter=on&useOrder=true`)
+      .then(r => r.json())
+      .then(data => setBanners(data.banners ?? []))
+      .catch(err => console.error("Failed to fetch banners:", err))
+      .finally(() => setLoadingBanners(false));
+
+    fetch(`${API_CATEGORIES}?all=true&statusFilter=on&useOrder=true`)
+      .then(r => r.json())
+      .then(data => setCategories(data.categories ?? []))
+      .catch(err => console.error("Failed to fetch categories:", err))
+      .finally(() => setLoadingCategories(false));
+
+    fetch(`${API_MENU_ITEMS}?all=true&status=on&useOrder=true`)
+      .then(r => r.json())
+      .then(data => setMenuItems(data.menuItems ?? []))
+      .catch(err => console.error("Failed to fetch menu items:", err))
+      .finally(() => setLoadingMenuItems(false));
+
+    // 3 cái này không block skeleton — về sau thì sections tự update thêm
+    fetch(`${API_COMBO}?all=true&status=on&useOrder=true`)
+      .then(r => r.json())
+      .then(data => setComboList(data.combos ?? []))
+      .catch(err => console.error("Failed to fetch combos:", err));
+
+    fetch(`${API_COMBO_TYPES}?all=true&status=on&useOrder=true`)
+      .then(r => r.json())
+      .then(data => setComboTypeList(data.comboTypes ?? []))
+      .catch(err => console.error("Failed to fetch combo types:", err));
+
+    fetch(`${API_REARRANGE}?type=sections`)
+      .then(r => r.json())
+      .then(data => setSectionOrder(data.sections ?? []))
+      .catch(err => console.error("Failed to fetch section order:", err));
   }, []);
 
+  const loadingSections = loadingCategories || loadingMenuItems;
+
   const dataReady = categories.length > 0 && menuItems.length > 0;
+  const sectionsRendered = dataReady && !loadingSections;
+
   useEffect(() => {
-    if (!dataReady) return;
+    if (!sectionsRendered) return;
     const urlHash = window.location.hash.replace("#", "");
     if (!urlHash) return;
     setHash(urlHash);
     hashRef.current = urlHash;
-    const target = document.getElementById(urlHash);
-    const carousel = document.querySelector(".sticky");
-    if (target) {
-      const offset = 80 + (carousel?.offsetHeight ?? 0);
+
+    const doScroll = () => {
+      const target = document.getElementById(urlHash);
+      if (!target) return;
+      const carousel = document.querySelector(".sticky");
+      const offset = 100 + (carousel?.offsetHeight ?? 0);
       const top = target.getBoundingClientRect().top + window.scrollY - offset;
       window.scrollTo({ top, behavior: "smooth" });
+    };
+
+    // Nếu tất cả resources đã load xong thì scroll ngay, không thì chờ
+    if (document.readyState === "complete") {
+      setTimeout(doScroll, 100); // nhỏ để tránh rAF race
+    } else {
+      window.addEventListener("load", doScroll, { once: true });
     }
-  }, [dataReady]);
+  }, [sectionsRendered]);
 
   const allDataReady = dataReady && comboList.length > 0 && comboTypeList.length > 0;
   useEffect(() => {
@@ -104,14 +144,12 @@ export default function Home() {
       (activeSearch === "" || item.name.toLowerCase().includes(activeSearch.toLowerCase()))
     ), [comboList, activeSearch]);
 
-  // Build danh sách sections theo DisplayOrder, fallback nếu chưa có order
   const orderedSections = useMemo(() => {
     const allSections = [
       ...comboTypeList.map(c => ({ ...c, refType: "comboType" })),
       ...categories.map(c => ({ ...c, refType: "category" })),
     ];
 
-    // Filter trước: chỉ giữ section có items khớp search
     const visibleSections = allSections.filter(s => {
       if (s.status !== "on") return false;
       if (s.refType === "comboType") return getCombosByType(s._id).length > 0;
@@ -120,13 +158,11 @@ export default function Home() {
 
     if (sectionOrder.length === 0) return visibleSections;
 
-    // Sort theo DisplayOrder
     const orderMap = new Map(sectionOrder.map(o => [o.refId, o.order]));
     const inOrder = visibleSections
       .filter(s => orderMap.has(s._id))
       .sort((a, b) => (orderMap.get(a._id) ?? 0) - (orderMap.get(b._id) ?? 0));
 
-    // Append section chưa có trong DisplayOrder vào cuối
     const inOrderIds = new Set(inOrder.map(s => s._id));
     const rest = visibleSections.filter(s => !inOrderIds.has(s._id));
 
@@ -144,50 +180,74 @@ export default function Home() {
 
   return (
     <>
-      <Slider banners={banners} setHash={setHash} hash={hash} isScrollingTo={isScrollingTo} />
-      <Carousel
-        carouselList={carouselList}
-        openInputSearch={openInputSearch}
-        setOpenInputSearch={setOpenInputSearch}
-        setHash={setHash}
-        hash={hash}
-        isScrollingTo={isScrollingTo}
-        search={search}
-        setSearch={setSearch}
-        handleSearch={handleSearch}
-        activeSearch={activeSearch}
-        setActiveSearch={setActiveSearch}
-      />
+      {/* Banner: tắt skeleton ngay khi banners về, không chờ sections */}
+      {loadingBanners ? (
+
+        <SkeletonLoadingSlider />
+      ) : (
+        <Slider banners={banners} setHash={setHash} hash={hash} isScrollingTo={isScrollingTo} />
+      )}
+
+      {/* Carousel + Sections: chỉ chờ categories + menuItems */}
+      {loadingSections ? (
+        <SkeletonLoadingCarousel />
+      ) : (
+        <Carousel
+          carouselList={carouselList}
+          openInputSearch={openInputSearch}
+          setOpenInputSearch={setOpenInputSearch}
+          setHash={setHash}
+          hash={hash}
+          isScrollingTo={isScrollingTo}
+          search={search}
+          setSearch={setSearch}
+          handleSearch={handleSearch}
+          activeSearch={activeSearch}
+          setActiveSearch={setActiveSearch}
+        />
+      )}
+
       {!openInputSearch && <RecommendMenuItems sectionRefs={sectionRefs} />}
 
-      <section className='mt-8'>
-        {orderedSections.map(section => (
-          <div
-            key={section._id}
-            id={slugify(section.name)}
-            ref={el => sectionRefs.current[section._id] = el}
-          >
-            <div className="text-center">
-              <SectionHeader mainHeader={section.name} urlHeader={section?.image} />
-            </div>
+      <section className="mt-8">
+        {loadingSections ? (
+          <>
 
-            {section.refType === "comboType" ? (
-              <div className="grid gap-4 px-4 mt-4 mb-8 md:px-0 md:mb-12 md:mt-6 md:gap-6 md:grid-cols-2">
-                {getCombosByType(section._id).map(item => (
-                  <MenuCombo key={item._id} {...item} categories={categories} />
-                ))}
-              </div>
-            ) : (
-              <div className="grid mt-4 mb-8 md:mb-12 md:mt-6 md:gap-6 md:grid-cols-2">
-                {getMenuItemsByCategory(section._id).map(item => (
-                  <MenuItems key={item._id} {...item} />
-                ))}
-              </div>
-            )}
-          </div>
-        ))}
+            <SkeletonLoadingSection type="combo" count={2} />
+            <SkeletonLoadingSection type="item" count={4} />
+            <SkeletonLoadingSection type="item" count={4} />
+          </>
+        ) : (
+          <>
+            {orderedSections.map(section => (
+              <div
+                key={section._id}
+                id={slugify(section.name)}
+                ref={el => sectionRefs.current[section._id] = el}
+              >
+                <div className="text-center">
+                  <SectionHeader mainHeader={section.name} urlHeader={section?.image} />
+                </div>
 
-        {noResults && <NotFindLayout />}
+                {section.refType === "comboType" ? (
+                  <div className="grid gap-4 px-4 mt-4 mb-8 md:px-0 md:mb-12 md:mt-6 md:gap-6 md:grid-cols-2">
+                    {getCombosByType(section._id).map(item => (
+                      <MenuCombo key={item._id} {...item} categories={categories} />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="grid mt-4 mb-8 md:mb-12 md:mt-6 md:gap-6 md:grid-cols-2">
+                    {getMenuItemsByCategory(section._id).map(item => (
+                      <MenuItems key={item._id} {...item} />
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+
+            {noResults && <NotFindLayout />}
+          </>
+        )}
       </section>
     </>
   );

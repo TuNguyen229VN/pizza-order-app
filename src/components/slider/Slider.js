@@ -1,7 +1,7 @@
 "use client"
 import Image from 'next/image'
 import Link from 'next/link'
-import React, { useRef } from 'react'
+import React, { useRef, useState } from 'react'
 import { Swiper, SwiperSlide } from 'swiper/react';
 
 // import required modules
@@ -14,11 +14,12 @@ import 'swiper/css/pagination';
 import ChevronRight from '../icons/ChevronRight';
 import ChevronLeft from '../icons/ChevronLeft';
 import { slugify } from '@/libs/slugify';
+import SkeletonLoadingBox from '../skeleton/SkeletonLoadingBox';
 
 export default function Slider({ banners = [], hash, setHash, isScrollingTo }) {
     const prevRef = useRef(null);
     const nextRef = useRef(null);
-
+    const [loadingImage, setLoadingImage] = useState(true);
     const handleClick = (slug) => {
         setHash(slug);
         window.history.replaceState(null, "", `#${slug}`);
@@ -76,7 +77,8 @@ export default function Slider({ banners = [], hash, setHash, isScrollingTo }) {
                             e.preventDefault();
                             handleClick(slugify(banner.name));
                         }} >
-                            <Image src={banner.image} alt={banner.name} fill className='absolute object-cover object-center w-full h-full' />
+                            {loadingImage && <SkeletonLoadingBox className='w-full h-full' />}
+                            <Image onLoad={() => setLoadingImage(false)} src={banner.image} alt={banner.name} fill className={`absolute object-cover object-center w-full h-full ${loadingImage ? "opacity-0" : "opacity-100"}`} />
                         </Link>
                     </SwiperSlide>
                 )

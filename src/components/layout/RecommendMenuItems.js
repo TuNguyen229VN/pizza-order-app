@@ -13,6 +13,8 @@ import 'swiper/css';
 import 'swiper/css/effect-fade';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
+import SkeletonLoadingSectionHeader from "../skeleton/SkeletonLoadingSectionsHeader";
+import SkeletonLoadingRecommend from "../skeleton/SkeletonLoadingRecommend";
 
 const RecommendMenuItems = ({ sectionRefs = null, hasLine = true,
   slidesConfig = {
@@ -25,6 +27,7 @@ const RecommendMenuItems = ({ sectionRefs = null, hasLine = true,
   const { cartProducts } = useContext(CartContext);
   const [isBeginning, setIsBeginning] = useState(true);
   const [isEnd, setIsEnd] = useState(false);
+  const [loadingRecommend, setLoadingRecommend] = useState(true)
   const swiperRef = useRef(null);
   const prevRef = useRef(null);
   const nextRef = useRef(null);
@@ -50,7 +53,10 @@ const RecommendMenuItems = ({ sectionRefs = null, hasLine = true,
       .then((res) => res.json())
       .then((data) => {
         setRecommendMenuItems(data?.menuItems || []);
-      });
+      })
+      .finally(
+        () => setLoadingRecommend(false)
+      );
   }, [])
 
   return (
@@ -60,63 +66,68 @@ const RecommendMenuItems = ({ sectionRefs = null, hasLine = true,
       }
     }}>
       <div className="mb-4 text-center">
-        <SectionHeader subHeader={"check out"} mainHeader={"Bạn sẽ thích"} hasLine={hasLine} classNameTitle={classNameTitle} />
+        {loadingRecommend ? <SkeletonLoadingSectionHeader hasImage={false} /> : <SectionHeader subHeader={"check out"} mainHeader={"Bạn sẽ thích"} hasLine={hasLine} classNameTitle={classNameTitle} />}
       </div>
       <div className="relative w-full">
-        {!isBeginning && (
-          <div className="absolute top-0 left-0 z-10 w-16 h-full pointer-events-none bg-gradient-to-r from-white to-transparent" />
-        )}
-        {!isEnd && (
-          <div className="absolute top-0 right-0 z-10 w-16 h-full pointer-events-none bg-gradient-to-l from-white to-transparent" />
-        )}
-        <Swiper
-          slidesPerView={slidesConfig.mobile}
-          slidesPerGroup={1}
-          spaceBetween={10}
-          breakpoints={{
-            640: {
-              slidesPerView: slidesConfig.tablet,
-              slidesPerGroup: 2
-            },
-            768: {
-              slidesPerView: slidesConfig.desktop,
-              spaceBetween: 20
-            }
-          }}
-          onSwiper={(swiper) => {
-            swiperRef.current = swiper
-            setIsBeginning(swiper.isBeginning)
-            setIsEnd(swiper.isEnd)
-          }}
-          onSlideChange={(swiper) => {
-            setIsBeginning(swiper.isBeginning)
-            setIsEnd(swiper.isEnd)
-          }}
-          navigation={{
-            prevEl: prevRef.current,
-            nextEl: nextRef.current,
-          }}
-          modules={[Navigation]}>
+        {loadingRecommend ?
+        <SkeletonLoadingRecommend  count={3}/>
+        : 
+        <>
+          {!isBeginning && (
+            <div className="absolute top-0 left-0 z-10 w-16 h-full pointer-events-none bg-gradient-to-r from-white to-transparent" />
+          )}
+          {!isEnd && (
+            <div className="absolute top-0 right-0 z-10 w-16 h-full pointer-events-none bg-gradient-to-l from-white to-transparent" />
+          )}
+          <Swiper
+            slidesPerView={slidesConfig.mobile}
+            slidesPerGroup={1}
+            spaceBetween={10}
+            breakpoints={{
+              640: {
+                slidesPerView: slidesConfig.tablet,
+                slidesPerGroup: 2
+              },
+              768: {
+                slidesPerView: slidesConfig.desktop,
+                spaceBetween: 20
+              }
+            }}
+            onSwiper={(swiper) => {
+              swiperRef.current = swiper
+              setIsBeginning(swiper.isBeginning)
+              setIsEnd(swiper.isEnd)
+            }}
+            onSlideChange={(swiper) => {
+              setIsBeginning(swiper.isBeginning)
+              setIsEnd(swiper.isEnd)
+            }}
+            navigation={{
+              prevEl: prevRef.current,
+              nextEl: nextRef.current,
+            }}
+            modules={[Navigation]}>
 
-          {recommendMenuItems.length > 0 && recommendMenuItems.map((item) => (
-            <SwiperSlide key={item._id}>
-              <MenuItems recomStyle={"recomStyle"}  {...item} />
-            </SwiperSlide>
-          ))}
-        </Swiper>
-        <button
-          ref={prevRef}
-          className={`absolute z-20 flex items-center justify-center text-black -translate-y-1/2 bg-white rounded-full w-5 h-5 md:w-7 md:h-7 left-2 top-1/2 shadow transition-opacity ${isBeginning ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
-        >
-          <ChevronLeft strokeWidth={3} className="w-4 h-4 md:w-6 md:h-6" />
-        </button>
+            {recommendMenuItems.length > 0 && recommendMenuItems.map((item) => (
+              <SwiperSlide key={item._id}>
+                <MenuItems recomStyle={"recomStyle"}  {...item} />
+              </SwiperSlide>
+            ))}
+          </Swiper>
+          <button
+            ref={prevRef}
+            className={`absolute z-20 flex items-center justify-center text-black -translate-y-1/2 bg-white rounded-full w-5 h-5 md:w-7 md:h-7 left-2 top-1/2 shadow transition-opacity ${isBeginning ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+          >
+            <ChevronLeft strokeWidth={3} className="w-4 h-4 md:w-6 md:h-6" />
+          </button>
 
-        <button
-          ref={nextRef}
-          className={`absolute z-20 flex items-center justify-center text-black -translate-y-1/2 bg-white rounded-full w-5 h-5 md:w-7 md:h-7 right-2 top-1/2 shadow transition-opacity ${isEnd ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
-        >
-          <ChevronRight strokeWidth={3} className="w-4 h-4 md:w-6 md:h-6" />
-        </button>
+          <button
+            ref={nextRef}
+            className={`absolute z-20 flex items-center justify-center text-black -translate-y-1/2 bg-white rounded-full w-5 h-5 md:w-7 md:h-7 right-2 top-1/2 shadow transition-opacity ${isEnd ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+          >
+            <ChevronRight strokeWidth={3} className="w-4 h-4 md:w-6 md:h-6" />
+          </button>
+        </>}
 
       </div>
     </section>
