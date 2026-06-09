@@ -31,6 +31,7 @@ export default function ComboForm({ onSuccess, editData = null, setRedirectToIte
     const [pendingFile, setPendingFile] = useState(null);     // file chờ upload
     const [previewImage, setPreviewImage] = useState(null);
     const [savedData, setSavedData] = useState(editData);
+    const [imageInputKey, setImageInputKey] = useState(0);
 
     const [slots, setSlots] = useState(
         editData?.slots?.map((s) => ({
@@ -143,7 +144,6 @@ export default function ComboForm({ onSuccess, editData = null, setRedirectToIte
                 setSlotErrors([]);
             }
         }
-
         if (!isValid || hasSlotError) {
             setLoading(false);
             return;
@@ -317,6 +317,7 @@ export default function ComboForm({ onSuccess, editData = null, setRedirectToIte
             category: s.category?._id || s.category || "",
             quantity: s.quantity || 1, label: s.label || "", size: s.size || null,
         })));
+        setImageInputKey((k) => k + 1);
         // setSelections(savedData?._resolvedSelections || []);
         clearError("name"); clearError("status"); clearError("price");
         clearError("image"); clearError("slots");
@@ -328,6 +329,7 @@ export default function ComboForm({ onSuccess, editData = null, setRedirectToIte
         <div className="rounded-lg">
             <div className="relative p-2 rounded-lg w-[200px] h-[200px] mx-auto group mt-12 md:mt-8">
                 <EditTableImage
+                    key={imageInputKey}
                     classNameImage={"rounded-none"}
                     link={image}
                     previewLink={previewImage}
@@ -411,7 +413,9 @@ export default function ComboForm({ onSuccess, editData = null, setRedirectToIte
                         Chưa có slot nào. Nhấn &quot;+ Thêm slot&quot; để bắt đầu.
                     </div>
                 )}
-
+                {errors.slots && (
+                    <span className="block mt-1 text-xs text-primary">{errors.slots}</span>
+                )}
                 <div className="space-y-3">
                     {slots.map((slot, idx) => (
                         <div
@@ -428,7 +432,7 @@ export default function ComboForm({ onSuccess, editData = null, setRedirectToIte
                                     <button
                                         type="button"
                                         onClick={() => moveSlot(idx, -1)}
-                                        disabled={idx === 0}
+                                        disabled={loading || idx === 0}
                                         className={`p-1 text-xs text-gray-400 hover:text-gray-600 disabled:opacity-30 ${loading ? "pointer-events-none" : "cursor-pointer"}`}
                                         title="Di chuyển lên"
                                     >
@@ -437,7 +441,7 @@ export default function ComboForm({ onSuccess, editData = null, setRedirectToIte
                                     <button
                                         type="button"
                                         onClick={() => moveSlot(idx, 1)}
-                                        disabled={idx === slots.length - 1}
+                                        disabled={loading || idx === slots.length - 1}
                                         className={`p-1 text-xs text-gray-400 hover:text-gray-600 disabled:opacity-30 ${loading ? "pointer-events-none" : "cursor-pointer"}`}
                                         title="Di chuyển xuống"
                                     >
@@ -445,13 +449,13 @@ export default function ComboForm({ onSuccess, editData = null, setRedirectToIte
                                     </button>
                                     <ConfirmPopup onDelete={() => removeSlot(idx)}>
                                         <button
-                                        type="button"
-                                        
-                                        className={`p-1 ml-1 text-xs text-primary hover:text-red-700 ${loading ? "pointer-events-none" : "cursor-pointer"}`}
-                                        title="Xóa slot"
-                                    >
-                                        <CloseIcon />
-                                    </button>
+                                            type="button"
+                                            disabled={loading}
+                                            className={`p-1 ml-1 text-xs text-primary hover:text-red-700 ${loading ? "pointer-events-none" : "cursor-pointer"}`}
+                                            title="Xóa slot"
+                                        >
+                                            <CloseIcon />
+                                        </button>
                                     </ConfirmPopup>
                                 </div>
                             </div>

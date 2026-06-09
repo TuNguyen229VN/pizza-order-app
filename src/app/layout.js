@@ -24,6 +24,11 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="vi" className="scroll-smooth" suppressHydrationWarning={true}>
+      <head>
+        <script dangerouslySetInnerHTML={{
+          __html: `if (window.location.hash) { history.scrollRestoration = "manual"; window.scrollTo(0,0); }`
+        }} />
+      </head>
       <body className={roboto.className}>
         <AppProvider>
           <DeliveryProvider>

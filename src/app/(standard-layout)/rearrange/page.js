@@ -18,6 +18,7 @@ import UserTabs from "@/components/layout/UserTabs";
 import UseProfile from "@/components/UseProfile";
 import ContainerProfileLeft from "@/container/ContainerProfileLeft";
 import Image from "next/image";
+import SkeletonLoadingBox from "@/components/skeleton/SkeletonLoadingBox";
 
 const TABS = [
     { key: "banner", label: "Banner" },
@@ -29,7 +30,7 @@ const TABS = [
 function SortableItem({ item }) {
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: item._id });
     const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : 1 };
-
+    const [loadingImage, setLoadingImage] = useState({});
     return (
         <div
             ref={setNodeRef}
@@ -43,7 +44,10 @@ function SortableItem({ item }) {
         >
             <span className="text-gray-400 select-none">☰</span>
             {item.image && (
-                <Image src={item.image} alt={item.name} width={200} height={200} className="object-cover w-10 h-10 rounded" />
+                <>
+                    {!loadingImage[item._id] && <SkeletonLoadingBox className='w-full h-full' />}
+                    <Image src={item.image} onLoad={() => setLoadingImage(prev => ({ ...prev, [item._id]: true }))} alt={item.name} width={200} height={200} className={`object-cover w-10 h-10 rounded ${!loadingImage[item._id] ? "opacity-0" : "opacity-100"}`} />
+                </>
             )}
             <div className="flex-1 min-w-0">
                 <span className="font-medium">{item.name}</span>
@@ -242,7 +246,7 @@ export default function RearrangePage() {
                         ) : items.length === 0 ? (
                             <div className="py-12 text-center text-gray-400">Không có dữ liệu</div>
                         ) : (
-                            <div className="overflow-y-auto max-h-[500px] pr-1">
+                            <div className="overflow-y-auto max-h-[400px] pr-1">
                                 <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                                     <SortableContext items={items.map(i => i._id)} strategy={verticalListSortingStrategy}>
                                         <div className="flex flex-col gap-2">

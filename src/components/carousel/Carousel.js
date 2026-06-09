@@ -117,12 +117,11 @@ export default function Carousel({ carouselList = [], setHash, hash, isScrolling
                     <Swiper
                         slidesPerView={'auto'}
                         slidesPerGroup={2}
-                        spaceBetween={10}
+                        spaceBetween={20}
                         breakpoints={{
                             480: {
                             },
                             640: {
-                                // slidesPerView: 5.7,
                                 spaceBetween: 20,
                             },
                             768: {

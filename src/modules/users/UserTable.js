@@ -4,11 +4,13 @@ import { USERS_ROUTE } from '@/constant/routesApp'
 import { dbTimeForHuman } from '@/libs/datetime'
 import Image from 'next/image'
 import Link from 'next/link'
-import React from 'react'
+import React, { useState } from 'react'
 import { MdOutlineModeEdit } from 'react-icons/md'
 import { HiArrowRight, HiLockOpen } from "react-icons/hi2";
+import SkeletonLoadingBox from "@/components/skeleton/SkeletonLoadingBox";
 
 export default function UserTable({ users, loadingForm = false, handleUserBlock }) {
+    const [loadingImage, setLoadingImage] = useState({});
     return (
         <>
             <div className="overflow-x-auto">
@@ -30,8 +32,8 @@ export default function UserTable({ users, loadingForm = false, handleUserBlock 
                                     <td className="px-5 py-4">
                                         <div className='flex gap-4'>
                                             <div className='relative w-[80px] h-14'>
-
-                                                <Image width={200} height={200} alt="Pizza Thumbnail" className="object-cover w-full h-full border rounded border-outline-variant" src={user?.image || "/images/noimage.png"} />
+                                                {!loadingImage[user?._id] && <SkeletonLoadingBox className='w-full h-full' />}
+                                                <Image width={200} height={200} onLoad={prev => ({ ...prev, [user?._id]: true })} alt="Pizza Thumbnail" className={`object-cover w-full h-full border rounded border-outline-variant ${!loadingImage[user?._id] ? "opacity-0" : "opacity-100"}`} src={user?.image || "/images/noimage.png"} />
                                             </div>
                                             <div>
                                                 <p className="w-[200px] line-clamp-1 break-all overflow-hidden" title={user?.name || "Không tên"}>

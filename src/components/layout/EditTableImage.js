@@ -1,9 +1,10 @@
 import Image from "next/image";
-import React from "react";
+import React, { useState } from "react";
+import SkeletonLoadingBox from "../skeleton/SkeletonLoadingBox";
 
 
-export default function EditTableImage({ link, previewLink, onFileSelect, loadingForm,classNameImage }) {
-
+export default function EditTableImage({ link, previewLink, onFileSelect, loadingForm, classNameImage }) {
+  const [loadingImage, setLoadingImage] = useState(true)
   const handleFileChange = (e) => {
     const file = e?.target.files?.[0];
     if (!file) return;
@@ -14,14 +15,18 @@ export default function EditTableImage({ link, previewLink, onFileSelect, loadin
   return (
     <label className={`${loadingForm ? "pointer-events-none" : "cursor-pointer pointer-events-auto "}`}>
       {displayImage && (
-        <Image
-          className={`object-cover object-center w-full h-full mb-4 rounded-full ${classNameImage}`}
-          src={displayImage}
-          width={1200}
-          height={250}
-          quality={100}
-          alt="avatar"
-        />
+        <>
+          {loadingImage && <SkeletonLoadingBox className='w-full h-full' />}
+          <Image
+            className={`object-cover object-center w-full h-full mb-4 rounded-full ${loadingImage ? "opacity-0" : "opacity-100"} ${classNameImage}`}
+            src={displayImage}
+            onLoad={() => setLoadingImage(false)}
+            width={1200}
+            height={250}
+            quality={100}
+            alt="avatar"
+          />
+        </>
       )}
       {!displayImage && (
         <div className={`w-full h-full mb-4 text-gray-500 bg-gray-200 rounded-full  ${classNameImage}`}>

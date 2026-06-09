@@ -22,7 +22,7 @@ export default function UserForm({ title, user, onSave, errors, registerRef, cle
   const [city, setCity] = useState(user?.city || "");
   const [country, setCountry] = useState(user?.country || "");
   const [admin, setAdmin] = useState(user?.admin || false);
-
+  const [imageInputKey, setImageInputKey] = useState(0);
   const GENDER_OPTIONS = [
     { value: "male", label: "Nam" },
     { value: "female", label: "Nữ" },
@@ -81,6 +81,7 @@ export default function UserForm({ title, user, onSave, errors, registerRef, cle
       ? new Date(user.birthday).toISOString().split("T")[0]
       : "");
     setGender(user?.gender || GENDER_OPTIONS[0].value);
+    setImageInputKey((k) => k + 1);
     clearError("userName");
     clearError("gender");
     clearError("birthday");
@@ -104,6 +105,7 @@ export default function UserForm({ title, user, onSave, errors, registerRef, cle
       <div className="rounded-lg">
         <div className="group relative p-2 rounded-lg w-[200px] h-[200px]  mx-auto">
           <EditTableImage
+            key={imageInputKey}
             link={image}
             previewLink={previewImage}
             onFileSelect={handleFileSelect}

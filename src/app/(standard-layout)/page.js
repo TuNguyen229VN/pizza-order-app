@@ -28,6 +28,9 @@ export default function Home() {
   const [loadingBanners, setLoadingBanners] = useState(true);
   const [loadingCategories, setLoadingCategories] = useState(true);
   const [loadingMenuItems, setLoadingMenuItems] = useState(true);
+  const [loadingCombos, setLoadingCombos] = useState(true);
+  const [loadingComboTypes, setLoadingComboTypes] = useState(true);
+  const [loadingSectionOrder, setLoadingSectionOrder] = useState(true);
 
   const [hash, setHash] = useState("");
   const [search, setSearch] = useState("");
@@ -37,7 +40,9 @@ export default function Home() {
   const sectionRefs = useRef({});
   const isScrollingTo = useRef(false);
   const hashRef = useRef("");
-
+  const initialScrollDone = useRef(false);
+  const scrollInitialized = useRef(false);
+  const spyAttached = useRef(false);
   useEffect(() => {
     // Mỗi fetch set state ngay khi về — không chờ nhau
     fetch(`${API_BANNERS}?all=true&statusFilter=on&useOrder=true`)
@@ -62,101 +67,158 @@ export default function Home() {
     fetch(`${API_COMBO}?all=true&status=on&useOrder=true`)
       .then(r => r.json())
       .then(data => setComboList(data.combos ?? []))
-      .catch(err => console.error("Failed to fetch combos:", err));
+      .catch(err => console.error("Failed to fetch combos:", err))
+      .finally(() => setLoadingCombos(false));
 
     fetch(`${API_COMBO_TYPES}?all=true&status=on&useOrder=true`)
       .then(r => r.json())
       .then(data => setComboTypeList(data.comboTypes ?? []))
-      .catch(err => console.error("Failed to fetch combo types:", err));
+      .catch(err => console.error("Failed to fetch combo types:", err))
+      .finally(() => setLoadingComboTypes(false));
 
     fetch(`${API_REARRANGE}?type=sections`)
       .then(r => r.json())
       .then(data => setSectionOrder(data.sections ?? []))
-      .catch(err => console.error("Failed to fetch section order:", err));
+      .catch(err => console.error("Failed to fetch section order:", err))
+      .finally(() => setLoadingSectionOrder(false));
   }, []);
 
   const loadingSections = loadingCategories || loadingMenuItems;
 
   const dataReady = categories.length > 0 && menuItems.length > 0;
-  const sectionsRendered = dataReady && !loadingSections;
+  const scrollReady = !loadingCategories && !loadingMenuItems
+    && !loadingCombos && !loadingComboTypes && !loadingSectionOrder;
 
- useEffect(() => {
-  if (!sectionsRendered) return;
-  const urlHash = window.location.hash.replace("#", "");
-  if (!urlHash) return;
-  setHash(urlHash);
-  hashRef.current = urlHash;
-
-  let attempts = 0;
-  const MAX = 20;
-
- const tryScroll = () => {
-  const target = document.getElementById(urlHash);
-  if (!target) {
-    if (++attempts < MAX) setTimeout(tryScroll, 100);
-    return;
-  }
-  const carousel = document.querySelector(".sticky");
-  const offset = 100 + (carousel?.offsetHeight ?? 0);
-  const top = target.getBoundingClientRect().top + window.scrollY - offset;
-
-  isScrollingTo.current = true;
-  window.scrollTo({ top, behavior: "smooth" });
-
-  let scrollEndTimer;
-  const onScrollEnd = () => {
-    clearTimeout(scrollEndTimer);
-    scrollEndTimer = setTimeout(() => {
-      window.removeEventListener("scroll", onScrollEnd);
-      // Force đúng hash + URL
-      hashRef.current = urlHash;
-      setHash(urlHash);
-      window.history.replaceState(null, "", `#${urlHash}`);
-      requestAnimationFrame(() => {
-        isScrollingTo.current = false;
-      });
-    }, 150);
-  };
-
-  window.addEventListener("scroll", onScrollEnd, { passive: true });
-
-  setTimeout(() => {
-    window.removeEventListener("scroll", onScrollEnd);
-    clearTimeout(scrollEndTimer);
-    hashRef.current = urlHash;
+  useEffect(() => {
+    if (!scrollReady) return;
+    if (scrollInitialized.current) return;
+    const urlHash = window.location.hash.replace("#", "");
+    if (!urlHash) {
+      initialScrollDone.current = true; // không có hash → spy chạy luôn
+      return;
+    }
     setHash(urlHash);
-    window.history.replaceState(null, "", `#${urlHash}`);
-    requestAnimationFrame(() => {
-      isScrollingTo.current = false;
-    });
-  }, 2000);
-};
+    hashRef.current = urlHash;
 
-  requestAnimationFrame(() => setTimeout(tryScroll, 50));
-}, [sectionsRendered]);
+    let attempts = 0;
+    const MAX = 40;
+    let scrollDone = false;
+
+    const doScroll = (target, behavior = "smooth") => {
+      const carousel = document.querySelector(".sticky");
+      const offset = 100 + (carousel?.offsetHeight ?? 0);
+      const top = target.getBoundingClientRect().top + window.scrollY - offset;
+      isScrollingTo.current = true;
+      window.scrollTo({ top, behavior });
+    };
+
+    const finalize = (urlHash) => {
+      let timer;
+      const onScrollStop = () => {
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+          window.removeEventListener("scroll", onScrollStop);
+          console.log("finalize done, initialScrollDone = true");
+          hashRef.current = urlHash;
+          setHash(urlHash);
+          window.history.replaceState(null, "", `#${urlHash}`);
+          isScrollingTo.current = false;
+          initialScrollDone.current = true;
+        }, 150);
+      };
+      window.addEventListener("scroll", onScrollStop, { passive: true });
+      timer = setTimeout(() => {
+        window.removeEventListener("scroll", onScrollStop);
+        console.log("finalize fallback done, initialScrollDone = true");
+        hashRef.current = urlHash;
+        setHash(urlHash);
+        window.history.replaceState(null, "", `#${urlHash}`);
+        isScrollingTo.current = false;
+        initialScrollDone.current = true;
+      }, 150);
+    };
+
+    const tryScroll = () => {
+      const target = document.getElementById(urlHash);
+      if (!target) {
+        if (++attempts < MAX) setTimeout(tryScroll, 150);
+        return;
+      }
+
+      doScroll(target, "smooth");
+
+      const images = Array.from(document.querySelectorAll("img")).filter(img => !img.complete);
+
+      if (images.length === 0) {
+        // Không có ảnh nào cần chờ → finalize luôn
+        finalize(urlHash);
+        return;
+      }
+
+      // Có ảnh chưa load → KHÔNG finalize vội
+      // isScrollingTo vẫn = true → spy bị chặn hoàn toàn
+      let loaded = 0;
+      const onLoad = () => {
+        loaded++;
+        if (loaded >= images.length) {
+          // Tất cả ảnh xong → correct offset → finalize
+          doScroll(target, "instant");
+          finalize(urlHash);
+        }
+      };
+      images.forEach(img => {
+        img.addEventListener("load", onLoad, { once: true });
+        img.addEventListener("error", onLoad, { once: true });
+      });
+
+      // Fallback 2s
+      setTimeout(() => {
+        if (!initialScrollDone.current) {
+          doScroll(target, "instant");
+          finalize(urlHash);
+        }
+      }, 2000);
+    };
+
+    setTimeout(tryScroll, 100); // giảm từ 300 → 100
+  }, [scrollReady]);
 
   const allDataReady = dataReady && comboList.length > 0 && comboTypeList.length > 0;
   useEffect(() => {
     if (!allDataReady) return;
-    const handleScroll = () => {
-      if (isScrollingTo.current) return;
-      const els = Object.values(sectionRefs.current).filter(Boolean);
-      const current = els.reduce((closest, el) => {
-        const offset = el.getBoundingClientRect().top - window.innerHeight * 0.3;
-        if (offset <= 0 && offset > (closest?.offset ?? -Infinity)) return { el, offset };
-        return closest;
-      }, null);
-      if (current?.el) {
-        const id = current.el.id;
-        if (id !== hashRef.current) {
+    if (spyAttached.current) return;
+    spyAttached.current = true;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (isScrollingTo.current) return;
+        if (!initialScrollDone.current) return;
+
+        // Lấy section đang visible nhiều nhất
+        const visible = entries
+          .filter(e => e.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+
+        if (visible.length === 0) return;
+
+        const id = visible[0].target.id;
+        if (id && id !== hashRef.current) {
           hashRef.current = id;
           setHash(id);
           window.history.replaceState(null, "", `#${id}`);
         }
+      },
+      {
+        threshold: [0.1, 0.3, 0.5],
+        rootMargin: "-100px 0px -50% 0px", // trigger khi section vào vùng trên
       }
-    };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    );
+
+    Object.values(sectionRefs.current).filter(Boolean).forEach(el => {
+      observer.observe(el);
+    });
+
+    return () => observer.disconnect();
   }, [allDataReady]);
 
   const handleSearch = useCallback(() => setActiveSearch(search.trim()), [search]);

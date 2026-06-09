@@ -8,9 +8,11 @@ import ConfirmPopup from '@/components/popup/ConfirmPopup';
 import { useSwipeDelete } from '@/hooks/useSwipeDelete';
 import Trash from '@/components/icons/Trash';
 import { useRouter } from 'next/navigation';
+import SkeletonLoadingBox from '@/components/skeleton/SkeletonLoadingBox';
 
 export default function CartProduct({ index, product, onRemove, showEdit = false }) {
   const [showPopup, setShowPopup] = useState(false);
+  const [loadingImage, setLoadingImage] = useState(true);
   useLockBodyScroll(showPopup);
   const { wrapperRef, itemRef, bgRef } = useSwipeDelete(() => onRemove?.(index));
   const router = useRouter();
@@ -39,12 +41,14 @@ export default function CartProduct({ index, product, onRemove, showEdit = false
       >
         <div className='flex gap-4'>
           <div className='w-[82px] h-[96px] overflow-hidden flex-shrink-0'>
+           {loadingImage && <SkeletonLoadingBox className='w-full h-full' />}
             <Image
               width={240}
               height={240}
               src={product.image}
               alt={product.name}
-              className={`object-center object-cover`}
+              onLoad={() => setLoadingImage(false)}
+              className={`object-center object-cover ${loadingImage ? "opacity-0" : "opacity-100"}`}
             />
           </div>
 
@@ -68,7 +72,7 @@ export default function CartProduct({ index, product, onRemove, showEdit = false
 
             {/* Hiển thị items của combo */}
             {product?.slots?.length > 0 && (
-              <div className="mt-1 text-secondary text-xs space-y-0.5">
+              <div className="mt-1 text-secondary">
                 {product.slots.map((item, i) => (
                   <span key={i} className="block">
                     • {item.menuItem?.name}

@@ -28,6 +28,7 @@ export default function BannersPage() {
   const [status, setStatus] = useState(editedBanner?.status || STATUS_OPTIONS[0].value);
   const [pendingFile, setPendingFile] = useState(null);     // file chờ upload
   const [previewImage, setPreviewImage] = useState(null);
+  const [imageInputKey, setImageInputKey] = useState(0);
   const [loadingForm, setLoadingForm] = useState(false);
   const { errors, setErrors, registerRef, handleValidate, clearError } = useFormValidate();
   // --- state mới ---
@@ -208,6 +209,7 @@ export default function BannersPage() {
           <ContainerProfileLeft >
             <div className="relative w-full h-[200px] group mb-4 ">
               <EditTableImage
+                key={imageInputKey}
                 classNameImage={"rounded-none"}
                 link={editedBanner?.image}
                 previewLink={previewImage}
@@ -218,7 +220,7 @@ export default function BannersPage() {
             {errors.image && (
               <span className="block mx-auto mt-2 text-xs text-center text-primary w-max">{errors.image}</span>
             )}
-            <BannersForm categories={[...comboTypeList, ...categories]} bannerName={bannerName} clearError={clearError} editedBanner={editedBanner} errors={errors} handleBannerSubmit={handleBannerSubmit} loadingForm={loadingForm} pendingFile={pendingFile} previewImage={previewImage} setBannerName={setBannerName} setEditedBanner={setEditedBanner} setPendingFile={setPendingFile} setPreviewImage={setPreviewImage} setStatus={setStatus} status={status} registerRef={registerRef} STATUS_OPTIONS={STATUS_OPTIONS} />
+            <BannersForm categories={[...comboTypeList, ...categories]} bannerName={bannerName} clearError={clearError} editedBanner={editedBanner} errors={errors} handleBannerSubmit={handleBannerSubmit} loadingForm={loadingForm} pendingFile={pendingFile} previewImage={previewImage} setBannerName={setBannerName} setEditedBanner={setEditedBanner} setPendingFile={setPendingFile} setPreviewImage={setPreviewImage} setStatus={setStatus} status={status} registerRef={registerRef} STATUS_OPTIONS={STATUS_OPTIONS} setImageInputKey={setImageInputKey}/>
 
           </ContainerProfileLeft>
           <ContainerProfileLeft className={"mt-6"}>

@@ -30,7 +30,7 @@ const CategoriesPage = () => {
   const [pendingFile, setPendingFile] = useState(null);     // file chờ upload
   const [previewImage, setPreviewImage] = useState(null);
   const [loadingForm, setLoadingForm] = useState(false);
-
+  const [imageInputKey, setImageInputKey] = useState(0);
   // --- state mới ---
   const [search, setSearch] = useState("");
   const [statusFilter, setstatusFilter] = useState("")
@@ -199,6 +199,7 @@ const CategoriesPage = () => {
           <ContainerProfileLeft >
             <div className="relative w-full h-[100px] group mb-4 ">
               <EditTableImage
+                key={imageInputKey}
                 classNameImage={"rounded-none"}
                 link={editedCategory?.image}
                 previewLink={previewImage}
@@ -206,7 +207,7 @@ const CategoriesPage = () => {
                 loadingForm={loadingForm} />
             </div>
 
-            <CategoriesForm categoryName={categoryName} clearError={clearError} editedCategory={editedCategory} errors={errors} handleCategorySubmit={handleCategorySubmit} loadingForm={loadingForm} pendingFile={pendingFile} previewImage={previewImage} setCategoryName={setCategoryName} setEditedCategory={setEditedCategory} setPendingFile={setPendingFile} setPreviewImage={setPreviewImage} setStatus={setStatus} status={status} registerRef={registerRef} STATUS_OPTIONS={STATUS_OPTIONS} />
+            <CategoriesForm categoryName={categoryName} clearError={clearError} editedCategory={editedCategory} errors={errors} handleCategorySubmit={handleCategorySubmit} loadingForm={loadingForm} pendingFile={pendingFile} previewImage={previewImage} setCategoryName={setCategoryName} setEditedCategory={setEditedCategory} setPendingFile={setPendingFile} setPreviewImage={setPreviewImage} setStatus={setStatus} status={status} registerRef={registerRef} STATUS_OPTIONS={STATUS_OPTIONS} setImageInputKey={setImageInputKey} />
 
           </ContainerProfileLeft>
           <ContainerProfileLeft className={"mt-6"}>
@@ -214,9 +215,9 @@ const CategoriesPage = () => {
 
             {/* ✅ Thanh tìm kiếm + sort */}
             <div className="flex flex-wrap items-center gap-3 my-4">
-            <div className="w-full">
-              <InputSearch search={search} setSearch={setSearch} />
-            </div>
+              <div className="w-full">
+                <InputSearch search={search} setSearch={setSearch} />
+              </div>
               <FilterSort sort={statusFilter} setSort={setstatusFilter} listOption={STATUS_OPTIONS_FILTER} />
               <FilterSort sort={sort} setSort={setSort} listOption={LIST_OPTION} />
             </div>

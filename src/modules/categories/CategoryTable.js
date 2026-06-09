@@ -1,11 +1,13 @@
 import Trash from '@/components/icons/Trash';
 import ConfirmPopup from '@/components/popup/ConfirmPopup';
+import SkeletonLoadingBox from '@/components/skeleton/SkeletonLoadingBox';
 import { dbTimeForHuman } from '@/libs/datetime';
 import Image from 'next/image';
-import React from 'react'
+import React, { useState } from 'react'
 import { MdOutlineModeEdit } from 'react-icons/md';
 
 export default function CategoryTable({ categories, setEditedCategory, setCategoryName, setStatus, clearError, loadingForm, setPendingFile, setPreviewImage, handleCategoryDelete }) {
+    const [loadingImage, setLoadingImage] = useState({});
     return (
         <div className='overflow-x-auto'>
             <table className="w-full text-left">
@@ -23,7 +25,8 @@ export default function CategoryTable({ categories, setEditedCategory, setCatego
                         categories.map((category) => (
                             <tr className="transition-colors hover:bg-surface-container-low group" key={category._id}>
                                 <td className="px-4 py-4 md:px-6">
-                                    <Image width={200} height={200} alt="Pizza Thumbnail" className="object-cover w-12 h-12 border rounded border-outline-variant" src={category.image || "/images/noimage.png"} />
+                                    {!loadingImage[category._id] && <SkeletonLoadingBox className='w-full h-full' />}
+                                    <Image width={200} height={200} onLoad={() => setLoadingImage(prev => ({ ...prev, [category._id]: true }))} alt="Pizza Thumbnail" className={`object-cover w-12 h-12 border rounded border-outline-variant ${!loadingImage[category._id] ? "opacity-0" : "opacity-100"}`} src={category.image || "/images/noimage.png"} />
                                 </td>
                                 <td className="px-4 py-4 md:px-6 text-on-surface ">
                                     <p className="w-[100px] font-bold line-clamp-1 break-all overflow-hidden" title={category.name}>

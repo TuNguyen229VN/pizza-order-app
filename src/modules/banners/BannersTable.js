@@ -1,11 +1,13 @@
 import Trash from '@/components/icons/Trash';
 import ConfirmPopup from '@/components/popup/ConfirmPopup';
+import SkeletonLoadingBox from '@/components/skeleton/SkeletonLoadingBox';
 import { dbTimeForHuman } from '@/libs/datetime';
 import Image from 'next/image';
-import React from 'react'
+import React, { useState } from 'react'
 import { MdOutlineModeEdit } from 'react-icons/md';
 
 export default function BannersTable({ banners, setEditedBanner, setBannerName, setStatus, clearError, loadingForm, setPendingFile, setPreviewImage, handleBannerDelete }) {
+    const [loadingImage, setLoadingImage] = useState({});
     return (
         <div className='overflow-x-auto'>
             <table className="w-full text-left">
@@ -23,7 +25,8 @@ export default function BannersTable({ banners, setEditedBanner, setBannerName, 
                         banners.map((banner) => (
                             <tr className="transition-colors hover:bg-surface-container-low group" key={banner._id}>
                                 <td className="px-4 py-4 md:px-6">
-                                    <Image width={200} height={200} alt="Pizza Thumbnail" className="object-cover w-12 h-12 border rounded border-outline-variant" src={banner.image || "/images/noimage.png"} />
+                                    {!loadingImage[banner._id] && <SkeletonLoadingBox className='w-full h-full' />}
+                                    <Image width={200} height={200} alt="Pizza Thumbnail" className={`object-cover w-12 h-12 border rounded border-outline-variant ${!loadingImage[banner._id] ? "opacity-0" : "opacity-100"} `}   onLoad={() => setLoadingImage(prev => ({ ...prev, [banner._id]: true }))} src={banner.image || "/images/noimage.png"} />
                                 </td>
                                 <td className="px-4 py-4 md:px-6 text-on-surface ">
                                     <p className="w-[100px] font-bold line-clamp-1 break-all overflow-hidden" title={banner.name}>

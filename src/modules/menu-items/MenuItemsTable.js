@@ -1,14 +1,16 @@
 import Trash from '@/components/icons/Trash';
 import ConfirmPopup from '@/components/popup/ConfirmPopup';
+import SkeletonLoadingBox from '@/components/skeleton/SkeletonLoadingBox';
 import { MENU_ITEM_EDIT_ROUTE } from '@/constant/routesApp';
 import { dbTimeForHuman } from '@/libs/datetime';
 import Image from 'next/image';
 import Link from 'next/link';
-import React from 'react'
+import React, { useState } from 'react'
 import { HiArrowRight } from 'react-icons/hi2';
 import { MdOutlineModeEdit } from 'react-icons/md';
 
 export default function MenuItemsTable({ menuItems, loadingForm, handleMenuItemDelete, categories }) {
+    const [loadedImages, setLoadedImages] = useState({});
     return (
         <>
             <div className="overflow-x-auto">
@@ -30,8 +32,8 @@ export default function MenuItemsTable({ menuItems, loadingForm, handleMenuItemD
                                 <tr className="transition-colors hover:bg-surface-container-low group" key={item._id}>
                                     <td className="px-5 py-4">
                                         <div className='relative w-[100px] h-14'>
-
-                                            <Image width={200} height={200} alt="Pizza Thumbnail" className="object-cover w-full h-full border rounded border-outline-variant" src={item.image || "/images/noimage.png"} />
+                                            {!loadedImages[item._id] && <SkeletonLoadingBox className='w-full h-full' />}
+                                            <Image width={200} height={200} onLoad={() => setLoadedImages(prev => ({ ...prev, [item._id]: true }))} alt="Pizza Thumbnail" className={`object-cover w-full h-full border rounded border-outline-variant ${!loadedImages[item._id] ? "opacity-0" : "opacity-100"}`} src={item.image || "/images/noimage.png"} />
                                         </div>
                                     </td>
                                     <td className="px-5 py-4 text-on-surface ">
@@ -75,13 +77,13 @@ export default function MenuItemsTable({ menuItems, loadingForm, handleMenuItemD
                                         </div>
                                     </td>
                                 </tr>
-                            )): (
-                            <tr>
-                                <td colSpan={7} className="py-4 italic text-center text-secondary">
-                                    Không có dữ liệu
-                                </td>
-                            </tr>
-                        )}
+                            )) : (
+                                <tr>
+                                    <td colSpan={7} className="py-4 italic text-center text-secondary">
+                                        Không có dữ liệu
+                                    </td>
+                                </tr>
+                            )}
                     </tbody>
                 </table>
             </div>

@@ -22,7 +22,7 @@ export default function ComboTypeForm({ onSuccess, editData = null, setRedirectT
 
     const [pendingFile, setPendingFile] = useState(null);     // file chờ upload
     const [previewImage, setPreviewImage] = useState(null);
-
+    const [imageInputKey, setImageInputKey] = useState(0);
     const [loading, setLoading] = useState(false);
 
     function handleFileSelect(file, localPreview) {
@@ -134,6 +134,7 @@ export default function ComboTypeForm({ onSuccess, editData = null, setRedirectT
         setImage(savedData?.image || "");
         setName(savedData?.name || "");
         setStatus(savedData?.status || STATUS_OPTIONS[0].value);
+        setImageInputKey((k) => k + 1);
         clearError("name");
         clearError("status");
         clearError("image");
@@ -144,6 +145,7 @@ export default function ComboTypeForm({ onSuccess, editData = null, setRedirectT
         <div className="rounded-lg">
             <div className="relative w-full h-[120px] group mb-4 mt-12 md:mt-8">
                 <EditTableImage
+                    key={imageInputKey}
                     classNameImage={"rounded-none"}
                     link={image}
                     previewLink={previewImage}

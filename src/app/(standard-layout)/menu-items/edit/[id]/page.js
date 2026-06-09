@@ -79,7 +79,7 @@ export default function EditMenuItemPage() {
             };
             dynamicFields[`sizes_${i}_price`] = {
                 value: item.price,
-                rules: [validators.required("giá"), validators.isNumber("giá cơ bản"), validators.minValue(1000), validators.maxValue(100000000)],
+                rules: [validators.required("giá"), validators.isNumber("Giá cơ bản"), validators.minValue(1000), validators.maxValue(100000000)],
             };
         });
 
@@ -90,7 +90,7 @@ export default function EditMenuItemPage() {
             };
             dynamicFields[`extraIngredientPrices_${i}_price`] = {
                 value: item.price,
-                rules: [validators.required("giá"), validators.isNumber("giá cơ bản"), validators.minValue(1000), validators.maxValue(100000000)],
+                rules: [validators.required("giá"), validators.isNumber("Giá cơ bản"), validators.minValue(1000), validators.maxValue(100000000)],
             };
         });
 
@@ -106,7 +106,7 @@ export default function EditMenuItemPage() {
             },
             basePrice: {
                 value: formData?.basePrice,
-                rules: [validators.required("giá cơ bản"), validators.isNumber("giá cơ bản"), validators.minValue(1000), validators.maxValue(100000000)],
+                rules: [validators.required("giá cơ bản"), validators.isNumber("Giá cơ bản"), validators.minValue(1000), validators.maxValue(100000000)],
             },
             category: {
                 value: formData?.category,

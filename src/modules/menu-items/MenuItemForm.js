@@ -20,7 +20,7 @@ export default function MenuItemForm({ onSubmit, menuItem, errors, registerRef, 
     const [status, setStatus] = useState(menuItem?.status || STATUS_OPTIONS[0].value);
     const [pendingFile, setPendingFile] = useState(null);     // file chờ upload
     const [previewImage, setPreviewImage] = useState(null);
-
+    const [imageInputKey, setImageInputKey] = useState(0);
     useEffect(() => {
         if (!menuItem) return;
         setImage(menuItem.image || "");
@@ -79,6 +79,7 @@ export default function MenuItemForm({ onSubmit, menuItem, errors, registerRef, 
         setCategory(menuItem?.category || "");
         setExtraIngredientPrices(menuItem?.extraIngredientPrices || []);
         setStatus(menuItem?.status || STATUS_OPTIONS[0].value);
+        setImageInputKey((k) => k + 1);
         clearError("name");
         clearError("description");
         clearError("category");
@@ -99,6 +100,7 @@ export default function MenuItemForm({ onSubmit, menuItem, errors, registerRef, 
             <div className="rounded-lg">
                 <div className="group relative p-2 rounded-lg w-[200px] h-[200px]  mx-auto">
                     <EditTableImage
+                        key={imageInputKey}  
                         link={image}
                         previewLink={previewImage}
                         onFileSelect={handleFileSelect}
@@ -141,7 +143,7 @@ export default function MenuItemForm({ onSubmit, menuItem, errors, registerRef, 
                         name="category"
                         value={category}
                         options={[
-                            { value: "", label: "-- Chọn loại combo --" },
+                            { value: "", label: "-- Chọn danh mục --" },
                             ...categories.map(c => ({ value: c._id, label: c.name }))]}
                         disabled={loadingForm}
                         inputRef={registerRef("category")}
