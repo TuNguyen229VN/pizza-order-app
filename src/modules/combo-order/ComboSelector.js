@@ -422,7 +422,7 @@ export default function ComboSelector({
                                             </div>
                                             <div className='flex flex-col justify-between flex-1 w-full p-4 pl-2'>
                                                 <div>
-                                                    <h4 className={`md:text-lg text-sm md:leading-[26px] capitalize  line-clamp-2 font-bold`}>{mi.name}</h4>
+                                                    <h4 title={mi.name} className={`md:text-lg text-sm md:leading-[26px] capitalize  line-clamp-2 font-bold `}>{mi.name}</h4>
                                                     <p className='text-sm text-secondary line-clamp-1'>{mi.description}</p>
                                                     {combo.slots[chooseTabIndex].size?.name && (
                                                         <span className="text-xs font-medium ">
@@ -430,7 +430,7 @@ export default function ComboSelector({
                                                         </span>
                                                     )}
                                                 </div>
-                                                <div className='flex items-center justify-between w-full'>
+                                                <div className='relative flex items-center justify-between w-full'>
                                                     <div>
                                                         <p className={`font-medium  md:text-base mt-1 text-sm `}>{(mi.basePrice + (mi.sizes?.[0]?.price || 0)).toLocaleString('vi-VN')}<span className='ml-2 underline'>đ</span></p>
                                                     </div>
@@ -441,11 +441,11 @@ export default function ComboSelector({
                                                         if (isChosen && (!slotFull || isEditing)) {
                                                             // Đang chọn chưa đủ slot, HOẶC đã bấm edit → hiện +/-
                                                             return (
-                                                                <>
+                                                                <div className="absolute right-0 flex items-center gap-4">
                                                                     <ButtonDecrement onClick={() => decrementItem(chooseTabIndex, mi)} />
                                                                     <span className="text-sm font-medium md:text-lg">{qty}</span>
                                                                     <ButtonIncrement onClick={() => incrementItem(chooseTabIndex, mi)} />
-                                                                </>
+                                                                </div>
                                                             );
                                                         }
 
@@ -453,7 +453,7 @@ export default function ComboSelector({
                                                             // Đã chọn & slot đủ → hiện nút check, bấm để mở edit
                                                             return (
                                                                 <ButtonAdd
-                                                                    className="add-to-cart-zone"
+                                                                    className="absolute right-0 add-to-cart-zone"
                                                                     onClick={() => {
                                                                         setEditingItems(prev => {
                                                                             const next = new Set(prev);
@@ -469,7 +469,7 @@ export default function ComboSelector({
                                                         // Chưa chọn → nút add bình thường
                                                         return (
                                                             <ButtonAdd
-                                                                className="add-to-cart-zone"
+                                                                className="absolute right-0 add-to-cart-zone"
                                                                 onClick={() => incrementItem(chooseTabIndex, mi)}
                                                                 forCombo="add"
                                                             />
