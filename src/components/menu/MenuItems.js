@@ -13,9 +13,10 @@ import { useDelivery } from "@/context/DeliveryContext";
 import DeliveryPickupModal from "@/modules/DeliveryPickupModal";
 import { KEYWORDS } from "@/constant/constant";
 import SkeletonLoadingBox from "../skeleton/SkeletonLoadingBox";
+import { RenderTag } from "./RenderTag";
 
 const MenuItems = ({ recomStyle, ...menuItem }) => {
-  const { image, name, description, basePrice, sizes, extraIngredientPrices } = menuItem
+  const { image, name, description, basePrice, sizes, extraIngredientPrices, tags } = menuItem
   const [
     selectedSize, setSelectedSize
   ] = useState(sizes?.[0] || null);
@@ -145,6 +146,11 @@ const MenuItems = ({ recomStyle, ...menuItem }) => {
                 <div>
                   <h3 className="md:text-2xl leading-[30px] font-semibold break-words absolute md:static top-0 left-0 bg-white md:bg-none w-full md:w-max p-3 md:p-0">{name}</h3>
                   <p className="text-sm break-words md:mt-2 md:text-base text-secondary">{description}</p>
+                  <div className='flex flex-wrap items-center gap-2 md:mt-2'>
+                    {tags && tags.map((tag, index) => (
+                      <RenderTag key={index} tag={tag} />
+                    ))}
+                  </div>
                 </div>
                 {sizes?.length > 0 && (
                   <div className="mt-4 md:mt-7 ">
@@ -194,20 +200,6 @@ const MenuItems = ({ recomStyle, ...menuItem }) => {
                   <button onClick={() => handleQtyChange(1)}
                     className="flex items-center justify-center w-10 h-10 text-2xl border rounded-md text-primary">+</button>
                 </div>
-                {/* <FlyingButton
-                  className="flex items-center justify-center w-full"
-                  targetTop={'6%'}
-                  targetLeft={'80%'}
-                  src={image}
-                  >
-                  <ButtonPrimary onClick={handleAddToCartButtonClick}>
-                    <div
-                      className="text-center text-white"
-                    >
-                      Thêm vào giỏ hàng <span className="inline-block w-2 h-2 mx-2 bg-white rounded-full"></span> {selectedPrice.toLocaleString('vi-VN')} <span className="underline">đ</span>
-                    </div>
-                  </ButtonPrimary>
-                </FlyingButton> */}
                 <FlyingButton
                   ref={flyingBtnRef}
                   className="flex items-center justify-center w-full"

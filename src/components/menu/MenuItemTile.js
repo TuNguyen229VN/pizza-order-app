@@ -4,9 +4,10 @@ import Image from 'next/image';
 import { useDelivery } from '@/context/DeliveryContext';
 import { KEYWORDS } from '@/constant/constant';
 import SkeletonLoadingBox from '../skeleton/SkeletonLoadingBox';
+import { RenderTag } from './RenderTag';
 
 export default function MenuItemTile({ onClick, onAddToCart, addToCartRef, addToCartFn, recomStyle, ...item }) {
-    const { image, description, name, basePrice,
+    const { image, description, tags, name, basePrice,
         sizes, extraIngredientPrices,
     } = item;
     const isPizza = KEYWORDS.some(keyword =>
@@ -44,7 +45,12 @@ export default function MenuItemTile({ onClick, onAddToCart, addToCartRef, addTo
                 <div>
                     <h4 className={`${recomStyle === "recomStyle" ? "font-medium md:text-xl lg:text-2xl" : "font-semibold"} text-sm md:text-2xl  md:leading-[30px] capitalize text-[#374151] line-clamp-2`}>{name}</h4>
                     {!recomStyle && <p className='text-sm md:text-lg leading-[26px] text-secondary line-clamp-1'>{description}</p>}
-                    {/* <div className='px-1 py-[2px] mt-1 text-white rounded bg-primary w-max'>New</div> */}
+                    <div className='flex flex-wrap items-center gap-2'>
+                        {tags && tags.map((tag, index) => (
+                            <RenderTag key={index} tag={tag} />
+                        ))}
+                    </div>
+
                 </div>
                 <div className='flex items-center justify-between w-full'>
                     <div>

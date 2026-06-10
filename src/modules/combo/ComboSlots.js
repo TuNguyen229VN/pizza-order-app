@@ -221,7 +221,7 @@ export default function ComboSlots({
                                                                         className="flex-shrink-0 object-cover w-8 h-8 rounded"
                                                                     />
                                                                 )}
-                                                                <span className="truncate">{item.name}</span>
+                                                                    <span className="truncate">{item.name} - {item.basePrice.toLocaleString("vi-VN")}đ</span>
                                                             </label>
                                                         );
                                                     })}

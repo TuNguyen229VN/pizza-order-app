@@ -73,7 +73,7 @@ export default function Carousel({ carouselList = [], setHash, hash, isScrolling
         <div ref={carouselRef} className='sticky z-10 pt-3 md:pt-6 top-[65px] md:top-[80px] bg-white'>
             <div className="relative flex items-center pb-3 overflow-hidden">
                 <div
-                    className="flex items-center flex-shrink-0 gap-3 px-4 overflow-hidden transition-all duration-500 ease-in-out md:p-0"
+                    className="flex items-center flex-shrink-0 gap-3 px-2 overflow-hidden transition-all duration-500 ease-in-out md:px-4 md:p-0"
                     style={{
                         maxWidth: openInputSearch ? '100%' : '0px',
                         opacity: openInputSearch ? 1 : 0,

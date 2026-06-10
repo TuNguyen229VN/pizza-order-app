@@ -7,6 +7,7 @@ import ValidatedSelectInput from '../../components/input/ValidatedSelectInput';
 import ButtonPrimary from '../../components/buttons/ButtonPrimary';
 import Loader from '../../components/loading/Loader';
 import ButtonCancel from '../../components/buttons/ButtonCancel';
+import TagInput from '@/components/input/TagInput';
 
 export default function MenuItemForm({ onSubmit, menuItem, errors, registerRef, clearError, loadingForm }) {
     const [image, setImage] = useState(menuItem?.image || "");
@@ -17,6 +18,7 @@ export default function MenuItemForm({ onSubmit, menuItem, errors, registerRef, 
     const [categories, setCategories] = useState([]);
     const [category, setCategory] = useState(menuItem?.category || "");
     const [extraIngredientPrices, setExtraIngredientPrices] = useState(menuItem?.extraIngredientPrices || []);
+    const [tags, setTags] = useState(menuItem?.tags || []);
     const [status, setStatus] = useState(menuItem?.status || STATUS_OPTIONS[0].value);
     const [pendingFile, setPendingFile] = useState(null);     // file chờ upload
     const [previewImage, setPreviewImage] = useState(null);
@@ -30,6 +32,7 @@ export default function MenuItemForm({ onSubmit, menuItem, errors, registerRef, 
         setSizes(menuItem.sizes || []);
         setCategory(menuItem.category || "");
         setExtraIngredientPrices(menuItem.extraIngredientPrices || []);
+        setTags(menuItem.tags || []);
         setStatus(menuItem.status || STATUS_OPTIONS[0].value);
     }, [menuItem]);
 
@@ -78,6 +81,7 @@ export default function MenuItemForm({ onSubmit, menuItem, errors, registerRef, 
         setSizes(menuItem?.sizes || []);
         setCategory(menuItem?.category || "");
         setExtraIngredientPrices(menuItem?.extraIngredientPrices || []);
+        setTags(menuItem?.tags || []);
         setStatus(menuItem?.status || STATUS_OPTIONS[0].value);
         setImageInputKey((k) => k + 1);
         clearError("name");
@@ -96,11 +100,11 @@ export default function MenuItemForm({ onSubmit, menuItem, errors, registerRef, 
     }
 
     return (
-        <form onSubmit={e => onSubmit(e, { image, name, description, basePrice, sizes, extraIngredientPrices, category, status }, pendingFile)} >
+        <form onSubmit={e => onSubmit(e, { image, name, description, basePrice, sizes, extraIngredientPrices, category, tags, status }, pendingFile)} >
             <div className="rounded-lg">
                 <div className="group relative p-2 rounded-lg w-[200px] h-[200px]  mx-auto">
                     <EditTableImage
-                        key={imageInputKey}  
+                        key={imageInputKey}
                         link={image}
                         previewLink={previewImage}
                         onFileSelect={handleFileSelect}
@@ -182,6 +186,7 @@ export default function MenuItemForm({ onSubmit, menuItem, errors, registerRef, 
                         errors={errors}
                         clearError={clearError}
                         registerRef={registerRef} />
+                    <TagInput tags={tags} setTags={setTags} disabled={loadingForm} />
                     <ValidatedSelectInput
                         label="Trạng thái"
                         name="status"

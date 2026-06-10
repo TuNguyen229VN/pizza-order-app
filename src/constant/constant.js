@@ -25,6 +25,13 @@ const PAID_OPTION = [
     { value: "true", label: "Đã thanh toán" },
     { value: "false", label: "Chưa thanh toán" },
 ];
+const PRESET_TAGS = [
+    { label: "✨ New", value: "New", color: "bg-blue-50 text-blue-800 border-blue-200" },
+    { label: "🌶️ Cay", value: "Cay", color: "bg-orange-50 text-orange-800 border-orange-200" },
+    { label: "🌿 Chay", value: "Chay", color: "bg-green-50 text-green-800 border-green-200" },
+    { label: "⭐ Best Seller", value: "Best Seller", color: "bg-amber-50 text-amber-800 border-amber-200" },
+];
+
 const KEYWORDS = ["pizza", "melts"];
 const SALT_ROUNDS = 10;
 const LIMITPAGE = 4;
@@ -45,5 +52,5 @@ const API_COMBO = "/api/combo";
 const API_BANNERS = "/api/banners"
 const API_REARRANGE="/api/rearrange"
 
-export { PAID_OPTION, USER_STATUS_OPTION, STATUS_OPTIONS, STATUS_OPTIONS_FILTER, LIST_OPTION, KEYWORDS, SALT_ROUNDS, LIMITPAGE, API_PROFILE, API_CATEGORIES, API_MENU_ITEMS, API_REGISTER, API_LOGIN, API_UPLOAD_IMAGE, API_USERS, API_CHECKOUT, API_ORDERS, API_CHANGE_PASSWORD, API_FORGOT_PASSWORD, API_RESET_PASSWORD, API_COMBO_TYPES, API_COMBO, API_BANNERS,API_REARRANGE };
+export { PAID_OPTION, USER_STATUS_OPTION, STATUS_OPTIONS, STATUS_OPTIONS_FILTER, LIST_OPTION, KEYWORDS, SALT_ROUNDS, LIMITPAGE, API_PROFILE, API_CATEGORIES, API_MENU_ITEMS, API_REGISTER, API_LOGIN, API_UPLOAD_IMAGE, API_USERS, API_CHECKOUT, API_ORDERS, API_CHANGE_PASSWORD, API_FORGOT_PASSWORD, API_RESET_PASSWORD, API_COMBO_TYPES, API_COMBO, API_BANNERS,API_REARRANGE,PRESET_TAGS };
 
