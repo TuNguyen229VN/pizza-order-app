@@ -1,17 +1,17 @@
 "use client";
 import ButtonCancel from "@/components/buttons/ButtonCancel";
-import CloseIcon from "@/components/icons/CloseIcon";
 import ValidatedInput from "@/components/input/ValidatedInput";
 import ValidatedSelectInput from "@/components/input/ValidatedSelectInput";
 import EditTableImage from "@/components/layout/EditTableImage";
 import Loader from "@/components/loading/Loader";
-import ConfirmPopup from "@/components/popup/ConfirmPopup";
 import { API_CATEGORIES, API_COMBO, API_COMBO_TYPES, API_MENU_ITEMS, STATUS_OPTIONS } from "@/constant/constant";
 import { useFormValidate } from "@/hooks/useFormValidate";
 import { uploadImage } from "@/libs/uploadImage";
 import { validators } from "@/libs/validators";
 import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
+import ComboSlots from "./ComboSlots";
+import ComboSummary from "./ComboSummary";
 
 
 export default function ComboForm({ onSuccess, editData = null, setRedirectToItems }) {
@@ -28,6 +28,7 @@ export default function ComboForm({ onSuccess, editData = null, setRedirectToIte
         editData?.comboType || null
     );
     const [status, setStatus] = useState(editData?.status || STATUS_OPTIONS[0].value);
+    const [categoryItems, setCategoryItems] = useState({});
     const [pendingFile, setPendingFile] = useState(null);     // file chờ upload
     const [previewImage, setPreviewImage] = useState(null);
     const [savedData, setSavedData] = useState(editData);
@@ -39,6 +40,7 @@ export default function ComboForm({ onSuccess, editData = null, setRedirectToIte
             quantity: s.quantity || 1,
             label: s.label || "",
             size: s.size ?? null,
+            allowedItems: s.allowedItems?.map((id) => id?._id || id) || [],
         })) || []
     );
 
@@ -57,13 +59,12 @@ export default function ComboForm({ onSuccess, editData = null, setRedirectToIte
     }, []);
 
     async function fetchSizesForCategory(categoryId) {
-        if (!categoryId || categorySizes[categoryId]) return; // đã cache rồi thì thôi
+        if (!categoryId || categorySizes[categoryId] !== undefined) return;
         try {
             const res = await fetch(`${API_MENU_ITEMS}?category=${categoryId}&status=on&all=true`);
             const data = await res.json();
             const items = data.menuItems || data || [];
 
-            // Gom sizes unique theo name
             const sizeMap = new Map();
             for (const item of items) {
                 for (const s of item.sizes || []) {
@@ -75,13 +76,28 @@ export default function ComboForm({ onSuccess, editData = null, setRedirectToIte
                     }
                 }
             }
+
+            // Cache luôn toàn bộ items theo categoryId để dùng khi filter theo size
+            setCategoryItems((prev) => ({ ...prev, [categoryId]: items }));
             setCategorySizes((prev) => ({
                 ...prev,
                 [categoryId]: Array.from(sizeMap.values()),
             }));
         } catch {
             setCategorySizes((prev) => ({ ...prev, [categoryId]: [] }));
+            setCategoryItems((prev) => ({ ...prev, [categoryId]: [] }));
         }
+    }
+
+    // Lấy items của slot dựa vào category + size hiện tại
+    function getItemsForSlot(slot) {
+        const allItems = categoryItems[slot.category] || [];
+        if (!slot.size?.name) return allItems; // chưa chọn size → show tất cả
+        return allItems.filter((item) =>
+            item.sizes?.some(
+                (s) => s.name.trim().toLowerCase() === slot.size.name.trim().toLowerCase()
+            )
+        );
     }
 
     function handleFileSelect(file, localPreview) {
@@ -128,6 +144,7 @@ export default function ComboForm({ onSuccess, editData = null, setRedirectToIte
                 if (!slot.category) e.category = "Chưa chọn danh mục";
                 if (!slot.quantity || slot.quantity < 1) e.quantity = "Số lượng phải >= 1";
                 if (!slot.size?.name && categorySizes[slot.category]?.length > 0) e.size = "Chưa chọn size";
+                if (!slot.allowedItems?.length) e.allowedItems = "Phải chọn ít nhất 1 món";
                 return e;
             });
 
@@ -249,20 +266,18 @@ export default function ComboForm({ onSuccess, editData = null, setRedirectToIte
     }
 
     function updateSlot(idx, field, value) {
-        if (loading) {
-            return
-        }
-        // setSlots((prev) =>
-        //     prev.map((slot, i) => (i === idx ? { ...slot, [field]: value } : slot))
-        // );
+        if (loading) return;
         setSlots((prev) =>
             prev.map((slot, i) => {
                 if (i !== idx) return slot;
                 const updated = { ...slot, [field]: value };
-                // Reset size khi đổi category
                 if (field === "category") {
                     updated.size = null;
-                    fetchSizesForCategory(value); // ← fetch sizes mới
+                    updated.allowedItems = [];
+                    fetchSizesForCategory(value);
+                }
+                if (field === "size") {
+                    updated.allowedItems = []; // reset khi đổi size
                 }
                 return updated;
             })
@@ -294,6 +309,7 @@ export default function ComboForm({ onSuccess, editData = null, setRedirectToIte
             quantity: s.quantity || 1,
             label: s.label || "",
             size: s.size ?? null,
+            allowedItems: s.allowedItems?.map((id) => id?._id || id) || [],
         })) || []);
         setSelectedComboType(savedData?.comboType || null);
         editData?.slots?.forEach((s) => {
@@ -316,6 +332,7 @@ export default function ComboForm({ onSuccess, editData = null, setRedirectToIte
         setSlots((savedData?.slots || []).map((s) => ({
             category: s.category?._id || s.category || "",
             quantity: s.quantity || 1, label: s.label || "", size: s.size || null,
+            allowedItems: s.allowedItems?.map((id) => id?._id || id) || [],
         })));
         setImageInputKey((k) => k + 1);
         // setSelections(savedData?._resolvedSelections || []);
@@ -394,207 +411,12 @@ export default function ComboForm({ onSuccess, editData = null, setRedirectToIte
 
             {/* Slots */}
             <div>
-                <div className="flex items-center justify-between mt-4 mb-2">
-                    <label className="block text-sm font-medium text-gray-700">
-                        Slots <span className="text-red-500">*</span>
-                    </label>
-                    <button
-                        type="button"
-                        onClick={addSlot}
-                        disabled={loading}
-                        className={`flex items-center gap-1 text-sm font-semibold text-primary hover:text-red-700 ${loading ? "pointer-events-none" : "cursor-pointer"}`}
-                    >
-                        + Thêm slot
-                    </button>
-                </div>
-
-                {slots.length === 0 && (
-                    <div className="p-6 text-sm text-center text-gray-400 border-2 border-gray-200 border-dashed rounded-xl">
-                        Chưa có slot nào. Nhấn &quot;+ Thêm slot&quot; để bắt đầu.
-                    </div>
-                )}
-                {errors.slots && (
-                    <span className="block mt-1 text-xs text-primary">{errors.slots}</span>
-                )}
-                <div className="space-y-3">
-                    {slots.map((slot, idx) => (
-                        <div
-                            key={idx}
-                            ref={(el) => (slotRefs.current[idx] = el)}
-                            className="relative p-4 border border-gray-200 rounded-xl"
-                        >
-                            {/* Header slot */}
-                            <div className="flex items-center justify-between mb-3">
-                                <span className="bg-primary text-white text-xs font-bold px-2 py-0.5 rounded-full">
-                                    Slot {idx + 1}
-                                </span>
-                                <div className="flex items-center gap-1">
-                                    <button
-                                        type="button"
-                                        onClick={() => moveSlot(idx, -1)}
-                                        disabled={loading || idx === 0}
-                                        className={`p-1 text-xs text-gray-400 hover:text-gray-600 disabled:opacity-30 ${loading ? "pointer-events-none" : "cursor-pointer"}`}
-                                        title="Di chuyển lên"
-                                    >
-                                        ▲
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => moveSlot(idx, 1)}
-                                        disabled={loading || idx === slots.length - 1}
-                                        className={`p-1 text-xs text-gray-400 hover:text-gray-600 disabled:opacity-30 ${loading ? "pointer-events-none" : "cursor-pointer"}`}
-                                        title="Di chuyển xuống"
-                                    >
-                                        ▼
-                                    </button>
-                                    <ConfirmPopup onDelete={() => removeSlot(idx)}>
-                                        <button
-                                            type="button"
-                                            disabled={loading}
-                                            className={`p-1 ml-1 text-xs text-primary hover:text-red-700 ${loading ? "pointer-events-none" : "cursor-pointer"}`}
-                                            title="Xóa slot"
-                                        >
-                                            <CloseIcon />
-                                        </button>
-                                    </ConfirmPopup>
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-3">
-                                {/* Danh mục */}
-                                <div className="col-span-2">
-                                    <label className="block mb-1 text-xs text-gray-500">
-                                        Danh mục <span className="text-red-400">*</span>
-                                    </label>
-                                    <select
-                                        className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                                        value={slot.category}
-                                        disabled={loading}
-                                        onChange={(e) => updateSlot(idx, "category", e.target.value)}
-                                    >
-                                        <option value="">-- Chọn danh mục --</option>
-                                        {categories.map((cat) => (
-                                            <option key={cat._id} value={cat._id}>
-                                                {cat.name}
-                                            </option>
-                                        ))}
-                                    </select>
-                                    {slotErrors[idx]?.category && (
-                                        <span className="block mt-1 text-xs text-primary">{slotErrors[idx].category}</span>
-                                    )}
-                                </div>
-
-                                {/* Size */}
-                                {slot.category && (
-                                    <div className="col-span-2">
-                                        <label className="block mb-1 text-xs text-gray-500">
-                                            Size <span className="text-red-400">*</span>
-                                        </label>
-                                        {categorySizes[slot.category] === undefined ? (
-                                            <p className="text-xs italic text-gray-400">Đang tải sizes...</p>
-                                        ) : categorySizes[slot.category].length === 0 ? (
-                                            <p className="text-xs italic text-gray-400">
-                                                Danh mục này không có size nào
-                                            </p>
-                                        ) : (
-                                            <select
-                                                className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                                                value={slot.size ? `${slot.size.name}||${slot.size.price || 0}` : ""}
-                                                disabled={loading}
-                                                onChange={(e) => {
-                                                    const lastIdx = e.target.value.lastIndexOf("||");
-                                                    const name = e.target.value.slice(0, lastIdx);
-                                                    const price = e.target.value.slice(lastIdx + 2);
-                                                    const picked = categorySizes[slot.category]?.find(
-                                                        (s) => s.name.trim().toLowerCase() === name.trim().toLowerCase()
-                                                            && String(s.price || 0) === price
-                                                    );
-                                                    updateSlot(idx, "size", picked || null); // ← THÊM
-                                                }}
-                                            >
-                                                <option value="">-- Chọn size --</option>
-                                                {categorySizes[slot.category].map((s) => (
-                                                    <option key={`${s.name}||${s.price}`} value={`${s.name}||${s.price}`}>
-                                                        {s.name}{s.price > 0 ? ` (+${s.price.toLocaleString("vi-VN")}đ)` : ""}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        )}
-                                        {slotErrors[idx]?.size && (
-                                            <span className="block mt-1 text-xs text-primary">{slotErrors[idx].size}</span>
-                                        )}
-                                    </div>
-                                )}
-                                {/* Label */}
-                                <div>
-                                    <label className="block mb-1 text-xs text-gray-500">
-                                        Nhãn hiển thị
-                                    </label>
-                                    <input
-                                        className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                                        value={slot.label}
-                                        disabled={loading}
-                                        onChange={(e) => updateSlot(idx, "label", e.target.value)}
-                                        placeholder="VD: Pizza, Đồ uống..."
-                                    />
-                                </div>
-
-                                {/* Số lượng */}
-                                <div>
-                                    <label className="block mb-1 text-xs text-gray-500">
-                                        Số lượng <span className="text-red-400">*</span>
-                                    </label>
-                                    <div className="flex items-center gap-2">
-                                        <button
-                                            disabled={loading}
-                                            type="button"
-                                            onClick={() =>
-                                                updateSlot(idx, "quantity", Math.max(1, slot.quantity - 1))
-                                            }
-                                            className="flex items-center justify-center w-8 h-8 text-lg font-bold leading-none text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-100"
-                                        >
-                                            −
-                                        </button>
-                                        <span className="w-8 font-semibold text-center text-gray-800">
-                                            {slot.quantity}
-                                        </span>
-                                        <button
-                                            disabled={loading}
-                                            type="button"
-                                            onClick={() => updateSlot(idx, "quantity", slot.quantity + 1)}
-                                            className="flex items-center justify-center w-8 h-8 text-lg font-bold leading-none text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-100"
-                                        >
-                                            +
-                                        </button>
-                                    </div>
-                                    {slotErrors[idx]?.quantity && (
-                                        <span className="block mt-1 text-xs text-primary">{slotErrors[idx].quantity}</span>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-
-                </div>
+                {/* Chon combo slots */}
+                <ComboSlots slots={slots} addSlot={addSlot} moveSlot={moveSlot} loading={loading} removeSlot={removeSlot} updateSlot={updateSlot} categories={categories} categorySizes={categorySizes} getItemsForSlot={getItemsForSlot} errors={errors} slotRefs={slotRefs} slotErrors={slotRefs} />
             </div>
 
             {/* Preview tóm tắt */}
-            {slots.length > 0 && (
-                <div className="p-3 mt-4 text-[#333] text-sm border border-gray-200 bg-red-50 rounded-xl">
-                    <p className="mb-1 font-medium">Tóm tắt combo:</p>
-                    <ul className="list-disc list-inside space-y-0.5">
-                        {slots.map((slot, idx) => {
-                            const cat = categories.find((c) => c._id === slot.category);
-                            return (
-                                <li key={idx}>
-                                    <strong>{slot.label || cat?.name || "?"}</strong>  {slot.size?.name ? ` [${slot.size.name}]` : ""} — {slot.quantity} món
-                                    {cat && slot.label && cat.name !== slot.label ? ` (${cat.name})` : ""}
-                                </li>
-                            );
-                        })}
-                    </ul>
-                </div>
-            )}
+            <ComboSummary slots={slots} categories={categories} />
 
             {/* Submit */}
             <div className='flex justify-end gap-4 mt-4'>

@@ -118,7 +118,6 @@ export default function Home() {
         clearTimeout(timer);
         timer = setTimeout(() => {
           window.removeEventListener("scroll", onScrollStop);
-          console.log("finalize done, initialScrollDone = true");
           hashRef.current = urlHash;
           setHash(urlHash);
           window.history.replaceState(null, "", `#${urlHash}`);
@@ -129,7 +128,6 @@ export default function Home() {
       window.addEventListener("scroll", onScrollStop, { passive: true });
       timer = setTimeout(() => {
         window.removeEventListener("scroll", onScrollStop);
-        console.log("finalize fallback done, initialScrollDone = true");
         hashRef.current = urlHash;
         setHash(urlHash);
         window.history.replaceState(null, "", `#${urlHash}`);
@@ -325,7 +323,7 @@ export default function Home() {
                 {section.refType === "comboType" ? (
                   <div className="grid gap-4 px-4 mt-4 mb-8 md:px-0 md:mb-12 md:mt-6 md:gap-6 md:grid-cols-2">
                     {getCombosByType(section._id).map(item => (
-                      <MenuCombo key={item._id} {...item} categories={categories} />
+                      <MenuCombo key={item._id} {...item} categories={categories} menuItems={menuItems}/>
                     ))}
                   </div>
                 ) : (

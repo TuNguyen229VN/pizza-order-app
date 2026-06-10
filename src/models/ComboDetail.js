@@ -17,6 +17,7 @@ const ComboDetailSchema = new Schema(
                     name: { type: String },
                     price: { type: Number },
                 },
+                allowedItems: [{ type: Schema.Types.ObjectId, ref: "MenuItem" }],
             },
         ],
         order: { type: Number, default: 0 }

@@ -36,6 +36,9 @@ export function validateCombo(data, categorySizes = {}) {
             if (!slot.size?.name && categorySizes[slot.category]?.length > 0) {
                 e.size = "Chưa chọn size";
             }
+            if (!slot.allowedItems?.length) {
+                e.allowedItems = "Phải chọn ít nhất 1 món";
+            }
             return e;
         });
 

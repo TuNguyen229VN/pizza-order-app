@@ -4,7 +4,7 @@ import ButtonPrimary from '@/components/buttons/ButtonPrimary';
 import FlyingButton from '@/components/buttons/FlyingButton';
 import NotFindLayout from '@/components/layout/NotFindLayout';
 import SkeletonLoadingBox from '@/components/skeleton/SkeletonLoadingBox';
-import { API_CATEGORIES, API_COMBO } from '@/constant/constant';
+import { API_CATEGORIES, API_COMBO, API_MENU_ITEMS } from '@/constant/constant';
 import { HOME_ROUTE } from '@/constant/routesApp';
 import { useDelivery } from '@/context/DeliveryContext';
 import HeaderCart from '@/modules/cart/HeaderCart';
@@ -24,6 +24,7 @@ export default function ComboOrderPage() {
     const { addComboToCart, updateComboInCart, cartProducts } = useContext(CartContext);
     const [comboChooseList, setComboChooseList] = useState([]);
     const [combos, setCombos] = useState(null);
+    const [menuItems, setMenuItems] = useState(null)
     const [categories, setCategories] = useState(null);
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -59,19 +60,22 @@ export default function ComboOrderPage() {
         Promise.all([
             fetch(`${API_COMBO}?all=true&status=on`)
                 .then(res => res.json()),
-
+            fetch(`${API_MENU_ITEMS}?all=true&status=on`)
+                .then(res => res.json()),
             fetch(`${API_CATEGORIES}?all=true&statusFilter=on`)
                 .then(res => res.json())
         ])
-            .then(([comboData, categoryData]) => {
+            .then(([comboData, menuItemData, categoryData]) => {
 
                 const item = comboData.combos.find(i => i._id === id);
 
                 setCombos(item || null);
+                setMenuItems(menuItemData.menuItems || []);
                 setCategories(categoryData.categories || []);
             })
             .catch(() => {
                 setCombos(null);
+                setMenuItems(null);
                 setCategories(null);
             })
             .finally(() => {
@@ -128,14 +132,38 @@ export default function ComboOrderPage() {
             <div className='flex flex-col-reverse mb-4 md:flex-row'>
                 <div className='w-full p-4 md:w-1/2 '>
                     <h4 className='mb-4 text-lg font-bold capitalize md:text-3xl'>{combos?.name}</h4>
-                    <ul className='pl-5 mb-4 text-sm list-disc'>{combos?.slots
-                        ?.map((slot, index) => {
-                            const category = categories.find(c => c._id === slot.category)
-                            if (!category) return null;
-                            return <li key={`${slot.category}-${index}`}>{String(slot.quantity).padStart(2, "0")} {category.name} {slot?.size ? `(${slot.size.name.toLowerCase()})` : ''}</li>
-                        }
-                        )
-                        || "Chưa có"}</ul>
+                    <ul className='pl-5 mb-4 text-sm list-disc'>
+                        {combos?.slots
+                            ?.map((slot, index) => {
+                                const category = categories.find(c => c._id === slot.category);
+                                if (!category) return null;
+
+                                const qty = String(slot.quantity).padStart(2, "0");
+                                const sizeText = slot?.size ? ` (${slot.size.name.toLowerCase()})` : '';
+
+                                if (slot.label) return <li key={`${slot.category}-${index}`}>{qty} {slot.label}{sizeText}</li>;
+
+                                if (slot?.size) return <li key={`${slot.category}-${index}`}>{qty} {category.name}{sizeText}</li>;
+
+                                if (slot.allowedItems?.length) {
+                                    const allowed = menuItems?.filter(mi =>
+                                        slot.allowedItems.includes(mi._id)
+                                    ) || [];
+                                    const allInCategory = menuItems?.filter(mi =>
+                                        (mi.category?._id || mi.category) === slot.category
+                                    ) || [];
+                                    const isSelectAll = allInCategory.length > 0 && allowed.length === allInCategory.length;
+
+                                    if (!isSelectAll && allowed.length > 0) {
+                                        return <li key={`${slot.category}-${index}`}>{qty} {allowed.map(mi => mi.name).join(" / ")}</li>;
+                                    }
+                                }
+
+                                return <li key={`${slot.category}-${index}`}>{qty} {category.name}</li>;
+                            })
+                            .filter(Boolean)
+                            || <li>Chưa có</li>}
+                    </ul>
                     <div className='flex flex-col gap-2 md:items-center md:gap-32 md:flex-row'>
                         <div>
                             <p className='text-sm text-[rgb(55,65,81)]'>Chỉ từ:</p>

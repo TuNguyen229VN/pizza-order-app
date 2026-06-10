@@ -91,7 +91,7 @@ export default function ComboSelector({
         const promises = combo.slots.map(async (slot, idx) => {
             const catId = slot.category?._id || slot.category;
             if (!catId) return { idx, items: [] };
-            return fetch(`${API_MENU_ITEMS}?category=${catId}&status=on&all=true`)
+            return fetch(`${API_MENU_ITEMS}?category=${catId}&status=on&all=true&useOrder=true`)
                 .then((r) => r.json())
                 .then((d) => ({ idx, items: d.menuItems || [] }))
                 .catch(() => ({ idx, items: [] }));
@@ -100,19 +100,29 @@ export default function ComboSelector({
         Promise.all(promises).then((results) => {
             const bySlot = {};
             results.forEach(({ idx, items }) => {
-                const slotSize = combo.slots[idx].size;
+                const slot = combo.slots[idx];
+                const slotSize = slot.size;
+                const allowedIds = slot.allowedItems?.map((id) => id?._id || id) || [];
+
+                let filtered = items;
+
+                // 1. Filter theo allowedItems nếu có
+                if (allowedIds.length > 0) {
+                    filtered = filtered.filter((item) => allowedIds.includes(item._id));
+                }
+
+                // 2. Filter theo size nếu slot có size
                 if (slotSize?.name) {
-                    // Chỉ giữ items có size khớp (case-insensitive)
-                    bySlot[idx] = items.filter((item) =>
+                    filtered = filtered.filter((item) =>
                         item.sizes?.some(
-                            (s) => s.name.trim().toLowerCase() === slotSize.name.trim().toLowerCase()
-                                && String(s.price || 0) === String(slotSize.price || 0)
+                            (s) =>
+                                s.name.trim().toLowerCase() === slotSize.name.trim().toLowerCase() &&
+                                String(s.price || 0) === String(slotSize.price || 0)
                         )
                     );
-                } else {
-                    // Category không có size → show hết
-                    bySlot[idx] = items;
                 }
+
+                bySlot[idx] = filtered;
             });
             setMenuItemsBySlot(bySlot);
             setLoadingSlots(false);
@@ -211,13 +221,6 @@ export default function ComboSelector({
                 const label = slot.label || slot.category?.name || `Slot ${slotIdx + 1}`;
                 return `"${label}": cần chọn đủ ${slot.quantity} món (đã chọn ${total})`;
             }
-
-            // const map = selections[slotIdx] || new Map();
-            // for (const [, entry] of map) {
-            //     if (entry.menuItem?.sizes?.length > 0 && !entry.selectedSize) {
-            //         return `Món "${entry.menuItem.name}" cần chọn size`;
-            //     }
-            // }
         }
         return null;
     }
@@ -249,7 +252,7 @@ export default function ComboSelector({
             const slot = combo.slots[i];
             const total = totalChosenInSlot(i);
             if (total < slot.quantity) {
-                const category= categories.find(c => c._id === slot.category)
+                const category = categories.find(c => c._id === slot.category)
                 const label = slot.label || category.name || `Slot ${i + 1}`;
                 setValidationError(`"${label}": cần chọn đủ ${slot.quantity} món (đã chọn ${total})`);
                 setChooseTabIndex(i); // Nhảy về slot lỗi
@@ -277,11 +280,6 @@ export default function ComboSelector({
         setComboChooseList(buildSelectedItems());
         onClose();
     }
-    // useEffect(() => {
-    //     if (swiperRef.current) {
-    //         swiperRef.current.slideTo(chooseTabIndex);
-    //     }
-    // }, [chooseTabIndex]);
 
     const updateIndicator = () => {
         if (!swiperRef.current) return;

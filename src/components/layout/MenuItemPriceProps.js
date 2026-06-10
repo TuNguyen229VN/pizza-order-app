@@ -110,7 +110,7 @@ export default function MenuItemPriceProps({ name, addLabel, props, setProps, er
                     </div>
                 ))}
 
-                <button type="button" onClick={addProps} className="flex items-center mt-3 bg-white" disabled={disabled}>
+                <button type="button" onClick={addProps} className="flex items-center mt-3 font-medium bg-white text-primary" disabled={disabled}>
                     <Plus className="w-4 h-4" />
                     <span className="ml-1">{addLabel}</span>
                 </button>

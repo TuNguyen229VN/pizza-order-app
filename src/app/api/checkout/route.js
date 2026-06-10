@@ -60,14 +60,14 @@ export async function POST(req) {
             if (cartProduct.type === "combo") {
                 const comboInfo = await ComboDetail.findById(cartProduct._id);
                 if (!comboInfo) {
-                    return Response.json({ message: `Combo "${cartProduct?.name||""}" không tồn tại` }, { status: 400 });
+                    return Response.json({ message: `Combo "${cartProduct?.name || ""}" không tồn tại` }, { status: 400 });
                 }
                 if (comboInfo.status !== "on") {
-                    return Response.json({ message: `Combo "${cartProduct?.name||""}" không còn bán` }, { status: 400 });
+                    return Response.json({ message: `Combo "${cartProduct?.name || ""}" không còn bán` }, { status: 400 });
                 }
                 const quantity = cartProduct.quantity;
                 if (!Number.isInteger(quantity) || quantity < 1) {
-                    return Response.json({ message: `Số lượng trong "${cartProduct?.name||""}" không hợp lệ` }, { status: 400 });
+                    return Response.json({ message: `Số lượng trong "${cartProduct?.name || ""}" không hợp lệ` }, { status: 400 });
                 }
 
                 // Check menuItem tồn tại và đang bán
@@ -77,22 +77,29 @@ export async function POST(req) {
                     const slotIdx = selected.slotIndex;
                     const slot = comboInfo.slots[slotIdx];
                     if (!slot) {
-                        return Response.json({ message: `Combo "${cartProduct?.name||""}": slot index ${slotIdx} không hợp lệ` }, { status: 400 });
+                        return Response.json({ message: `Combo "${cartProduct?.name || ""}": slot index ${slotIdx} không hợp lệ` }, { status: 400 });
                     }
 
                     const menuItemInfo = await MenuItem.findById(selected.menuItem?._id || selected.menuItem);
                     if (!menuItemInfo) {
-                        return Response.json({ message: `Combo "${cartProduct?.name||""}": món không tồn tại` }, { status: 400 });
+                        return Response.json({ message: `Combo "${cartProduct?.name || ""}": món không tồn tại` }, { status: 400 });
                     }
                     if (menuItemInfo.status !== "on") {
-                        return Response.json({ message: `Combo "${cartProduct?.name||""}": món "${menuItemInfo.name}" không còn bán` }, { status: 400 });
+                        return Response.json({ message: `Combo "${cartProduct?.name || ""}": món "${menuItemInfo.name}" không còn bán` }, { status: 400 });
                     }
 
                     // Check menuItem đúng category của slot
                     if (menuItemInfo.category.toString() !== slot.category._id?.toString()) {
-                        return Response.json({ message: `Combo "${cartProduct?.name||""}": món "${menuItemInfo.name}" không thuộc danh mục của slot ${slotIdx + 1}` }, { status: 400 });
+                        return Response.json({ message: `Combo "${cartProduct?.name || ""}": món "${menuItemInfo.name}" không thuộc danh mục của slot ${slotIdx + 1}` }, { status: 400 });
                     }
-
+                    if (slot.allowedItems?.length > 0) {
+                        const allowed = slot.allowedItems.map((id) => id?._id?.toString() || id.toString());
+                        if (!allowed.includes(menuItemInfo._id.toString())) {
+                            return Response.json({
+                                message: `Combo "${cartProduct?.name || ""}": món "${menuItemInfo.name}" không được phép chọn trong slot ${slotIdx + 1}`
+                            }, { status: 400 });
+                        }
+                    }
                     // Nếu slot có size cố định → check selectedSize khớp
                     if (slot.size?.name) {
                         const selectedSizeName = selected.selectedSize?.name?.trim().toLowerCase();
@@ -100,7 +107,7 @@ export async function POST(req) {
                         const slotSizePrice = slot.size.price || 0;
 
                         if (selectedSizeName !== slotSizeName) {
-                            return Response.json({ message: `Combo "${cartProduct?.name||""}": món "${menuItemInfo.name}" phải chọn size "${slot.size.name}"` }, { status: 400 });
+                            return Response.json({ message: `Combo "${cartProduct?.name || ""}": món "${menuItemInfo.name}" phải chọn size "${slot.size.name}"` }, { status: 400 });
                         }
 
                         // Check size thực sự tồn tại trong menuItem với đúng giá
@@ -109,7 +116,7 @@ export async function POST(req) {
                                 && String(s.price || 0) === String(slotSizePrice)
                         );
                         if (!matchedSize) {
-                            return Response.json({ message: `Combo "${cartProduct?.name||""}": size "${slot.size.name}" không hợp lệ cho món "${menuItemInfo.name}"` }, { status: 400 });
+                            return Response.json({ message: `Combo "${cartProduct?.name || ""}": size "${slot.size.name}" không hợp lệ cho món "${menuItemInfo.name}"` }, { status: 400 });
                         }
                     }
                 }
@@ -122,7 +129,7 @@ export async function POST(req) {
                     if (totalInSlot !== slot.quantity) {
                         const label = slot.label || slot.category?.name || `Slot ${i + 1}`;
                         return Response.json({
-                            message: `Combo "${cartProduct?.name||""}": "${label}" cần đúng ${slot.quantity} món (nhận được ${totalInSlot})`
+                            message: `Combo "${cartProduct?.name || ""}": "${label}" cần đúng ${slot.quantity} món (nhận được ${totalInSlot})`
                         }, { status: 400 });
                     }
                 }
@@ -142,18 +149,18 @@ export async function POST(req) {
             // món đơn
             const productInfo = await MenuItem.findById(cartProduct._id);
             if (!productInfo) {
-                return Response.json({ message: `Sản phẩm "${cartProduct?.name||""}" trong giỏ hàng không tồn tại` }, { status: 400 });
+                return Response.json({ message: `Sản phẩm "${cartProduct?.name || ""}" trong giỏ hàng không tồn tại` }, { status: 400 });
             }
 
             if (productInfo.status !== "on") {
-                return Response.json({ message: `Sản phẩm "${cartProduct?.name||""}" trong giỏ hàng không còn bán` }, { status: 400 });
+                return Response.json({ message: `Sản phẩm "${cartProduct?.name || ""}" trong giỏ hàng không còn bán` }, { status: 400 });
             }
 
             let productPrice = productInfo.basePrice;
             if (cartProduct.size) {
                 const size = productInfo.sizes
                     .find(size => size._id.toString() === cartProduct.size._id.toString());
-                if (!size) return Response.json({ message: `Size của "${cartProduct?.name||""}" không hợp lệ` }, { status: 400 });
+                if (!size) return Response.json({ message: `Size của "${cartProduct?.name || ""}" không hợp lệ` }, { status: 400 });
                 productPrice += size.price;
             }
             if (cartProduct.extras?.length > 0) {
@@ -161,14 +168,14 @@ export async function POST(req) {
                     const productExtras = productInfo.extraIngredientPrices;
                     const extraThingInfo = productExtras
                         .find(extra => extra._id.toString() === cartProductExtraThing._id.toString());
-                    if (!extraThingInfo) return Response.json({ message: `Extra "${cartProduct?.name||""}" không hợp lệ` }, { status: 400 });
+                    if (!extraThingInfo) return Response.json({ message: `Extra "${cartProduct?.name || ""}" không hợp lệ` }, { status: 400 });
                     productPrice += extraThingInfo.price;
                 }
             }
 
             const quantity = cartProduct.quantity;
             if (!Number.isInteger(quantity) || quantity < 1) {
-                return Response.json({ message: `Số lượng "${cartProduct?.name||""}" không hợp lệ` }, { status: 400 });
+                return Response.json({ message: `Số lượng "${cartProduct?.name || ""}" không hợp lệ` }, { status: 400 });
             }
 
             stripeLineItems.push({
