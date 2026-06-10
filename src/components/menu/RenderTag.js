@@ -13,7 +13,7 @@ export const TAG_CONFIG = {
     },
     "Cay": {
         render: () => (
-            <div className="px-3 py-[2px] mt-1 text-white rounded bg-red-500 w-max tracking-wide font-medium">
+            <div className="px-3 py-[2px] mt-1 text-white rounded bg-red-600 w-max tracking-wide font-medium">
                 <span>Cay</span>
             </div>
         ),

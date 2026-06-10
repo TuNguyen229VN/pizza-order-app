@@ -26,8 +26,8 @@ const PAID_OPTION = [
     { value: "false", label: "Chưa thanh toán" },
 ];
 const PRESET_TAGS = [
-    { label: "✨ New", value: "New", color: "bg-blue-50 text-blue-800 border-blue-200" },
-    { label: "🌶️ Cay", value: "Cay", color: "bg-orange-50 text-orange-800 border-orange-200" },
+    { label: "✨ New", value: "New", color: "bg-red-50 text-red-800 border-red-200" },
+    { label: "🌶️ Cay", value: "Cay", color: "bg-red-100 text-red-900 border-red-200" },
     { label: "🌿 Chay", value: "Chay", color: "bg-green-50 text-green-800 border-green-200" },
     { label: "⭐ Best Seller", value: "Best Seller", color: "bg-amber-50 text-amber-800 border-amber-200" },
 ];
