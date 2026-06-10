@@ -1,4 +1,7 @@
+import { connectDB } from "@/libs/connectDB";
 import { Order } from '@/models/Order';
+import { pusherServer } from "@/libs/pusherServer";
+import { sendNotification } from "@/libs/sendNotification";
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
@@ -17,8 +20,49 @@ export async function POST(req) {
     if (event.type === 'checkout.session.completed') {
         const orderId = event?.data?.object?.metadata?.orderId;
         const isPaid = event?.data?.object?.payment_status === 'paid';
+
         if (isPaid) {
-            await Order.updateOne({ _id: orderId }, { paid: true });
+            await connectDB();
+            const order = await Order.findByIdAndUpdate(
+                orderId,
+                { paid: true },
+                { new: true }
+            );
+
+            if (order) {
+                const shortId = order._id.toString().slice(-6).toUpperCase();
+
+                const [userNotif, adminNotif] = await Promise.all([
+                    sendNotification({
+                        type: "order_placed",
+                        recipientRole: "user",
+                        recipientEmail: order.userEmail,
+                        orderId: order._id,
+                        title: "Đặt hàng thành công 🎉",
+                        message: `Đơn hàng #${shortId} của bạn đã được thanh toán!`,
+                    }),
+                    sendNotification({
+                        type: "order_placed",
+                        recipientRole: "admin",
+                        orderId: order._id,
+                        title: "Đơn hàng mới!",
+                        message: `Khách ${order.userName} (${order.phone}) vừa thanh toán đơn #${shortId}.`,
+                    }),
+                ]);
+
+                await Promise.all([
+                    pusherServer.trigger(
+                        `private-user-${order.userEmail.replace(/[@.]/g, "-")}`,
+                        "new-notification",
+                        { notification: userNotif }
+                    ),
+                    pusherServer.trigger(
+                        "private-admin",
+                        "new-notification",
+                        { notification: adminNotif }
+                    ),
+                ]);
+            }
         }
     }
 

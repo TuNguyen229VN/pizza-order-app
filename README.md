@@ -30,7 +30,8 @@
 - **@dnd-kit/core**
 - **@dnd-kit/sortable**
 - **@dnd-kit/utilities**
-
+- **pusher** 
+- **pusher-js**
 ## Pages:
 
 - Home Page
