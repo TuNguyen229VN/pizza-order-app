@@ -25,8 +25,6 @@ export function useNotifications() {
         const channel = pusherClient.subscribe(channelName);
 
         channel.bind("new-notification", ({ notification }) => {
-            console.log("Event received:", notification);
-            console.log("Permission:", Notification.permission);
             setNotifications(prev => [notification, ...prev]);
 
             if (Notification.permission === "granted") {
@@ -35,9 +33,7 @@ export function useNotifications() {
                         body: notification.message,
                         icon: "/images/thankyour.png",
                     });
-                    console.log("Notification created:", n);
                 } catch (e) {
-                    console.error("Notification error:", e); // ← quan trọng
                 }
             }
         });
