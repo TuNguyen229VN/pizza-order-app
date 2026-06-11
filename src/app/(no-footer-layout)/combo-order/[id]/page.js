@@ -141,7 +141,7 @@ export default function ComboOrderPage() {
                                 const qty = String(slot.quantity).padStart(2, "0");
                                 const sizeText = slot?.size ? ` (${slot.size.name.toLowerCase()})` : '';
 
-                                if (slot.label) return <li key={`${slot.category}-${index}`}>{qty} {slot.label}{sizeText}</li>;
+                                if (slot.label) return <li key={`${slot.category}-${index}`}>{slot.label}</li>;
 
                                 if (slot?.size) return <li key={`${slot.category}-${index}`}>{qty} {category.name}{sizeText}</li>;
 

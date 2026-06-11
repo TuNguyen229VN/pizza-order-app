@@ -21,17 +21,14 @@ export default function Carousel({ carouselList = [], setHash, hash, isScrolling
     useEffect(() => {
         if (!swiperRef.current || !hash) return;
 
-        // Tìm index của item đang active trong carouselList
-
         if (hash === "recommendations") {
-            swiperRef.current.slideTo(1); // slide index 1 = "Bạn sẽ thích"
+            swiperRef.current.slideTo(1, 300);
             return;
         }
 
         const idx = carouselList.findIndex(item => item.slug === hash);
         if (idx !== -1) {
-            // +2 vì có 2 slide cố định trước (Search + Recommendations)
-            swiperRef.current.slideTo(idx + 2);
+            swiperRef.current.slideTo(idx + 2, 100);
         }
     }, [hash, carouselList]);
 
@@ -116,8 +113,10 @@ export default function Carousel({ carouselList = [], setHash, hash, isScrolling
 
                     <Swiper
                         slidesPerView={'auto'}
-                        slidesPerGroup={2}
+                        slidesPerGroup={1}
                         spaceBetween={20}
+                        centeredSlides={true}
+                        centeredSlidesBounds={true}
                         breakpoints={{
                             480: {
                             },

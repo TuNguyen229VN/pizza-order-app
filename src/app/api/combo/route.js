@@ -6,6 +6,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/route";
 import { LIMITPAGE } from "@/constant/constant";
 import { validateCombo } from "@/libs/validateCombo";
+import { escapeRegex } from "@/utils/escapeRegex";
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -84,6 +85,7 @@ export async function GET(req) {
         const all = url.searchParams.get("all") === "true";
         const useOrderSort = url.searchParams.get("useOrder") === "true";
         const search = url.searchParams.get("search") || "";
+        const safeSearch = escapeRegex(search);
         const statusFilter = url.searchParams.get("status");
         const comboType = url.searchParams.get("comboType");
         const sort = url.searchParams.get("sort") || "newest";
@@ -96,7 +98,7 @@ export async function GET(req) {
 
         const query = {
             ...statusQuery,
-            ...(search && { name: { $regex: search, $options: "i" } }),
+            ...(safeSearch && { name: { $regex: safeSearch, $options: "i" } }),
             ...(comboType && { comboType }),
         };
 

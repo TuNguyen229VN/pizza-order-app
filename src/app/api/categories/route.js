@@ -4,6 +4,7 @@ import { Category } from "@/models/Category";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/route";
 import { LIMITPAGE } from "@/constant/constant";
+import { escapeRegex } from "@/utils/escapeRegex";
 
 export async function POST(req) {
   try {
@@ -88,14 +89,15 @@ export async function GET(req) {
   const all = url.searchParams.get("all") === "true";
   const useOrderSort = url.searchParams.get("useOrder") === "true";
   const search = url.searchParams.get("search") || "";
+  const safeSearch = escapeRegex(search);
   const status = url.searchParams.get("statusFilter"); // "on" | "off" | ""
   const sort = url.searchParams.get("sort") || "newest";
   const page = parseInt(url.searchParams.get("page") || "1");
   const limit = LIMITPAGE;
   const skip = (page - 1) * limit;
 
-  const query = search
-    ? { name: { $regex: search, $options: "i" }, status: status || { $in: ["on", "off"] } }
+  const query = safeSearch
+    ? { name: { $regex: safeSearch, $options: "i" }, status: status || { $in: ["on", "off"] } }
     : { status: status || { $in: ["on", "off"] } };
 
   const sortMap = {

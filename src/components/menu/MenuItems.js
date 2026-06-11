@@ -146,9 +146,9 @@ const MenuItems = ({ recomStyle, ...menuItem }) => {
                 <div>
                   <h3 className="md:text-2xl leading-[30px] font-semibold break-words absolute md:static top-0 left-0 bg-white md:bg-none w-full md:w-max p-3 md:p-0">{name}</h3>
                   <p className="text-sm break-words md:mt-2 md:text-base text-secondary">{description}</p>
-                  <div className='flex flex-wrap items-center gap-2 md:mt-2'>
+                  <div className='flex flex-wrap items-center gap-4 mt-2'>
                     {tags && tags.map((tag, index) => (
-                      <RenderTag key={index} tag={tag} />
+                      <RenderTag key={index} tag={tag} haveName={true} />
                     ))}
                   </div>
                 </div>

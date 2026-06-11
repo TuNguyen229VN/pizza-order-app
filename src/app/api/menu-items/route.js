@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/route";
 import { validateMenuItem } from "@/libs/validateMenuItem";
 import { LIMITPAGE } from "@/constant/constant";
+import { escapeRegex } from "@/utils/escapeRegex";
 
 export async function POST(req) {
     try {
@@ -63,6 +64,7 @@ export async function GET(req) {
     const all = url.searchParams.get("all") === "true";
     const useOrderSort = url.searchParams.get("useOrder") === "true";
     const search = url.searchParams.get("search") || "";
+    const safeSearch = escapeRegex(search);
     const status = url.searchParams.get("status"); // "on" | "off" | ""
     const sort = url.searchParams.get("sort") || "newest";
     const category = url.searchParams.get("category") || "";
@@ -71,7 +73,7 @@ export async function GET(req) {
     const skip = (page - 1) * limit;
 
     const query = {
-        ...(search && { name: { $regex: search, $options: "i" } }),
+        ...(safeSearch && { name: { $regex: safeSearch, $options: "i" } }),
         status: status || { $in: ["on", "off"] },
         ...(category && { category }), // 👈 thêm
     };

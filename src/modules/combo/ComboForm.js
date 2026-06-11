@@ -298,26 +298,13 @@ export default function ComboForm({ onSuccess, editData = null, setRedirectToIte
 
 
 
+    // Thay useEffect([editData]) hiện tại bằng:
     useEffect(() => {
-        if (!editData) return;
-        setImage(editData?.image || "");
-        setName(editData?.name || "");
-        setPrice(savedData?.price || "");
-        setStatus(savedData?.status || STATUS_OPTIONS[0].value);
-        setSlots(editData?.slots?.map((s) => ({
-            category: s.category?._id || s.category || "",
-            quantity: s.quantity || 1,
-            label: s.label || "",
-            size: s.size ?? null,
-            allowedItems: s.allowedItems?.map((id) => id?._id || id) || [],
-        })) || []);
-        setSelectedComboType(savedData?.comboType || null);
         editData?.slots?.forEach((s) => {
             const catId = s.category?._id || s.category;
             if (catId) fetchSizesForCategory(catId);
         });
-        // setSelections(savedData?.items || []);
-    }, [editData]);
+    }, []);
 
     function handleCancel() {
         if (loading) return;
@@ -412,7 +399,7 @@ export default function ComboForm({ onSuccess, editData = null, setRedirectToIte
             {/* Slots */}
             <div>
                 {/* Chon combo slots */}
-                <ComboSlots slots={slots} addSlot={addSlot} moveSlot={moveSlot} loading={loading} removeSlot={removeSlot} updateSlot={updateSlot} categories={categories} categorySizes={categorySizes} getItemsForSlot={getItemsForSlot} errors={errors} slotRefs={slotRefs} slotErrors={slotRefs} />
+                <ComboSlots slots={slots} addSlot={addSlot} moveSlot={moveSlot} loading={loading} removeSlot={removeSlot} updateSlot={updateSlot} categories={categories} categorySizes={categorySizes} getItemsForSlot={getItemsForSlot} errors={errors} slotRefs={slotRefs} slotErrors={slotErrors} />
             </div>
 
             {/* Preview tóm tắt */}

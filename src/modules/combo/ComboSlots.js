@@ -1,7 +1,8 @@
 import CloseIcon from '@/components/icons/CloseIcon';
 import ConfirmPopup from '@/components/popup/ConfirmPopup';
+import SkeletonLoadingBox from '@/components/skeleton/SkeletonLoadingBox';
 import Image from 'next/image';
-import React from 'react'
+import React, { useState } from 'react'
 
 export default function ComboSlots({
     slots = [],
@@ -17,6 +18,9 @@ export default function ComboSlots({
     slotRefs,
     slotErrors = [],
 }) {
+    const [loadingImage, setLoadingImage] = useState({});
+    const [searchItem, setSearchItem] = useState({});
+    console.log(errors)
     return (
         <>
             <div className="flex items-center justify-between mt-4 mb-2">
@@ -183,50 +187,88 @@ export default function ComboSlots({
                                                     {allSelected ? "Bỏ chọn tất cả" : "Chọn tất cả"}
                                                 </button>
                                             </div>
-
-                                            {items.length === 0 ? (
-                                                <p className="text-xs italic text-gray-400">
-                                                    {categorySizes[slot.category] === undefined
-                                                        ? "Đang tải..."
-                                                        : "Không có món nào phù hợp"}
-                                                </p>
-                                            ) : (
-                                                <div className="overflow-y-auto border border-gray-200 divide-y divide-gray-100 rounded-lg max-h-48">
-                                                    {items.map((item) => {
-                                                        const checked = allowedIds.includes(item._id);
-                                                        return (
-                                                            <label
-                                                                key={item._id}
-                                                                className={`flex items-center gap-2 px-3 py-2 text-sm cursor-pointer hover:bg-red-50 transition-colors ${checked ? "bg-red-50" : ""
-                                                                    }`}
-                                                            >
-                                                                <input
-                                                                    type="checkbox"
-                                                                    disabled={loading}
-                                                                    checked={checked}
-                                                                    onChange={() => {
-                                                                        const next = checked
-                                                                            ? allowedIds.filter((id) => id !== item._id)
-                                                                            : [...allowedIds, item._id];
-                                                                        updateSlot(idx, "allowedItems", next);
-                                                                    }}
-                                                                    className="flex-shrink-0 w-4 h-4 accent-primary"
-                                                                />
-                                                                {item.image && (
-                                                                    <Image
-                                                                        src={item.image}
-                                                                        alt={item.name}
-                                                                        width={200}
-                                                                        height={200}
-                                                                        className="flex-shrink-0 object-cover w-8 h-8 rounded"
-                                                                    />
-                                                                )}
-                                                                    <span className="truncate">{item.name} - {item.basePrice.toLocaleString("vi-VN")}đ</span>
-                                                            </label>
-                                                        );
-                                                    })}
-                                                </div>
+                                            {items.length > 0 && (
+                                                <input
+                                                    type="text"
+                                                    placeholder="Tìm theo tên món..."
+                                                    value={searchItem[idx] || ""}
+                                                    onChange={(e) =>
+                                                        setSearchItem((prev) => ({ ...prev, [idx]: e.target.value }))
+                                                    }
+                                                    className="w-full px-3 py-1.5 mb-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                                                />
                                             )}
+                                            {(() => {
+                                                const keyword = (searchItem[idx] || "").trim().toLowerCase();
+                                                const filtered = keyword
+                                                    ? items.filter((item) =>
+                                                        item.name.toLowerCase().includes(keyword)
+                                                    )
+                                                    : items;
+
+                                                return filtered.length === 0 ? (
+                                                    <p className="text-xs italic text-gray-400">
+                                                        {categorySizes[slot.category] === undefined
+                                                            ? "Đang tải..."
+                                                            : keyword
+                                                                ? "Không tìm thấy món phù hợp"
+                                                                : "Không có món nào phù hợp"}
+                                                    </p>
+                                                ) : (
+                                                    <div className="overflow-y-auto border border-gray-200 divide-y divide-gray-100 rounded-lg max-h-48">
+                                                        {filtered.map((item) => {
+                                                            const checked = allowedIds.includes(item._id);
+                                                            return (
+                                                                <label
+                                                                    key={item._id}
+                                                                    className={`flex items-center gap-2 px-3 py-2 text-sm cursor-pointer hover:bg-red-50 transition-colors ${checked ? "bg-red-50" : ""
+                                                                        }`}
+                                                                >
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        disabled={loading}
+                                                                        checked={checked}
+                                                                        onChange={() => {
+                                                                            const next = checked
+                                                                                ? allowedIds.filter((id) => id !== item._id)
+                                                                                : [...allowedIds, item._id];
+                                                                            updateSlot(idx, "allowedItems", next);
+                                                                        }}
+                                                                        className="flex-shrink-0 w-4 h-4 accent-primary"
+                                                                    />
+                                                                    {item.image && (
+                                                                        <>
+                                                                            {!loadingImage[item._id] && (
+                                                                                <SkeletonLoadingBox className="w-8 h-8 rounded" />
+                                                                            )}
+                                                                            <Image
+                                                                                src={item.image}
+                                                                                alt={item.name}
+                                                                                width={200}
+                                                                                height={200}
+                                                                                onLoad={() =>
+                                                                                    setLoadingImage((prev) => ({
+                                                                                        ...prev,
+                                                                                        [item._id]: true,
+                                                                                    }))
+                                                                                }
+                                                                                className={`flex-shrink-0 object-cover w-8 h-8 rounded ${!loadingImage[item._id]
+                                                                                        ? "opacity-0"
+                                                                                        : "opacity-100"
+                                                                                    }`}
+                                                                            />
+                                                                        </>
+                                                                    )}
+                                                                    <span className="truncate">
+                                                                        {item.name} -{" "}
+                                                                        {(item.basePrice + (slot.size?.price || 0)).toLocaleString("vi-VN")}đ
+                                                                    </span>
+                                                                </label>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                );
+                                            })()}
                                             {slotErrors[idx]?.allowedItems && (
                                                 <span className="block mt-1 text-xs text-primary">
                                                     {slotErrors[idx].allowedItems}

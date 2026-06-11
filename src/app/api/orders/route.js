@@ -4,32 +4,10 @@ import { Order } from "@/models/Order";
 import { getServerSession } from "next-auth";
 import { LIMITPAGE } from "@/constant/constant";
 import mongoose from "mongoose";
+import { escapeRegex } from "@/utils/escapeRegex";
 
 const buildSearchQuery = (search, admin) => {
     if (!search) return {};
-
-    // const isValidId = mongoose.Types.ObjectId.isValid(search);
-
-    // return {
-    //     $or: [
-    //         ...(isValidId ? [{ _id: new mongoose.Types.ObjectId(search) }] : []),
-    //         { phone: { $regex: search, $options: "i" } },
-    //     ]
-    // };
-    // return {
-    //     $or: [
-    //         {
-    //             $expr: {
-    //                 $regexMatch: {
-    //                     input: { $toString: "$_id" },
-    //                     regex: search,
-    //                     options: "i"
-    //                 }
-    //             }
-    //         },
-    //         { phone: { $regex: search, $options: "i" } },
-    //     ]
-    // };
 
     if (admin) {
         return {
@@ -69,6 +47,7 @@ export async function GET(req) {
         const _id = url.searchParams.get('_id');
         const all = url.searchParams.get("all") === "true";
         const search = url.searchParams.get("search") || "";
+        const safeSearch = escapeRegex(search);
         const sort = url.searchParams.get("sort") || "newest";
         const paid = url.searchParams.get("paid"); // "true" | "false" | null
         const page = parseInt(url.searchParams.get("page") || "1");
@@ -100,8 +79,8 @@ export async function GET(req) {
 
         // Base query theo quyền
         const baseQuery = admin
-            ? { ...buildSearchQuery(search, true), ...paidFilter }
-            : { userEmail, "deliveryInfo.mode": "delivery", ...buildSearchQuery(search, false), ...paidFilter };
+            ? { ...buildSearchQuery(safeSearch, true), ...paidFilter }
+            : { userEmail, "deliveryInfo.mode": "delivery", ...buildSearchQuery(safeSearch, false), ...paidFilter };
 
         // 3. Không phân trang
         if (all) {

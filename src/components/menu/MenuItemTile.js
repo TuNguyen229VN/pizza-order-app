@@ -45,7 +45,7 @@ export default function MenuItemTile({ onClick, onAddToCart, addToCartRef, addTo
                 <div>
                     <h4 className={`${recomStyle === "recomStyle" ? "font-medium md:text-xl lg:text-2xl" : "font-semibold"} text-sm md:text-2xl  md:leading-[30px] capitalize text-[#374151] line-clamp-2`}>{name}</h4>
                     {!recomStyle && <p className='text-sm md:text-lg leading-[26px] text-secondary line-clamp-1'>{description}</p>}
-                    <div className='flex flex-wrap items-center gap-2'>
+                    <div className='flex flex-wrap items-center gap-4 mt-2'>
                         {tags && tags.map((tag, index) => (
                             <RenderTag key={index} tag={tag} />
                         ))}

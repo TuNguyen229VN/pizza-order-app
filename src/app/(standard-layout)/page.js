@@ -23,8 +23,6 @@ export default function Home() {
   const [comboTypeList, setComboTypeList] = useState([]);
   const [sectionOrder, setSectionOrder] = useState([]);
 
-  // Chỉ 2 cái này block skeleton — categories + menuItems là đủ render sections đầu tiên
-  // combo/comboTypes/order về sau thì orderedSections tự update thêm
   const [loadingBanners, setLoadingBanners] = useState(true);
   const [loadingCategories, setLoadingCategories] = useState(true);
   const [loadingMenuItems, setLoadingMenuItems] = useState(true);
@@ -36,15 +34,17 @@ export default function Home() {
   const [search, setSearch] = useState("");
   const [activeSearch, setActiveSearch] = useState("");
   const [openInputSearch, setOpenInputSearch] = useState(false);
+  const [spyEnabled, setSpyEnabled] = useState(false);
 
   const sectionRefs = useRef({});
   const isScrollingTo = useRef(false);
   const hashRef = useRef("");
   const initialScrollDone = useRef(false);
   const scrollInitialized = useRef(false);
-  const spyAttached = useRef(false);
+  const observerRef = useRef(null);
+
+  // — Fetch —
   useEffect(() => {
-    // Mỗi fetch set state ngay khi về — không chờ nhau
     fetch(`${API_BANNERS}?all=true&statusFilter=on&useOrder=true`)
       .then(r => r.json())
       .then(data => setBanners(data.banners ?? []))
@@ -63,7 +63,6 @@ export default function Home() {
       .catch(err => console.error("Failed to fetch menu items:", err))
       .finally(() => setLoadingMenuItems(false));
 
-    // 3 cái này không block skeleton — về sau thì sections tự update thêm
     fetch(`${API_COMBO}?all=true&status=on&useOrder=true`)
       .then(r => r.json())
       .then(data => setComboList(data.combos ?? []))
@@ -85,24 +84,121 @@ export default function Home() {
 
   const loadingSections = loadingCategories || loadingMenuItems;
 
-  const dataReady = categories.length > 0 && menuItems.length > 0;
   const scrollReady = !loadingCategories && !loadingMenuItems
     && !loadingCombos && !loadingComboTypes && !loadingSectionOrder;
 
+  // — Derived data —
+  const getMenuItemsByCategory = useCallback((categoryId) =>
+    menuItems.filter(item =>
+      item.category == categoryId &&
+      item.status === "on" &&
+      (activeSearch === "" || item.name.toLowerCase().includes(activeSearch.toLowerCase()))
+    ), [menuItems, activeSearch]);
+
+  const getCombosByType = useCallback((comboTypeId) =>
+    comboList.filter(item =>
+      item?.comboType?._id == comboTypeId &&
+      item.status === "on" &&
+      (activeSearch === "" || item.name.toLowerCase().includes(activeSearch.toLowerCase()))
+    ), [comboList, activeSearch]);
+
+  const orderedSections = useMemo(() => {
+    const allSections = [
+      ...comboTypeList.map(c => ({ ...c, refType: "comboType" })),
+      ...categories.map(c => ({ ...c, refType: "category" })),
+    ];
+
+    const visibleSections = allSections.filter(s => {
+      if (s.status !== "on") return false;
+      if (s.refType === "comboType") return getCombosByType(s._id).length > 0;
+      return getMenuItemsByCategory(s._id).length > 0;
+    });
+
+    if (sectionOrder.length === 0) return visibleSections;
+
+    const orderMap = new Map(sectionOrder.map(o => [o.refId, o.order]));
+    const inOrder = visibleSections
+      .filter(s => orderMap.has(s._id.toString()))
+      .sort((a, b) => (orderMap.get(a._id.toString()) ?? 0) - (orderMap.get(b._id.toString()) ?? 0));
+
+    const inOrderIds = new Set(inOrder.map(s => s._id.toString()));
+    const rest = visibleSections.filter(s => !inOrderIds.has(s._id.toString()));
+
+    return [...inOrder, ...rest];
+  }, [categories, comboTypeList, sectionOrder, getCombosByType, getMenuItemsByCategory]);
+
+  const carouselList = useMemo(() =>
+    orderedSections.map(c => ({
+      name: c.name,
+      icons: getCategoryIcon(c.name),
+      slug: slugify(c.name),
+    })), [orderedSections]);
+
+  // — Bật spy ngay khi sections render xong (không chờ combo/sectionOrder) —
+  useEffect(() => {
+    if (loadingSections) return;
+    setSpyEnabled(true);
+  }, [loadingSections]);
+
+  // Thay toàn bộ useEffect khởi tạo observer
+  useEffect(() => {
+    if (!spyEnabled) return;
+
+    const findActiveSection = () => {
+      if (isScrollingTo.current) return;
+      if (!initialScrollDone.current) return;
+
+      const carousel = document.querySelector(".sticky");
+      const offset = (carousel?.offsetHeight ?? 0) + 100 + 10;
+
+      // Tìm section gần top nhất mà đã qua offset
+      let activeId = null;
+      let minDistance = Infinity;
+
+      Object.entries(sectionRefs.current).forEach(([_, el]) => {
+        if (!el) return;
+        const top = el.getBoundingClientRect().top - offset;
+        // Section đã scroll qua hoặc đang hiện
+        if (top <= 0 && Math.abs(top) < minDistance) {
+          minDistance = Math.abs(top);
+          activeId = el.id;
+        }
+      });
+
+      // Nếu chưa scroll tới section nào thì lấy section đầu tiên
+      if (!activeId) {
+        const first = Object.values(sectionRefs.current).find(Boolean);
+        activeId = first?.id ?? null;
+      }
+
+      if (activeId && activeId !== hashRef.current) {
+        hashRef.current = activeId;
+        setHash(activeId);
+        window.history.replaceState(null, "", `#${activeId}`);
+      }
+    };
+
+    window.addEventListener("scroll", findActiveSection, { passive: true });
+    return () => window.removeEventListener("scroll", findActiveSection);
+  }, [spyEnabled]);
+
+  // — Initial scroll to hash — chờ scrollReady (cần sectionOrder để scroll đúng vị trí) —
   useEffect(() => {
     if (!scrollReady) return;
     if (scrollInitialized.current) return;
+    scrollInitialized.current = true;
+
     const urlHash = window.location.hash.replace("#", "");
     if (!urlHash) {
-      initialScrollDone.current = true; // không có hash → spy chạy luôn
+      initialScrollDone.current = true;
       return;
     }
+
     setHash(urlHash);
     hashRef.current = urlHash;
 
     let attempts = 0;
     const MAX = 40;
-    let scrollDone = false;
 
     const doScroll = (target, behavior = "smooth") => {
       const carousel = document.querySelector(".sticky");
@@ -142,24 +238,16 @@ export default function Home() {
         if (++attempts < MAX) setTimeout(tryScroll, 150);
         return;
       }
-
       doScroll(target, "smooth");
-
       const images = Array.from(document.querySelectorAll("img")).filter(img => !img.complete);
-
       if (images.length === 0) {
-        // Không có ảnh nào cần chờ → finalize luôn
         finalize(urlHash);
         return;
       }
-
-      // Có ảnh chưa load → KHÔNG finalize vội
-      // isScrollingTo vẫn = true → spy bị chặn hoàn toàn
       let loaded = 0;
       const onLoad = () => {
         loaded++;
         if (loaded >= images.length) {
-          // Tất cả ảnh xong → correct offset → finalize
           doScroll(target, "instant");
           finalize(urlHash);
         }
@@ -168,8 +256,6 @@ export default function Home() {
         img.addEventListener("load", onLoad, { once: true });
         img.addEventListener("error", onLoad, { once: true });
       });
-
-      // Fallback 2s
       setTimeout(() => {
         if (!initialScrollDone.current) {
           doScroll(target, "instant");
@@ -178,108 +264,21 @@ export default function Home() {
       }, 2000);
     };
 
-    setTimeout(tryScroll, 100); // giảm từ 300 → 100
+    setTimeout(tryScroll, 100);
   }, [scrollReady]);
 
-  const allDataReady = dataReady && comboList.length > 0 && comboTypeList.length > 0;
-  useEffect(() => {
-    if (!allDataReady) return;
-    if (spyAttached.current) return;
-    spyAttached.current = true;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (isScrollingTo.current) return;
-        if (!initialScrollDone.current) return;
-
-        // Lấy section đang visible nhiều nhất
-        const visible = entries
-          .filter(e => e.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
-
-        if (visible.length === 0) return;
-
-        const id = visible[0].target.id;
-        if (id && id !== hashRef.current) {
-          hashRef.current = id;
-          setHash(id);
-          window.history.replaceState(null, "", `#${id}`);
-        }
-      },
-      {
-        threshold: [0.1, 0.3, 0.5],
-        rootMargin: "-100px 0px -50% 0px", // trigger khi section vào vùng trên
-      }
-    );
-
-    Object.values(sectionRefs.current).filter(Boolean).forEach(el => {
-      observer.observe(el);
-    });
-
-    return () => observer.disconnect();
-  }, [allDataReady]);
-
   const handleSearch = useCallback(() => setActiveSearch(search.trim()), [search]);
-
-  const getMenuItemsByCategory = useCallback((categoryId) =>
-    menuItems.filter(item =>
-      item.category == categoryId &&
-      item.status === "on" &&
-      (activeSearch === "" || item.name.toLowerCase().includes(activeSearch.toLowerCase()))
-    ), [menuItems, activeSearch]);
-
-  const getCombosByType = useCallback((comboTypeId) =>
-    comboList.filter(item =>
-      item?.comboType?._id == comboTypeId &&
-      item.status === "on" &&
-      (activeSearch === "" || item.name.toLowerCase().includes(activeSearch.toLowerCase()))
-    ), [comboList, activeSearch]);
-
-  const orderedSections = useMemo(() => {
-    const allSections = [
-      ...comboTypeList.map(c => ({ ...c, refType: "comboType" })),
-      ...categories.map(c => ({ ...c, refType: "category" })),
-    ];
-
-    const visibleSections = allSections.filter(s => {
-      if (s.status !== "on") return false;
-      if (s.refType === "comboType") return getCombosByType(s._id).length > 0;
-      return getMenuItemsByCategory(s._id).length > 0;
-    });
-
-    if (sectionOrder.length === 0) return visibleSections;
-
-    const orderMap = new Map(sectionOrder.map(o => [o.refId, o.order]));
-    const inOrder = visibleSections
-      .filter(s => orderMap.has(s._id))
-      .sort((a, b) => (orderMap.get(a._id) ?? 0) - (orderMap.get(b._id) ?? 0));
-
-    const inOrderIds = new Set(inOrder.map(s => s._id));
-    const rest = visibleSections.filter(s => !inOrderIds.has(s._id));
-
-    return [...inOrder, ...rest];
-  }, [categories, comboTypeList, sectionOrder, getCombosByType, getMenuItemsByCategory]);
-
-  const carouselList = useMemo(() =>
-    orderedSections.map(c => ({
-      name: c.name,
-      icons: getCategoryIcon(c.name),
-      slug: slugify(c.name),
-    })), [orderedSections]);
 
   const noResults = activeSearch && orderedSections.length === 0;
 
   return (
     <>
-      {/* Banner: tắt skeleton ngay khi banners về, không chờ sections */}
       {loadingBanners ? (
-
         <SkeletonLoadingSlider />
       ) : (
         <Slider banners={banners} setHash={setHash} hash={hash} isScrollingTo={isScrollingTo} />
       )}
 
-      {/* Carousel + Sections: chỉ chờ categories + menuItems */}
       {loadingSections ? (
         <SkeletonLoadingCarousel />
       ) : (
@@ -303,7 +302,6 @@ export default function Home() {
       <section className="mt-8">
         {loadingSections ? (
           <>
-
             <SkeletonLoadingSection type="combo" count={2} />
             <SkeletonLoadingSection type="item" count={4} />
             <SkeletonLoadingSection type="item" count={4} />
@@ -314,7 +312,9 @@ export default function Home() {
               <div
                 key={section._id}
                 id={slugify(section.name)}
-                ref={el => sectionRefs.current[section._id] = el}
+                ref={el => {
+                  sectionRefs.current[section._id] = el;
+                }}
               >
                 <div className="text-center">
                   <SectionHeader mainHeader={section.name} urlHeader={section?.image} />
@@ -323,7 +323,7 @@ export default function Home() {
                 {section.refType === "comboType" ? (
                   <div className="grid gap-4 px-4 mt-4 mb-8 md:px-0 md:mb-12 md:mt-6 md:gap-6 md:grid-cols-2">
                     {getCombosByType(section._id).map(item => (
-                      <MenuCombo key={item._id} {...item} categories={categories} menuItems={menuItems}/>
+                      <MenuCombo key={item._id} {...item} categories={categories} menuItems={menuItems} />
                     ))}
                   </div>
                 ) : (
