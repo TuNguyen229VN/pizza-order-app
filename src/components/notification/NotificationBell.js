@@ -7,10 +7,16 @@ import Bell from "../icons/Bell";
 export function NotificationBell() {
     const { notifications, unreadCount, markAsRead } = useNotifications();
     const [open, setOpen] = useState(false);
-
+    async function handleOpen() {
+        setOpen(!open);
+        // Xin quyền khi user click vào chuông
+        if ("Notification" in window && Notification.permission === "default") {
+            await Notification.requestPermission();
+        }
+    }
     return (
         <div className="relative">
-            <button onClick={() => setOpen(!open)} className="relative p-2">
+            <button onClick={handleOpen} className="relative p-2">
                 <Bell className="hidden w-6 h-6 md:inline" />
                 {unreadCount > 0 && (
                     <span className="absolute flex items-center justify-center w-5 h-5 text-xs text-white bg-red-500 rounded-full -top-0 -right-0">

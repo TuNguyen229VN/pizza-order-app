@@ -39,14 +39,14 @@ export async function POST(req) {
                         recipientEmail: order.userEmail,
                         orderId: order._id,
                         title: "Đặt hàng thành công 🎉",
-                        message: `Đơn hàng #${shortId} của bạn đã được thanh toán!`,
+                        message: `Đơn hàng [${order._id}] của bạn đã được thanh toán!`,
                     }),
                     sendNotification({
                         type: "order_placed",
                         recipientRole: "admin",
                         orderId: order._id,
                         title: "Đơn hàng mới!",
-                        message: `Khách ${order.userName} (${order.phone}) vừa thanh toán đơn #${shortId}.`,
+                        message: `Khách ${order.userName} (${order.phone}) vừa thanh toán đơn [${order._id}].`,
                     }),
                 ]);
 

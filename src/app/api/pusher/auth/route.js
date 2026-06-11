@@ -10,7 +10,6 @@ export async function POST(req) {
     const params = new URLSearchParams(data);
     const socketId = params.get("socket_id");
     const channelName = params.get("channel_name");
-    console.log(channelName)
     const isAdmin = session.user?.admin;
     const userChannel = `private-user-${session.user.email.replace(/[@.]/g, "-")}`;
 

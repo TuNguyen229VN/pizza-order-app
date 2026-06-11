@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { pusherClient } from "@/libs/pusherClient";
 import { useSession } from "next-auth/react";
+import { API_NOTIFICATION } from "@/constant/constant";
 
 export function useNotifications() {
     const { data: session } = useSession();
@@ -8,7 +9,15 @@ export function useNotifications() {
     const unreadCount = notifications.filter(n => !n.isRead).length;
 
     useEffect(() => {
-        fetch("/api/notifications")
+        if (typeof window !== "undefined" && "Notification" in window) {
+            if (Notification.permission === "default") {
+                Notification.requestPermission();
+            }
+        }
+    }, []);
+
+    useEffect(() => {
+        fetch(API_NOTIFICATION)
             .then(res => res.json())
             .then(data => Array.isArray(data) && setNotifications(data));
     }, []);
@@ -16,16 +25,25 @@ export function useNotifications() {
     useEffect(() => {
         if (!session?.user || !pusherClient) return;
 
-        // pusherClient.config.authEndpoint = "/api/pusher/auth";
-
         const isAdmin = session.user?.admin;
         const channelName = isAdmin
             ? "private-admin"
             : `private-user-${session.user.email.replace(/[@.]/g, "-")}`;
 
         const channel = pusherClient.subscribe(channelName);
+
         channel.bind("new-notification", ({ notification }) => {
             setNotifications(prev => [notification, ...prev]);
+
+            // Browser notification
+            if (typeof window !== "undefined"
+                && "Notification" in window
+                && Notification.permission === "granted") {
+                new Notification(notification.title, {
+                    body: notification.message,
+                    icon: "/images/thankyour.png",
+                });
+            }
         });
 
         return () => {
@@ -35,7 +53,7 @@ export function useNotifications() {
     }, [session]);
 
     const markAsRead = async (id) => {
-        await fetch("/api/notifications", {
+        await fetch(API_NOTIFICATION, {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ id }),
