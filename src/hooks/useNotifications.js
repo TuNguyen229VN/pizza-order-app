@@ -14,17 +14,16 @@ export function useNotifications() {
     }, []);
 
     useEffect(() => {
-        if (!session?.user) return;
+        if (!session?.user || !pusherClient) return;
 
-        pusherClient.config.authEndpoint = "/api/pusher/auth";
+        // pusherClient.config.authEndpoint = "/api/pusher/auth";
 
-        const isAdmin = session.user?.isAdmin;
+        const isAdmin = session.user?.admin;
         const channelName = isAdmin
             ? "private-admin"
             : `private-user-${session.user.email.replace(/[@.]/g, "-")}`;
 
         const channel = pusherClient.subscribe(channelName);
-
         channel.bind("new-notification", ({ notification }) => {
             setNotifications(prev => [notification, ...prev]);
         });

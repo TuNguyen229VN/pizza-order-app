@@ -116,14 +116,14 @@ const RecommendMenuItems = ({ sectionRefs = null, hasLine = true,
           </Swiper>
           <button
             ref={prevRef}
-            className={`absolute z-20 flex items-center justify-center text-black -translate-y-1/2 bg-white rounded-full w-5 h-5 md:w-7 md:h-7 left-2 top-1/2 shadow transition-opacity ${isBeginning ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+            className={`absolute z-10 flex items-center justify-center text-black -translate-y-1/2 bg-white rounded-full w-5 h-5 md:w-7 md:h-7 left-2 top-1/2 shadow transition-opacity ${isBeginning ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
           >
             <ChevronLeft strokeWidth={3} className="w-4 h-4 md:w-6 md:h-6" />
           </button>
 
           <button
             ref={nextRef}
-            className={`absolute z-20 flex items-center justify-center text-black -translate-y-1/2 bg-white rounded-full w-5 h-5 md:w-7 md:h-7 right-2 top-1/2 shadow transition-opacity ${isEnd ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+            className={`absolute z-10 flex items-center justify-center text-black -translate-y-1/2 bg-white rounded-full w-5 h-5 md:w-7 md:h-7 right-2 top-1/2 shadow transition-opacity ${isEnd ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
           >
             <ChevronRight strokeWidth={3} className="w-4 h-4 md:w-6 md:h-6" />
           </button>

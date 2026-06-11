@@ -20,7 +20,6 @@ export default function ComboSlots({
 }) {
     const [loadingImage, setLoadingImage] = useState({});
     const [searchItem, setSearchItem] = useState({});
-    console.log(errors)
     return (
         <>
             <div className="flex items-center justify-between mt-4 mb-2">

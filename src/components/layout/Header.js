@@ -16,6 +16,7 @@ import { useDelivery } from "@/context/DeliveryContext";
 import CloseIcon from "../icons/CloseIcon";
 import MenuMobile from "./MenuMobile";
 import { useLockBodyScroll } from "@/hooks/useLockBodyScroll";
+import { NotificationBell } from "../notification/NotificationBell";
 
 
 
@@ -46,8 +47,8 @@ const Header = ({ className }) => {
               <Image src={"/logo.png"} width={180} height={180} alt="logo" className="hidden md:block" />
             </Link>
           </div>
-          <div className="flex items-center justify-end flex-1 min-w-0 gap-3 md:gap-5">
-            <Bell className="hidden w-6 h-6 md:inline" />
+          <div className="flex items-center justify-end flex-1 min-w-0 gap-3 md:gap-5">          
+            <NotificationBell/>
             <p className="hidden text-base font-semibold text-primary md:block">VI</p>
             <Link
               href={CART_ROUTE}
