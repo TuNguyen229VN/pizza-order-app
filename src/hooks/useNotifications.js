@@ -9,14 +9,6 @@ export function useNotifications() {
     const unreadCount = notifications.filter(n => !n.isRead).length;
 
     useEffect(() => {
-        if (typeof window !== "undefined" && "Notification" in window) {
-            if (Notification.permission === "default") {
-                Notification.requestPermission();
-            }
-        }
-    }, []);
-
-    useEffect(() => {
         fetch(API_NOTIFICATION)
             .then(res => res.json())
             .then(data => Array.isArray(data) && setNotifications(data));
@@ -33,16 +25,20 @@ export function useNotifications() {
         const channel = pusherClient.subscribe(channelName);
 
         channel.bind("new-notification", ({ notification }) => {
+            console.log("Event received:", notification);
+            console.log("Permission:", Notification.permission);
             setNotifications(prev => [notification, ...prev]);
 
-            // Browser notification
-            if (typeof window !== "undefined"
-                && "Notification" in window
-                && Notification.permission === "granted") {
-                new Notification(notification.title, {
-                    body: notification.message,
-                    icon: "/images/thankyour.png",
-                });
+            if (Notification.permission === "granted") {
+                try {
+                    const n = new Notification(notification.title, {
+                        body: notification.message,
+                        icon: "/images/thankyour.png",
+                    });
+                    console.log("Notification created:", n);
+                } catch (e) {
+                    console.error("Notification error:", e); // ← quan trọng
+                }
             }
         });
 
