@@ -15,6 +15,7 @@ import HeaderCart from '@/modules/cart/HeaderCart';
 import CheckAcceptPolicy from '@/modules/checkout/CheckAcceptPolicy';
 import CheckoutAddress from '@/modules/checkout/CheckoutAddress';
 import CheckoutInfo from '@/modules/checkout/CheckoutInfo';
+import CheckoutMethod from '@/modules/checkout/CheckoutMethod';
 import Link from 'next/link';
 import React, { useContext, useEffect, useState } from 'react'
 import toast from 'react-hot-toast';
@@ -29,7 +30,7 @@ export default function CheckoutPage() {
 
     const { cartProducts } = useContext(CartContext);
     const { deliveryInfo, openDeliveryModal } = useDelivery();
-
+    const [paymentMethod, setPaymentMethod] = useState();
     useEffect(() => {
         if (typeof window !== 'undefined') {
             if (window.location.href.includes('canceled=1')) {
@@ -80,6 +81,10 @@ export default function CheckoutPage() {
             noteDelivery: {
                 value: noteDelivery,
                 rules: [validators.maxLength(200)]
+            },
+            paymentMethod: {
+                value: paymentMethod,
+                rules: [validators.required("phương thức thanh toán")],
             }
         });
 
@@ -95,7 +100,8 @@ export default function CheckoutPage() {
                     infoProfileCheckout,
                     cartProducts,
                     deliveryInfo,
-                    noteDelivery
+                    noteDelivery,
+                    paymentMethod
                 }),
             }).then(async (response) => {
                 if (response.ok) {
@@ -144,6 +150,7 @@ export default function CheckoutPage() {
                         <CheckoutInfo infoProps={infoProfileCheckout}
                             setInfoProps={handleInfoChange} errors={errors} registerRef={registerRef}
                             clearError={clearError} ></CheckoutInfo>
+                        <CheckoutMethod paymentMethod={paymentMethod} setPaymentMethod={setPaymentMethod} errors={errors} registerRef={registerRef} />
                     </form>
                 </div>
                 <div>

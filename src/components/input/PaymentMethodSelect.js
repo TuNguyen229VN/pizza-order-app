@@ -1,0 +1,75 @@
+// components/ui/PaymentMethodSelect.jsx
+const METHODS = [
+  {
+    value: "cod",
+    label: "Tiền mặt (COD)",
+    sub: "Thanh toán khi nhận hàng",
+    icon: "💵",
+    iconBg: "bg-gray-100",
+  },
+  {
+    value: "momo",
+    label: "MoMo",
+    sub: "Ví điện tử MoMo",
+    icon: "📱",
+    iconBg: "bg-pink-100",
+  },
+  {
+    value: "zalopay",
+    label: "ZaloPay",
+    sub: "Ví ZaloPay / thẻ ATM",
+    icon: "👛",
+    iconBg: "bg-blue-100",
+  },
+  {
+    value: "paypal",
+    label: "PayPal",
+    sub: "Thanh toán quốc tế",
+    icon: "🅿️",
+    iconBg: "bg-indigo-100",
+  },
+  {
+    value: "stripe",
+    label: "Thẻ tín dụng / Stripe",
+    sub: "Visa, Mastercard, JCB",
+    icon: "💳",
+    iconBg: "bg-purple-100",
+  },
+];
+
+const PaymentMethodSelect = ({ value, onChange }) => {
+  return (
+    <div className="flex flex-col gap-3">
+      {METHODS.map((method) => {
+        const isSelected = value === method.value;
+        return (
+          <div
+            key={method.value}
+            onClick={() => onChange(method.value)}
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer 
+              }`}
+          >
+            {/* Radio dot */}
+            <div className={`w-[18px] h-[18px] rounded-full flex items-center justify-center flex-shrink-0
+              ${isSelected ? "border-2 border-primary" : "border border-gray-300"}`}>
+              {isSelected && <div className="w-2 h-2 rounded-full bg-primary" />}
+            </div>
+
+            {/* Icon */}
+            <div className={`w-9 h-9 rounded-lg flex items-center justify-center text-lg flex-shrink-0 ${method.iconBg}`}>
+              {method.icon}
+            </div>
+
+            {/* Text */}
+            <div>
+              <p className="text-sm font-medium">{method.label}</p>
+              <p className="text-xs text-gray-500">{method.sub}</p>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
+export default PaymentMethodSelect;

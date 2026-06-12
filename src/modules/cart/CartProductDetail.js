@@ -3,6 +3,7 @@ import ButtonPrimary from '@/components/buttons/ButtonPrimary';
 import CloseIcon from '@/components/icons/CloseIcon';
 import InputCheckbox from '@/components/input/InputCheckbox';
 import InputRadio from '@/components/input/InputRadio';
+import { RenderTag } from '@/components/menu/RenderTag';
 import Image from 'next/image';
 import React, { useContext, useEffect, useState } from 'react'
 
@@ -11,6 +12,7 @@ export default function CartProductDetail({ menuItem, showPopup, setShowPopup })
     const [selectedExtras, setSelectedExtras] = useState(menuItem?.extras ?? []);
     const [quantity, setQuantity] = useState(menuItem?.quantity ?? 1);
     const [noteOrder, setNoteOrder] = useState(menuItem?.noteOrder ?? "");
+    const [tags, setTags] = useState(menuItem?.tags??[]);
 
     const { updateCart } = useContext(CartContext);
     useEffect(() => {
@@ -19,6 +21,7 @@ export default function CartProductDetail({ menuItem, showPopup, setShowPopup })
             setSelectedExtras(menuItem?.extras ?? []);
             setQuantity(menuItem?.quantity ?? 1);
             setNoteOrder(menuItem?.noteOrder ?? "");
+            setTags(menuItem?.tags??[]);
         }
     }, [showPopup, menuItem]);
 
@@ -82,6 +85,11 @@ export default function CartProductDetail({ menuItem, showPopup, setShowPopup })
                             <div>
                                 <h3 className="text-2xl leading-[30px] font-semibold break-words">{name}</h3>
                                 <p className="mt-2 break-words text-secondary">{description}</p>
+                            </div>
+                            <div className='flex flex-wrap items-center gap-4 mt-2'>
+                                {tags && tags.map((tag, index) => (
+                                    <RenderTag key={index} tag={tag} />
+                                ))}
                             </div>
                             {sizes?.length > 0 && (
                                 <div className="mt-7 ">

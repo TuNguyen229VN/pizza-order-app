@@ -30,8 +30,6 @@ export async function POST(req) {
             );
 
             if (order) {
-                const shortId = order._id.toString().slice(-6).toUpperCase();
-
                 const [userNotif, adminNotif] = await Promise.all([
                     sendNotification({
                         type: "order_placed",
