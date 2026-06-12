@@ -15,11 +15,11 @@ import { signOut } from "next-auth/react";
 import { MdOutlineFastfood } from "react-icons/md";
 import { FiPackage } from "react-icons/fi";
 import { GrSystem } from "react-icons/gr";
-import { useNotifications } from "@/hooks/useNotifications";
+import { useNotificationContext } from "@/context/NotificationContext";
 
 const UserTabs = ({ isAdmin }) => {
   const path = usePathname();
-  const { unreadCount } = useNotifications();
+  const { unreadCount } = useNotificationContext();
   return (
     <div className="hidden md:block">
       <div className="flex flex-col border rounded-2xl">

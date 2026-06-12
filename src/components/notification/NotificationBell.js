@@ -1,15 +1,19 @@
 "use client";
-import { useNotifications } from "@/hooks/useNotifications";
 import { useEffect, useRef, useState } from "react";
 import Bell from "../icons/Bell";
 import { timeAgo } from "@/libs/timeAgo";
-import { ORDERS_ROUTE } from "@/constant/routesApp";
+import { NOTIFICATION_ROUTE, ORDERS_ROUTE } from "@/constant/routesApp";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import SkeletonLoadingNotification from "../skeleton/SkeletonLoadingNotification";
+import { useNotificationContext } from "@/context/NotificationContext";
 
 export function NotificationBell() {
-    const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
+    const { notifications, unreadCount, markAsRead, loadMore, hasMore, loadingMore, loading } = useNotificationContext();
     const router = useRouter();
     const [open, setOpen] = useState(false);
+    const ref = useRef(null);
+    const listRef = useRef(null);
 
     async function handleOpen() {
         setOpen(!open);
@@ -17,7 +21,15 @@ export function NotificationBell() {
             await Notification.requestPermission();
         }
     }
-    const ref = useRef(null);
+
+    function handleScroll() {
+        const el = listRef.current;
+        if (!el) return;
+        // Khi scroll gần tới cuối
+        if (el.scrollTop + el.clientHeight >= el.scrollHeight - 20) {
+            loadMore();
+        }
+    }
 
     useEffect(() => {
         function handleClickOutside(e) {
@@ -40,24 +52,31 @@ export function NotificationBell() {
             </button>
 
             {open && (
-                <div className="absolute right-0 z-50 mt-2 overflow-y-auto bg-white border shadow-xl w-80 rounded-xl max-h-96">
+                <div ref={listRef}
+                    onScroll={handleScroll}
+                    className="absolute right-0 z-50 mt-2 overflow-y-auto bg-white border shadow-xl w-80 rounded-xl max-h-96">
                     <div className="flex items-center justify-between p-3 border-b">
                         <p className="text-sm font-bold">Thông báo</p>
-                        {unreadCount > 0 && (
-                            <button
-                                onClick={markAllAsRead}
+                        {!loading && notifications.length > 0 && (
+                            <Link
+                                href={NOTIFICATION_ROUTE}
                                 className="text-xs text-blue-500 hover:text-blue-700 hover:underline"
                             >
-                                Đọc tất cả
-                            </button>
+                                Xem tất cả
+                            </Link>
                         )}
                     </div>
+                    {loading && (
+                        Array.from({ length: 4 }).map((_, i) => (
+                            <SkeletonLoadingNotification key={i} />
+                        ))
+                    )}
 
-                    {notifications.length === 0 && (
+                    {!loading && notifications.length === 0 && (
                         <p className="p-4 text-sm text-center text-gray-400">Không có thông báo</p>
                     )}
 
-                    {notifications.map(n => (
+                    {!loading && notifications.map(n => (
                         <div
                             key={n._id}
                             onClick={() => {
@@ -71,6 +90,10 @@ export function NotificationBell() {
                             <p className="mt-1 text-xs text-gray-400">{timeAgo(n.createdAt)}</p>
                         </div>
                     ))}
+                    {loadingMore && <p className="p-3 text-xs text-center text-gray-400">Đang tải...</p>}
+                    {!hasMore && notifications.length > 0 && (
+                        <p className="p-3 text-xs text-center text-gray-400">Đã tải hết</p>
+                    )}
                 </div>
             )}
         </div>

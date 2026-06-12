@@ -5,11 +5,11 @@ import React from 'react'
 import ConfirmPopup from '../popup/ConfirmPopup';
 import { signOut } from 'next-auth/react';
 import { BANNER_ROUTE, CATEGORIES_ROUTE, CHANGEPASSWORD_ROUTE, COMBO_ROUTE, COMBOTYPE_ROUTE, LOGIN_ROUTE, MENU_ITEMS_ROUTE, NOTIFICATION_ROUTE, ORDER_TRACKING_ROUTE, ORDERS_ROUTE, PROFILE_ROUTE, REARRANGE_ROUTE, REGISTER_ROUTE, USERS_ROUTE } from '@/constant/routesApp';
-import { useNotifications } from '@/hooks/useNotifications';
+import { useNotificationContext } from '@/context/NotificationContext';
 
 export default function MenuMobile({ isAdmin, status, onClose }) {
     const path = usePathname();
-    const { unreadCount } = useNotifications();
+    const { unreadCount } = useNotificationContext();
     return (
         <div className='fixed bottom-0 left-0 z-30 w-full overflow-y-auto bg-white top-16 md:hidden'>
             {status === "unauthenticated" && (

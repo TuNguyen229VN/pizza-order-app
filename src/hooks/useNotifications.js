@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { pusherClient } from "@/libs/pusherClient";
 import { useSession } from "next-auth/react";
 import { API_NOTIFICATION } from "@/constant/constant";
@@ -6,13 +6,39 @@ import { API_NOTIFICATION } from "@/constant/constant";
 export function useNotifications() {
     const { data: session } = useSession();
     const [notifications, setNotifications] = useState([]);
-    const unreadCount = notifications.filter(n => !n.isRead).length;
-
+    const [unreadCount, setUnreadCount] = useState(0);
+    const [page, setPage] = useState(1);
+    const [hasMore, setHasMore] = useState(true);
+    const [loadingMore, setLoadingMore] = useState(false);
+    const [loading, setLoading] = useState(true);
     useEffect(() => {
-        fetch(API_NOTIFICATION)
+         setLoading(true);
+        fetch(`${API_NOTIFICATION}?page=1`)
             .then(res => res.json())
-            .then(data => Array.isArray(data) && setNotifications(data));
+            .then(data => {
+                if (Array.isArray(data.notifications)) {
+                    setNotifications(data.notifications);
+                    setHasMore(data.hasMore);
+                    setUnreadCount(data.totalUnread);
+                }
+            })
+            .finally(() => setLoading(false));
     }, []);
+
+    // Load thêm khi scroll
+    const loadMore = useCallback(async () => {
+        if (!hasMore || loadingMore) return;
+        setLoadingMore(true);
+        const nextPage = page + 1;
+        const res = await fetch(`${API_NOTIFICATION}?page=${nextPage}`);
+        const data = await res.json();
+        if (Array.isArray(data.notifications)) {
+            setNotifications(prev => [...prev, ...data.notifications]);
+            setHasMore(data.hasMore);
+            setPage(nextPage);
+        }
+        setLoadingMore(false);
+    }, [hasMore, loadingMore, page]);
 
     useEffect(() => {
         if (!session?.user || !pusherClient) return;
@@ -26,6 +52,7 @@ export function useNotifications() {
 
         channel.bind("new-notification", ({ notification }) => {
             setNotifications(prev => [notification, ...prev]);
+            setUnreadCount(prev => prev + 1);
 
             if (Notification.permission === "granted") {
                 try {
@@ -53,19 +80,18 @@ export function useNotifications() {
         setNotifications(prev =>
             prev.map(n => n._id === id ? { ...n, isRead: true } : n)
         );
+        setUnreadCount(prev => Math.max(0, prev - 1));
     };
 
-    async function markAllAsRead() {
-        const unread = notifications.filter(n => !n.isRead);
-        await Promise.all(unread.map(n =>
-            fetch(API_NOTIFICATION, {
-                method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ id: n._id }),
-            })
-        ));
+    const markAllAsRead = async () => {
+        await fetch("/api/notifications", {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ all: true }),
+        });
         setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
-    }
+        setUnreadCount(0);
+    };
 
-    return { notifications, unreadCount, markAsRead,markAllAsRead };
+    return { notifications, unreadCount, markAsRead, markAllAsRead, loadMore, hasMore, loadingMore,loading };
 }
