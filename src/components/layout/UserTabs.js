@@ -15,9 +15,11 @@ import { signOut } from "next-auth/react";
 import { MdOutlineFastfood } from "react-icons/md";
 import { FiPackage } from "react-icons/fi";
 import { GrSystem } from "react-icons/gr";
+import { useNotifications } from "@/hooks/useNotifications";
 
 const UserTabs = ({ isAdmin }) => {
   const path = usePathname();
+  const { unreadCount } = useNotifications();
   return (
     <div className="hidden md:block">
       <div className="flex flex-col border rounded-2xl">
@@ -31,7 +33,7 @@ const UserTabs = ({ isAdmin }) => {
               className={`flex items-center p-4 gap-4 text-lg ${path === BANNER_ROUTE ? "text-primary font-semibold" : ""}`}
               href={BANNER_ROUTE}
             >
-             <PiFlagBanner className="w-6 h-6"/>
+              <PiFlagBanner className="w-6 h-6" />
               <span>Quản lý banner</span>
             </Link>
             <Link
@@ -72,7 +74,7 @@ const UserTabs = ({ isAdmin }) => {
               <span>Quản lý đơn hàng</span>
             </Link>
             <Link className={`flex items-center p-4 gap-4 text-lg ${path === REARRANGE_ROUTE ? "text-primary font-semibold" : ""}`} href={REARRANGE_ROUTE}>
-              <GrSystem   className="w-6 h-6" />
+              <GrSystem className="w-6 h-6" />
               <span>Sắp xếp hiển thị sản phẩm</span>
             </Link>
           </>
@@ -80,6 +82,11 @@ const UserTabs = ({ isAdmin }) => {
         <Link className={`flex items-center p-4 gap-4 text-lg ${path === NOTIFICATION_ROUTE ? "text-primary font-semibold" : ""}`} href={NOTIFICATION_ROUTE}>
           <Bell />
           <span>Thông báo</span>
+          {unreadCount > 0 && (
+            <span className="flex items-center justify-center p-2 text-xs text-center text-white bg-red-500 rounded-full">
+              {unreadCount}
+            </span>
+          )}
         </Link>
         <Link className={`flex items-center p-4 gap-4 text-lg ${path === CHANGEPASSWORD_ROUTE ? "text-primary font-semibold" : ""}`} href={CHANGEPASSWORD_ROUTE}>
           <TbLockPassword className="w-6 h-6" />

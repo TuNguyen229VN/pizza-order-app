@@ -55,5 +55,17 @@ export function useNotifications() {
         );
     };
 
-    return { notifications, unreadCount, markAsRead };
+    async function markAllAsRead() {
+        const unread = notifications.filter(n => !n.isRead);
+        await Promise.all(unread.map(n =>
+            fetch(API_NOTIFICATION, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id: n._id }),
+            })
+        ));
+        setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+    }
+
+    return { notifications, unreadCount, markAsRead,markAllAsRead };
 }
