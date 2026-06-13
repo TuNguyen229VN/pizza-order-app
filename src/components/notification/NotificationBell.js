@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import SkeletonLoadingNotification from "../skeleton/SkeletonLoadingNotification";
 import { useNotificationContext } from "@/context/NotificationContext";
+import { useSession } from "next-auth/react";
 
 export function NotificationBell() {
     const { notifications, unreadCount, markAsRead, loadMore, hasMore, loadingMore, loading } = useNotificationContext();
@@ -14,7 +15,8 @@ export function NotificationBell() {
     const [open, setOpen] = useState(false);
     const ref = useRef(null);
     const listRef = useRef(null);
-
+    const session = useSession();
+    const { status } = session;
     async function handleOpen() {
         setOpen(!open);
         if ("Notification" in window && Notification.permission === "default") {
@@ -40,6 +42,28 @@ export function NotificationBell() {
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
+    if (status === "unauthenticated") return (
+        <div className="relative hidden md:block" ref={ref}>
+            <button onClick={handleOpen} className="relative p-2">
+                <Bell className="hidden w-6 h-6 md:inline" />
+                {unreadCount > 0 && (
+                    <span className="absolute flex items-center justify-center w-5 h-5 text-xs text-white bg-red-500 rounded-full -top-0 -right-0">
+                        {unreadCount > 9 ? "9+" : unreadCount}
+                    </span>
+                )}
+            </button>
+
+            {open && (
+                <div
+                    className="absolute right-0 z-50 mt-2 overflow-y-auto bg-white border shadow-xl w-80 rounded-xl max-h-96">
+                    <div className="flex items-center justify-between p-3 border-b">
+                        <p className="text-sm font-bold">Thông báo</p>
+                    </div>
+                    <p className="p-4 text-sm text-center text-gray-400">Không có thông báo</p>
+                </div>
+            )}
+        </div>
+    );
     return (
         <div className="relative hidden md:block" ref={ref}>
             <button onClick={handleOpen} className="relative p-2">

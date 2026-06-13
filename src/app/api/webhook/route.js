@@ -44,7 +44,7 @@ export async function POST(req) {
                         recipientRole: "admin",
                         orderId: order._id,
                         title: "Đơn hàng mới!",
-                        message: `Khách ${order.userName} (${order.phone}) vừa thanh toán đơn [${order._id}].`,
+                        message: `Khách ${order.userName} (${order.phone}) vừa thanh toán đơn [${order._id}].- ${order.paymentMethod?.toUpperCase()}.`,
                     }),
                 ]);
 

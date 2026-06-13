@@ -32,6 +32,45 @@ const PRESET_TAGS = [
     { label: "⭐ Best Seller", value: "Best Seller", color: "bg-amber-50 text-amber-800 border-amber-200" },
 ];
 
+const METHODS = [
+  {
+    value: "cod",
+    label: "Tiền mặt (COD)",
+    sub: "Thanh toán khi nhận hàng",
+    icon: "💵",
+    iconBg: "bg-gray-100",
+  },
+  {
+    value: "stripe",
+    label: "Thẻ tín dụng / Stripe",
+    sub: "Visa, Mastercard, JCB",
+    icon: "💳",
+    iconBg: "bg-purple-100",
+  },
+  {
+    value: "momo",
+    label: "MoMo",
+    sub: "Ví điện tử MoMo",
+    icon: "📱",
+    iconBg: "bg-pink-100",
+  },
+  {
+    value: "zalopay",
+    label: "ZaloPay",
+    sub: "Ví ZaloPay / thẻ ATM",
+    icon: "👛",
+    iconBg: "bg-blue-100",
+  },
+  {
+    value: "paypal",
+    label: "PayPal",
+    sub: "Thanh toán quốc tế",
+    icon: "🅿️",
+    iconBg: "bg-indigo-100",
+  },
+
+];
+
 const KEYWORDS = ["pizza", "melts"];
 const SALT_ROUNDS = 10;
 const LIMITPAGE = 4;
@@ -54,5 +93,5 @@ const API_REARRANGE="/api/rearrange";
 const API_NOTIFICATION="/api/notifications";
 const API_PUSHER_AUTH="/api/pusher/auth";
 
-export { PAID_OPTION, USER_STATUS_OPTION, STATUS_OPTIONS, STATUS_OPTIONS_FILTER, LIST_OPTION, KEYWORDS, SALT_ROUNDS, LIMITPAGE, API_PROFILE, API_CATEGORIES, API_MENU_ITEMS, API_REGISTER, API_LOGIN, API_UPLOAD_IMAGE, API_USERS, API_CHECKOUT, API_ORDERS, API_CHANGE_PASSWORD, API_FORGOT_PASSWORD, API_RESET_PASSWORD, API_COMBO_TYPES, API_COMBO, API_BANNERS,API_REARRANGE,PRESET_TAGS ,API_NOTIFICATION,API_PUSHER_AUTH };
+export { PAID_OPTION, USER_STATUS_OPTION, STATUS_OPTIONS, STATUS_OPTIONS_FILTER, LIST_OPTION, KEYWORDS, SALT_ROUNDS, LIMITPAGE, API_PROFILE, API_CATEGORIES, API_MENU_ITEMS, API_REGISTER, API_LOGIN, API_UPLOAD_IMAGE, API_USERS, API_CHECKOUT, API_ORDERS, API_CHANGE_PASSWORD, API_FORGOT_PASSWORD, API_RESET_PASSWORD, API_COMBO_TYPES, API_COMBO, API_BANNERS,API_REARRANGE,PRESET_TAGS ,API_NOTIFICATION,API_PUSHER_AUTH ,METHODS};
 

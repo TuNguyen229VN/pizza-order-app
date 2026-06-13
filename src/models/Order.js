@@ -9,6 +9,7 @@ const OrderSchema = new Schema({
     cartProducts: Object,
     paid: { type: Boolean, default: false },
     totalOrder: Number,
+    paymentMethod:String,
 }, { timestamps: true });
 
 // Tự xóa sau 24h nếu chưa paid

@@ -3,7 +3,7 @@ import { CartContext, cartProductPrice, totalCartPrice } from '@/components/AppC
 import AddressInput from '@/components/layout/AddressInput';
 import SectionHeader from '@/components/layout/SectionHeader';
 import CartProduct from '@/modules/cart/CartProduct';
-import { API_ORDERS } from '@/constant/constant';
+import { API_ORDERS, METHODS } from '@/constant/constant';
 import { useParams, useSearchParams } from 'next/navigation';
 import React, { useContext, useEffect, useState } from 'react'
 import Image from 'next/image';
@@ -70,7 +70,7 @@ export default function OrderPage() {
                             <p>Đơn hàng của bạn đã được đặt thành công</p>
                         </>}
                         <p>#{order?._id}</p>
-                        <div></div>
+                        {!showAdminLayout&&order?.paymentMethod==="cod" && from !== "orders" && <p className='mt-4 text-sm font-normal text-secondary'>Chúng tôi đang xác nhận đơn hàng (COD) của bạn được thực hiện. Quá trình sẽ nhanh thôi</p>}
                     </div>
                     {!showAdminLayout && from !== "orders" && <>
                         <div className='my-6 w-[200px] h-[200px] md:w-[320px] md:h-[320px] mx-auto'>
@@ -91,7 +91,7 @@ export default function OrderPage() {
                     </div>
                     <div className='p-6 border rounded-lg'>
                         <h4 className='mb-4 font-semibold md:mb-6 md:text-2xl'>Phương thức thanh toán</h4>
-                        <p>Thanh toán STRIPE</p>
+                        <p>{METHODS.find(m => m.value === order?.paymentMethod)?.label ?? order?.paymentMethod}</p>
                         <p className={`mt-4 text-center rounded-lg w-[150px] p-2 line-clamp-1 break-all overflow-hidden font-medium ${order?.paid ? 'text-green-700 bg-green-200' : 'text-red-500 bg-red-200'}`} title={order?.paid ? 'Đã thanh toán' : 'Chưa thanh toán'}>
                             {order?.paid ? 'Đã thanh toán' : 'Chưa thanh toán'}
 

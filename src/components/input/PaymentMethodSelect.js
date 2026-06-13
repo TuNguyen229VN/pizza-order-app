@@ -1,41 +1,5 @@
-// components/ui/PaymentMethodSelect.jsx
-const METHODS = [
-  {
-    value: "cod",
-    label: "Tiền mặt (COD)",
-    sub: "Thanh toán khi nhận hàng",
-    icon: "💵",
-    iconBg: "bg-gray-100",
-  },
-  {
-    value: "momo",
-    label: "MoMo",
-    sub: "Ví điện tử MoMo",
-    icon: "📱",
-    iconBg: "bg-pink-100",
-  },
-  {
-    value: "zalopay",
-    label: "ZaloPay",
-    sub: "Ví ZaloPay / thẻ ATM",
-    icon: "👛",
-    iconBg: "bg-blue-100",
-  },
-  {
-    value: "paypal",
-    label: "PayPal",
-    sub: "Thanh toán quốc tế",
-    icon: "🅿️",
-    iconBg: "bg-indigo-100",
-  },
-  {
-    value: "stripe",
-    label: "Thẻ tín dụng / Stripe",
-    sub: "Visa, Mastercard, JCB",
-    icon: "💳",
-    iconBg: "bg-purple-100",
-  },
-];
+import { METHODS } from "@/constant/constant";
+
 
 const PaymentMethodSelect = ({ value, onChange }) => {
   return (

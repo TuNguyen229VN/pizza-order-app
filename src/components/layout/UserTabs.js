@@ -83,7 +83,7 @@ const UserTabs = ({ isAdmin }) => {
           <Bell />
           <span>Thông báo</span>
           {unreadCount > 0 && (
-            <span className="flex items-center justify-center p-2 text-xs text-center text-white bg-red-500 rounded-full">
+            <span className="flex items-center justify-center p-2 px-4 text-xs text-center text-white bg-red-500 rounded-full">
               {unreadCount}
             </span>
           )}

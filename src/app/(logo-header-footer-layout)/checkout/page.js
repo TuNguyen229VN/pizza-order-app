@@ -101,12 +101,13 @@ export default function CheckoutPage() {
                     cartProducts,
                     deliveryInfo,
                     noteDelivery,
-                    paymentMethod
+                    paymentMethod,
                 }),
             }).then(async (response) => {
                 if (response.ok) {
                     resolve();
-                    window.location = await response.json();
+                    const { redirectUrl } = await response.json();
+                    window.location = redirectUrl;
                 } else {
                     const errorData = await response.json().catch(() => null);
                     reject(errorData);
@@ -116,7 +117,7 @@ export default function CheckoutPage() {
 
         await toast.promise(promise, {
             loading: 'Đang xử lý...',
-            success: 'Đang chuyển hướng thanh toán...',
+            success: 'Đang chuyển hướng...',
             error: (err) => {
                 // Xử lý lỗi validation từ server
                 if (err?.errors && typeof err.errors === 'object') {
