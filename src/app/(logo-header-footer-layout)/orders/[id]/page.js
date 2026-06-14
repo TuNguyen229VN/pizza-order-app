@@ -4,7 +4,7 @@ import AddressInput from '@/components/layout/AddressInput';
 import SectionHeader from '@/components/layout/SectionHeader';
 import CartProduct from '@/modules/cart/CartProduct';
 import { API_ORDERS, METHODS } from '@/constant/constant';
-import { useParams, useSearchParams } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import React, { useContext, useEffect, useState } from 'react'
 import Image from 'next/image';
 import Link from 'next/link';
@@ -18,16 +18,28 @@ import HeaderCart from '@/modules/cart/HeaderCart';
 export default function OrderPage() {
     const { clearCart } = useContext(CartContext);
     const [order, setOrder] = useState();
+    const router = useRouter();
     const [loadingOrder, setLoadingOrder] = useState(true);
     const { loading, data: profile } = UseProfile();
     const { id } = useParams();
     const searchParams = useSearchParams();
 
     const from = searchParams.get("from");
+    const status = searchParams.get("status");
+
+    useEffect(() => {
+        if (status !== null && status !== "1") {
+            router.replace("/cart?canceled=1");
+        }
+    }, [status]);
+
+    // Nếu đang cần redirect → không render gì hết
 
     useEffect(() => {
         if (typeof window.console !== "undefined") {
-            if (window.location.href.includes('clear-cart=1')) {
+            const status = searchParams.get("status");
+            const isCanceled = status !== null && status !== "1";
+            if (!isCanceled && window.location.href.includes('clear-cart=1')) {
                 clearCart();
             }
         }
@@ -50,7 +62,7 @@ export default function OrderPage() {
             subtotal += cartProductPrice(product);
         }
     }
-
+    if (status !== null && status !== "1") return null;
     const isOwnOrder = profile.email === order?.userEmail;
     const showAdminLayout = profile.admin && !isOwnOrder;
     return (
@@ -70,7 +82,7 @@ export default function OrderPage() {
                             <p>Đơn hàng của bạn đã được đặt thành công</p>
                         </>}
                         <p>#{order?._id}</p>
-                        {!showAdminLayout&&order?.paymentMethod==="cod" && from !== "orders" && <p className='mt-4 text-sm font-normal text-secondary'>Chúng tôi đang xác nhận đơn hàng (COD) của bạn được thực hiện. Quá trình sẽ nhanh thôi</p>}
+                        {!showAdminLayout && order?.paymentMethod === "cod" && from !== "orders" && <p className='mt-4 text-sm font-normal text-secondary'>Chúng tôi đang xác nhận đơn hàng (COD) của bạn được thực hiện. Quá trình sẽ nhanh thôi</p>}
                     </div>
                     {!showAdminLayout && from !== "orders" && <>
                         <div className='my-6 w-[200px] h-[200px] md:w-[320px] md:h-[320px] mx-auto'>

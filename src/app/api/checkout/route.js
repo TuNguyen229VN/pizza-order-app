@@ -190,51 +190,67 @@ export async function POST(req) {
         }
 
         // // ─── MoMo ────────────────────────────────────────────────────────────
-        // if (paymentMethod === "momo") {
-        //     const orderDoc = await Order.create(orderData);
-        //     const partnerCode = process.env.MOMO_PARTNER_CODE;
-        //     const accessKey = process.env.MOMO_ACCESS_KEY;
-        //     const secretKey = process.env.MOMO_SECRET_KEY;
-        //     const orderId = orderDoc._id.toString();
-        //     const requestId = orderId;
-        //     const redirectUrl = `${process.env.NEXTAUTH_URL}orders/${orderId}?clear-cart=1`;
-        //     const ipnUrl = `${process.env.NEXTAUTH_URL}api/momo/callback`;
-        //     const requestType = "payWithMethod";
-        //     const extraData = "";
-        //     const rawSignature = `accessKey=${accessKey}&amount=${totalAmount}&extraData=${extraData}&ipnUrl=${ipnUrl}&orderId=${orderId}&orderInfo=Thanh toan don hang&partnerCode=${partnerCode}&redirectUrl=${redirectUrl}&requestId=${requestId}&requestType=${requestType}`;
-        //     const signature = crypto.createHmac("sha256", secretKey).update(rawSignature).digest("hex");
-        //     const momoRes = await fetch("https://test-payment.momo.vn/v2/gateway/api/create", {
-        //         method: "POST",
-        //         headers: { "Content-Type": "application/json" },
-        //         body: JSON.stringify({ partnerCode, accessKey, requestId, amount: totalAmount, orderId, orderInfo: "Thanh toan don hang", redirectUrl, ipnUrl, requestType, extraData, lang: "vi", signature }),
-        //     });
-        //     const momoData = await momoRes.json();
-        //     if (!momoData.payUrl) return Response.json({ message: momoData.localMessage || "MoMo lỗi" }, { status: 400 });
-        //     return Response.json({ redirectUrl: momoData.payUrl });
-        // }
+        if (paymentMethod === "momo") {
+            const orderDoc = await Order.create(orderData);
+            const partnerCode = process.env.MOMO_PARTNER_CODE;
+            const accessKey = process.env.MOMO_ACCESS_KEY;
+            const secretKey = process.env.MOMO_SECRET_KEY;
+            const orderId = orderDoc._id.toString();
+            const requestId = orderId;
+            const redirectUrl = `${process.env.NEXTAUTH_URL}orders/${orderId}?clear-cart=1`;
+            const ipnUrl = `${process.env.NEXTAUTH_URL}api/momo/callback`;
+            const requestType = "payWithMethod";
+            const extraData = "";
+            const rawSignature = `accessKey=${accessKey}&amount=${totalAmount}&extraData=${extraData}&ipnUrl=${ipnUrl}&orderId=${orderId}&orderInfo=Thanh toan don hang&partnerCode=${partnerCode}&redirectUrl=${redirectUrl}&requestId=${requestId}&requestType=${requestType}`;
+            const signature = crypto.createHmac("sha256", secretKey).update(rawSignature).digest("hex");
+            const momoRes = await fetch("https://test-payment.momo.vn/v2/gateway/api/create", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ partnerCode, accessKey, requestId, amount: totalAmount, orderId, orderInfo: "Thanh toan don hang", redirectUrl, ipnUrl, requestType, extraData, lang: "vi", signature }),
+            });
+            const momoData = await momoRes.json();
+            if (!momoData.payUrl) return Response.json({ message: momoData.localMessage || "MoMo lỗi" }, { status: 400 });
+            return Response.json({ redirectUrl: momoData.payUrl });
+        }
 
-        // ─── ZaloPay ─────────────────────────────────────────────────────────
+        // ─── ZaloPay ─────────────────────────────────────────────────────────────────
         if (paymentMethod === "zalopay") {
             const orderDoc = await Order.create(orderData);
-            const app_id = process.env.ZALOPAY_APP_ID;
+            const app_id = Number(process.env.ZALOPAY_APP_ID);
             const key1 = process.env.ZALOPAY_KEY1;
             const app_trans_id = `${moment().format("YYMMDD")}_${orderDoc._id}`;
             const app_time = Date.now();
-            const embed_data = JSON.stringify({ redirecturl: `${process.env.NEXTAUTH_URL}orders/${orderDoc._id}?clear-cart=1` });
+            const embed_data = JSON.stringify({
+                redirecturl: `${process.env.NEXTAUTH_URL}orders/${orderDoc._id}?clear-cart=1`,
+            });
             const item = JSON.stringify([]);
             const description = `Thanh toán đơn hàng #${orderDoc._id}`;
             const callback_url = `${process.env.NEXTAUTH_URL}api/zalopay/callback`;
-            const hmac_data = `${app_id}|${app_trans_id}|${app_time}|${totalAmount}|${embed_data}|${item}`;
-            const mac = crypto.createHmac("sha256", key1).update(hmac_data).digest("hex");
-            const params = new URLSearchParams({ app_id, app_trans_id, app_user: infoProfileCheckout.email, app_time, amount: totalAmount, embed_data, item, description, mac, callback_url });
-            const zaloRes = await fetch("https://sandbox.zalopay.com.vn/v001/tpe/createorder", {
+
+            const hmac_input = `${app_id}|${app_trans_id}|${infoProfileCheckout.email}|${totalAmount}|${app_time}|${embed_data}|${item}`;
+            const mac = crypto.createHmac("sha256", key1).update(hmac_input).digest("hex");
+
+            const zaloRes = await fetch("https://sb-openapi.zalopay.vn/v2/create", {
                 method: "POST",
-                headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                body: params.toString(),
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    app_id,
+                    app_trans_id,
+                    app_user: infoProfileCheckout.email,
+                    app_time,
+                    amount: totalAmount,
+                    embed_data,
+                    item,
+                    description,
+                    mac,
+                    callback_url,
+                    bank_code: "",
+                }),
             });
+
             const zaloData = await zaloRes.json();
-            console.log(params)
-            if (!zaloData.order_url) return Response.json({ message: "ZaloPay lỗi" }, { status: 400 });
+            if (!zaloData.order_url) return Response.json({ message: zaloData.return_message || "ZaloPay lỗi" }, { status: 400 });
+
             return Response.json({ redirectUrl: zaloData.order_url });
         }
 
