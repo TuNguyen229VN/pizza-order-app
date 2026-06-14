@@ -6,8 +6,9 @@ import { calcDeliveryInfo } from "@/utils/utils";
 import { ComboDetail } from "@/models/ComboDetail";
 import { sendNotification } from "@/libs/sendNotification";
 import { pusherServer } from "@/libs/pusherServer";
-// import crypto from "crypto";
-// import moment from "moment";
+import { EXCHANGE_RATE_VIETNAM } from "@/constant/constant";
+import crypto from "crypto";
+import moment from "moment";
 
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
@@ -212,73 +213,74 @@ export async function POST(req) {
         //     return Response.json({ redirectUrl: momoData.payUrl });
         // }
 
-        // // ─── ZaloPay ─────────────────────────────────────────────────────────
-        // if (paymentMethod === "zalopay") {
-        //     const orderDoc = await Order.create(orderData);
-        //     const app_id = process.env.ZALOPAY_APP_ID;
-        //     const key1 = process.env.ZALOPAY_KEY1;
-        //     const app_trans_id = `${moment().format("YYMMDD")}_${orderDoc._id}`;
-        //     const app_time = Date.now();
-        //     const embed_data = JSON.stringify({ redirecturl: `${process.env.NEXTAUTH_URL}orders/${orderDoc._id}?clear-cart=1` });
-        //     const item = JSON.stringify([]);
-        //     const description = `Thanh toán đơn hàng #${orderDoc._id}`;
-        //     const callback_url = `${process.env.NEXTAUTH_URL}api/zalopay/callback`;
-        //     const hmac_data = `${app_id}|${app_trans_id}|${app_time}|${totalAmount}|${embed_data}|${item}`;
-        //     const mac = crypto.createHmac("sha256", key1).update(hmac_data).digest("hex");
-        //     const params = new URLSearchParams({ app_id, app_trans_id, app_user: infoProfileCheckout.email, app_time, amount: totalAmount, embed_data, item, description, mac, callback_url });
-        //     const zaloRes = await fetch("https://sb-openapi.zalopay.vn/v2/create", {
-        //         method: "POST",
-        //         headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        //         body: params.toString(),
-        //     });
-        //     const zaloData = await zaloRes.json();
-        //     if (!zaloData.order_url) return Response.json({ message: "ZaloPay lỗi" }, { status: 400 });
-        //     return Response.json({ redirectUrl: zaloData.order_url });
-        // }
-        
-        // // ─── PayPal ──────────────────────────────────────────────────────────────────
-        // if (paymentMethod === "paypal") {
-        //     const orderDoc = await Order.create(orderData);
+        // ─── ZaloPay ─────────────────────────────────────────────────────────
+        if (paymentMethod === "zalopay") {
+            const orderDoc = await Order.create(orderData);
+            const app_id = process.env.ZALOPAY_APP_ID;
+            const key1 = process.env.ZALOPAY_KEY1;
+            const app_trans_id = `${moment().format("YYMMDD")}_${orderDoc._id}`;
+            const app_time = Date.now();
+            const embed_data = JSON.stringify({ redirecturl: `${process.env.NEXTAUTH_URL}orders/${orderDoc._id}?clear-cart=1` });
+            const item = JSON.stringify([]);
+            const description = `Thanh toán đơn hàng #${orderDoc._id}`;
+            const callback_url = `${process.env.NEXTAUTH_URL}api/zalopay/callback`;
+            const hmac_data = `${app_id}|${app_trans_id}|${app_time}|${totalAmount}|${embed_data}|${item}`;
+            const mac = crypto.createHmac("sha256", key1).update(hmac_data).digest("hex");
+            const params = new URLSearchParams({ app_id, app_trans_id, app_user: infoProfileCheckout.email, app_time, amount: totalAmount, embed_data, item, description, mac, callback_url });
+            const zaloRes = await fetch("https://sandbox.zalopay.com.vn/v001/tpe/createorder", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: params.toString(),
+            });
+            const zaloData = await zaloRes.json();
+            console.log(params)
+            if (!zaloData.order_url) return Response.json({ message: "ZaloPay lỗi" }, { status: 400 });
+            return Response.json({ redirectUrl: zaloData.order_url });
+        }
 
-        //     // Lấy access token
-        //     const authRes = await fetch("https://api-m.sandbox.paypal.com/v1/oauth2/token", {
-        //         method: "POST",
-        //         headers: {
-        //             "Content-Type": "application/x-www-form-urlencoded",
-        //             Authorization: `Basic ${Buffer.from(`${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_CLIENT_SECRET}`).toString("base64")}`,
-        //         },
-        //         body: "grant_type=client_credentials",
-        //     });
-        //     const { access_token } = await authRes.json();
+        // ─── PayPal ──────────────────────────────────────────────────────────────────
+        if (paymentMethod === "paypal") {
+            const orderDoc = await Order.create(orderData);
 
-        //     // Tạo order PayPal
-        //     const paypalRes = await fetch("https://api-m.sandbox.paypal.com/v2/checkout/orders", {
-        //         method: "POST",
-        //         headers: {
-        //             "Content-Type": "application/json",
-        //             Authorization: `Bearer ${access_token}`,
-        //         },
-        //         body: JSON.stringify({
-        //             intent: "CAPTURE",
-        //             purchase_units: [{
-        //                 amount: {
-        //                     currency_code: "USD",
-        //                     value: (totalAmount / 25000).toFixed(2), // VNĐ → USD
-        //                 },
-        //                 custom_id: orderDoc._id.toString(),
-        //             }],
-        //             application_context: {
-        //                 return_url: `${process.env.NEXTAUTH_URL}api/paypal/capture`,
-        //                 cancel_url: `${process.env.NEXTAUTH_URL}cart?canceled=1`,
-        //             },
-        //         }),
-        //     });
-        //     const paypalOrder = await paypalRes.json();
-        //     const approvalUrl = paypalOrder.links?.find((l) => l.rel === "approve")?.href;
-        //     if (!approvalUrl) return Response.json({ message: "PayPal lỗi" }, { status: 400 });
+            // Lấy access token
+            const authRes = await fetch("https://api-m.sandbox.paypal.com/v1/oauth2/token", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    Authorization: `Basic ${Buffer.from(`${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_CLIENT_SECRET}`).toString("base64")}`,
+                },
+                body: "grant_type=client_credentials",
+            });
+            const { access_token } = await authRes.json();
 
-        //     return Response.json({ redirectUrl: approvalUrl });
-        // }
+            // Tạo order PayPal
+            const paypalRes = await fetch("https://api-m.sandbox.paypal.com/v2/checkout/orders", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${access_token}`,
+                },
+                body: JSON.stringify({
+                    intent: "CAPTURE",
+                    purchase_units: [{
+                        amount: {
+                            currency_code: "USD",
+                            value: (totalAmount / EXCHANGE_RATE_VIETNAM).toFixed(2), // VNĐ → USD
+                        },
+                        custom_id: orderDoc._id.toString(),
+                    }],
+                    application_context: {
+                        return_url: `${process.env.NEXTAUTH_URL}api/paypal/capture`,
+                        cancel_url: `${process.env.NEXTAUTH_URL}cart?canceled=1`,
+                    },
+                }),
+            });
+            const paypalOrder = await paypalRes.json();
+            const approvalUrl = paypalOrder.links?.find((l) => l.rel === "approve")?.href;
+            if (!approvalUrl) return Response.json({ message: "PayPal lỗi" }, { status: 400 });
+
+            return Response.json({ redirectUrl: approvalUrl });
+        }
 
         return Response.json({ message: "Phương thức thanh toán không hợp lệ" }, { status: 400 });
 
