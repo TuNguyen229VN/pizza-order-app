@@ -1,5 +1,6 @@
 import crypto from "crypto";
-import { markOrderPaid } from "@/app/api/webhooks/stripe/route";
+import { markOrderPaid } from "../../webhook/route";
+
 
 export async function POST(req) {
     const body = await req.json();

@@ -1,7 +1,6 @@
 import crypto from "crypto";
 import { markOrderPaid } from "../../webhook/route";
 
-
 export async function POST(req) {
     const body = await req.json();
     const mac = crypto.createHmac("sha256", process.env.ZALOPAY_KEY2).update(body.data).digest("hex");
