@@ -163,7 +163,7 @@ export default function OrderPage() {
                         </div>
                     </div>
                     <div></div>
-                    <CartSubtotal subtotal={totalCartPrice(order?.cartProducts)} deliveryFee={order?.deliveryInfo?.shipFee} className={"md:border-none"} />
+                    <CartSubtotal subtotal={totalCartPrice(order?.cartProducts)} deliveryFee={order?.deliveryInfo?.shipFee}  discountAmount={order?.pointDiscount?.discountAmount} discountPercent={order?.pointDiscount?.discountPercent} className={"md:border-none"} />
                 </div>
 
                 {!showAdminLayout && from !== "orders" && <div className='p-6 mt-4 border rounded-lg md:mt-6'>

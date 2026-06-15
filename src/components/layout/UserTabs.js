@@ -16,12 +16,14 @@ import { MdOutlineFastfood } from "react-icons/md";
 import { FiPackage } from "react-icons/fi";
 import { GrSystem } from "react-icons/gr";
 import { useNotificationContext } from "@/context/NotificationContext";
+import UserPointRewards from "./UserPointRewards";
 
 const UserTabs = ({ isAdmin }) => {
   const path = usePathname();
   const { unreadCount } = useNotificationContext();
   return (
     <div className="hidden md:block">
+      <UserPointRewards />
       <div className="flex flex-col border rounded-2xl">
         <Link className={`flex items-center p-4 gap-4 text-lg ${path === PROFILE_ROUTE ? "text-primary font-semibold" : ""}`} href={PROFILE_ROUTE}>
           <UserIcon />

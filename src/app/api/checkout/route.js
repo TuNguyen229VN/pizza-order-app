@@ -9,6 +9,10 @@ import { pusherServer } from "@/libs/pusherServer";
 import { EXCHANGE_RATE_VIETNAM } from "@/constant/constant";
 import crypto from "crypto";
 import moment from "moment";
+import { UserInfo } from "@/models/UserInfo";
+import { calcPointDiscount } from "@/libs/pointTier";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../auth/[...nextauth]/route";
 
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
@@ -26,14 +30,14 @@ async function triggerOrderNotification(orderDoc) {
             recipientEmail: orderDoc.userEmail,
             orderId: orderDoc._id,
             title: "Đặt hàng thành công 🎉",
-            message: `Đơn hàng [${orderDoc._id}] của bạn đã được đặt!`,
+            message: `Đơn hàng [${orderDoc._id}] của bạn đã được đặt! Vui lòng thanh toán khi nhận hàng (COD).`,
         }),
         sendNotification({
             type: "order_placed",
             recipientRole: "admin",
             orderId: orderDoc._id,
-            title: "Đơn hàng mới!",
-            message: `Khách ${orderDoc.userName} (${orderDoc.phone}) vừa đặt đơn [${orderDoc._id}] - ${orderDoc.paymentMethod?.toUpperCase()}.`,
+            title: "Đơn hàng mới (COD)!",
+            message: `Khách ${orderDoc.userName} (${orderDoc.phone}) vừa đặt đơn [${orderDoc._id}] - COD. Chưa thanh toán, chờ giao hàng.`,
         }),
     ]);
     await Promise.all([
@@ -139,7 +143,22 @@ export async function POST(req) {
             if (!Number.isInteger(quantity) || quantity < 1) return Response.json({ message: `Số lượng "${cartProduct?.name || ""}" không hợp lệ` }, { status: 400 });
             lineItems.push({ name: productInfo.name, quantity, unitAmount: Math.round(productPrice) });
         }
+        const session = await getServerSession(authOptions);
+        const isLoggedIn = !!session?.user?.email;
 
+        let discountAmount = 0;
+        let discountPercent = 0;
+        let tierLabel = null;
+        if (isLoggedIn) {
+            const userInfo = await UserInfo.findOne({ email: infoProfileCheckout.email });
+            const pointRewards = userInfo?.pointRewards ?? 0;
+            const result = calcPointDiscount(pointRewards, totalAmount);
+            discountAmount = result.discountAmount;
+            discountPercent = result.discountPercent;
+            tierLabel = result.tier?.label ?? null;
+        }
+
+        const finalAmount = Math.max(0, totalAmount - discountAmount);
         // ─── Data chung để tạo Order ─────────────────────────────────────────
         const orderData = {
             ...infoProfileCheckout,
@@ -154,10 +173,8 @@ export async function POST(req) {
             cartProducts,
             paid: false,
             paymentMethod,
+            pointDiscount: { discountPercent, discountAmount, tierLabel: tier?.label ?? null },
         };
-
-        const totalAmount = lineItems.reduce((sum, i) => sum + i.unitAmount * i.quantity, 0) + shipFee;
-
         // ─── COD ─────────────────────────────────────────────────────────────
         if (paymentMethod === "cod") {
             const orderDoc = await Order.create(orderData);
@@ -201,12 +218,12 @@ export async function POST(req) {
             const ipnUrl = `${process.env.NEXTAUTH_URL}api/momo/callback`;
             const requestType = "payWithMethod";
             const extraData = "";
-            const rawSignature = `accessKey=${accessKey}&amount=${totalAmount}&extraData=${extraData}&ipnUrl=${ipnUrl}&orderId=${orderId}&orderInfo=Thanh toan don hang&partnerCode=${partnerCode}&redirectUrl=${redirectUrl}&requestId=${requestId}&requestType=${requestType}`;
+            const rawSignature = `accessKey=${accessKey}&amount=${finalAmount}&extraData=${extraData}&ipnUrl=${ipnUrl}&orderId=${orderId}&orderInfo=Thanh toan don hang&partnerCode=${partnerCode}&redirectUrl=${redirectUrl}&requestId=${requestId}&requestType=${requestType}`;
             const signature = crypto.createHmac("sha256", secretKey).update(rawSignature).digest("hex");
             const momoRes = await fetch("https://test-payment.momo.vn/v2/gateway/api/create", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ partnerCode, accessKey, requestId, amount: totalAmount, orderId, orderInfo: "Thanh toan don hang", redirectUrl, ipnUrl, requestType, extraData, lang: "vi", signature }),
+                body: JSON.stringify({ partnerCode, accessKey, requestId, amount: finalAmount, orderId, orderInfo: "Thanh toan don hang", redirectUrl, ipnUrl, requestType, extraData, lang: "vi", signature }),
             });
             const momoData = await momoRes.json();
             if (!momoData.payUrl) return Response.json({ message: momoData.localMessage || "MoMo lỗi" }, { status: 400 });
@@ -227,7 +244,7 @@ export async function POST(req) {
             const description = `Thanh toán đơn hàng #${orderDoc._id}`;
             const callback_url = `${process.env.NEXTAUTH_URL}api/zalopay/callback`;
             await Order.findByIdAndUpdate(orderDoc._id, { app_trans_id });
-            const hmac_input = `${app_id}|${app_trans_id}|${infoProfileCheckout.email}|${totalAmount}|${app_time}|${embed_data}|${item}`;
+            const hmac_input = `${app_id}|${app_trans_id}|${infoProfileCheckout.email}|${finalAmount}|${app_time}|${embed_data}|${item}`;
             const mac = crypto.createHmac("sha256", key1).update(hmac_input).digest("hex");
 
             const zaloRes = await fetch("https://sb-openapi.zalopay.vn/v2/create", {
@@ -238,7 +255,7 @@ export async function POST(req) {
                     app_trans_id,
                     app_user: infoProfileCheckout.email,
                     app_time,
-                    amount: totalAmount,
+                    amount: finalAmount,
                     embed_data,
                     item,
                     description,
@@ -281,7 +298,7 @@ export async function POST(req) {
                     purchase_units: [{
                         amount: {
                             currency_code: "USD",
-                            value: (totalAmount / EXCHANGE_RATE_VIETNAM).toFixed(2), // VNĐ → USD
+                            value: (finalAmount / EXCHANGE_RATE_VIETNAM).toFixed(2), // VNĐ → USD
                         },
                         custom_id: orderDoc._id.toString(),
                     }],

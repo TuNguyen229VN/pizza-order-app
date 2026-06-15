@@ -2,12 +2,12 @@
 import { CartContext, cartProductPrice, totalCartPrice } from '@/components/AppContext';
 import ButtonPrimary from '@/components/buttons/ButtonPrimary';
 import ChevronRight from '@/components/icons/ChevronRight';
-import AddressInput from '@/components/layout/AddressInput'
 import UseProfile from '@/components/UseProfile';
 import { API_CHECKOUT } from '@/constant/constant';
 import { CART_ROUTE } from '@/constant/routesApp';
 import { useDelivery } from '@/context/DeliveryContext';
 import { useFormValidate } from '@/hooks/useFormValidate';
+import { calcPointDiscount } from '@/libs/pointTier';
 import { totalQuantity } from '@/libs/totalQuantity';
 import { validators } from '@/libs/validators';
 import CartSubtotal from '@/modules/cart/CartSubtotal';
@@ -138,7 +138,7 @@ export default function CheckoutPage() {
         subtotal += cartProductPrice(p);
     }
 
-
+    const { discountAmount, discountPercent, tier } = calcPointDiscount(profileData?.pointRewards, totalCartPrice(cartProducts));
     return (
         <section>
             <HeaderCart text='Thanh toán' urlLink={CART_ROUTE} />
@@ -155,7 +155,7 @@ export default function CheckoutPage() {
                     </form>
                 </div>
                 <div>
-                    <CartSubtotal subtotal={totalCartPrice(cartProducts)} deliveryFee={deliveryInfo?.shipFee}>
+                    <CartSubtotal subtotal={totalCartPrice(cartProducts)} deliveryFee={deliveryInfo?.shipFee} discountAmount={discountAmount} discountPercent={discountPercent}>
                         <Link href={CART_ROUTE} className='flex items-center justify-between '>
                             <p className='mb-1 font-semibold md:text-2xl'>Giỏ hàng của tôi</p>
                             <ChevronRight className='w-4 h-4 md:w-6 md:h-6' />

@@ -7,6 +7,8 @@ import GoogleProvider from "next-auth/providers/google";
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import clientPromise from "@/libs/mongoConnect";
 import { UserInfo } from "@/models/UserInfo";
+import { connectDB } from "@/libs/connectDB";
+
 
 export const authOptions = {
   secret: process.env.NEXTAUTH_SECRET,
@@ -16,32 +18,26 @@ export const authOptions = {
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       authorization: {
-        params: {
-          prompt: "select_account",
-        },
+        params: { prompt: "select_account" },
       },
     }),
     CredentialsProvider({
       name: "Credentials",
       id: "credentials",
       credentials: {
-        username: {
-          label: "Email",
-          type: "email",
-          placeholder: "test@example.com",
-        },
+        username: { label: "Email", type: "email", placeholder: "test@example.com" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials, req) {
+      async authorize(credentials) {
         const email = credentials?.email;
         const password = credentials?.password;
-        await mongoose.connect(process.env.MONGO_URL);
+        await connectDB(); 
         const user = await User.findOne({ email });
         const passwordOk = user && bcrypt.compareSync(password, user.password);
         if (passwordOk) {
           const userInfo = await UserInfo.findOne({ email });
           if (userInfo?.status === "on") {
-            throw new Error("AccountBlocked"); // Trả về lỗi tùy chỉnh
+            throw new Error("AccountBlocked");
           }
           return user;
         }
@@ -51,7 +47,7 @@ export const authOptions = {
   ],
   events: {
     async createUser({ user }) {
-      // user vừa được adapter tạo, patch thêm createdAt
+      await connectDB(); 
       await User.findOneAndUpdate(
         { email: user.email },
         { $set: { createdAt: new Date() } }
@@ -59,13 +55,15 @@ export const authOptions = {
     },
   },
   session: {
-    strategy: "jwt", // "jwt" Hoặc 'database' nếu bạn lưu session vào MongoDB
+    strategy: "jwt",
   },
   pages: {
-    signIn: "/login", // Đường dẫn đến trang đăng nhập tùy chỉnh
+    signIn: "/login",
   },
   callbacks: {
     async jwt({ token, user, session, trigger }) {
+      await connectDB(); 
+
       if (user) {
         token.id = user._id;
         token.email = user.email;
@@ -73,25 +71,26 @@ export const authOptions = {
         const userInfo = await UserInfo.findOne({ email: user.email });
         token.admin = userInfo?.admin || false;
         token.status = userInfo?.status || "off";
+        token.pointRewards = userInfo?.pointRewards ?? 0;
       }
-      if (trigger === "update" && session?.name) {
+
+      if (trigger === "update" && session) {
         if (session.name) token.name = session.name;
         if (session.admin !== undefined) token.admin = session.admin;
         if (session.status !== undefined) token.status = session.status;
       }
 
-      // Check realtime mỗi lần token được đọc
+      // Realtime check status mỗi lần token được đọc
       if (token.email) {
         const userInfo = await UserInfo.findOne({ email: token.email });
         token.status = userInfo?.status || "off";
+        token.pointRewards = userInfo?.pointRewards ?? 0;
       }
+
       return token;
     },
     async session({ session, token }) {
-
-      if (token.status === "on") {
-        return null;
-      }
+      if (token.status === "on") return null;
 
       session.user = {
         id: token.id,
@@ -99,6 +98,7 @@ export const authOptions = {
         name: token.name,
         admin: token.admin,
         status: token.status,
+        pointRewards: token.pointRewards ?? 0,
       };
       return session;
     },
@@ -108,16 +108,12 @@ export const authOptions = {
 export async function isAdmin() {
   const session = await getServerSession(authOptions);
   const userEmail = session?.user?.email;
-  if (!userEmail) {
-    return false;
-  }
+  if (!userEmail) return false;
+  await connectDB();
   const userInfo = await UserInfo.findOne({ email: userEmail });
-  if (!userInfo) {
-    return false;
-  }
+  if (!userInfo) return false;
   return userInfo.admin;
 }
 
 const handler = NextAuth(authOptions);
-
 export { handler as GET, handler as POST };

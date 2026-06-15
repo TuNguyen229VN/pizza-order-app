@@ -11,15 +11,19 @@ import Link from 'next/link';
 import { CHECKOUT_ROUTE, HOME_ROUTE } from '@/constant/routesApp';
 import { useDelivery } from '@/context/DeliveryContext';
 import RecommendMenuItems from '@/components/layout/RecommendMenuItems';
+import UseProfile from '@/components/UseProfile';
+import { calcPointDiscount } from '@/libs/pointTier';
 
 export default function CartPage() {
   const { cartProducts, removeCartProduct } = useContext(CartContext);
+  const { data: profileData } = UseProfile();
   let subtotal = 0;
   for (const p of cartProducts) {
     subtotal += cartProductPrice(p);
   }
 
   const { deliveryInfo } = useDelivery();
+  const { discountAmount, discountPercent, tier } = calcPointDiscount(profileData?.pointRewards, totalCartPrice(cartProducts));
   return (
     <section>
       <HeaderCart urlLink={HOME_ROUTE} />
@@ -32,7 +36,7 @@ export default function CartPage() {
             <p className='py-4 text-sm font-semibold text-blackHeader md:text-base'>Có {totalQuantity(cartProducts)} sản phẩm trong giỏ hàng của bạn</p>
             {cartProducts?.length > 0 && cartProducts.map((product, index) => (
               <CartProduct
-                key={product.cartId||product.cartComboId||index}
+                key={product.cartId || product.cartComboId || index}
                 index={index}
                 product={product}
                 onRemove={removeCartProduct}
@@ -49,7 +53,7 @@ export default function CartPage() {
           </div>
         </div>
         <div className="">
-          <CartSubtotal subtotal={totalCartPrice(cartProducts)} deliveryFee={deliveryInfo?.shipFee} />
+          <CartSubtotal subtotal={totalCartPrice(cartProducts)} deliveryFee={deliveryInfo?.shipFee} discountAmount={discountAmount} discountPercent={discountPercent}/>
           <div className='px-4 md:px-0'>
             <Link href={cartProducts?.length > 0 ? CHECKOUT_ROUTE : '#'}
               className={cartProducts?.length === 0 ? 'pointer-events-none' : ''}>

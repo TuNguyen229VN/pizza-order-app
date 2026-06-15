@@ -2,6 +2,9 @@ import { connectDB } from "@/libs/connectDB";
 import { Order } from '@/models/Order';
 import { pusherServer } from "@/libs/pusherServer";
 import { sendNotification } from "@/libs/sendNotification";
+import { UserInfo } from "@/models/UserInfo";
+import { totalCartPrice } from "@/libs/priceUtils";
+import { DIVISION_POINT } from "@/constant/constant";
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
@@ -10,6 +13,17 @@ export async function markOrderPaid(orderId) {
     await connectDB();
     const order = await Order.findByIdAndUpdate(orderId, { paid: true }, { new: true });
     if (!order) return null;
+
+    const subtotal = totalCartPrice(order.cartProducts ?? []);
+    const deliveryFee = order.deliveryInfo?.shipFee ?? 0;
+    const earnedPoints = Math.floor((subtotal + deliveryFee) / DIVISION_POINT);
+
+    if (earnedPoints > 0) {
+        await UserInfo.findOneAndUpdate(
+            { email: order.userEmail },
+            { $inc: { pointRewards: earnedPoints } }
+        );
+    }
 
     const [userNotif, adminNotif] = await Promise.all([
         sendNotification({

@@ -3,6 +3,7 @@ import { markOrderPaid } from "../../webhook/route";
 
 
 export async function POST(req) {
+    console.log("momomoo")
     const body = await req.json();
     const secretKey = process.env.MOMO_SECRET_KEY;
     const rawSignature = `accessKey=${process.env.MOMO_ACCESS_KEY}&amount=${body.amount}&extraData=${body.extraData}&message=${body.message}&orderId=${body.orderId}&orderInfo=${body.orderInfo}&orderType=${body.orderType}&partnerCode=${body.partnerCode}&payType=${body.payType}&requestId=${body.requestId}&responseTime=${body.responseTime}&resultCode=${body.resultCode}&transId=${body.transId}`;

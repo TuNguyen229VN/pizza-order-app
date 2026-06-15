@@ -5,6 +5,7 @@ import { getServerSession } from "next-auth";
 import { LIMITPAGE } from "@/constant/constant";
 import mongoose from "mongoose";
 import { escapeRegex } from "@/utils/escapeRegex";
+import { markOrderPaid } from "../webhook/route";
 
 const buildSearchQuery = (search, admin) => {
     if (!search) return {};
@@ -113,6 +114,7 @@ export async function GET(req) {
 
 }
 
+
 export async function PATCH(req) {
     try {
         await connectDB();
@@ -145,14 +147,11 @@ export async function PATCH(req) {
             return Response.json({ message: "Đơn hàng đã được thanh toán rồi" }, { status: 400 });
         }
 
-        const updated = await Order.findByIdAndUpdate(
-            _id,
-            { paid: true },
-            { new: true }
-        );
+        const updated = await markOrderPaid(_id);
 
         return Response.json(updated);
     } catch (error) {
+        console.log(error)
         return Response.json({ message: "Không thể kết nối Database" }, { status: 500 });
     }
 }
