@@ -112,3 +112,47 @@ export async function GET(req) {
     }
 
 }
+
+export async function PATCH(req) {
+    try {
+        await connectDB();
+
+        const admin = await isAdmin();
+        if (!admin) {
+            return Response.json({ message: "Unauthorized" }, { status: 401 });
+        }
+
+        const { _id } = await req.json();
+
+        if (!_id) {
+            return Response.json({ message: "Thiếu _id" }, { status: 400 });
+        }
+
+        const order = await Order.findById(_id);
+
+        if (!order) {
+            return Response.json({ message: "Không tìm thấy đơn hàng" }, { status: 404 });
+        }
+
+        if (order.paymentMethod !== "cod") {
+            return Response.json(
+                { message: "Chỉ có thể xác nhận thanh toán cho đơn COD" },
+                { status: 400 }
+            );
+        }
+
+        if (order.paid) {
+            return Response.json({ message: "Đơn hàng đã được thanh toán rồi" }, { status: 400 });
+        }
+
+        const updated = await Order.findByIdAndUpdate(
+            _id,
+            { paid: true },
+            { new: true }
+        );
+
+        return Response.json(updated);
+    } catch (error) {
+        return Response.json({ message: "Không thể kết nối Database" }, { status: 500 });
+    }
+}

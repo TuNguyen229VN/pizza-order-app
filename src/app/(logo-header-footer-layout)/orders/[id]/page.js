@@ -14,6 +14,8 @@ import { dbTimeForHuman } from '@/libs/datetime';
 import CartSubtotal from '@/modules/cart/CartSubtotal';
 import UseProfile from '@/components/UseProfile';
 import HeaderCart from '@/modules/cart/HeaderCart';
+import toast from 'react-hot-toast';
+import ConfirmPopup from '@/components/popup/ConfirmPopup';
 
 export default function OrderPage() {
     const { clearCart } = useContext(CartContext);
@@ -23,7 +25,7 @@ export default function OrderPage() {
     const { loading, data: profile } = UseProfile();
     const { id } = useParams();
     const searchParams = useSearchParams();
-
+    const [updatingPaid, setUpdatingPaid] = useState(false);
     const from = searchParams.get("from");
     const status = searchParams.get("status");
 
@@ -66,6 +68,29 @@ export default function OrderPage() {
             })
         }
     }, []);
+
+    async function handleConfirmCodPayment() {
+        setUpdatingPaid(true);
+        try {
+            const res = await fetch(API_ORDERS, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ _id: order._id }),
+            });
+            if (res.ok) {
+                const updated = await res.json();
+                setOrder(updated);
+                toast.success("Xác nhận thanh toán thành công!");
+            } else {
+                const err = await res.json();
+                toast.error(err.message || "Cập nhật thất bại");
+            }
+        } catch {
+            toast.error("Lỗi kết nối");
+        } finally {
+            setUpdatingPaid(false);
+        }
+    }
 
     let subtotal = 0;
     if (order?.cartProducts) {
@@ -119,6 +144,12 @@ export default function OrderPage() {
                             {order?.paid ? 'Đã thanh toán' : 'Chưa thanh toán'}
 
                         </p>
+
+                        {profile?.admin && order?.paymentMethod === "cod" && !order?.paid && (
+                            <ConfirmPopup onDelete={handleConfirmCodPayment} disabled={updatingPaid} label='Cập nhật thanh toán (COD)' classNameButton='w-full py-3 mt-4 text-sm font-medium text-white duration-200 bg-green-600 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed'>
+                                {updatingPaid ? "Đang cập nhật..." : "Xác nhận đã thanh toán (COD)"}
+                            </ConfirmPopup>
+                        )}
                     </div>
                 </div>
                 <div className='grid grid-cols-1 p-6 mt-4 border rounded-lg md:grid-cols-2 md:mt-6'>

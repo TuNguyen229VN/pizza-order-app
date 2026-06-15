@@ -6,7 +6,6 @@ import EditTableImage from "@/components/layout/EditTableImage";
 import Paging from "@/components/layout/Paging";
 import TotalDashboard from "@/components/layout/TotalDashboard";
 import UserTabs from "@/components/layout/UserTabs";
-import ConfirmPopup from "@/components/popup/ConfirmPopup";
 import UseProfile from "@/components/UseProfile";
 import { API_CATEGORIES, API_UPLOAD_IMAGE, LIST_OPTION, STATUS_OPTIONS, STATUS_OPTIONS_FILTER } from "@/constant/constant";
 import ContainerProfileLeft from "@/container/ContainerProfileLeft";

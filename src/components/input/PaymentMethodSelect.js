@@ -1,4 +1,5 @@
 import { METHODS } from "@/constant/constant";
+import Image from "next/image";
 
 
 const PaymentMethodSelect = ({ value, onChange }) => {
@@ -21,7 +22,7 @@ const PaymentMethodSelect = ({ value, onChange }) => {
 
             {/* Icon */}
             <div className={`w-9 h-9 rounded-lg flex items-center justify-center text-lg flex-shrink-0 ${method.iconBg}`}>
-              {method.icon}
+              <Image src={method.icon} alt={method.value} width={200} height={200}/>
             </div>
 
             {/* Text */}
