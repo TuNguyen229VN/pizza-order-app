@@ -1,0 +1,5 @@
+const crypto = require('crypto');
+const body = JSON.parse('{"data":"{\\"app_id\\":2553,\\"app_trans_id\\":\\"260615_6a2fde3e8cf05a2d3a67785e\\",\\"app_time\\":1781521982312,\\"app_user\\":\\"teo@gmail.com\\",\\"amount\\":254000,\\"embed_data\\":\\"{\\\\\\"redirecturl\\\\\\":\\\\\\"https://zealous-morphing-dominion.ngrok-free.dev/orders/6a2fde3e8cf05a2d3a67785e?clear-cart=1\\\\\\"}\\",\\"item\\":\\"[]\\",\\"zp_trans_id\\":260615000002401,\\"server_time\\":1781522017716,\\"channel\\":36,\\"merchant_user_id\\":\\"DXp3vtfyygtb2_XdP8yFeA\\",\\"zp_user_id\\":\\"DXp3vtfyygtb2_XdP8yFeA\\",\\"user_fee_amount\\":0,\\"discount_amount\\":0}","mac":"49e8ee21d44ba4e750863533c2d27da59ed5752d5a0d9f50650ed1d87ff6eefa","type":1}');
+
+const mac = crypto.createHmac('sha256', 'eG4r0GcoNtRGbO8').update(body.data).digest('hex');
+console.log('match:', mac === body.mac);

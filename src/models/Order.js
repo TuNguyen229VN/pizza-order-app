@@ -10,6 +10,7 @@ const OrderSchema = new Schema({
     paid: { type: Boolean, default: false },
     totalOrder: Number,
     paymentMethod:String,
+    app_trans_id: { type: String },
 }, { timestamps: true });
 
 // Tự xóa sau 24h nếu chưa paid

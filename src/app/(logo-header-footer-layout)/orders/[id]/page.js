@@ -34,7 +34,16 @@ export default function OrderPage() {
     }, [status]);
 
     // Nếu đang cần redirect → không render gì hết
-
+    useEffect(() => {
+        const status = searchParams.get("status");
+        if (status === "1" && order?.app_trans_id) {
+            fetch("/api/zalopay/query", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ app_trans_id: order.app_trans_id }),
+            });
+        }
+    }, [order]);
     useEffect(() => {
         if (typeof window.console !== "undefined") {
             const status = searchParams.get("status");
@@ -44,6 +53,8 @@ export default function OrderPage() {
             }
         }
     }, [clearCart]);
+
+
     useEffect(() => {
         if (id) {
             setLoadingOrder(true);

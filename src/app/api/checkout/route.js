@@ -226,7 +226,7 @@ export async function POST(req) {
             const item = JSON.stringify([]);
             const description = `Thanh toán đơn hàng #${orderDoc._id}`;
             const callback_url = `${process.env.NEXTAUTH_URL}api/zalopay/callback`;
-
+            await Order.findByIdAndUpdate(orderDoc._id, { app_trans_id });
             const hmac_input = `${app_id}|${app_trans_id}|${infoProfileCheckout.email}|${totalAmount}|${app_time}|${embed_data}|${item}`;
             const mac = crypto.createHmac("sha256", key1).update(hmac_input).digest("hex");
 
