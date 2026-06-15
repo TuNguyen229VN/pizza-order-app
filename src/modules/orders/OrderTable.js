@@ -1,3 +1,4 @@
+import { METHODS } from '@/constant/constant';
 import { ORDERS_ROUTE } from '@/constant/routesApp'
 import { dbTimeForHuman } from '@/libs/datetime'
 import Link from 'next/link'
@@ -17,7 +18,7 @@ export default function OrderTable({ orders, loadingForm = false }) {
                             <th className="px-5 py-4">Đơn hàng</th>
                             <th className="px-5 py-4">Ngày đặt hàng</th>
                             <th className="px-5 py-4">Thanh toán</th>
-                            <th className="px-5 py-4">Giao hàng</th>
+                            <th className="px-5 py-4">Phương thức</th>
                             <th className="px-5 py-4">Loại đơn</th>
                             <th className="sticky right-0 z-10 px-5 py-4 text-right bg-white "><p className='w-max'>Thao tác</p></th>
                         </tr>
@@ -60,7 +61,7 @@ export default function OrderTable({ orders, loadingForm = false }) {
                                     </td>
                                     <td className="px-5 py-4">
                                         <p className='w-[100px]'>
-                                            Alo
+                                           {METHODS.find(m => m.value === order?.paymentMethod)?.label ?? order?.paymentMethod}
                                         </p>
                                     </td>
                                     <td className="px-5 py-4">
