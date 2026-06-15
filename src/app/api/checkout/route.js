@@ -145,7 +145,8 @@ export async function POST(req) {
         }
         const session = await getServerSession(authOptions);
         const isLoggedIn = !!session?.user?.email;
-
+        const totalAmount = lineItems.reduce((sum, i) => sum + i.unitAmount * i.quantity, 0) + shipFee;
+        
         let discountAmount = 0;
         let discountPercent = 0;
         let tierLabel = null;
