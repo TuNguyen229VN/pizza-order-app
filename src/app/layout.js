@@ -7,6 +7,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import "leaflet/dist/leaflet.css";
 import { DeliveryProvider } from "@/context/DeliveryContext";
 import { NotificationProvider } from "@/context/NotificationContext";
+import { NextIntlClientProvider } from "next-intl";
 
 const roboto = Inter({
   subsets: ["latin"],
@@ -37,7 +38,9 @@ export default function RootLayout({ children }) {
               <Toaster
                 position="top-right"
               />
+               <NextIntlClientProvider>
               {children}
+               </NextIntlClientProvider>
             </NotificationProvider>
           </DeliveryProvider>
         </AppProvider>

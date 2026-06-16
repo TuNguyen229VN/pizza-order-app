@@ -3,7 +3,7 @@ import { CartContext, cartProductPrice, totalCartPrice } from '@/components/AppC
 import ButtonPrimary from '@/components/buttons/ButtonPrimary';
 import ChevronRight from '@/components/icons/ChevronRight';
 import UseProfile from '@/components/UseProfile';
-import { API_CHECKOUT } from '@/constant/constant';
+import { API_CHECKOUT, MIN_DELIVERY_AMOUNT } from '@/constant/constant';
 import { CART_ROUTE } from '@/constant/routesApp';
 import { useDelivery } from '@/context/DeliveryContext';
 import { useFormValidate } from '@/hooks/useFormValidate';
@@ -31,6 +31,7 @@ export default function CheckoutPage() {
     const { cartProducts } = useContext(CartContext);
     const { deliveryInfo, openDeliveryModal } = useDelivery();
     const [paymentMethod, setPaymentMethod] = useState();
+    const isDeliveryBelowMin = deliveryInfo?.mode === "delivery" && totalCartPrice(cartProducts) < MIN_DELIVERY_AMOUNT;
     useEffect(() => {
         if (typeof window !== 'undefined') {
             if (window.location.href.includes('canceled=1')) {
@@ -63,6 +64,10 @@ export default function CheckoutPage() {
         // address and shopping cart products
         if (!deliveryInfo) {
             openDeliveryModal();
+            return;
+        }
+        if (isDeliveryBelowMin) {
+            toast.error(`Đợi đã! Bạn vui lòng mua thêm ${(MIN_DELIVERY_AMOUNT - totalCartPrice(cartProducts)).toLocaleString('vi-VN')} ₫ để đủ điều kiện giao hàng`);
             return;
         }
         const isValid = handleValidate({

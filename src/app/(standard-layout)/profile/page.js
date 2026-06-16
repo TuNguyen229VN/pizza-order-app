@@ -10,6 +10,7 @@ import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import UserPointRewards from "@/components/layout/UserPointRewards";
 
 const ProfilePage = () => {
   const session = useSession();
@@ -125,6 +126,9 @@ const ProfilePage = () => {
   return (
     <section className="">
       <HeaderCart text="Tài khoản" className={"top-[70px]"} />
+      <div className="block md:hidden">
+         <UserPointRewards />
+      </div>
       <div className="grid gap-6 md:grid-cols-3">
         <UserTabs isAdmin={isAdmin}></UserTabs>
 

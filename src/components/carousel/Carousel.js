@@ -10,8 +10,10 @@ import ChevronLeft from '../icons/ChevronLeft'
 import ChevronRight from '../icons/ChevronRight'
 import CloseIcon from '../icons/CloseIcon'
 import { AiOutlineLike } from 'react-icons/ai'
+import { useTranslations } from 'next-intl'
 
 export default function Carousel({ carouselList = [], setHash, hash, isScrollingTo, search, setSearch, handleSearch, activeSearch, setActiveSearch, openInputSearch, setOpenInputSearch }) {
+    const t = useTranslations('HomePage');
     const prevRef = useRef(null);
     const nextRef = useRef(null);
     const swiperRef = useRef(null);
@@ -79,7 +81,7 @@ export default function Carousel({ carouselList = [], setHash, hash, isScrolling
                     }}
                 >
                     <div className='relative flex-1 min-w-0 '>
-                        <input type="text" placeholder='Tìm kiếm mọi thứ bạn muốn' className='w-full py-3 pl-5 pr-4 border rounded-md focus:border-black md:text-base' value={search} onChange={(ev) => setSearch(ev.target.value)} onKeyDown={(e) => {
+                        <input type="text" placeholder={t("Tìm kiếm mọi thứ bạn muốn")} className='w-full py-3 pl-5 pr-4 border rounded-md focus:border-black md:text-base' value={search} onChange={(ev) => setSearch(ev.target.value)} onKeyDown={(e) => {
                             if (e.key === "Enter") handleSearch()
                         }} />
                         {search?.length > 0 && <button className="absolute p-[1px] border rounded-full right-3 top-2/4 -translate-y-2/4 cursor-pointer" onClick={() => {
@@ -87,15 +89,13 @@ export default function Carousel({ carouselList = [], setHash, hash, isScrolling
                             setActiveSearch("")
                         }}><CloseIcon className="w-4 h-4" /></button>}
                     </div>
-                    <button className='md:w-[180px] px-6 py-3 duration-300 font-medium text-white rounded-md bg-primary hover:bg-red-400 text-sm md:text-base' onClick={handleSearch}><p className='hidden md:block'>Tìm kiếm</p><SearchIcon className='inline w-5 h-5 md:hidden' /></button>
+                    <button className='md:w-[180px] px-6 py-3 duration-300 font-medium text-white rounded-md bg-primary hover:bg-red-400 text-sm md:text-base' onClick={handleSearch}><p className='hidden md:block'>{t("Tìm kiếm")}</p><SearchIcon className='inline w-5 h-5 md:hidden' /></button>
                     <button className='text-sm md:text-base' onClick={() => {
                         setSearch("");
                         setActiveSearch("");
                         setOpenInputSearch(false);
-                    }}><p className='hidden md:block'>Đóng</p> <CloseIcon className='inline w-5 h-5 md:hidden' /></button>
+                    }}><p className='hidden md:block'>{t("Đóng")}</p> <CloseIcon className='inline w-5 h-5 md:hidden' /></button>
                 </div>
-
-
                 <div
                     className="relative w-full overflow-hidden transition-all duration-500 ease-in-out md:h-[72px]"
                     style={{
@@ -148,7 +148,7 @@ export default function Carousel({ carouselList = [], setHash, hash, isScrolling
                         <SwiperSlide className="!w-auto">
                             <div className='flex flex-col items-center justify-center w-full gap-1 pb-3 text-sm text-center cursor-pointer md:text-base' onClick={() => setOpenInputSearch(true)}>
                                 <SearchIcon className="w-4 h-4 md:w-6 md:h-6" />
-                                <p>Tìm kiếm</p>
+                                <p>{t("Tìm kiếm")}</p>
                             </div>
                         </SwiperSlide>
                         <SwiperSlide className="!w-auto">
@@ -164,7 +164,7 @@ export default function Carousel({ carouselList = [], setHash, hash, isScrolling
                                     }`}
                             >
                                 <AiOutlineLike className="w-4 h-4 md:w-6 md:h-6" />
-                                <p className='w-full text-sm whitespace-nowrap md:text-base'>Bạn sẽ thích</p>
+                                <p className='w-full text-sm whitespace-nowrap md:text-base'>{t("Bạn sẽ thích")}</p>
 
                                 <span
                                     className={`absolute bottom-0 left-0 h-1 md:h-[6px] w-full rounded-full bg-primary transition-all duration-300 ${"recommendations" === hash
@@ -188,7 +188,7 @@ export default function Carousel({ carouselList = [], setHash, hash, isScrolling
                                         }`}
                                 >
                                     {carouselItem.icons}
-                                    <p className='w-full text-sm md:text-base whitespace-nowrap'>{carouselItem.name}</p>
+                                    <p className='w-full text-sm md:text-base whitespace-nowrap'>{t.has(carouselItem.name) ? t(carouselItem.name) : carouselItem.name}</p>
 
                                     <span
                                         className={`absolute bottom-0 left-0 h-1 md:h-[6px] w-full rounded-full bg-primary transition-all duration-300 ${carouselItem.slug === hash

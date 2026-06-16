@@ -101,10 +101,17 @@ export default function OrderPage() {
     if (status !== null && status !== "1") return null;
     const isOwnOrder = profile.email === order?.userEmail;
     const showAdminLayout = profile.admin && !isOwnOrder;
+    if (order?.message) {
+        return (
+            <p className="max-w-3xl mx-auto mt-8 text-center md:pb-6">
+               Không có đơn hàng
+            </p>
+        );
+    }
     return (
         <section className="max-w-3xl mx-auto md:pb-6">
             {loadingOrder && (
-                <div>Đang tải đơn hàng...</div>
+                <div className='mt-8 text-center'>Đang tải đơn hàng...</div>
             )}
             {order && <>
                 {from === "orders" &&
@@ -133,8 +140,8 @@ export default function OrderPage() {
                         <h4 className='mb-4 font-semibold md:mb-6 md:text-2xl'>{order?.deliveryInfo?.mode === "delivery" ? "Giao đến" : "Mua mang về tại"}</h4>
                         <p><span className='font-medium'>Khách hàng:</span> {order?.userName}</p>
                         <p> {order?.phone}</p>
-                        <p className='font-medium'> {order?.deliveryInfo?.address || order?.deliveryInfo.store.name} </p>
-                        {order?.deliveryInfo.store && <p>{order?.deliveryInfo.store.address}</p>}
+                        <p className='font-medium'> {order?.deliveryInfo?.address || order?.deliveryInfo?.store.name} </p>
+                        {order?.deliveryInfo?.store && <p>{order?.deliveryInfo?.store.address}</p>}
                         {order?.noteDelivery && <p className='text-sm italic text-secondary'>Ghi chú giao hàng: {order?.noteDelivery}</p>}
                     </div>
                     <div className='p-6 border rounded-lg'>
@@ -157,13 +164,13 @@ export default function OrderPage() {
                     <div className='md:col-span-2'>
                         <p className='text-secondary'>{dbTimeForHuman(order?.createdAt)}</p>
                         <div>
-                            {order.cartProducts.map(product => (
+                            {order?.cartProducts?.map(product => (
                                 <CartProduct key={product._id} product={product} />
                             ))}
                         </div>
                     </div>
                     <div></div>
-                    <CartSubtotal subtotal={totalCartPrice(order?.cartProducts)} deliveryFee={order?.deliveryInfo?.shipFee}  discountAmount={order?.pointDiscount?.discountAmount} discountPercent={order?.pointDiscount?.discountPercent} className={"md:border-none"} />
+                    <CartSubtotal subtotal={totalCartPrice(order?.cartProducts)} deliveryFee={order?.deliveryInfo?.shipFee} discountAmount={order?.pointDiscount?.discountAmount} discountPercent={order?.pointDiscount?.discountPercent} className={"md:border-none"} />
                 </div>
 
                 {!showAdminLayout && from !== "orders" && <div className='p-6 mt-4 border rounded-lg md:mt-6'>

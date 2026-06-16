@@ -35,7 +35,7 @@ export default function UserPointRewards() {
                     <p className='font-medium'>{tier?.label || "Thành viên Thường"}</p>
                     <div className=''></div>
                 </div>
-                <div className='flex flex-col items-center justify-between lg:flex-row'>
+                <div className='flex flex-row items-center justify-between md:flex-col lg:flex-row'>
                     <div className=''>
                         <span className='text-[40px] font-semibold'>{profileData?.pointRewards || 0}</span>
                         <span className='ml-2 text-sm'>điểm</span>

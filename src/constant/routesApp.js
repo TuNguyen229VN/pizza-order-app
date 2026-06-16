@@ -24,7 +24,7 @@ const COMBO_ORDER_ROUTE = '/combo-order';
 const ORDER_TRACKING_ROUTE = '/order-tracking';
 const BANNER_ROUTE = '/banners';
 const REARRANGE_ROUTE = "/rearrange";
-
+const REWARDS_ROUTE="/rewards";
 export {
   HOME_ROUTE,
   PROFILE_ROUTE,
@@ -52,4 +52,5 @@ export {
   COMBO_ORDER_ROUTE,
   ORDER_TRACKING_ROUTE,
   REARRANGE_ROUTE,
+  REWARDS_ROUTE,
 }

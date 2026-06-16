@@ -6,7 +6,7 @@ import { calcDeliveryInfo } from "@/utils/utils";
 import { ComboDetail } from "@/models/ComboDetail";
 import { sendNotification } from "@/libs/sendNotification";
 import { pusherServer } from "@/libs/pusherServer";
-import { EXCHANGE_RATE_VIETNAM } from "@/constant/constant";
+import { EXCHANGE_RATE_VIETNAM, MIN_DELIVERY_AMOUNT } from "@/constant/constant";
 import crypto from "crypto";
 import moment from "moment";
 import { UserInfo } from "@/models/UserInfo";
@@ -58,7 +58,9 @@ export async function POST(req) {
         if (!deliveryInfo) {
             return Response.json({ message: "Vui lòng nhập địa chỉ để giao hàng hoặc mua mang về" }, { status: 400 });
         }
-
+        if (deliveryInfo.mode === "delivery" && calcTotal(cartProducts) < MIN_DELIVERY_AMOUNT) {
+            return Response.json({ message: `Đơn giao hàng tối thiểu ${MIN_DELIVERY_AMOUNT.toLocaleString("vi-VN")}đ` }, { status: 400 });
+        }
         const { isValid, errors } = validateForm({
             name: { value: infoProfileCheckout.name, rules: [validators.required("họ và tên"), validators.minLength(2), validators.maxLength(200)] },
             email: { value: infoProfileCheckout.email, rules: [validators.required("email"), validators.email] },
@@ -235,11 +237,6 @@ export async function POST(req) {
             const requestType = "payWithMethod";
             const extraData = "";
             const rawSignature = `accessKey=${accessKey}&amount=${finalAmount}&extraData=${extraData}&ipnUrl=${ipnUrl}&orderId=${orderId}&orderInfo=Thanh toan don hang&partnerCode=${partnerCode}&redirectUrl=${redirectUrl}&requestId=${requestId}&requestType=${requestType}`;
-
-            console.log("ipnUrl:", ipnUrl);
-            console.log("redirectUrl:", redirectUrl);
-
-
             const signature = crypto.createHmac("sha256", secretKey).update(rawSignature).digest("hex");
             const momoRes = await fetch("https://test-payment.momo.vn/v2/gateway/api/create", {
                 method: "POST",
@@ -247,7 +244,6 @@ export async function POST(req) {
                 body: JSON.stringify({ partnerCode, accessKey, requestId, amount: finalAmount, orderId, orderInfo: "Thanh toan don hang", redirectUrl, ipnUrl, requestType, extraData, lang: "vi", signature }),
             });
             const momoData = await momoRes.json();
-            console.log("momoData:", momoData);
             if (!momoData.payUrl) return Response.json({ message: momoData.localMessage || "MoMo lỗi" }, { status: 400 });
             return Response.json({ redirectUrl: momoData.payUrl });
         }

@@ -13,6 +13,8 @@ import { useDelivery } from '@/context/DeliveryContext';
 import RecommendMenuItems from '@/components/layout/RecommendMenuItems';
 import UseProfile from '@/components/UseProfile';
 import { calcPointDiscount } from '@/libs/pointTier';
+import NotificationPopup from '@/components/popup/NotificationPopup';
+import { MIN_DELIVERY_AMOUNT } from '@/constant/constant';
 
 export default function CartPage() {
   const { cartProducts, removeCartProduct } = useContext(CartContext);
@@ -24,6 +26,7 @@ export default function CartPage() {
 
   const { deliveryInfo } = useDelivery();
   const { discountAmount, discountPercent, tier } = calcPointDiscount(profileData?.pointRewards, totalCartPrice(cartProducts));
+  const isDeliveryBelowMin = deliveryInfo?.mode === "delivery" && totalCartPrice(cartProducts) < MIN_DELIVERY_AMOUNT;
   return (
     <section>
       <HeaderCart urlLink={HOME_ROUTE} />
@@ -53,12 +56,28 @@ export default function CartPage() {
           </div>
         </div>
         <div className="">
-          <CartSubtotal subtotal={totalCartPrice(cartProducts)} deliveryFee={deliveryInfo?.shipFee} discountAmount={discountAmount} discountPercent={discountPercent}/>
+          <CartSubtotal subtotal={totalCartPrice(cartProducts)} deliveryFee={deliveryInfo?.shipFee} discountAmount={discountAmount} discountPercent={discountPercent} />
           <div className='px-4 md:px-0'>
-            <Link href={cartProducts?.length > 0 ? CHECKOUT_ROUTE : '#'}
-              className={cartProducts?.length === 0 ? 'pointer-events-none' : ''}>
-              <ButtonPrimary className={"mt-6"} disabled={!cartProducts?.length}>Thanh toán</ButtonPrimary>
-            </Link>
+            <div className='px-4 md:px-0'>
+              {isDeliveryBelowMin ? (
+                <NotificationPopup
+                  labelDesc={`Đợi đã! Bạn vui lòng mua thêm ${(MIN_DELIVERY_AMOUNT-totalCartPrice(cartProducts)).toLocaleString('vi-VN')} ₫ để đủ điều kiện giao hàng`}
+                  labelConfirm="Xác nhận"
+                  classNameButton="w-full"
+                >
+                  <ButtonPrimary className="mt-6" disabled={!cartProducts?.length}>
+                    Thanh toán
+                  </ButtonPrimary>
+                </NotificationPopup>
+              ) : (
+                <Link href={cartProducts?.length > 0 ? CHECKOUT_ROUTE : '#'}
+                  className={!cartProducts?.length ? 'pointer-events-none' : ''}>
+                  <ButtonPrimary className="mt-6" disabled={!cartProducts?.length}>
+                    Thanh toán
+                  </ButtonPrimary>
+                </Link>
+              )}
+            </div>
           </div>
         </div>
       </div>

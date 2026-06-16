@@ -33,6 +33,7 @@
 - **pusher** 
 - **pusher-js**
 - **moment**
+- **next-intl**
 ## Pages:
 
 - Home Page
@@ -53,6 +54,7 @@
 - Update User Page
 - Change Password Page
 - Combobox User Page
+- Reward Page
 
 ## Main Features:
 

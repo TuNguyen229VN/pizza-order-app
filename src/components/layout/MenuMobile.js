@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation';
 import React from 'react'
 import ConfirmPopup from '../popup/ConfirmPopup';
 import { signOut } from 'next-auth/react';
-import { BANNER_ROUTE, CATEGORIES_ROUTE, CHANGEPASSWORD_ROUTE, COMBO_ROUTE, COMBOTYPE_ROUTE, LOGIN_ROUTE, MENU_ITEMS_ROUTE, NOTIFICATION_ROUTE, ORDER_TRACKING_ROUTE, ORDERS_ROUTE, PROFILE_ROUTE, REARRANGE_ROUTE, REGISTER_ROUTE, USERS_ROUTE } from '@/constant/routesApp';
+import { BANNER_ROUTE, CATEGORIES_ROUTE, CHANGEPASSWORD_ROUTE, COMBO_ROUTE, COMBOTYPE_ROUTE, LOGIN_ROUTE, MENU_ITEMS_ROUTE, NOTIFICATION_ROUTE, ORDER_TRACKING_ROUTE, ORDERS_ROUTE, PROFILE_ROUTE, REARRANGE_ROUTE, REGISTER_ROUTE, REWARDS_ROUTE, USERS_ROUTE } from '@/constant/routesApp';
 import { useNotificationContext } from '@/context/NotificationContext';
 
 export default function MenuMobile({ isAdmin, status, onClose }) {
@@ -27,6 +27,9 @@ export default function MenuMobile({ isAdmin, status, onClose }) {
                     <p>Ngôn ngữ / Language </p>
                     <p className='text-primary'>Tiếng Việt</p>
                 </div>
+                 <Link href={REWARDS_ROUTE} className='inline-block p-3' onClick={onClose}>
+                    Teo Rewards
+                </Link>
             </div>
             <ConfirmPopup labelConfirm="Gọi ngay" label="Hỗ trợ khách hàng" labelDesc="gọi đến 1900 1822" onDelete={() => {
                 onClose?.();
