@@ -238,7 +238,7 @@ export async function POST(req) {
 
             console.log("ipnUrl:", ipnUrl);
             console.log("redirectUrl:", redirectUrl);
-            console.log("momoData:", momoData);
+
 
             const signature = crypto.createHmac("sha256", secretKey).update(rawSignature).digest("hex");
             const momoRes = await fetch("https://test-payment.momo.vn/v2/gateway/api/create", {
@@ -247,6 +247,7 @@ export async function POST(req) {
                 body: JSON.stringify({ partnerCode, accessKey, requestId, amount: finalAmount, orderId, orderInfo: "Thanh toan don hang", redirectUrl, ipnUrl, requestType, extraData, lang: "vi", signature }),
             });
             const momoData = await momoRes.json();
+            console.log("momoData:", momoData);
             if (!momoData.payUrl) return Response.json({ message: momoData.localMessage || "MoMo lỗi" }, { status: 400 });
             return Response.json({ redirectUrl: momoData.payUrl });
         }
