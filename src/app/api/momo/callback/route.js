@@ -14,3 +14,7 @@ export async function POST(req) {
 
     return Response.json({ message: "ok" });
 }
+
+export async function GET() {
+    return Response.json({ ok: true });
+}

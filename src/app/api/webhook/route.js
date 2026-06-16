@@ -5,6 +5,8 @@ import { sendNotification } from "@/libs/sendNotification";
 import { UserInfo } from "@/models/UserInfo";
 import { totalCartPrice } from "@/libs/priceUtils";
 import { DIVISION_POINT } from "@/constant/constant";
+import transporter from "@/libs/mailer";
+import { renderOrderInvoiceEmail } from "@/mail/RenderOrderEmail";
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
@@ -50,6 +52,14 @@ export async function markOrderPaid(orderId) {
             { notification: userNotif }
         ),
         pusherServer.trigger("private-admin", "new-notification", { notification: adminNotif }),
+        // mail
+        transporter.sendMail({
+            from: `"Pizza Teo" <${process.env.GMAIL_USER}>`,
+            to: order.userEmail,
+            replyTo: process.env.GMAIL_USER,
+            subject: `Hóa đơn thanh toán #${order._id}`,
+            html: renderOrderInvoiceEmail({ order, subtotal, deliveryFee, earnedPoints }),
+        }).catch(err => console.error("Invoice email failed:", err)),
     ]);
 
     return order;

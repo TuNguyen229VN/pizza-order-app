@@ -129,7 +129,7 @@ const ProfilePage = () => {
         <UserTabs isAdmin={isAdmin}></UserTabs>
 
         <div className="col-span-2">
-          <UserForm title={"Hồ sơ của tôi"} user={user} onSave={handleProfileInfoUpdate} errors={errors} registerRef={registerRef}
+          <UserForm title={`Hồ sơ của tôi ${isAdmin?"(Admin)":""}`} user={user} onSave={handleProfileInfoUpdate} errors={errors} registerRef={registerRef}
             clearError={clearError} loadingForm={loadingForm} />
         </div>
       </div>

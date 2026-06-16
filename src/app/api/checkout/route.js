@@ -216,7 +216,7 @@ export async function POST(req) {
                         fixed_amount: { amount: shipFee, currency: "vnd" },
                     },
                 }],
-                ...(discounts.length > 0 && { discounts }), 
+                ...(discounts.length > 0 && { discounts }),
             });
 
             return Response.json({ redirectUrl: stripeSession.url });
@@ -235,6 +235,11 @@ export async function POST(req) {
             const requestType = "payWithMethod";
             const extraData = "";
             const rawSignature = `accessKey=${accessKey}&amount=${finalAmount}&extraData=${extraData}&ipnUrl=${ipnUrl}&orderId=${orderId}&orderInfo=Thanh toan don hang&partnerCode=${partnerCode}&redirectUrl=${redirectUrl}&requestId=${requestId}&requestType=${requestType}`;
+
+            console.log("ipnUrl:", ipnUrl);
+            console.log("redirectUrl:", redirectUrl);
+            console.log("momoData:", momoData);
+
             const signature = crypto.createHmac("sha256", secretKey).update(rawSignature).digest("hex");
             const momoRes = await fetch("https://test-payment.momo.vn/v2/gateway/api/create", {
                 method: "POST",
