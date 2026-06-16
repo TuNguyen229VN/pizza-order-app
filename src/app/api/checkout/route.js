@@ -145,7 +145,7 @@ export async function POST(req) {
         }
         const session = await getServerSession(authOptions);
         const isLoggedIn = !!session?.user?.email;
-        const totalAmount = lineItems.reduce((sum, i) => sum + i.unitAmount * i.quantity, 0) + shipFee;
+        const totalAmount = lineItems.reduce((sum, i) => sum + i.unitAmount * i.quantity, 0);
 
         let discountAmount = 0;
         let discountPercent = 0;
@@ -159,7 +159,7 @@ export async function POST(req) {
             tierLabel = result.tier?.label ?? null;
         }
 
-        const finalAmount = Math.max(0, totalAmount - discountAmount);
+        const finalAmount = Math.max(0, totalAmount + shipFee - discountAmount);
         // ─── Data chung để tạo Order ─────────────────────────────────────────
         const orderData = {
             ...infoProfileCheckout,
@@ -186,6 +186,19 @@ export async function POST(req) {
         // ─── Stripe ──────────────────────────────────────────────────────────
         if (paymentMethod === "stripe") {
             const orderDoc = await Order.create(orderData);
+
+            // Tạo coupon nếu có discount
+            let discounts = [];
+            if (discountAmount > 0) {
+                const coupon = await stripe.coupons.create({
+                    amount_off: discountAmount,
+                    currency: "vnd",
+                    duration: "once",
+                    name: `Giảm giá ${tierLabel || ""}`.trim(),
+                });
+                discounts = [{ coupon: coupon.id }];
+            }
+
             const stripeSession = await stripe.checkout.sessions.create({
                 line_items: lineItems.map((i) => ({
                     quantity: i.quantity,
@@ -203,7 +216,9 @@ export async function POST(req) {
                         fixed_amount: { amount: shipFee, currency: "vnd" },
                     },
                 }],
+                ...(discounts.length > 0 && { discounts }), 
             });
+
             return Response.json({ redirectUrl: stripeSession.url });
         }
 

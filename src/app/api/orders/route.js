@@ -151,7 +151,6 @@ export async function PATCH(req) {
 
         return Response.json(updated);
     } catch (error) {
-        console.log(error)
         return Response.json({ message: "Không thể kết nối Database" }, { status: 500 });
     }
 }
