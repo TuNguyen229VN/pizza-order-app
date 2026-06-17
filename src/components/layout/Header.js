@@ -18,6 +18,7 @@ import MenuMobile from "./MenuMobile";
 import { useLockBodyScroll } from "@/hooks/useLockBodyScroll";
 import { NotificationBell } from "../notification/NotificationBell";
 import LocaleSelectorClient from "../LocaleSelectorClient";
+import { useTranslations } from "next-intl";
 
 const Header = ({ className }) => {
   const session = useSession();
@@ -27,6 +28,7 @@ const Header = ({ className }) => {
   const { cartProducts } = useContext(CartContext);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const { deliveryInfo, openDeliveryModal } = useDelivery();
+   const t = useTranslations('HomePage');
   useLockBodyScroll(mobileNavOpen);
   return (
     <header className={`sticky top-0 z-30 max-w-6xl p-3 mx-auto bg-white md:p-4 ${className}`}>
@@ -34,9 +36,9 @@ const Header = ({ className }) => {
         <h1 className="sr-only">Pizza Teo ngon nhất TP.HCM</h1>
         <div className="grid items-center grid-cols-3">
           <div onClick={() => openDeliveryModal()} className="text-sm cursor-pointer md:text-base">
-            {deliveryInfo ? <> <p className="text-secondary">{deliveryInfo?.mode === "delivery" ? "Giao hàng tới" : "Mua mang về"}</p>
+            {deliveryInfo ? <> <p className="text-secondary">{deliveryInfo?.mode === "delivery" ? t("Giao hàng tới") : t("Mua mang về")}</p>
               <p className="font-medium truncate lg:w-[400px]">{deliveryInfo?.address || deliveryInfo?.store.name}</p></>
-              : <p className="">Bạn đang ở đâu? </p>
+              : <p className="">{t("Bạn đang ở đâu?")} </p>
             }
           </div>
 
