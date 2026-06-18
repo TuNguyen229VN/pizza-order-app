@@ -34,6 +34,7 @@
 - **pusher-js**
 - **moment**
 - **next-intl**
+- **eruda**
 ## Pages:
 
 - Home Page

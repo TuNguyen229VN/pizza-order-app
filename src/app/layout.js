@@ -9,7 +9,6 @@ import { DeliveryProvider } from "@/context/DeliveryContext";
 import { NotificationProvider } from "@/context/NotificationContext";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
-import ErudaLoader from "@/components/ErudaLoader";
 
 const roboto = Inter({
   subsets: ["latin"],
@@ -27,16 +26,25 @@ export const metadata = {
 
 export default async function RootLayout({ children }) {
   const messages = await getMessages();
-  const locale=await getLocale();
+  const locale = await getLocale();
   return (
     <html lang="vi" className="scroll-smooth" suppressHydrationWarning={true}>
       <head>
         <script dangerouslySetInnerHTML={{
           __html: `if (window.location.hash) { history.scrollRestoration = "manual"; window.scrollTo(0,0); }`
         }} />
+        <script dangerouslySetInnerHTML={{
+          __html: `
+            if (window.location.search.includes('debug=1')) {
+              var s = document.createElement('script');
+              s.src = 'https://cdn.jsdelivr.net/npm/eruda';
+              s.onload = function(){ window.eruda && window.eruda.init(); };
+              document.head.appendChild(s);
+            }
+          `
+        }} />
       </head>
       <body className={roboto.className}>
-       <ErudaLoader /> 
         <NextIntlClientProvider messages={messages} timeZone="Asia/Ho_Chi_Minh" locale={locale}>
           <AppProvider>
             <DeliveryProvider>
