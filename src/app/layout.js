@@ -35,13 +35,47 @@ export default async function RootLayout({ children }) {
         }} />
         <script dangerouslySetInnerHTML={{
           __html: `
-            if (window.location.search.includes('debug=1')) {
-              var s = document.createElement('script');
-              s.src = 'https://cdn.jsdelivr.net/npm/eruda';
-              s.onload = function(){ window.eruda && window.eruda.init(); };
-              document.head.appendChild(s);
-            }
-          `
+      if (window.location.search.includes('debug=1')) {
+        var box = document.createElement('div');
+        box.id = '__debugbox';
+        box.style.position = 'fixed';
+        box.style.top = '0';
+        box.style.left = '0';
+        box.style.right = '0';
+        box.style.zIndex = '2147483647';
+        box.style.background = 'rgba(200,0,0,0.95)';
+        box.style.color = '#fff';
+        box.style.fontSize = '11px';
+        box.style.lineHeight = '1.4';
+        box.style.padding = '6px';
+        box.style.maxHeight = '60vh';
+        box.style.overflow = 'auto';
+        box.style.whiteSpace = 'pre-wrap';
+        box.style.fontFamily = 'monospace';
+        document.documentElement.appendChild(box);
+
+        function logMsg(msg) {
+          var p = document.createElement('div');
+          p.textContent = new Date().toISOString().slice(11,19) + ' ' + msg;
+          box.appendChild(p);
+        }
+
+        logMsg('head script chạy');
+
+        window.addEventListener('error', function(e) {
+          logMsg('JS ERROR: ' + e.message + ' @ ' + e.filename + ':' + e.lineno);
+        });
+        window.addEventListener('unhandledrejection', function(e) {
+          logMsg('PROMISE REJECT: ' + (e.reason && (e.reason.message || e.reason)));
+        });
+        document.addEventListener('DOMContentLoaded', function() {
+          logMsg('DOMContentLoaded');
+        });
+        window.addEventListener('load', function() {
+          logMsg('window load xong');
+        });
+      }
+    `
         }} />
       </head>
       <body className={roboto.className}>
