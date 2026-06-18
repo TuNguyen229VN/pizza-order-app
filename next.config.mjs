@@ -4,6 +4,13 @@ import createNextIntlPlugin from 'next-intl/plugin';
 const withNextIntl = createNextIntlPlugin();
 
 const nextConfig = {
+  transpilePackages: [
+    'next-intl',
+    'use-intl',
+    'intl-messageformat',
+    '@formatjs/icu-messageformat-parser',
+    '@formatjs/fast-memoize',
+  ],
   images: {
     remotePatterns: [
       {

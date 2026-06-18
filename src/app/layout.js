@@ -77,6 +77,16 @@ export default async function RootLayout({ children }) {
       }
     `
         }} />
+        <script dangerouslySetInnerHTML={{
+          __html: `
+            if (window.location.search.includes('debug=1')) {
+              var s = document.createElement('script');
+              s.src = 'https://cdn.jsdelivr.net/npm/eruda';
+              s.onload = function(){ window.eruda && window.eruda.init(); };
+              document.head.appendChild(s);
+            }
+          `
+        }} />
       </head>
       <body className={roboto.className}>
         <NextIntlClientProvider messages={messages} timeZone="Asia/Ho_Chi_Minh" locale={locale}>
