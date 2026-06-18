@@ -16,6 +16,7 @@ import CheckAcceptPolicy from '@/modules/checkout/CheckAcceptPolicy';
 import CheckoutAddress from '@/modules/checkout/CheckoutAddress';
 import CheckoutInfo from '@/modules/checkout/CheckoutInfo';
 import CheckoutMethod from '@/modules/checkout/CheckoutMethod';
+import { getLabel } from '@/utils/i18n-utils';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import React, { useContext, useEffect, useState } from 'react'
@@ -136,9 +137,9 @@ export default function CheckoutPage() {
                         ...prev,
                         ...err.errors // merge lỗi server vào errors hiện tại
                     }));
-                    return (sTrans.has(err?.message) ? sTrans(err?.message) : err?.message) || sTrans("Dữ liệu không hợp lệ");
+                    return getLabel(sTrans,err?.message) || sTrans("Dữ liệu không hợp lệ");
                 }
-                return (sTrans.has(err?.message) ? sTrans(err?.message) : err?.message) || sTrans("Cập nhật thất bại");
+                return getLabel(sTrans,err?.message)  || sTrans("Cập nhật thất bại");
             },
         });
     }

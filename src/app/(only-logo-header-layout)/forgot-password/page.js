@@ -11,6 +11,7 @@ import Loader from "@/components/loading/Loader";
 import { createValidators } from "@/libs/validators";
 import { API_FORGOT_PASSWORD } from "@/constant/constant";
 import { useTranslations } from "next-intl";
+import { getLabel } from "@/utils/i18n-utils";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -48,12 +49,12 @@ export default function ForgotPasswordPage() {
         } else {
           setStatus("error");
         }
-        setMessage(sTrans.has(data.message) ? sTrans(data.message) : data.message);
+        setMessage(getLabel(sTrans, data.message));
         return;
       }
 
       setStatus("success");
-      setMessage(sTrans.has(data.message) ? sTrans(data.message) : data.message);
+      setMessage(getLabel(sTrans, data.message));
     } catch {
       setStatus("error");
       setMessage(sTrans("FORGOT_PW_ERROR"));

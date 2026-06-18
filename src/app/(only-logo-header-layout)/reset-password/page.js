@@ -11,6 +11,7 @@ import { createValidators } from "@/libs/validators";
 import Image from "next/image";
 import { API_RESET_PASSWORD } from "@/constant/constant";
 import { useTranslations } from "next-intl";
+import { getLabel } from "@/utils/i18n-utils";
 function ResetPasswordContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
@@ -65,12 +66,12 @@ function ResetPasswordContent() {
 
             if (!res.ok) {
                 setStatus("error");
-                setMessage(sTrans.has(data.message) ? sTrans(data.message) : data.message);
+                setMessage(getLabel(sTrans, data.message));
                 return;
             }
 
             setStatus("success");
-            setMessage(sTrans.has(data.message) ? sTrans(data.message) : data.message);
+            setMessage(getLabel(sTrans, data.message));
             setTimeout(() => router.push("/login"), 3000);
         } catch {
             setStatus("error");

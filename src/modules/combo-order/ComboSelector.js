@@ -16,6 +16,7 @@ import 'swiper/css/navigation';
 import { Navigation } from 'swiper/modules'
 import { useRef } from "react";
 import { useTranslations } from "next-intl";
+import { getLabel } from "@/utils/i18n-utils";
 /**
  * ComboSelector
  * Dùng cho cả 2 trường hợp:
@@ -255,7 +256,7 @@ export default function ComboSelector({
             const total = totalChosenInSlot(i);
             if (total < slot.quantity) {
                 const category = categories.find(c => c._id === slot.category)
-                const label = slot.label || (hTrans.has(category.name) ? hTrans(category.name) : category.name) || `Slot ${i + 1}`;
+                const label = slot.label ||  getLabel(hTrans,category.name) || `Slot ${i + 1}`;
                 setValidationError(`"${label}": ${sTrans("cần chọn đủ")} ${slot.quantity} ${sTrans("món")} (${sTrans("đã chọn")} ${total})`);
                 setChooseTabIndex(i); // Nhảy về slot lỗi
                 return;
@@ -376,7 +377,7 @@ export default function ComboSelector({
                                                 <div key={slotIdx} className={`flex items-center gap-2  ${total === 0 && chooseTabIndex !== slotIdx ? "opacity-50 pointer-events-none" : "cursor-pointer"}`} onClick={() => { setChooseTabIndex(slotIdx); setEditingItems(new Set()); }}>
                                                     <div className={`flex flex-shrink-0 items-center justify-center w-8 h-8 text-sm rounded-full border ${chooseTabIndex === slotIdx ? "bg-primary text-white " : "border-primary text-primary"}`}> <p className="font-semibold">{total > 0 && chooseTabIndex !== slotIdx ? <FaCheck /> : slotIdx + 1}</p></div>
                                                     <div>
-                                                        <p className="text-sm font-semibold whitespace-nowrap md:text-base">{sTrans("ChọnSelect")}  {hTrans.has(category?.name) ? hTrans(category?.name) : category?.name} {slot.quantity > 0 && `(${total}/${slot.quantity})`}</p>
+                                                        <p className="text-sm font-semibold whitespace-nowrap md:text-base">{sTrans("ChọnSelect")} {getLabel(hTrans,category?.name)} {slot.quantity > 0 && `(${total}/${slot.quantity})`}</p>
                                                         <p className="text-sm font-semibold text-secondary">{sTrans("Yêu cầu")}</p>
                                                     </div>
                                                 </div>

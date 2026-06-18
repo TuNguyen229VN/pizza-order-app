@@ -1,6 +1,7 @@
 "use client"
 import ArrowLeft from '@/components/icons/ArrowLeft'
 import { HOME_ROUTE } from '@/constant/routesApp'
+import { getLabel } from '@/utils/i18n-utils'
 import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -37,7 +38,7 @@ export default function HeaderCart({ text = "Giỏ hàng của tôi", urlLink, c
                 <ArrowLeft className='w-4 h-4 md:w-5 md:h-5' strokeWidth='3' />
                 <span>{sTrans("Trở lại")}</span>
             </div>
-            <p className='text-base font-semibold md:text-3xl md:font-bold text-center md:leading-[30px] mx-auto'>{sTrans.has(text) ? sTrans(text) : text}</p>
+            <p className='text-base font-semibold md:text-3xl md:font-bold text-center md:leading-[30px] mx-auto'>{getLabel(sTrans,text)}</p>
         </div>
     )
 }

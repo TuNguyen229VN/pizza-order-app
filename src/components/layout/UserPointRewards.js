@@ -4,6 +4,7 @@ import UseProfile from '../UseProfile';
 import { getUserTier } from '@/libs/pointTier';
 import { POINT_TIERS } from '@/constant/constant';
 import { useTranslations } from 'next-intl';
+import { getLabel } from '@/utils/i18n-utils';
 
 export default function UserPointRewards() {
     const { data: profileData } = UseProfile();
@@ -34,7 +35,7 @@ export default function UserPointRewards() {
             <div className='p-4 px-5 text-white rounded-lg bg-primary'>
                 <div className='flex items-center gap-4 mb-4'>
                     <GiFullPizza className='w-6 h-6' />
-                    <p className='font-medium'>{(rTrans.has(tier?.label) ? rTrans(tier?.label) : tier?.label) || rTrans("Thành viên Thường")}</p>
+                    <p className='font-medium'>{getLabel(rTrans,tier?.label) || rTrans("Thành viên Thường")}</p>
                     <div className=''></div>
                 </div>
                 <div className='flex flex-row items-center justify-between md:flex-col lg:flex-row'>
@@ -64,7 +65,7 @@ export default function UserPointRewards() {
 
                     {nextTier && (
                         <p className="mt-2 text-xs">
-                            {rTrans("Còn")} {nextMin - points} {rTrans("điểm để đạt")} {rTrans.has(nextTier.label) ? rTrans(nextTier.label) : nextTier.label}
+                            {rTrans("Còn")} {nextMin - points} {rTrans("điểm để đạt")} {getLabel(rTrans,nextTier.label)}
                         </p>
                     )}
                 </div>

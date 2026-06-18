@@ -7,6 +7,7 @@ import { HOME_ROUTE, LOGIN_ROUTE } from "@/constant/routesApp";
 import { useFormValidate } from "@/hooks/useFormValidate";
 import { createValidators } from "@/libs/validators";
 import HeaderCart from "@/modules/cart/HeaderCart";
+import { getLabel } from "@/utils/i18n-utils";
 import { signIn } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
@@ -84,7 +85,7 @@ const RegisterPage = () => {
         setErrors(prev => ({ ...prev, ...data.errors }));
       }
 
-      setError((sTrans.has(data.message) ? sTrans(data.message) : data.message)|| sTrans("Đã có lỗi xảy ra"));
+      setError(getLabel(sTrans, data.message) || sTrans("Đã có lỗi xảy ra"));
 
       recaptchaRef.current?.reset();
       setCaptchaToken("");

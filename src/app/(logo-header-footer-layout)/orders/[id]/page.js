@@ -18,6 +18,7 @@ import toast from 'react-hot-toast';
 import ConfirmPopup from '@/components/popup/ConfirmPopup';
 import LoadingCat from '@/components/loading/LoadingCat';
 import { useTranslations } from 'next-intl';
+import { getLabel } from '@/utils/i18n-utils';
 
 export default function OrderPage() {
     const { clearCart } = useContext(CartContext);
@@ -87,7 +88,7 @@ export default function OrderPage() {
                 toast.success(sTrans("Xác nhận thanh toán thành công"));
             } else {
                 const err = await res.json();
-                toast.error((sTrans.has(err.message) ? sTrans(err.message) : err.message) || (sTrans("Cập nhật thất bại")));
+                toast.error(getLabel(sTrans, err?.message) || (sTrans("Cập nhật thất bại")));
             }
         } catch {
             toast.error(sTrans("Lỗi kết nối"));
@@ -115,7 +116,7 @@ export default function OrderPage() {
     return (
         <section className="max-w-3xl mx-auto md:pb-6">
             {loadingOrder && (
-                    <LoadingCat />
+                <LoadingCat />
             )}
             {order && <>
                 {from === "orders" &&

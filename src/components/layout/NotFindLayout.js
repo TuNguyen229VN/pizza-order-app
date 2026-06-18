@@ -1,3 +1,4 @@
+import { getLabel } from '@/utils/i18n-utils';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image'
 import React from 'react'
@@ -9,8 +10,8 @@ export default function NotFindLayout({ title = "PRODUCT_NOTFOUND_SEARCH", conte
             <div className="w-[200px] h-[200px] md:w-[300px] md:h-[300px]">
                 <Image src={"/images/sorry.png"} alt="sorry" width={200} height={200} className="object-cover object-center w-full h-full" />
             </div>
-            <p className="mt-6 text-2xl font-medium">{sTrans.has(title) ? sTrans(title) : title}</p>
-            <p>{sTrans.has(content) ? sTrans(content) : content} </p>
+            <p className="mt-6 text-2xl font-medium">{getLabel(sTrans,title)}</p>
+            <p>{getLabel(sTrans,content)}</p>
         </div>
     )
 }

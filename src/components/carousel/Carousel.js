@@ -11,6 +11,7 @@ import ChevronRight from '../icons/ChevronRight'
 import CloseIcon from '../icons/CloseIcon'
 import { AiOutlineLike } from 'react-icons/ai'
 import { useTranslations } from 'next-intl'
+import { getLabel } from '@/utils/i18n-utils'
 
 export default function Carousel({ carouselList = [], setHash, hash, isScrollingTo, search, setSearch, handleSearch, activeSearch, setActiveSearch, openInputSearch, setOpenInputSearch }) {
     const t = useTranslations('HomePage');
@@ -188,7 +189,7 @@ export default function Carousel({ carouselList = [], setHash, hash, isScrolling
                                         }`}
                                 >
                                     {carouselItem.icons}
-                                    <p className='w-full text-sm md:text-base whitespace-nowrap'>{t.has(carouselItem.name) ? t(carouselItem.name) : carouselItem.name}</p>
+                                    <p className='w-full text-sm md:text-base whitespace-nowrap'>{getLabel(t,carouselItem.name)}</p>
 
                                     <span
                                         className={`absolute bottom-0 left-0 h-1 md:h-[6px] w-full rounded-full bg-primary transition-all duration-300 ${carouselItem.slug === hash
