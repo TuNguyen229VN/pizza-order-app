@@ -1,7 +1,7 @@
 import { connectDB } from "@/libs/connectDB";
 import { Order } from "@/models/Order";
 import { MenuItem } from "@/models/MenuItem";
-import { validateForm, validators } from "@/libs/validators";
+import { createValidators, validateForm } from "@/libs/validators";
 import { calcDeliveryInfo } from "@/utils/utils";
 import { ComboDetail } from "@/models/ComboDetail";
 import { sendNotification } from "@/libs/sendNotification";
@@ -13,6 +13,8 @@ import { UserInfo } from "@/models/UserInfo";
 import { calcPointDiscount } from "@/libs/pointTier";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/route";
+import { cookies } from "next/headers";
+import { getTranslations } from "next-intl/server";
 
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
@@ -54,7 +56,10 @@ export async function POST(req) {
     try {
         await connectDB();
         const { cartProducts, infoProfileCheckout, deliveryInfo, noteDelivery, paymentMethod } = await req.json();
-
+        const cookieStore = await cookies();
+        const locale = cookieStore.get("locale")?.value || "vi";
+        const t = await getTranslations({ locale, namespace: "Validation" });
+        const validators = createValidators(t);
         if (!deliveryInfo) {
             return Response.json({ message: "Vui lòng nhập địa chỉ để giao hàng hoặc mua mang về" }, { status: 400 });
         }

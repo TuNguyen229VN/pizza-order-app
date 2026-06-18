@@ -35,42 +35,42 @@ const PRESET_TAGS = [
 const METHODS = [
   {
     value: "cod",
-    label: "Tiền mặt (COD)",
-    sub: "Thanh toán khi nhận hàng",
+    label: "COD_LABEL",
+    sub: "COD_SUB",
     icon: "/images/cod.png",
     iconBg: "bg-gray-100",
   },
   {
     value: "stripe",
-    label: "Thẻ tín dụng / Stripe",
-    sub: "Visa, Mastercard, JCB",
+    label: "STRIPE_LABEL",
+    sub: "STRIPE_SUB",
     icon: "/images/stripe.png",
     iconBg: "bg-purple-100",
   },
   {
     value: "momo",
-    label: "MoMo",
-    sub: "Ví điện tử MoMo",
+    label: "MOMO_LABEL",
+    sub: "MOMO_SUB",
     icon: "/images/momo.png",
     iconBg: "bg-pink-100",
   },
   {
     value: "zalopay",
-    label: "ZaloPay",
-    sub: "Ví ZaloPay / thẻ ATM",
+    label: "ZALO_LABEL",
+    sub: "ZALO_SUB",
     icon: "/images/zalopay.png",
     iconBg: "bg-blue-100",
   },
   {
     value: "paypal",
-    label: "PayPal",
-    sub: "Thanh toán quốc tế (USD)",
+    label: "PAYPAL_LABEL",
+    sub: "PAYPAL_SUB",
     icon: "/images/paypal.png",
     iconBg: "bg-indigo-100",
   },
 
 ];
-  const MIN_DELIVERY_AMOUNT = 80000;
+const MIN_DELIVERY_AMOUNT = 80000;
 const DIVISION_POINT = 10000;
 const EXCHANGE_RATE_VIETNAM = 25000;
 const KEYWORDS = ["pizza", "melts"];
@@ -100,5 +100,5 @@ const POINT_TIERS = [
   { minPoints: 200, discountPercent: 5, label: "Thành viên Đồng" },
   { minPoints: 50, discountPercent: 2, label: "Thành viên thân thiết" },
 ];
-export { PAID_OPTION, USER_STATUS_OPTION, STATUS_OPTIONS, STATUS_OPTIONS_FILTER, LIST_OPTION, KEYWORDS, SALT_ROUNDS, LIMITPAGE, API_PROFILE, API_CATEGORIES, API_MENU_ITEMS, API_REGISTER, API_LOGIN, API_UPLOAD_IMAGE, API_USERS, API_CHECKOUT, API_ORDERS, API_CHANGE_PASSWORD, API_FORGOT_PASSWORD, API_RESET_PASSWORD, API_COMBO_TYPES, API_COMBO, API_BANNERS, API_REARRANGE, PRESET_TAGS, API_NOTIFICATION, API_PUSHER_AUTH, METHODS, EXCHANGE_RATE_VIETNAM, DIVISION_POINT, POINT_TIERS,MIN_DELIVERY_AMOUNT };
+export { PAID_OPTION, USER_STATUS_OPTION, STATUS_OPTIONS, STATUS_OPTIONS_FILTER, LIST_OPTION, KEYWORDS, SALT_ROUNDS, LIMITPAGE, API_PROFILE, API_CATEGORIES, API_MENU_ITEMS, API_REGISTER, API_LOGIN, API_UPLOAD_IMAGE, API_USERS, API_CHECKOUT, API_ORDERS, API_CHANGE_PASSWORD, API_FORGOT_PASSWORD, API_RESET_PASSWORD, API_COMBO_TYPES, API_COMBO, API_BANNERS, API_REARRANGE, PRESET_TAGS, API_NOTIFICATION, API_PUSHER_AUTH, METHODS, EXCHANGE_RATE_VIETNAM, DIVISION_POINT, POINT_TIERS, MIN_DELIVERY_AMOUNT };
 

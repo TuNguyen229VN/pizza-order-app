@@ -3,9 +3,11 @@ import { GiFullPizza } from 'react-icons/gi'
 import UseProfile from '../UseProfile';
 import { getUserTier } from '@/libs/pointTier';
 import { POINT_TIERS } from '@/constant/constant';
+import { useTranslations } from 'next-intl';
 
 export default function UserPointRewards() {
     const { data: profileData } = UseProfile();
+    const rTrans = useTranslations("Rewards");
     const tier = getUserTier(profileData?.pointRewards);
 
     const points = profileData?.pointRewards || 0;
@@ -32,23 +34,23 @@ export default function UserPointRewards() {
             <div className='p-4 px-5 text-white rounded-lg bg-primary'>
                 <div className='flex items-center gap-4 mb-4'>
                     <GiFullPizza className='w-6 h-6' />
-                    <p className='font-medium'>{tier?.label || "Thành viên Thường"}</p>
+                    <p className='font-medium'>{(rTrans.has(tier?.label) ? rTrans(tier?.label) : tier?.label) || rTrans("Thành viên Thường")}</p>
                     <div className=''></div>
                 </div>
                 <div className='flex flex-row items-center justify-between md:flex-col lg:flex-row'>
                     <div className=''>
                         <span className='text-[40px] font-semibold'>{profileData?.pointRewards || 0}</span>
-                        <span className='ml-2 text-sm'>điểm</span>
+                        <span className='ml-2 text-sm'>{rTrans("điểm")}</span>
                     </div>
                     <div className=''>
                         <span className='text-[40px] font-semibold'>{tier?.discountPercent || 0}%</span>
-                        <span className='ml-2 text-sm'>giảm giá</span>
+                        <span className='ml-2 text-sm'>{rTrans("giảm giá")}</span>
                     </div>
                 </div>
                 <div className="mt-4">
                     <div className="flex justify-between mb-1 text-xs">
-                        <span>{currentMin} điểm</span>
-                        <span>{nextMin || "MAX"} điểm</span>
+                        <span>{currentMin} {rTrans("điểm")}</span>
+                        <span>{nextMin || "MAX"} {rTrans("điểm")}</span>
                     </div>
 
                     <div className="w-full h-3 overflow-hidden rounded-full bg-white/30">
@@ -62,7 +64,7 @@ export default function UserPointRewards() {
 
                     {nextTier && (
                         <p className="mt-2 text-xs">
-                            Còn {nextMin - points} điểm để đạt {nextTier.label}
+                            {rTrans("Còn")} {nextMin - points} {rTrans("điểm để đạt")} {rTrans.has(nextTier.label) ? rTrans(nextTier.label) : nextTier.label}
                         </p>
                     )}
                 </div>

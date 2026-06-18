@@ -5,6 +5,7 @@ import { authOptions } from "../auth/[...nextauth]/route";
 import { LIMITPAGE } from "@/constant/constant";
 import { validateComboType } from "@/libs/validateComboType";
 import { escapeRegex } from "@/utils/escapeRegex";
+import { getServerT } from "@/libs/getServerT";
 
 async function checkAdmin() {
     const session = await getServerSession(authOptions);
@@ -21,7 +22,8 @@ export async function POST(req) {
         if (error) return Response.json({ message: error }, { status });
 
         const data = await req.json();
-        const { isValid, errors } = validateComboType(data);
+        const t = await getServerT();
+        const { isValid, errors } = validateComboType(data, t);
         if (!isValid) {
             return Response.json({ message: "Dữ liệu không hợp lệ", errors }, { status: 400 });
         }
@@ -143,8 +145,8 @@ export async function PUT(req) {
 
         const { _id, ...data } = await req.json();
         if (!_id) return Response.json({ message: "Thiếu _id" }, { status: 400 });
-
-        const { isValid, errors } = validateComboType(data);
+        const t = await getServerT();
+        const { isValid, errors } = validateComboType(data, t);
         if (!isValid) {
             return Response.json({ message: "Dữ liệu không hợp lệ", errors }, { status: 400 });
         }

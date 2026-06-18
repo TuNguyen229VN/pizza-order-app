@@ -6,16 +6,20 @@ import UseProfile from '@/components/UseProfile';
 import { API_PROFILE, API_UPLOAD_IMAGE, API_USERS } from '@/constant/constant';
 import { USERS_ROUTE } from '@/constant/routesApp';
 import { useFormValidate } from '@/hooks/useFormValidate';
-import { validators } from '@/libs/validators';
+import { createValidators } from '@/libs/validators';
 import HeaderCart from '@/modules/cart/HeaderCart';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 import toast from 'react-hot-toast';
 import { uploadImage } from '@/libs/uploadImage';
+import { useTranslations } from 'next-intl';
 
 export default function EditUserPage() {
     const { loading: profileLoading, data: profileData } = UseProfile();
+    const sTrans = useTranslations("System");
+    const t = useTranslations("Validation");
+    const validators = createValidators(t);
     const [user, setUser] = useState(null);
     const { id } = useParams();
     const { setErrors, errors, registerRef, handleValidate, clearError } = useFormValidate();

@@ -6,11 +6,13 @@ import ButtonAdd from '../buttons/ButtonAdd'
 import { COMBO_ORDER_ROUTE } from '@/constant/routesApp'
 import { useDelivery } from '@/context/DeliveryContext'
 import SkeletonLoadingBox from '../skeleton/SkeletonLoadingBox'
+import { useTranslations } from 'next-intl'
 
 export default function MenuCombo({ categories = [], menuItems = [], ...item }) {
     const { _id, image, name, price, slots } = item;
     const { deliveryInfo, openDeliveryModal } = useDelivery();
-    const [loadingImage, setLoadingImage] = useState(true)
+    const [loadingImage, setLoadingImage] = useState(true);
+    const sTrans = useTranslations("System");
     return (
         <Link href={`${COMBO_ORDER_ROUTE}/${_id}`} onClick={(e) => {
             if (!deliveryInfo) {
@@ -26,7 +28,7 @@ export default function MenuCombo({ categories = [], menuItems = [], ...item }) 
             <div className='flex flex-col justify-center w-full gap-2 p-2 md:p-4'>
                 <h4 className='text-sm capitalize text-[#374151]  md:text-[28px] font-semibold md:leading-[40px]'>{name}</h4>
                 <div className='relative flex flex-col-reverse gap-2 md:flex-col'>
-                    <div className='text-sm md:text-lg text-secondary'><span className='block mb-1 text-xs md:text-lg md:mb-0 md:inline'>Chỉ từ</span> <span className='font-semibold text-[#374151] '>{price?.toLocaleString('vi-VN')}</span> <span className='font-semibold underline text-[#374151] '>đ</span></div>
+                    <div className='text-sm md:text-lg text-secondary'><span className='block mb-1 text-xs md:text-lg md:mb-0 md:inline'>{sTrans("Chỉ từ")}</span> <span className='font-semibold text-[#374151] '>{price?.toLocaleString('vi-VN')}</span> <span className='font-semibold underline text-[#374151] '>đ</span></div>
                     <p className='text-sm line-clamp-1 md:text-lg text-secondary'>
                         {slots
                             ?.map(slot => {

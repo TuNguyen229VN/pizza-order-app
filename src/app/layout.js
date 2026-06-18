@@ -8,6 +8,7 @@ import "leaflet/dist/leaflet.css";
 import { DeliveryProvider } from "@/context/DeliveryContext";
 import { NotificationProvider } from "@/context/NotificationContext";
 import { NextIntlClientProvider } from "next-intl";
+import { getLocale, getMessages } from "next-intl/server";
 
 const roboto = Inter({
   subsets: ["latin"],
@@ -23,7 +24,9 @@ export const metadata = {
   },
 };
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  const messages = await getMessages();
+  const locale=await getLocale();
   return (
     <html lang="vi" className="scroll-smooth" suppressHydrationWarning={true}>
       <head>
@@ -32,18 +35,18 @@ export default function RootLayout({ children }) {
         }} />
       </head>
       <body className={roboto.className}>
-        <AppProvider>
-          <DeliveryProvider>
-            <NotificationProvider>
-              <Toaster
-                position="top-right"
-              />
-               <NextIntlClientProvider>
-              {children}
-               </NextIntlClientProvider>
-            </NotificationProvider>
-          </DeliveryProvider>
-        </AppProvider>
+        <NextIntlClientProvider messages={messages} timeZone="Asia/Ho_Chi_Minh" locale={locale}>
+          <AppProvider>
+            <DeliveryProvider>
+              <NotificationProvider>
+                <Toaster
+                  position="top-right"
+                />
+                {children}
+              </NotificationProvider>
+            </DeliveryProvider>
+          </AppProvider>
+        </NextIntlClientProvider>
         {/* <Analytics />
         <SpeedInsights /> */}
       </body>

@@ -127,7 +127,7 @@ export async function PATCH(req) {
         const { _id } = await req.json();
 
         if (!_id) {
-            return Response.json({ message: "Thiếu _id" }, { status: 400 });
+            return Response.json({ message: "Thiếu id" }, { status: 400 });
         }
 
         const order = await Order.findById(_id);

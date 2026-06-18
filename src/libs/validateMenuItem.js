@@ -1,8 +1,8 @@
-import { validateForm, validators } from "./validators";
+import { createValidators, validateForm } from "./validators";
 
-export function validateMenuItem(data) {
+export function validateMenuItem(data,t) {
     const dynamicFields = {};
-
+ const validators = createValidators(t);
     data.sizes?.forEach((item, i) => {
         dynamicFields[`sizes_${i}_name`] = {
             value: item.name,

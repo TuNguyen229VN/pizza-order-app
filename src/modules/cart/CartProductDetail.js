@@ -4,6 +4,7 @@ import CloseIcon from '@/components/icons/CloseIcon';
 import InputCheckbox from '@/components/input/InputCheckbox';
 import InputRadio from '@/components/input/InputRadio';
 import { RenderTag } from '@/components/menu/RenderTag';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import React, { useContext, useEffect, useState } from 'react'
 
@@ -12,8 +13,8 @@ export default function CartProductDetail({ menuItem, showPopup, setShowPopup })
     const [selectedExtras, setSelectedExtras] = useState(menuItem?.extras ?? []);
     const [quantity, setQuantity] = useState(menuItem?.quantity ?? 1);
     const [noteOrder, setNoteOrder] = useState(menuItem?.noteOrder ?? "");
-    const [tags, setTags] = useState(menuItem?.tags??[]);
-
+    const [tags, setTags] = useState(menuItem?.tags ?? []);
+    const sTrans = useTranslations("System");
     const { updateCart } = useContext(CartContext);
     useEffect(() => {
         if (showPopup) {
@@ -21,7 +22,7 @@ export default function CartProductDetail({ menuItem, showPopup, setShowPopup })
             setSelectedExtras(menuItem?.extras ?? []);
             setQuantity(menuItem?.quantity ?? 1);
             setNoteOrder(menuItem?.noteOrder ?? "");
-            setTags(menuItem?.tags??[]);
+            setTags(menuItem?.tags ?? []);
         }
     }, [showPopup, menuItem]);
 
@@ -69,7 +70,7 @@ export default function CartProductDetail({ menuItem, showPopup, setShowPopup })
 
     return (
         <div>{showPopup && (
-            <div onClick={() => setShowPopup(false)} className="fixed inset-0 z-20 flex items-center justify-center bg-black/80">
+            <div onClick={() => setShowPopup(false)} className="fixed inset-0 z-30 flex items-center justify-center bg-black/80">
                 <div onClick={ev => ev.stopPropagation()}
                     className="flex max-w-screen-lg h-[560px] overflow-hidden bg-white rounded-xl relative">
                     <button
@@ -88,12 +89,12 @@ export default function CartProductDetail({ menuItem, showPopup, setShowPopup })
                             </div>
                             <div className='flex flex-wrap items-center gap-4 mt-2'>
                                 {tags && tags.map((tag, index) => (
-                                    <RenderTag key={index} tag={tag} />
+                                    <RenderTag key={index} tag={tag} haveName={true} />
                                 ))}
                             </div>
                             {sizes?.length > 0 && (
                                 <div className="mt-7 ">
-                                    <h3 className="font-semibold ">Kích thước</h3>
+                                    <h3 className="font-semibold ">{sTrans("Kích thước")}</h3>
                                     <div className="flex mt-2 overflow-hidden text-center border rounded-md">
                                         {sizes.map(size => (
                                             <InputRadio key={size._id} name={size.name} onClick={() => setSelectedSize(size)} selectedSize={selectedSize?.name} />
@@ -103,7 +104,7 @@ export default function CartProductDetail({ menuItem, showPopup, setShowPopup })
                             )}
                             {extraIngredientPrices?.length > 0 && (
                                 <div className="mt-6">
-                                    <h3 className="font-semibold mb-7">Topping thêm</h3>
+                                    <h3 className="font-semibold mb-7">{sTrans("Topping thêm")}</h3>
                                     {extraIngredientPrices.map(extraThing => {
                                         const sel = selectedExtras.find(e => e._id === extraThing._id);
                                         const isChecked = !!sel;
@@ -115,14 +116,14 @@ export default function CartProductDetail({ menuItem, showPopup, setShowPopup })
                             )}
                             <div className="mt-6">
                                 <div className="flex items-center justify-between mb-5">
-                                    <h3 className="font-semibold">Ghi chú (tùy chọn)</h3>
+                                    <h3 className="font-semibold">{sTrans("Ghi chú")} ({sTrans("tùy chọn")})</h3>
                                     <span className="text-sm whitespace-nowrap">{noteOrder?.length}/72</span>
                                 </div>
                                 <div className="relative">
                                     <input
                                         type="text"
                                         maxLength={72}
-                                        placeholder="Chúng tôi sẽ cố gắng hết sức để phục vụ bạn nếu có thể!"
+                                        placeholder={sTrans("PLACEHOLDER_NOTES")}
                                         value={noteOrder}
                                         onChange={e => setNoteOrder(e.target.value)}
                                         className="flex-1 w-full px-4 py-3 pr-10 border rounded-lg outline-none focus:border-black"
@@ -145,7 +146,7 @@ export default function CartProductDetail({ menuItem, showPopup, setShowPopup })
                                     <div
                                         className="text-center text-white"
                                     >
-                                        Cập nhật giỏ hàng <span className="inline-block w-2 h-2 mx-2 bg-white rounded-full"></span> {selectedPrice.toLocaleString('vi-VN')} <span className="underline">đ</span>
+                                        {sTrans("Cập nhật giỏ hàng")} <span className="inline-block w-2 h-2 mx-2 bg-white rounded-full"></span> {selectedPrice.toLocaleString('vi-VN')} <span className="underline">đ</span>
                                     </div>
                                 </ButtonPrimary>
                             </div>

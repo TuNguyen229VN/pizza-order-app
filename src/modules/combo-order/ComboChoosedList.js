@@ -1,11 +1,12 @@
 import ChevronRight from '@/components/icons/ChevronRight';
 import { KEYWORDS } from '@/constant/constant';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import React from 'react'
 
 export default function ComboChoosedList({ chooseTabIndex, setChooseTabIndex, combos, categories, comboChooseList, onClick }) {
-
-
+    const sTrans = useTranslations("System");
+    const hTrans = useTranslations("HomePage")
     return (
         <div className="grid grid-cols-1 gap-4 p-4 bg-gray-100 rounded-2xl md:grid-cols-2">
             {combos.slots.map((item, index) => {
@@ -43,7 +44,12 @@ export default function ComboChoosedList({ chooseTabIndex, setChooseTabIndex, co
                         </div>
                         <div className='flex flex-col justify-between flex-1 w-full p-4 pl-2'>
                             <div>
-                                <h4 className={`md:text-2xl text-sm md:leading-[30px] capitalize  line-clamp-2 font-bold`}>Chọn <span className='lowercase'>{categories.find(c => c._id === item.category)?.name}</span>  ({totalQuantity}/{item.quantity})</h4>
+                                <h4 className={`md:text-2xl text-sm md:leading-[30px] capitalize  line-clamp-2 font-bold`}>{sTrans("ChọnSelect")} <span className='lowercase'>{hTrans(
+                                    categories.find(c => c._id === item.category)?.name,
+                                    {
+                                        defaultValue: categories.find(c => c._id === item.category)?.name
+                                    }
+                                )}</span>  ({totalQuantity}/{item.quantity})</h4>
                                 <p className='text-sm text-secondary line-clamp-1'>
                                     {
                                         selectedItems.map((choose, idx) => (<span key={`${choose.slotIndex}-${choose.menuItem._id}-${idx}`}>{choose.menuItem.name} x {choose.quantity}{idx < selectedItems.length - 1 ? ", " : ""} </span>))

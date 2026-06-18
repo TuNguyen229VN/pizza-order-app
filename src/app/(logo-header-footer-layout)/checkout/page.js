@@ -9,25 +9,30 @@ import { useDelivery } from '@/context/DeliveryContext';
 import { useFormValidate } from '@/hooks/useFormValidate';
 import { calcPointDiscount } from '@/libs/pointTier';
 import { totalQuantity } from '@/libs/totalQuantity';
-import { validators } from '@/libs/validators';
+import { createValidators, validators } from '@/libs/validators';
 import CartSubtotal from '@/modules/cart/CartSubtotal';
 import HeaderCart from '@/modules/cart/HeaderCart';
 import CheckAcceptPolicy from '@/modules/checkout/CheckAcceptPolicy';
 import CheckoutAddress from '@/modules/checkout/CheckoutAddress';
 import CheckoutInfo from '@/modules/checkout/CheckoutInfo';
 import CheckoutMethod from '@/modules/checkout/CheckoutMethod';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import React, { useContext, useEffect, useState } from 'react'
 import toast from 'react-hot-toast';
 
 export default function CheckoutPage() {
     const { errors, setErrors, registerRef, handleValidate, clearError } = useFormValidate();
+    const t = useTranslations("Validation");
+    const sTrans = useTranslations("System");
+    const cTrans = useTranslations("Cart");
+    const nTrans = useTranslations("Notification");
+    const validators = createValidators(t);
     const [infoProfileCheckout, setInfoProfileCheckout] = useState({});
     const [checked, setChecked] = useState(false);
     const [noteDelivery, setNoteDelivery] = useState("")
     const [legit, setLegit] = useState(false)
     const { data: profileData } = UseProfile();
-
     const { cartProducts } = useContext(CartContext);
     const { deliveryInfo, openDeliveryModal } = useDelivery();
     const [paymentMethod, setPaymentMethod] = useState();
@@ -35,7 +40,7 @@ export default function CheckoutPage() {
     useEffect(() => {
         if (typeof window !== 'undefined') {
             if (window.location.href.includes('canceled=1')) {
-                toast.error('Payment failed 😔');
+                toast.error('Payment failed');
             }
         }
     }, []);
@@ -67,21 +72,21 @@ export default function CheckoutPage() {
             return;
         }
         if (isDeliveryBelowMin) {
-            toast.error(`Đợi đã! Bạn vui lòng mua thêm ${(MIN_DELIVERY_AMOUNT - totalCartPrice(cartProducts)).toLocaleString('vi-VN')} ₫ để đủ điều kiện giao hàng`);
+            toast.error(`${nTrans("NEED_ADD_MORE_NOTI")} ${(MIN_DELIVERY_AMOUNT - totalCartPrice(cartProducts)).toLocaleString('vi-VN')} ₫ ${nTrans("NEED_ADD_MORE_NOTI2")}`);
             return;
         }
         const isValid = handleValidate({
             name: {
                 value: infoProfileCheckout.name,
-                rules: [validators.required("họ và tên"), validators.minLength(2), validators.maxLength(200)],
+                rules: [validators.required(sTrans("họ và tên")), validators.minLength(2), validators.maxLength(200)],
             },
             email: {
                 value: infoProfileCheckout.email,
-                rules: [validators.required("email"), validators.email],
+                rules: [validators.required(sTrans("email")), validators.email],
             },
             phone: {
                 value: infoProfileCheckout.phone,
-                rules: [validators.required("số điện thoại"), validators.phone],
+                rules: [validators.required(sTrans("số điện thoại")), validators.phone],
             },
             noteDelivery: {
                 value: noteDelivery,
@@ -89,7 +94,7 @@ export default function CheckoutPage() {
             },
             paymentMethod: {
                 value: paymentMethod,
-                rules: [validators.required("phương thức thanh toán")],
+                rules: [validators.required(sTrans("phương thức thanh toán"))],
             }
         });
 
@@ -121,8 +126,8 @@ export default function CheckoutPage() {
         });
 
         await toast.promise(promise, {
-            loading: 'Đang xử lý...',
-            success: 'Đang chuyển hướng...',
+            loading: `${sTrans("Đang xử lý")}...`,
+            success: `${sTrans("Đang chuyển hướng")}...`,
             error: (err) => {
                 // Xử lý lỗi validation từ server
                 if (err?.errors && typeof err.errors === 'object') {
@@ -131,9 +136,9 @@ export default function CheckoutPage() {
                         ...prev,
                         ...err.errors // merge lỗi server vào errors hiện tại
                     }));
-                    return err?.message || "Dữ liệu không hợp lệ";
+                    return (sTrans.has(err?.message) ? sTrans(err?.message) : err?.message) || sTrans("Dữ liệu không hợp lệ");
                 }
-                return err?.message || "Cập nhật thất bại";
+                return (sTrans.has(err?.message) ? sTrans(err?.message) : err?.message) || sTrans("Cập nhật thất bại");
             },
         });
     }
@@ -146,7 +151,7 @@ export default function CheckoutPage() {
     const { discountAmount, discountPercent, tier } = calcPointDiscount(profileData?.pointRewards, totalCartPrice(cartProducts));
     return (
         <section>
-            <HeaderCart text='Thanh toán' urlLink={CART_ROUTE} />
+            <HeaderCart text={cTrans("Thanh toán")} urlLink={CART_ROUTE} />
             <div className="grid gap-4 md:mt-8 md:gap-8 md:grid-cols-3">
                 <div className='md:col-span-2'>
                     <form id='checkout-form' onSubmit={proceedToCheckout}>
@@ -162,16 +167,16 @@ export default function CheckoutPage() {
                 <div>
                     <CartSubtotal subtotal={totalCartPrice(cartProducts)} deliveryFee={deliveryInfo?.shipFee} discountAmount={discountAmount} discountPercent={discountPercent}>
                         <Link href={CART_ROUTE} className='flex items-center justify-between '>
-                            <p className='mb-1 font-semibold md:text-2xl'>Giỏ hàng của tôi</p>
+                            <p className='mb-1 font-semibold md:text-2xl'>{sTrans("Giỏ hàng của tôi")}</p>
                             <ChevronRight className='w-4 h-4 md:w-6 md:h-6' />
                         </Link>
-                        <p>Có {totalQuantity(cartProducts)} sản phẩm trong giỏ hàng của bạn</p>
+                        <p>{cTrans("Có")} {totalQuantity(cartProducts)} {cTrans("sản phẩm trong giỏ hàng của bạn")}</p>
                         <div className='w-full h-[1px] bg-gray-200 my-3 md:my-4'></div>
                     </CartSubtotal>
                     <CheckAcceptPolicy checked={checked} setChecked={setChecked} legit={legit} />
                     <div className='px-4 md:px-0'>
                         <ButtonPrimary form="checkout-form" type="submit" className={"mt-4 md:mt-6"} disabled={!cartProducts?.length}>
-                            Đặt hàng
+                            {sTrans("Đặt hàng")}
                         </ButtonPrimary>
                     </div>
 

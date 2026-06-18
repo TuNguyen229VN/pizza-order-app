@@ -1,6 +1,7 @@
-import { validateForm, validators } from "./validators";
+import { createValidators, validateForm } from "./validators";
 
-export function validateCombo(data, categorySizes = {}) {
+export function validateCombo(data, categorySizes = {},t) {
+    const validators = createValidators(t);
     const { isValid, errors } = validateForm({
         name: {
             value: data.name,
@@ -26,18 +27,18 @@ export function validateCombo(data, categorySizes = {}) {
 
     let slotErrors = {};
     if (!data.slots || data.slots.length === 0) {
-        slotErrors.slots = "Phải có ít nhất 1 slot";
+        slotErrors.slots = t("Phải có ít nhất 1 slot");
     } else {
         const perSlotErrors = data.slots.map((slot) => {
             const e = {};
-            if (!slot.category) e.category = "Chưa chọn danh mục";
-            if (!slot.quantity || slot.quantity < 1) e.quantity = "Số lượng phải >= 1";
+            if (!slot.category) e.category = t("Chưa chọn danh mục");
+            if (!slot.quantity || slot.quantity < 1) e.quantity = t("comboQuantityMin");
             // Chỉ bắt buộc size nếu category đó có sizes
             if (!slot.size?.name && categorySizes[slot.category]?.length > 0) {
-                e.size = "Chưa chọn size";
+                e.size = t("Chưa chọn size");
             }
             if (!slot.allowedItems?.length) {
-                e.allowedItems = "Phải chọn ít nhất 1 món";
+                e.allowedItems = t("Phải chọn ít nhất 1 món");
             }
             return e;
         });

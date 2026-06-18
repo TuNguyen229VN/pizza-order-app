@@ -15,6 +15,7 @@ import Tabs from "./Tabs";
 import { useDelivery } from "@/context/DeliveryContext";
 import PickupMap from "./PickupMap";
 import { createPortal } from "react-dom";
+import { useTranslations } from "next-intl";
 
 const HCM_BOUNDS = { minLat: 10.349, maxLat: 11.160, minLng: 106.364, maxLng: 107.031 };
 const inHCM = (lat, lng) =>
@@ -38,7 +39,7 @@ export default function DeliveryPickupModal({ onConfirm }) {
 
     // ── Tab ─────────────────────────────────────────────────
     const [mode, setMode] = useState("delivery");
-
+    const sTrans = useTranslations("System");
     // ── Delivery state ───────────────────────────────────────
     const [deliveryQuery, setDeliveryQuery] = useState("");
     const [deliveryAddr, setDeliveryAddr] = useState(null);
@@ -184,12 +185,12 @@ export default function DeliveryPickupModal({ onConfirm }) {
     const handleClose = () => closeDeliveryModal();
 
     const confirmLabel = () => {
-        if (success) return "✓ Đã lưu thành công!";
-        if (mode === "pickup") return pickupStore ? `Chọn ${pickupStore.name}` : "Chọn cửa hàng này";
-        if (!deliveryAddr) return "Xác nhận giao hàng";
-        if (!addrValid) return "Vui lòng nhập số nhà";
-        if (!deliveryInfo?.canDeliver) return "Ngoài vùng giao hàng";
-        return `Xác nhận – Phí ship ${deliveryInfo.feeText}`;
+        if (success) return `${sTrans("ADD_SUCCESS_ADDRESS")}`;
+        if (mode === "pickup") return pickupStore ? `${sTrans("Chọn")} ${pickupStore.name}` : `${sTrans("Chọn cửa hàng này")}`;
+        if (!deliveryAddr) return `${sTrans("Xác nhận giao hàng")}`;
+        if (!addrValid) return `${sTrans("Vui lòng nhập số nhà")}`;
+        if (!deliveryInfo?.canDeliver) return `${sTrans("Ngoài vùng giao hàng")}`;
+        return `${sTrans("CONFIRM_FEE_SHIP")} ${deliveryInfo.feeText}`;
     };
 
     if (!isDeliveryModalOpen) return null;
@@ -204,8 +205,8 @@ export default function DeliveryPickupModal({ onConfirm }) {
                     <div className="pp-head bg-primary">
                         <Image src="/logo-small.png" alt="logo" width={100} height={100} className="bg-white rounded-full" />
                         <div>
-                            <div className="pp-htitle">Nhận hàng thế nào?</div>
-                            <div className="pp-hsub">Chọn cách bạn muốn nhận pizza</div>
+                            <div className="pp-htitle">{sTrans("Nhận hàng thế nào")}?</div>
+                            <div className="pp-hsub">{sTrans("Chọn cách bạn muốn nhận pizza")}</div>
                         </div>
                         <button className="pp-x" onClick={handleClose}>✕</button>
                     </div>
@@ -221,12 +222,12 @@ export default function DeliveryPickupModal({ onConfirm }) {
                             <div className="pp-section">
                                 <div className="pp-label-row">
                                     <label className="pp-lbl">
-                                        Địa chỉ giao hàng <span style={{ color: "#E63946" }}>*</span>
+                                        {sTrans("Địa chỉ giao hàng")} <span style={{ color: "#E63946" }}>*</span>
                                     </label>
                                     <button className="pp-locate-btn" onClick={handleGetLocation} disabled={locLoading} type="button">
                                         {locLoading
-                                            ? <><span className="pp-spin" /> Đang lấy...</>
-                                            : <><MdOutlineMyLocation /> Vị trí của tôi</>}
+                                            ? <><span className="pp-spin" /> {sTrans("Đang lấy")}...</>
+                                            : <><MdOutlineMyLocation /> {sTrans("Vị trí của tôi")}</>}
                                     </button>
                                 </div>
 
@@ -269,14 +270,14 @@ export default function DeliveryPickupModal({ onConfirm }) {
                                         </ul>
                                     )}
                                     {showDrop && !loading && deliveryQuery.length >= 3 && items.length === 0 && (
-                                        <div className="pp-empty">Không tìm thấy địa chỉ trong TP.HCM</div>
+                                        <div className="pp-empty">{sTrans("NO_ADDRESS_HCM")}</div>
                                     )}
                                 </div>
 
                                 {deliveryAddr && !addrValid && (
                                     <div className="pp-warn">
-                                        ⚠️ Địa chỉ chưa có <b>số nhà</b>. Vui lòng nhập cụ thể hơn,
-                                        ví dụ: <i>&quot;123 Nguyễn Huệ, Quận 1&quot;</i>
+                                        ⚠️ {sTrans("Địa chỉ chưa có")} <b>{sTrans("số nhà")}</b>. {sTrans("Vui lòng nhập cụ thể hơn")},
+                                        {sTrans("ví dụ")}: <i>&quot;123 Nguyễn Huệ, Quận 1&quot;</i>
                                     </div>
                                 )}
                                 {locError && <div className="pp-warn pp-warn-err">⚠️ {locError}</div>}
@@ -294,7 +295,7 @@ export default function DeliveryPickupModal({ onConfirm }) {
                                 <div className="pp-map">
                                     <PickupMap selected={pickupStore} onSelect={setPickupStore} />
                                 </div>
-                                <label className="pp-lbl" style={{ marginBottom: 8 }}>Chọn chi nhánh gần bạn:</label>
+                                <label className="pp-lbl" style={{ marginBottom: 8 }}>{sTrans("Chọn chi nhánh gần bạn")}:</label>
                                 <div className="pp-branches">
                                     {BRANCHES.map((b) => (
                                         <button

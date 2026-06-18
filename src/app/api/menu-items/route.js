@@ -5,6 +5,7 @@ import { authOptions } from "../auth/[...nextauth]/route";
 import { validateMenuItem } from "@/libs/validateMenuItem";
 import { LIMITPAGE } from "@/constant/constant";
 import { escapeRegex } from "@/utils/escapeRegex";
+import { getServerT } from "@/libs/getServerT";
 
 export async function POST(req) {
     try {
@@ -18,8 +19,8 @@ export async function POST(req) {
         if (session?.user?.admin !== true) {
             return Response.json({ message: "Bạn không phải là admin" }, { status: 401 });
         }
-
-        const { isValid, errors } = validateMenuItem(data);
+        const t = await getServerT();
+        const { isValid, errors } = validateMenuItem(data, t);
         if (!isValid) {
             return Response.json({ message: "Dữ liệu không hợp lệ", errors }, { status: 400 });
         }
@@ -42,8 +43,8 @@ export async function PUT(req) {
         if (session?.user?.admin !== true) {
             return Response.json({ message: "Bạn không phải là admin" }, { status: 401 });
         }
-
-        const { isValid, errors } = validateMenuItem(data);
+        const t = await getServerT();
+        const { isValid, errors } = validateMenuItem(data, t);
         if (!isValid) {
             return Response.json({ message: "Dữ liệu không hợp lệ", errors }, { status: 400 });
         }
@@ -75,9 +76,8 @@ export async function GET(req) {
     const query = {
         ...(safeSearch && { name: { $regex: safeSearch, $options: "i" } }),
         status: status || { $in: ["on", "off"] },
-        ...(category && { category }), // 👈 thêm
+        ...(category && { category }), 
     };
-
 
     const sortMap = {
         newest: { createdAt: -1 },

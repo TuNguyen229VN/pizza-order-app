@@ -8,14 +8,18 @@ import HeaderCart from "@/modules/cart/HeaderCart";
 import { LOGIN_ROUTE } from "@/constant/routesApp";
 import ButtonPrimary from "@/components/buttons/ButtonPrimary";
 import Loader from "@/components/loading/Loader";
-import { validators } from "@/libs/validators";
+import { createValidators } from "@/libs/validators";
 import { API_FORGOT_PASSWORD } from "@/constant/constant";
+import { useTranslations } from "next-intl";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState("idle"); // idle | loading | success | error | google
   const [message, setMessage] = useState("");
   const { errors, registerRef, handleValidate, clearError } = useFormValidate();
+  const sTrans = useTranslations("System");
+  const t = useTranslations("Validation");
+  const validators = createValidators(t);
   async function handleSubmit(e) {
     e.preventDefault();
     const isValid = handleValidate({
@@ -44,21 +48,21 @@ export default function ForgotPasswordPage() {
         } else {
           setStatus("error");
         }
-        setMessage(data.message);
+        setMessage(sTrans.has(data.message) ? sTrans(data.message) : data.message);
         return;
       }
-      
+
       setStatus("success");
-      setMessage(data.message);
+      setMessage(sTrans.has(data.message) ? sTrans(data.message) : data.message);
     } catch {
       setStatus("error");
-      setMessage("Đã xảy ra lỗi. Vui lòng thử lại.");
+      setMessage(sTrans("FORGOT_PW_ERROR"));
     }
   }
 
   return (
     <>
-      <HeaderCart text="Quên mật khẩu" urlLink={LOGIN_ROUTE}></HeaderCart>
+      <HeaderCart text={sTrans("Quên mật khẩu")} urlLink={LOGIN_ROUTE}></HeaderCart>
       <div className="p-4 md:w-[510px] mx-auto ">
         {/* Form */}
         {status !== "success" && (
@@ -66,17 +70,17 @@ export default function ForgotPasswordPage() {
             <div style={styles.field}>
               <ValidatedInput
                 id="email"
-                label="Email"
+                label={sTrans("Email")}
                 name="email"
                 value={email || ""}
                 inputRef={registerRef("email")}
                 error={errors.email}
-                placeholder="Nhập email của bạn"
+                placeholder={sTrans("Nhập email của bạn")}
                 disabled={status === "loading"}
                 onChange={(e) => { setEmail(e.target.value); clearError("email"); }}
               />
             </div>
-            <p className="mt-4 text-center text-secondary">Vui lòng nhập địa chỉ email bạn đã đăng ký để đặt lại mật khẩu ngay lập tức.</p>
+            <p className="mt-4 text-center text-secondary">{sTrans("NOTE_FORGOT_PW")}</p>
             {/* Error / Google notice */}
             {(status === "error" || status === "google") && message && (
               <div
@@ -89,7 +93,7 @@ export default function ForgotPasswordPage() {
                 {message}
                 {status === "google" && (
                   <Link href="/login" style={styles.link}>
-                    {" "}Đăng nhập với Google →
+                    {" "}{sTrans("Đăng nhập với Google")} →
                   </Link>
                 )}
               </div>
@@ -103,7 +107,7 @@ export default function ForgotPasswordPage() {
               {status === "loading" ? (
                 <Loader size={"20"} />
               ) : (
-                "Gửi"
+                sTrans("Gửi")
               )}
             </ButtonPrimary>
           </form>
@@ -113,10 +117,10 @@ export default function ForgotPasswordPage() {
         {status === "success" && (
           <div style={styles.successBox}>
             <div style={styles.successIcon}>📬</div>
-            <h2 style={styles.successTitle}>Kiểm tra hộp thư của bạn!</h2>
+            <h2 style={styles.successTitle}>{sTrans("CHECK_YOUR_INBOX")}</h2>
             <p style={styles.successText}>{message}</p>
             <p style={styles.successNote}>
-              Không thấy email? Kiểm tra thư mục Spam hoặc{" "}
+              {sTrans("CHECK_EMAIL_FORGOT_PW")}{" "}
               <button
                 onClick={() => {
                   setStatus("idle");
@@ -125,7 +129,7 @@ export default function ForgotPasswordPage() {
                 className="text-primary"
                 style={styles.retryBtn}
               >
-                thử lại
+                {sTrans("thử lại")}
               </button>
               .
             </p>

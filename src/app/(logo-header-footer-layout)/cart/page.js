@@ -15,6 +15,7 @@ import UseProfile from '@/components/UseProfile';
 import { calcPointDiscount } from '@/libs/pointTier';
 import NotificationPopup from '@/components/popup/NotificationPopup';
 import { MIN_DELIVERY_AMOUNT } from '@/constant/constant';
+import { useTranslations } from 'next-intl';
 
 export default function CartPage() {
   const { cartProducts, removeCartProduct } = useContext(CartContext);
@@ -23,7 +24,8 @@ export default function CartPage() {
   for (const p of cartProducts) {
     subtotal += cartProductPrice(p);
   }
-
+  const cTrans = useTranslations("Cart");
+  const nTrans = useTranslations("Notification");
   const { deliveryInfo } = useDelivery();
   const { discountAmount, discountPercent, tier } = calcPointDiscount(profileData?.pointRewards, totalCartPrice(cartProducts));
   const isDeliveryBelowMin = deliveryInfo?.mode === "delivery" && totalCartPrice(cartProducts) < MIN_DELIVERY_AMOUNT;
@@ -36,7 +38,7 @@ export default function CartPage() {
             <CartProductEmpty />
           )}
           {cartProducts?.length > 0 && <div className='px-4 border rounded-2xl'>
-            <p className='py-4 text-sm font-semibold text-blackHeader md:text-base'>Có {totalQuantity(cartProducts)} sản phẩm trong giỏ hàng của bạn</p>
+            <p className='py-4 text-sm font-semibold text-blackHeader md:text-base'>{cTrans("Có")} {totalQuantity(cartProducts)} {cTrans("sản phẩm trong giỏ hàng của bạn")}</p>
             {cartProducts?.length > 0 && cartProducts.map((product, index) => (
               <CartProduct
                 key={product.cartId || product.cartComboId || index}
@@ -61,19 +63,19 @@ export default function CartPage() {
             <div className='px-4 md:px-0'>
               {isDeliveryBelowMin ? (
                 <NotificationPopup
-                  labelDesc={`Đợi đã! Bạn vui lòng mua thêm ${(MIN_DELIVERY_AMOUNT-totalCartPrice(cartProducts)).toLocaleString('vi-VN')} ₫ để đủ điều kiện giao hàng`}
+                  labelDesc={`${nTrans("NEED_ADD_MORE_NOTI")} ${(MIN_DELIVERY_AMOUNT - totalCartPrice(cartProducts)).toLocaleString('vi-VN')} ₫ ${nTrans("NEED_ADD_MORE_NOTI2")}`}
                   labelConfirm="Xác nhận"
                   classNameButton="w-full"
                 >
                   <ButtonPrimary className="mt-6" disabled={!cartProducts?.length}>
-                    Thanh toán
+                    {cTrans("Thanh toán")}
                   </ButtonPrimary>
                 </NotificationPopup>
               ) : (
                 <Link href={cartProducts?.length > 0 ? CHECKOUT_ROUTE : '#'}
                   className={!cartProducts?.length ? 'pointer-events-none' : ''}>
                   <ButtonPrimary className="mt-6" disabled={!cartProducts?.length}>
-                    Thanh toán
+                    {cTrans("Thanh toán")}
                   </ButtonPrimary>
                 </Link>
               )}

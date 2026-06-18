@@ -15,6 +15,7 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import { Navigation } from 'swiper/modules'
 import { useRef } from "react";
+import { useTranslations } from "next-intl";
 /**
  * ComboSelector
  * Dùng cho cả 2 trường hợp:
@@ -47,7 +48,8 @@ export default function ComboSelector({
     const tabsContainerRef = useRef(null);
 
     const [menuItemsBySlot, setMenuItemsBySlot] = useState({});
-
+    const sTrans = useTranslations("System");
+    const hTrans = useTranslations("HomePage");
     const [selections, setSelections] = useState({});
     const [loadingSlots, setLoadingSlots] = useState(true);
     const [validationError, setValidationError] = useState("");
@@ -253,8 +255,8 @@ export default function ComboSelector({
             const total = totalChosenInSlot(i);
             if (total < slot.quantity) {
                 const category = categories.find(c => c._id === slot.category)
-                const label = slot.label || category.name || `Slot ${i + 1}`;
-                setValidationError(`"${label}": cần chọn đủ ${slot.quantity} món (đã chọn ${total})`);
+                const label = slot.label || (hTrans.has(category.name) ? hTrans(category.name) : category.name) || `Slot ${i + 1}`;
+                setValidationError(`"${label}": ${sTrans("cần chọn đủ")} ${slot.quantity} ${sTrans("món")} (${sTrans("đã chọn")} ${total})`);
                 setChooseTabIndex(i); // Nhảy về slot lỗi
                 return;
             }
@@ -313,16 +315,16 @@ export default function ComboSelector({
     return (
         <div className="fixed inset-0 z-50 flex items-end justify-center p-0 sm:items-center md:p-4">
             {/* Backdrop */}
-            {isComboComplete ? <div className="absolute inset-0 bg-black/50" onClick={onClose} /> : <ConfirmPopup onDelete={onClose} label="Thoát tạo mới combo" labelDesc="Lựa chọn của bạn sẽ bị mất nếu bạn thoát khỏi combo. Bạn có chắc chắn muốn thoát" labelConfirm="Thoát">
+            {isComboComplete ? <div className="absolute inset-0 bg-black/50" onClick={onClose} /> : <ConfirmPopup onDelete={onClose} label={sTrans("Thoát tạo mới combo")} labelDesc={sTrans("EXIT_ADDCOMBO_DESC")} labelConfirm={sTrans("Thoát")}>
                 <div className="absolute inset-0 bg-black/80" />
             </ConfirmPopup>}
             <div className="relative w-full lg:w-[960px] p-4 bg-white rounded-md shadow-2xl h-[100vh] flex flex-col">
                 {/* Header */}
                 <div className="relative mb-4">
-                    <h4 className="text-2xl font-semibold"> {isEdit ? "Chỉnh sửa combo" : "Tạo mới combo"}</h4>
+                    <h4 className="text-2xl font-semibold"> {isEdit ? sTrans("Chỉnh sửa combo") : sTrans("Tạo mới combo")}</h4>
                     {comboChooseList.length > 0 ? <button
                         className="absolute top-0 text-2xl transition right-3" onClick={onClose}
-                    >✕</button> : <ConfirmPopup onDelete={onClose} label="Thoát tạo mới combo" labelDesc="Lựa chọn của bạn sẽ bị mất nếu bạn thoát khỏi combo. Bạn có chắc chắn muốn thoát" labelConfirm="Thoát">
+                    >✕</button> : <ConfirmPopup onDelete={onClose} label={sTrans("Thoát tạo mới combo")} labelDesc={sTrans("EXIT_ADDCOMBO_DESC")} labelConfirm={sTrans("Thoát")}>
                         <button
                             className="absolute top-0 text-2xl transition right-3"
                         >✕</button>
@@ -334,7 +336,7 @@ export default function ComboSelector({
                     {loadingSlots ? (
                         <div className="flex items-center justify-center py-12 ">
                             <div className="border-orange-400 rounded-full w-7 h-7 border-3 border-t-transparent animate-spin" />
-                            <span className="ml-3 text-sm text-gray-400">Đang tải món...</span>
+                            <span className="ml-3 text-sm text-gray-400">{sTrans("Đang tải món")}...</span>
                         </div>) : (
                         <>
 
@@ -374,8 +376,8 @@ export default function ComboSelector({
                                                 <div key={slotIdx} className={`flex items-center gap-2  ${total === 0 && chooseTabIndex !== slotIdx ? "opacity-50 pointer-events-none" : "cursor-pointer"}`} onClick={() => { setChooseTabIndex(slotIdx); setEditingItems(new Set()); }}>
                                                     <div className={`flex flex-shrink-0 items-center justify-center w-8 h-8 text-sm rounded-full border ${chooseTabIndex === slotIdx ? "bg-primary text-white " : "border-primary text-primary"}`}> <p className="font-semibold">{total > 0 && chooseTabIndex !== slotIdx ? <FaCheck /> : slotIdx + 1}</p></div>
                                                     <div>
-                                                        <p className="text-sm font-semibold whitespace-nowrap md:text-base">Chọn  {category?.name} {slot.quantity > 0 && `(${total}/${slot.quantity})`}</p>
-                                                        <p className="text-sm font-semibold text-secondary">Yêu cầu</p>
+                                                        <p className="text-sm font-semibold whitespace-nowrap md:text-base">{sTrans("ChọnSelect")}  {hTrans.has(category?.name) ? hTrans(category?.name) : category?.name} {slot.quantity > 0 && `(${total}/${slot.quantity})`}</p>
+                                                        <p className="text-sm font-semibold text-secondary">{sTrans("Yêu cầu")}</p>
                                                     </div>
                                                 </div>
                                             </SwiperSlide>
@@ -424,7 +426,7 @@ export default function ComboSelector({
                                                     <p className='text-sm text-secondary line-clamp-1'>{mi.description}</p>
                                                     {combo.slots[chooseTabIndex].size?.name && (
                                                         <span className="text-xs font-medium ">
-                                                            Kích thước: {combo.slots[chooseTabIndex].size.name}
+                                                            {sTrans("Kích thước")}: {combo.slots[chooseTabIndex].size.name}
                                                         </span>
                                                     )}
                                                 </div>
@@ -490,7 +492,7 @@ export default function ComboSelector({
                     </div>
                 )}
 
-                <ButtonPrimary disabled={totalChosenInSlot(chooseTabIndex) === 0} className={"w-full hover:scale-[1.0]"} onClick={handleChooseCombo}>Tiếp tục{" "}<span className="inline-block w-2 h-2 mx-2 bg-white rounded-full" />{" "}
+                <ButtonPrimary disabled={totalChosenInSlot(chooseTabIndex) === 0} className={"w-full hover:scale-[1.0]"} onClick={handleChooseCombo}>{sTrans("Tiếp tục")}{" "}<span className="inline-block w-2 h-2 mx-2 bg-white rounded-full" />{" "}
                     {combo?.price?.toLocaleString('vi-VN')} <span className="underline">đ</span></ButtonPrimary>
             </div>
         </div>

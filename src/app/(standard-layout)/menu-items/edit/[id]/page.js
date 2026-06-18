@@ -11,7 +11,7 @@ import { API_MENU_ITEMS, API_UPLOAD_IMAGE } from '@/constant/constant';
 import { MENU_ITEMS_ROUTE } from '@/constant/routesApp';
 import ContainerProfileLeft from '@/container/ContainerProfileLeft';
 import { useFormValidate } from '@/hooks/useFormValidate';
-import { validators } from '@/libs/validators';
+import { createValidators } from '@/libs/validators';
 import { MenuItem } from '@/models/MenuItem';
 import HeaderCart from '@/modules/cart/HeaderCart';
 import Link from 'next/link';
@@ -19,11 +19,14 @@ import { redirect, useParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 import toast from 'react-hot-toast';
 import { uploadImage } from '@/libs/uploadImage';
+import { useTranslations } from 'next-intl';
 
 export default function EditMenuItemPage() {
     const { id } = useParams();
     const { loading: profileLoading, data: profileData } = UseProfile();
-
+    const sTrans = useTranslations("System");
+    const t = useTranslations("Validation");
+    const validators = createValidators(t);
     const [menuItem, setMenuItem] = useState(null)
     const [redirectToItems, setRedirectToItems] = useState(false)
     const [loadingForm, setLoadingForm] = useState(false)

@@ -28,7 +28,8 @@ const Header = ({ className }) => {
   const { cartProducts } = useContext(CartContext);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const { deliveryInfo, openDeliveryModal } = useDelivery();
-   const t = useTranslations('HomePage');
+  const t = useTranslations('HomePage');
+  const sTrans = useTranslations("System");
   useLockBodyScroll(mobileNavOpen);
   return (
     <header className={`sticky top-0 z-30 max-w-6xl p-3 mx-auto bg-white md:p-4 ${className}`}>
@@ -50,7 +51,7 @@ const Header = ({ className }) => {
           </div>
           <div className="flex items-center justify-end flex-1 min-w-0 gap-3 md:gap-5">
             <NotificationBell />
-            <LocaleSelectorClient/>
+            <LocaleSelectorClient className={"relative"}/>
             <Link
               href={CART_ROUTE}
               className={`md:w-[80px] h-[40px] md:h-[50px] flex justify-center items-center px-3 p-2 md:p-3 border rounded-[50px] transition-colors duration-200 ${cartProducts.length > 0 ? "bg-primary text-white" : "bg-white text-gray-700"
@@ -76,27 +77,27 @@ const Header = ({ className }) => {
               <UserIcon className={`${status === "authenticated" && "text-primary"} w-6 h-6`} />
               <div className="hidden md:block absolute bg-white w-[210px] rounded-3xl top-[80%]  right-0 shadow-lg py-[10px] opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto duration-250 delay-200">
                 {status === "unauthenticated" && (<>
-                  <Link href={LOGIN_ROUTE} className="block py-3 pl-4 hover:font-medium hover:text-primary">Đăng nhập</Link>
-                  <Link href={REGISTER_ROUTE} className="block py-3 pl-4 hover:font-medium hover:text-primary">Đăng ký</Link>
+                  <Link href={LOGIN_ROUTE} className="block py-3 pl-4 hover:font-medium hover:text-primary">{sTrans("Đăng nhập")}</Link>
+                  <Link href={REGISTER_ROUTE} className="block py-3 pl-4 hover:font-medium hover:text-primary">{sTrans("Đăng ký")}</Link>
                   <div className="w-full h-[1px] bg-gray-200"></div>
                 </>)}
                 <Link href={ORDER_TRACKING_ROUTE} className="inline-block py-3 pl-4 hover:font-medium hover:text-primary">
-                  Theo dõi đơn hàng
+                  {sTrans("Theo dõi đơn hàng")}
                 </Link>
                 {status === "authenticated" && (
                   <>
                     <div className="w-full h-[1px] bg-gray-200"></div>
-                    <Link href={PROFILE_ROUTE} className="block py-3 pl-4 hover:font-medium hover:text-primary">Hồ sơ của tôi</Link>
+                    <Link href={PROFILE_ROUTE} className="block py-3 pl-4 hover:font-medium hover:text-primary">{sTrans("Hồ sơ của tôi")}</Link>
                   </>
                 )}
-                <Link href={REWARDS_ROUTE} className="inline-block py-3 pl-4 hover:font-medium hover:text-primary">Teo Rewards</Link>
-                <ConfirmPopup labelConfirm="Gọi ngay" label="Hỗ trợ khách hàng" labelDesc="gọi đến 1900 1822" onDelete={() => window.location.href = 'tel:0123456789'}>
-                  <p className="py-3 pl-4 hover:font-medium hover:text-primary">Hỗ trợ khách hàng</p>
+                <Link href={REWARDS_ROUTE} className="inline-block py-3 pl-4 hover:font-medium hover:text-primary">{sTrans("Teo Rewards")}</Link>
+                <ConfirmPopup labelConfirm="Gọi ngay" label="Hỗ trợ khách hàng" labelDesc={`${sTrans("gọi đến")} 1900 1822`} onDelete={() => window.location.href = 'tel:0123456789'}>
+                  <p className="py-3 pl-4 hover:font-medium hover:text-primary">{sTrans("Hỗ trợ khách hàng")}</p>
                 </ConfirmPopup>
                 {status === "authenticated" && (<>
                   <div className="w-full h-[1px] bg-gray-200"></div>
                   <ConfirmPopup label="Đăng xuất" labelConfirm="Đăng xuất" onDelete={() => signOut()}>
-                    <p className="py-3 pl-4 hover:font-medium hover:text-primary">Đăng xuất</p>
+                    <p className="py-3 pl-4 hover:font-medium hover:text-primary">{sTrans("Đăng xuất")}</p>
                   </ConfirmPopup>
                 </>)}
               </div>

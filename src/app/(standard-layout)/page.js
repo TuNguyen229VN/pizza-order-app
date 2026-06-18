@@ -278,7 +278,6 @@ export default function Home() {
       ) : (
         <Slider banners={banners} setHash={setHash} hash={hash} isScrollingTo={isScrollingTo} />
       )}
-
       {loadingSections ? (
         <SkeletonLoadingCarousel />
       ) : (

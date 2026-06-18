@@ -3,12 +3,15 @@ import { authOptions } from "../auth/[...nextauth]/route";
 import { User } from "@/models/User";
 import { UserInfo } from "@/models/UserInfo";
 import { connectDB } from "@/libs/connectDB";
-import { validateForm, validators } from "@/libs/validators";
+import { createValidators, validateForm } from "@/libs/validators";
+import { getServerT } from "@/libs/getServerT";
 
 export async function PUT(req) {
   try {
     await connectDB();
     const data = await req.json();
+    const t = await getServerT();
+    const validators = createValidators(t);
     const { isValid, errors } = validateForm({
       userName: {
         value: data?.name,
@@ -98,7 +101,7 @@ export async function PATCH(req) {
     const user = await User.findOne({ _id }).lean();
     if (!user) return Response.json({ message: "Người dùng không tồn tại" }, { status: 404 });
     if (user.admin) return Response.json({ message: "Không thể chặn người dùng là admin" }, { status: 400 });
-    
+
     const updated = await UserInfo.findOneAndUpdate(
       { email: user.email },
       { status },

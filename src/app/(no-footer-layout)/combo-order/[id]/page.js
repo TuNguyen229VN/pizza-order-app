@@ -3,6 +3,7 @@ import { CartContext } from '@/components/AppContext';
 import ButtonPrimary from '@/components/buttons/ButtonPrimary';
 import FlyingButton from '@/components/buttons/FlyingButton';
 import NotFindLayout from '@/components/layout/NotFindLayout';
+import LoadingCat from '@/components/loading/LoadingCat';
 import SkeletonLoadingBox from '@/components/skeleton/SkeletonLoadingBox';
 import { API_CATEGORIES, API_COMBO, API_MENU_ITEMS } from '@/constant/constant';
 import { HOME_ROUTE } from '@/constant/routesApp';
@@ -12,6 +13,7 @@ import ComboChoosedList from '@/modules/combo-order/ComboChoosedList';
 import ComboNote from '@/modules/combo-order/ComboNote';
 import ComboQuantity from '@/modules/combo-order/ComboQuantity';
 import ComboSelector from '@/modules/combo-order/ComboSelector';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import React, { useContext, useEffect, useRef, useState } from 'react'
@@ -20,6 +22,7 @@ export default function ComboOrderPage() {
     const router = useRouter();
     const { id } = useParams();
     const searchParams = useSearchParams();
+    const sTrans = useTranslations("System");
     const comboCartId = searchParams.get("cartComboId");
     const { addComboToCart, updateComboInCart, cartProducts } = useContext(CartContext);
     const [comboChooseList, setComboChooseList] = useState([]);
@@ -120,10 +123,10 @@ export default function ComboOrderPage() {
     }
 
     if (loading) {
-        return <div>Loading...</div>
+        return <LoadingCat />
     }
     if (!combos || !categories) {
-        return <NotFindLayout title='Xin lỗi, không có combo này' />
+        return <NotFindLayout title={sTrans("COMBO_NOTFOUND_SEARCH")} />
     }
     return (
         <section>
@@ -166,12 +169,12 @@ export default function ComboOrderPage() {
                     </ul>
                     <div className='flex flex-col gap-2 md:items-center md:gap-32 md:flex-row'>
                         <div>
-                            <p className='text-sm text-[rgb(55,65,81)]'>Chỉ từ:</p>
+                            <p className='text-sm text-[rgb(55,65,81)]'>{sTrans("Chỉ từ")}:</p>
                             <p className='font-semibold md:text-2xl'>{combos?.price?.toLocaleString('vi-VN')} <span className='underline'>đ</span></p>
                         </div>
                         {deliveryInfo?.shipFee && (
                             <div>
-                                <p className='text-sm text-[rgb(55,65,81)]'>Chi phí giao hàng:</p>
+                                <p className='text-sm text-[rgb(55,65,81)]'>{sTrans("Chi phí giao hàng")}:</p>
                                 <p className='font-semibold md:text-2xl'>{deliveryInfo.shipFee?.toLocaleString('vi-VN')} <span className='underline'>đ</span></p>
                             </div>
                         )}
@@ -188,7 +191,7 @@ export default function ComboOrderPage() {
             }} />}
             {comboChooseList.length === 0 && (
                 <div className='px-4'>
-                    <ButtonPrimary className={"hover:scale-100"} onClick={() => setOpen(true)}>Bắt đầu</ButtonPrimary>
+                    <ButtonPrimary className={"hover:scale-100"} onClick={() => setOpen(true)}>{sTrans("Bắt đầu")}</ButtonPrimary>
                 </div>
             )}
             {comboChooseList.length > 0 && (
@@ -210,7 +213,7 @@ export default function ComboOrderPage() {
                                 onClick={(e) => { e.stopPropagation(); handleSubmit(); }}
                             >
                                 <div className="mb-4 text-center text-white">
-                                    {comboCartId ? "Cập nhật giỏ hàng" : "Thêm vào giỏ hàng"}{" "}
+                                    {comboCartId ? sTrans("Cập nhật giỏ hàng") : sTrans("Thêm vào giỏ hàng")}{" "}
                                     <span className="inline-block w-2 h-2 mx-2 bg-white rounded-full" />{" "}
                                     {combos?.price?.toLocaleString('vi-VN')} <span className="underline">đ</span>
                                 </div>

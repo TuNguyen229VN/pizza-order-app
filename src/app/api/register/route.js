@@ -2,13 +2,19 @@ import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import { User } from "@/models/User";
 import { connectDB } from "@/libs/connectDB";
-import { validateForm, validators } from "@/libs/validators";
+import { createValidators, validateForm } from "@/libs/validators";
 import { SALT_ROUNDS } from "@/constant/constant";
+import { cookies } from "next/headers";
+import { getTranslations } from "next-intl/server";
 
 export async function POST(req) {
   try {
     const body = await req.json();
     await connectDB();
+    const cookieStore = await cookies();
+    const locale = cookieStore.get("locale")?.value || "vi";
+    const t = await getTranslations({ locale, namespace: "Validation" });
+    const validators = createValidators(t);
     const { isValid, errors } = validateForm({
       email: {
         value: body?.email,

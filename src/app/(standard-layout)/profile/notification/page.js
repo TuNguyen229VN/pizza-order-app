@@ -9,12 +9,14 @@ import { useNotificationContext } from '@/context/NotificationContext';
 import { timeAgo } from '@/libs/timeAgo';
 import HeaderCart from '@/modules/cart/HeaderCart';
 import { useSession } from 'next-auth/react';
+import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import React, { useRef } from 'react'
 
 export default function NotificationPage() {
   const session = useSession();
   const router = useRouter();
+   const sTrans = useTranslations("System");
   const { status, data } = session;
   const { data: profile } = UseProfile();
   const listRef = useRef(null);
@@ -76,12 +78,12 @@ export default function NotificationPage() {
                 >
                   <p className="font-medium ">{n.title}</p>
                   <p className="text-sm text-gray-500 mt-0.5">{n.message}</p>
-                  <p className="mt-1 text-xs text-gray-400 text-end">{timeAgo(n.createdAt)}</p>
+                  <p className="mt-1 text-xs text-gray-400 text-end">{timeAgo(n.createdAt,sTrans)}</p>
                 </div>
               ))}
-              {loadingMore && <p className="p-3 text-xs text-center text-gray-400">Đang tải...</p>}
+              {loadingMore && <p className="p-3 text-xs text-center text-gray-400">{sTrans("Đang tải")}...</p>}
               {!hasMore && notifications.length > 0 && (
-                <p className="p-3 text-xs text-center text-gray-400">Đã tải hết</p>
+                <p className="p-3 text-xs text-center text-gray-400">{sTrans("Đã tải hết")}</p>
               )}
 
             </div>

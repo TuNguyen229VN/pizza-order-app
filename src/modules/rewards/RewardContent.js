@@ -1,6 +1,7 @@
 import ButtonPrimary from '@/components/buttons/ButtonPrimary';
 import { POINT_TIERS } from '@/constant/constant'
 import { REGISTER_ROUTE } from '@/constant/routesApp';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import React, { useState } from 'react'
 import { FaUserCheck } from "react-icons/fa";
@@ -9,19 +10,20 @@ import { FaAward } from "react-icons/fa";
 import { FaCrown } from "react-icons/fa";
 
 export default function RewardContent({ status }) {
-  const [selected, setSelected] = useState(1)
+  const [selected, setSelected] = useState(1);
+  const rTrans = useTranslations("Rewards");
   const REWARDS_LIST = [
     {
       title: "Vàng",
       icon: FaCrown,
       discountPercent: 20,
       content: [
-        "Giảm giá trực tiếp 20% trên mọi đơn hàng đủ điều kiện.",
-        "Tích lũy điểm thưởng sau mỗi lần thanh toán.",
-        "Hưởng mức ưu đãi cao nhất của chương trình Teo Rewards.",
+        "Giảm giá trực tiếp 20% trên mọi đơn hàng đủ điều kiện",
+        "Tích lũy điểm thưởng sau mỗi lần thanh toán",
+        "Hưởng mức ưu đãi cao nhất của chương trình Teo Rewards",
       ],
       levelup: [
-        "Đạt từ 1.000 điểm tích lũy để nâng hạng Vàng",
+        "Đạt từ 1000 điểm tích lũy để nâng hạng Vàng"
       ],
     },
     {
@@ -29,12 +31,12 @@ export default function RewardContent({ status }) {
       icon: FaAward,
       discountPercent: 10,
       content: [
-        "Giảm giá trực tiếp 10% trên mọi đơn hàng đủ điều kiện.",
-        "Tích lũy điểm thưởng sau mỗi lần thanh toán.",
-        "Tiếp tục tích điểm để nâng lên hạng Vàng.",
+        "Giảm giá trực tiếp 10% trên mọi đơn hàng đủ điều kiện",
+        "Tích lũy điểm thưởng sau mỗi lần thanh toán",
+        "Tiếp tục tích điểm để nâng lên hạng Vàng",
       ],
       levelup: [
-        "Đạt từ 500 điểm tích lũy để nâng hạng Bạc.",
+        "Đạt từ 500 điểm tích lũy để nâng hạng Bạc",
       ],
     },
     {
@@ -42,12 +44,12 @@ export default function RewardContent({ status }) {
       icon: FaMedal,
       discountPercent: 5,
       content: [
-        "Giảm giá trực tiếp 5% trên mọi đơn hàng đủ điều kiện.",
-        "Tích lũy điểm thưởng sau mỗi lần thanh toán.",
-        "Mở khóa nhiều ưu đãi hơn khi nâng hạng.",
+        "Giảm giá trực tiếp 5% trên mọi đơn hàng đủ điều kiện",
+        "Tích lũy điểm thưởng sau mỗi lần thanh toán",
+        "Mở khóa nhiều ưu đãi hơn khi nâng hạng",
       ],
       levelup: [
-        "Đạt từ 200 điểm tích lũy để nâng hạng Đồng.",
+        "Đạt từ 200 điểm tích lũy để nâng hạng Đồng",
       ],
     },
     {
@@ -55,12 +57,12 @@ export default function RewardContent({ status }) {
       icon: FaUserCheck,
       discountPercent: 2,
       content: [
-        "Giảm giá trực tiếp 2% trên mọi đơn hàng đủ điều kiện.",
-        "Bắt đầu tích lũy điểm thưởng với mỗi giao dịch.",
-        "Càng tích nhiều điểm, mức giảm giá càng cao.",
+        "Giảm giá trực tiếp 2% trên mọi đơn hàng đủ điều kiện",
+        "Bắt đầu tích lũy điểm thưởng với mỗi giao dịch",
+        "Càng tích nhiều điểm, mức giảm giá càng cao",
       ],
       levelup: [
-        "Đạt từ 50 điểm tích lũy để nâng hạng Thân thiết.",
+        "Đạt từ 50 điểm tích lũy để nâng hạng Thân thiết",
       ],
     },
   ];
@@ -72,7 +74,7 @@ export default function RewardContent({ status }) {
           return (
             <div className={`flex-1 flex items-center justify-center p-4 md:p-6 gap-2 cursor-pointer relative`} key={index} onClick={() => setSelected(index)}>
               <Icon className='w-7 h-7' />
-              <p>{item.title}</p>
+              <p>{rTrans(item.title)}</p>
               <span className={`absolute bottom-0 left-0 h-1 md:h-[6px] w-full rounded-full bg-primary transition-all duration-300 ${selected === index
                 ? "opacity-100 scale-x-100"
                 : "opacity-0 scale-x-0"
@@ -93,26 +95,26 @@ export default function RewardContent({ status }) {
           <span className="relative text-3xl font-bold text-white">{REWARDS_LIST[selected].discountPercent}%</span>
         </div>
 
-        <p class="text-lg font-medium text-black">Giảm giá {REWARDS_LIST[selected].discountPercent}%</p>
+        <p className="text-lg font-medium text-black">{rTrans("Giảm giá")} {REWARDS_LIST[selected].discountPercent}%</p>
       </div>
       <div className='p-4 mx-4 mb-4 overflow-hidden bg-gray-100 rounded-lg md:mb-6 md:mx-6 h-fit bg-background md:p-6'>
         <div>
-          <p>Quyền lợi</p>
+          <p>{rTrans("Quyền lợi")}:</p>
           {REWARDS_LIST[selected].content.map((item, i) =>
-            (<li className='mt-4 ml-8' key={i}>{item}</li>)
+            (<li className='mt-4 ml-8' key={i}>{rTrans(item)}</li>)
           )}
         </div>
         <div>
-          <p className='mt-4'>Quy định bảng xếp hạng</p>
+          <p className='mt-4'>{rTrans("Quy định bảng xếp hạng")}:</p>
           {REWARDS_LIST[selected].levelup.map((item, i) =>
-            (<li className='mt-4 ml-8' key={i}>{item}</li>)
+            (<li className='mt-4 ml-8' key={i}>{rTrans(item)}</li>)
           )}
         </div>
       </div>
       {status === "unauthenticated" && <div className='flex flex-col items-center justify-center gap-2 mb-4 md:mb-6'>
-        <p className='text-center text-secondary'>Không phải là thành viên?</p>
+        <p className='text-center text-secondary'>{rTrans("Không phải là thành viên")}?</p>
         <Link href={REGISTER_ROUTE}>
-          <ButtonPrimary className={"w-max p-4 "}>Tham gia ngay</ButtonPrimary>
+          <ButtonPrimary className={"w-max p-4 "}>{rTrans("Tham gia ngay")}</ButtonPrimary>
         </Link>
       </div>}
     </div>

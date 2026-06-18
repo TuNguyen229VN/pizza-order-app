@@ -8,9 +8,10 @@ import { API_CHANGE_PASSWORD } from '@/constant/constant';
 import { LOGIN_ROUTE } from '@/constant/routesApp';
 import ContainerProfileLeft from '@/container/ContainerProfileLeft';
 import { useFormValidate } from '@/hooks/useFormValidate';
-import { validators } from '@/libs/validators';
+import { createValidators } from '@/libs/validators';
 import HeaderCart from '@/modules/cart/HeaderCart';
 import { useSession } from 'next-auth/react';
+import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react'
 import toast from 'react-hot-toast';
@@ -20,7 +21,9 @@ export default function ChangePasswordPage() {
     const router = useRouter();
     const { status, data } = session;
     const { loading, data: profile } = UseProfile();
-
+    const sTrans = useTranslations("System");
+    const t = useTranslations("Validation");
+    const validators = createValidators(t);
     const [currentPassword, setCurrentPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [confirmNewPassword, setConfirmNewPassword] = useState("");

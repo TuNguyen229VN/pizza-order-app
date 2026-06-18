@@ -3,19 +3,24 @@ import bcrypt from "bcrypt";
 import { authOptions } from "../auth/[...nextauth]/route";
 import { User } from "@/models/User";
 import { connectDB } from "@/libs/connectDB";
-import { validateForm, validators } from "@/libs/validators";
+import { createValidators, validateForm } from "@/libs/validators";
 import { SALT_ROUNDS } from "@/constant/constant";
+import { cookies } from "next/headers";
+import { getTranslations } from "next-intl/server";
 
 export async function PUT(req) {
     try {
         const session = await getServerSession(authOptions);
-        
+        const cookieStore = await cookies();
+        const locale = cookieStore.get("locale")?.value || "vi";
+        const t = await getTranslations({ locale, namespace: "Validation" });
+        const validators = createValidators(t);
         if (!session) {
             return Response.json({ error: "Unauthorized" }, { status: 401 });
         }
-        
+
         const { currentPassword, newPassword } = await req.json();
-        
+
         const { isValid, errors } = validateForm({
             currentPassword: {
                 value: currentPassword,

@@ -5,9 +5,10 @@ import Loader from "@/components/loading/Loader";
 import { API_REGISTER } from "@/constant/constant";
 import { HOME_ROUTE, LOGIN_ROUTE } from "@/constant/routesApp";
 import { useFormValidate } from "@/hooks/useFormValidate";
-import { validators } from "@/libs/validators";
+import { createValidators } from "@/libs/validators";
 import HeaderCart from "@/modules/cart/HeaderCart";
 import { signIn } from "next-auth/react";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useRef, useState } from "react";
@@ -24,6 +25,9 @@ const RegisterPage = () => {
   const [loginInProgress, setLoginInProgress] = useState(false);
   const [error, setError] = useState("");
   const { errors, setErrors, registerRef, handleValidate, clearError } = useFormValidate();
+  const sTrans = useTranslations("System");
+  const t = useTranslations("Validation");
+  const validators = createValidators(t);
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     if (loginInProgress) return;
@@ -33,16 +37,16 @@ const RegisterPage = () => {
     const isValid = handleValidate({
       email: {
         value: email,
-        rules: [validators.required("email"), validators.email],
+        rules: [validators.required(sTrans("email")), validators.email],
       },
       password: {
         value: password,
-        rules: [validators.required("mật khẩu"), validators.minLength(6), validators.passwordStrength(2)],
+        rules: [validators.required(sTrans("mật khẩu")), validators.minLength(6), validators.passwordStrength(2)],
       },
       confirmPassword: {
         value: confirmPassword,
         rules: [
-          validators.required("xác nhận mật khẩu"),
+          validators.required(sTrans("xác nhận mật khẩu")),
           validators.matchField(password),
         ],
       },
@@ -52,7 +56,7 @@ const RegisterPage = () => {
 
     // Captcha
     if (!captchaToken) {
-      setError("Vui lòng xác nhận captcha");
+      setError(sTrans("Vui lòng xác nhận captcha"));
       setLoginInProgress(false);
       return;
     }
@@ -80,7 +84,7 @@ const RegisterPage = () => {
         setErrors(prev => ({ ...prev, ...data.errors }));
       }
 
-      setError(data.message || "Đã có lỗi xảy ra");
+      setError((sTrans.has(data.message) ? sTrans(data.message) : data.message)|| sTrans("Đã có lỗi xảy ra"));
 
       recaptchaRef.current?.reset();
       setCaptchaToken("");
@@ -89,7 +93,7 @@ const RegisterPage = () => {
 
   };
   return (
-    <><HeaderCart text="Tạo tài khoản" urlLink={LOGIN_ROUTE}></HeaderCart>
+    <><HeaderCart text={sTrans("Tạo tài khoản")} urlLink={LOGIN_ROUTE}></HeaderCart>
       <section className="p-4 md:w-[480px] mx-auto ">
 
         {userCreated && (
@@ -100,13 +104,13 @@ const RegisterPage = () => {
             <div className="mt-4 mb-2 font-medium">
               <div className="flex items-center justify-center gap-1 ">
                 <Image src={"/images/party-popper.png"} alt="firework" width={200} height={200} className="object-cover object-center w-4 h-4" />
-                <p>Chúc mừng!</p>
+                <p>{sTrans("Chúc mừng")}!</p>
               </div>
-              <p className="mx-auto mb-4 w-max">Tài khoản của bạn đã được tạo thành công</p>
+              <p className="mx-auto mb-4 w-max">{sTrans("Tài khoản của bạn đã được tạo thành công")}</p>
             </div>
             <Link href={HOME_ROUTE}>
               <ButtonPrimary>
-                Quay về trang chủ
+                {sTrans("Quay về trang chủ")}
               </ButtonPrimary>
             </Link>
           </div>
@@ -118,34 +122,34 @@ const RegisterPage = () => {
             {error && <p className="px-20 mb-4 text-sm text-center text-primary">{error}</p>}
             <form className="mx-auto " onSubmit={handleFormSubmit}>
               <ValidatedInput
-                label="Email"
+                label={sTrans("Email")}
                 name="email"
                 value={email || ""}
                 inputRef={registerRef("email")}
                 error={errors.email}
-                placeholder="Nhập email của bạn"
+                placeholder={sTrans("Nhập email của bạn")}
                 disabled={loginInProgress}
                 onChange={(e) => { setEmail(e.target.value); clearError("email"); }}
               />
               <ValidatedInput
-                label="Mật khẩu"
+                label={sTrans("Mật khẩu")}
                 name="password"
                 type="password"
                 value={password || ""}
                 inputRef={registerRef("password")}
                 error={errors.password}
-                placeholder="Nhập mật khẩu của bạn"
+                placeholder={sTrans("Nhập mật khẩu của bạn")}
                 disabled={loginInProgress}
                 onChange={(e) => { setPassword(e.target.value); clearError("password"); }}
               />
               <ValidatedInput
-                label="Nhập lại mật khẩu"
+                label={sTrans("Nhập lại mật khẩu")}
                 name="confirmPassword"
                 type="password"
                 value={confirmPassword || ""}
                 inputRef={registerRef("confirmPassword")}
                 error={errors.confirmPassword}
-                placeholder="Nhập lại mật khẩu của bạn"
+                placeholder={sTrans("Nhập lại mật khẩu của bạn")}
                 disabled={loginInProgress}
                 onChange={(e) => { setConfirmPassword(e.target.value); clearError("confirmPassword"); }}
               />
@@ -157,13 +161,13 @@ const RegisterPage = () => {
                 className="mt-4"
               />
               <ButtonPrimary className={"mt-4 flex items-center justify-center h"} disabled={loginInProgress} type="submit">
-                {loginInProgress ? <Loader size={22} /> : <span>Đăng ký</span>}
+                {loginInProgress ? <Loader size={22} /> : <span>{sTrans("Đăng ký")}</span>}
               </ButtonPrimary>
             </form>
-            <p className="mt-4 text-sm text-center">Đã có tài khoản? <Link className="underline text-primary" href={LOGIN_ROUTE}>Đăng nhập</Link></p>
+            <p className="mt-4 text-sm text-center">{sTrans("Đã có tài khoản")}? <Link className="underline text-primary" href={LOGIN_ROUTE}>{sTrans("Đăng nhập")}</Link></p>
             <div className="flex items-center justify-center gap-2 my-4 text-sm text-center text-gray-500" >
               <div className="w-20 h-[1px] bg-gray-200"></div>
-              hoặc đăng nhập bằng
+              {sTrans("hoặc đăng nhập bằng")}
               <div className="w-20 h-[1px] bg-gray-200"></div>
             </div>
             <button
@@ -173,7 +177,7 @@ const RegisterPage = () => {
               className="flex justify-center w-full h-12 gap-4 py-3 font-medium text-center border rounded-md hover:opacity-80 hover:scale-[1.02] duration-500"
             >
               <Image src={"/google.png"} alt={""} width={24} height={24} />
-              Đăng nhập bằng Google
+              {sTrans("Đăng nhập bằng Google")}
             </button>
           </div>}
       </section>

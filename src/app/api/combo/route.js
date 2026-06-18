@@ -7,6 +7,9 @@ import { authOptions } from "../auth/[...nextauth]/route";
 import { LIMITPAGE } from "@/constant/constant";
 import { validateCombo } from "@/libs/validateCombo";
 import { escapeRegex } from "@/utils/escapeRegex";
+import { cookies } from "next/headers";
+import { getTranslations } from "next-intl/server";
+import { getServerT } from "@/libs/getServerT";
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -26,7 +29,8 @@ export async function POST(req) {
         if (error) return Response.json({ message: error }, { status });
 
         const data = await req.json();
-        const { isValid, errors } = validateCombo(data, {});
+        const t = await getServerT();
+        const { isValid, errors } = validateCombo(data, {}, t);
         if (!isValid) return Response.json({ message: "Dữ liệu không hợp lệ", errors }, { status: 400 });
 
         // Lấy ComboType để kiểm tra slots
@@ -52,7 +56,8 @@ export async function PUT(req) {
         const { _id, ...data } = await req.json();
         if (!_id) return Response.json({ message: "Thiếu _id" }, { status: 400 });
 
-        const { isValid, errors } = validateCombo(data, {});
+        const t = await getServerT();
+        const { isValid, errors } = validateCombo(data, {}, t);
         if (!isValid) return Response.json({ message: "Dữ liệu không hợp lệ", errors }, { status: 400 });
 
         const updated = await ComboDetail.findByIdAndUpdate(_id, data, { new: true });

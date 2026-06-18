@@ -11,14 +11,18 @@ import ContainerProfileLeft from '@/container/ContainerProfileLeft'
 import { useDebounce } from '@/hooks/useDebounce'
 import { useFormValidate } from '@/hooks/useFormValidate'
 import { uploadImage } from '@/libs/uploadImage'
-import { validators } from '@/libs/validators'
+import { createValidators } from '@/libs/validators'
 import BannersForm from '@/modules/banners/BannersForm'
 import BannersTable from '@/modules/banners/BannersTable'
 import HeaderCart from '@/modules/cart/HeaderCart'
+import { useTranslations } from 'next-intl'
 import React, { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 
 export default function BannersPage() {
+  const sTrans = useTranslations("System");
+  const t = useTranslations("Validation");
+  const validators = createValidators(t);
   const [bannerName, setBannerName] = useState("");
   const [banners, setBanners] = useState("");
   const [categories, setCategories] = useState("");
@@ -220,7 +224,7 @@ export default function BannersPage() {
             {errors.image && (
               <span className="block mx-auto mt-2 text-xs text-center text-primary w-max">{errors.image}</span>
             )}
-            <BannersForm categories={[...comboTypeList, ...categories]} bannerName={bannerName} clearError={clearError} editedBanner={editedBanner} errors={errors} handleBannerSubmit={handleBannerSubmit} loadingForm={loadingForm} pendingFile={pendingFile} previewImage={previewImage} setBannerName={setBannerName} setEditedBanner={setEditedBanner} setPendingFile={setPendingFile} setPreviewImage={setPreviewImage} setStatus={setStatus} status={status} registerRef={registerRef} STATUS_OPTIONS={STATUS_OPTIONS} setImageInputKey={setImageInputKey}/>
+            <BannersForm categories={[...comboTypeList, ...categories]} bannerName={bannerName} clearError={clearError} editedBanner={editedBanner} errors={errors} handleBannerSubmit={handleBannerSubmit} loadingForm={loadingForm} pendingFile={pendingFile} previewImage={previewImage} setBannerName={setBannerName} setEditedBanner={setEditedBanner} setPendingFile={setPendingFile} setPreviewImage={setPreviewImage} setStatus={setStatus} status={status} registerRef={registerRef} STATUS_OPTIONS={STATUS_OPTIONS} setImageInputKey={setImageInputKey} />
 
           </ContainerProfileLeft>
           <ContainerProfileLeft className={"mt-6"}>

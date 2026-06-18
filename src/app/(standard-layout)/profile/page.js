@@ -4,17 +4,21 @@ import UserTabs from "@/components/layout/UserTabs";
 import { API_PROFILE, API_UPLOAD_IMAGE } from "@/constant/constant";
 import { LOGIN_ROUTE } from "@/constant/routesApp";
 import { useFormValidate } from "@/hooks/useFormValidate";
-import { validators } from "@/libs/validators";
+import { createValidators } from "@/libs/validators";
 import HeaderCart from "@/modules/cart/HeaderCart";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import UserPointRewards from "@/components/layout/UserPointRewards";
+import { useTranslations } from "next-intl";
 
 const ProfilePage = () => {
   const session = useSession();
   const router = useRouter();
+  const sTrans = useTranslations("System");
+  const t = useTranslations("Validation");
+  const validators = createValidators(t);
   const [user, setUser] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [statusAccount, setstatusAccount] = useState("");
@@ -125,15 +129,15 @@ const ProfilePage = () => {
   };
   return (
     <section className="">
-      <HeaderCart text="Tài khoản" className={"top-[70px]"} />
+      <HeaderCart text={sTrans("Tài khoản")} className={"top-[70px]"} />
       <div className="block md:hidden">
-         <UserPointRewards />
+        <UserPointRewards />
       </div>
       <div className="grid gap-6 md:grid-cols-3">
         <UserTabs isAdmin={isAdmin}></UserTabs>
 
         <div className="col-span-2">
-          <UserForm title={`Hồ sơ của tôi ${isAdmin?"(Admin)":""}`} user={user} onSave={handleProfileInfoUpdate} errors={errors} registerRef={registerRef}
+          <UserForm title={`${sTrans("Hồ sơ của tôi2")} ${isAdmin ? "(Admin)" : ""}`} user={user} onSave={handleProfileInfoUpdate} errors={errors} registerRef={registerRef}
             clearError={clearError} loadingForm={loadingForm} />
         </div>
       </div>

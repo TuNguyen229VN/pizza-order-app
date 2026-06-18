@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { METHODS } from "@/constant/constant";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 
 const PaymentMethodSelect = ({ value, onChange }) => {
   const [open, setOpen] = useState(false);
   const selected = METHODS.find((m) => m.value === value);
-
+  const sTrans = useTranslations("System");
   return (
     <>
       {/* Desktop: danh sách bình thường */}
@@ -27,8 +28,8 @@ const PaymentMethodSelect = ({ value, onChange }) => {
                 <Image src={method.icon} alt={method.value} width={200} height={200} />
               </div>
               <div>
-                <p className="text-sm font-medium">{method.label}</p>
-                <p className="text-xs text-gray-500">{method.sub}</p>
+                <p className="text-sm font-medium">{sTrans.has(method.label) ? sTrans(method.label) : method.label}</p>
+                <p className="text-xs text-gray-500">{sTrans.has(method.sub) ? sTrans(method.sub) : method.sub}</p>
               </div>
             </div>
           );
@@ -41,9 +42,9 @@ const PaymentMethodSelect = ({ value, onChange }) => {
           onClick={() => setOpen((o) => !o)}
           className="flex items-center justify-between gap-3 px-4 py-3 border rounded-md cursor-pointer"
         >
-          <p className="font-semibold">Phương thức thanh toán</p>
+          <p className="font-semibold">{sTrans("Phương thức thanh toán")}</p>
           <div className="flex gap-2">
-            <p className="text-sm font-medium">{selected?.label}</p>
+            <p className="text-sm font-medium">{sTrans.has(selected?.label) ? sTrans(selected?.label) : selected?.label}</p>
             <svg
               className={`w-4 h-4 text-gray-400 transition-transform ${open ? "rotate-180" : ""}`}
               fill="none" viewBox="0 0 24 24" stroke="currentColor"
@@ -68,8 +69,8 @@ const PaymentMethodSelect = ({ value, onChange }) => {
                     <Image src={method.icon} alt={method.value} width={200} height={200} />
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-medium">{method.label}</p>
-                    <p className="text-xs text-gray-500">{method.sub}</p>
+                    <p className="text-sm font-medium">{sTrans.has(method.label) ? sTrans(method.label) : method.label}</p>
+                    <p className="text-xs text-gray-500">{sTrans.has(method.sub) ? sTrans(method.sub) : method.sub}</p>
                   </div>
                   {isSelected && (
                     <svg className="w-4 h-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">

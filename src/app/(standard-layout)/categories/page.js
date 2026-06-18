@@ -12,15 +12,18 @@ import ContainerProfileLeft from "@/container/ContainerProfileLeft";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useFormValidate } from "@/hooks/useFormValidate";
 import { uploadImage } from "@/libs/uploadImage";
-import { validators } from "@/libs/validators";
+import { createValidators } from "@/libs/validators";
 import HeaderCart from "@/modules/cart/HeaderCart";
 import CategoriesForm from "@/modules/categories/CategoriesForm";
 import CategoryTable from "@/modules/categories/CategoryTable";
+import { useTranslations } from "next-intl";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 const CategoriesPage = () => {
-
+const sTrans = useTranslations("System");
+  const t = useTranslations("Validation");
+  const validators = createValidators(t);
   const [categoryName, setCategoryName] = useState("");
   const [categories, setCategories] = useState("");
   const { loading: profileLoading, data: profileData } = UseProfile();

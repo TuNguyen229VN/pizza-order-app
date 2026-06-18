@@ -3,6 +3,7 @@ import ButtonPrimary from '@/components/buttons/ButtonPrimary'
 import CloseIcon from '@/components/icons/CloseIcon'
 import NotFindLayout from '@/components/layout/NotFindLayout'
 import Paging from '@/components/layout/Paging'
+import LoadingCat from '@/components/loading/LoadingCat'
 import UseProfile from '@/components/UseProfile'
 import { API_ORDERS } from '@/constant/constant'
 import { LOGIN_ROUTE, ORDERS_ROUTE } from '@/constant/routesApp'
@@ -11,15 +12,16 @@ import { dbTimeForHuman } from '@/libs/datetime'
 import HeaderCart from '@/modules/cart/HeaderCart'
 import OrderTable from '@/modules/orders/OrderTable'
 import { useSession } from 'next-auth/react'
+import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
-import { HiDotsHorizontal } from 'react-icons/hi'
-import { HiArrowRight } from 'react-icons/hi2'
+
 
 export default function OrderTrackingPage() {
   const session = useSession();
   const router = useRouter();
+  const sTrans = useTranslations("System");
   const [orders, setOrders] = useState([]);
   const [loadingOrders, setLoadingOrders] = useState(true);
   const [sort, setSort] = useState("newest");
@@ -33,7 +35,8 @@ export default function OrderTrackingPage() {
   const [totalAll, setTotalAll] = useState(0);
   const [totalOn, setTotalOn] = useState(0);
   const [totalOff, setTotalOff] = useState(0);
-  const [searched, setSearched] = useState(false)
+  const [searched, setSearched] = useState(false);
+
   useEffect(() => {
     if (page > totalPages && totalPages > 0) {
       setPage(totalPages);
@@ -89,20 +92,20 @@ export default function OrderTrackingPage() {
   //   return null;
   // }
   if (loading) {
-    return "Đang tải...";
+    return <LoadingCat/>;
   }
   return (
     <section>
       <HeaderCart text="Theo dõi đơn hàng" />
       <div className="w-full p-4 mx-auto mt-0 bg-white md:border md:rounded-2xl md:p-6 md:w-1/2 md:mt-4">
-        <p className="mb-4 text-sm text-center text-secondary">Chỉ áp dụng cho đơn hàng giao hàng</p>
+        <p className="mb-4 text-sm text-center text-secondary">{sTrans("Chỉ áp dụng cho đơn hàng giao hàng")}</p>
         <div className="flex flex-col w-full gap-4 md:flex-row md:items-center">
           <div className="relative flex-1">
             <input
               type="text"
               maxLength={72}
               name="search"
-              placeholder="Nhập số điện thoại hoặc mã đơn hàng"
+              placeholder={sTrans("Nhập số điện thoại hoặc mã đơn hàng")}
               value={search}
               onChange={(e) => {
                 setSearch(e.target.value);
@@ -118,14 +121,14 @@ export default function OrderTrackingPage() {
             />
             {search?.length > 0 && <button className="absolute p-[1px] border rounded-full right-3 top-2/4 -translate-y-2/4 cursor-pointer" onClick={() => { setSearch(""); setSearched(false); }}><CloseIcon className="w-4 h-4" /></button>}
           </div>
-          <ButtonPrimary className={"md:w-max p-4"} onClick={searchOrders}><p>Tìm kiếm</p></ButtonPrimary>
+          <ButtonPrimary className={"md:w-max p-4"} onClick={searchOrders}><p>{sTrans("Tìm kiếm")}</p></ButtonPrimary>
         </div>
       </div>
       {searched &&
         !loadingOrders &&
         search.trim() &&
         orders.length === 0 && (
-          <NotFindLayout title="Xin lỗi, không tìm thấy đơn hàng của bạn" />
+          <NotFindLayout title={sTrans("ORDER_NOTFOUND_SEARCH")} />
         )}
       {searched && !loadingOrders && orders.length > 0 && (
         <div className='mt-4'>

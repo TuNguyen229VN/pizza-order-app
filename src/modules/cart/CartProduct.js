@@ -9,10 +9,13 @@ import { useSwipeDelete } from '@/hooks/useSwipeDelete';
 import Trash from '@/components/icons/Trash';
 import { useRouter } from 'next/navigation';
 import SkeletonLoadingBox from '@/components/skeleton/SkeletonLoadingBox';
+import { useTranslations } from 'next-intl';
 
 export default function CartProduct({ index, product, onRemove, showEdit = false }) {
   const [showPopup, setShowPopup] = useState(false);
   const [loadingImage, setLoadingImage] = useState(true);
+  const cTrans = useTranslations("Cart");
+ const sTrans = useTranslations("System");
   useLockBodyScroll(showPopup);
   const { wrapperRef, itemRef, bgRef } = useSwipeDelete(() => onRemove?.(index));
   const router = useRouter();
@@ -57,13 +60,13 @@ export default function CartProduct({ index, product, onRemove, showEdit = false
 
             {product.size && (
               <div className="mt-1 text-secondary">
-                Cỡ: <span>{product.size.name}</span>
+                {sTrans("Cỡ")}: <span>{product.size.name}</span>
               </div>
             )}
 
             {product.extras?.length > 0 && (
               <div className="mt-1 text-secondary">
-                Topping thêm:
+                {sTrans("Topping thêm")}:
                 {product.extras.map((extra, i) => (
                   <span key={extra.name}> {extra.name}{i !== product.extras.length - 1 && ","}</span>
                 ))}
@@ -85,7 +88,7 @@ export default function CartProduct({ index, product, onRemove, showEdit = false
 
             {product.noteOrder && (
               <div className='text-xs md:text-sm text-secondary'>
-                Ghi chú: <p>{product.noteOrder}</p>
+                {sTrans("Ghi chú")}: <p>{product.noteOrder}</p>
               </div>
             )}
 
@@ -95,7 +98,7 @@ export default function CartProduct({ index, product, onRemove, showEdit = false
                   className='mt-1 cursor-pointer text-primary'
                   onClick={() => isCombo ? handleEditCombo() : setShowPopup(true)}
                 >
-                  Chỉnh sửa
+                  {sTrans("Chỉnh sửa")}
                 </div>
 
                 {/* Edit modal cho sản phẩm thường */}

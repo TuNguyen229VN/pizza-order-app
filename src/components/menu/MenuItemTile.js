@@ -5,6 +5,7 @@ import { useDelivery } from '@/context/DeliveryContext';
 import { KEYWORDS } from '@/constant/constant';
 import SkeletonLoadingBox from '../skeleton/SkeletonLoadingBox';
 import { RenderTag } from './RenderTag';
+import { useTranslations } from 'next-intl';
 
 export default function MenuItemTile({ onClick, onAddToCart, addToCartRef, addToCartFn, recomStyle, ...item }) {
     const { image, description, tags, name, basePrice,
@@ -19,6 +20,7 @@ export default function MenuItemTile({ onClick, onAddToCart, addToCartRef, addTo
     const minSizePrice = sizes?.length
         ? Math.min(...sizes.map(size => size.price))
         : 0;
+    const sTrans = useTranslations("System");
     return (
         <div className={`flex h-[156px] md:h-[230px] border md:rounded-2xl cursor-pointer overflow-hidden group transition duration-300 md:hover:shadow-[0_3px_8px_rgba(0,0,0,0.1)] ${recomStyle === "recomStyle" ? "rounded-2xl md:h-[190px] " : ""}`} onClick={(e) => {
             if (e.target.closest('.add-to-cart-zone')) return;
@@ -54,7 +56,7 @@ export default function MenuItemTile({ onClick, onAddToCart, addToCartRef, addTo
                 </div>
                 <div className='flex items-center justify-between w-full'>
                     <div>
-                        {hasSizesOrExtras && <p className='text-xs leading-5 md:text-xs text-secondary'>Chỉ từ</p>}
+                        {hasSizesOrExtras && <p className='text-xs leading-5 md:text-xs text-secondary'>{sTrans("Chỉ từ")}</p>}
                         <p className={`${recomStyle === "recomStyle" ? "font-medium  md:text-xl lg:text-2xl" : "font-semibold"} mt-1 text-sm md:text-2xl text-[#374151]  md:leading=[30px]`}>{(basePrice + minSizePrice).toLocaleString('vi-VN')}<span className='ml-2 underline'>đ</span></p>
                     </div>
                     <AddToCartButton

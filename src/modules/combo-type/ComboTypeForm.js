@@ -8,13 +8,17 @@ import Loader from "@/components/loading/Loader";
 import { API_CATEGORIES, API_COMBO_TYPES, STATUS_OPTIONS } from "@/constant/constant";
 import { useFormValidate } from "@/hooks/useFormValidate";
 import { uploadImage } from "@/libs/uploadImage";
-import { validators } from "@/libs/validators";
+import { createValidators } from "@/libs/validators";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 export default function ComboTypeForm({ onSuccess, editData = null, setRedirectToItems }) {
     const isEdit = !!editData;
     const { errors, setErrors, registerRef, handleValidate, clearError } = useFormValidate();
+    const sTrans = useTranslations("System");
+    const t = useTranslations("Validation");
+    const validators = createValidators(t);
     const [name, setName] = useState(editData?.name || "");
     const [image, setImage] = useState(editData?.image || "");
     const [status, setStatus] = useState(editData?.status || "on");

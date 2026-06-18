@@ -4,10 +4,11 @@ import { motion, AnimatePresence } from "motion/react";
 import { LuBike } from 'react-icons/lu'
 import { PiPizza } from 'react-icons/pi'
 import { CiHeart } from "react-icons/ci";
+import { useTranslations } from 'next-intl';
 
 export default function LoadingCat() {
     const [progress, setProgress] = useState(0);
-
+    const sTrans = useTranslations("System");
     // Simulate loading progress
     useEffect(() => {
         const interval = setInterval(() => {
@@ -120,10 +121,10 @@ export default function LoadingCat() {
                     {/* Text Content */}
                     <div className="mt-8 space-y-3 text-center">
                         <h1 className="text-3xl font-bold tracking-tight text-gray-900 font-display md:text-4xl">
-                            Đang <span className="text-brand-red">tải...</span>
+                            {sTrans("Đang")} <span className="text-brand-red">{sTrans("tải")}...</span>
                         </h1>
                         <p className="flex items-center justify-center gap-2 font-medium text-gray-500">
-                            Mèo siêu cấp đang tới! <CiHeart size={16} className="text-brand-red fill-brand-red" />
+                            {sTrans("Mèo siêu cấp đang tới")}! <CiHeart size={16} className="text-brand-red fill-brand-red" />
                         </p>
                     </div>
 

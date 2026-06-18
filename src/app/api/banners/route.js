@@ -1,11 +1,13 @@
 import { connectDB } from "@/libs/connectDB";
-import { validateForm, validators } from "@/libs/validators";
+import { createValidators, validateForm } from "@/libs/validators";
 import { Category } from "@/models/Category";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/route";
 import { LIMITPAGE } from "@/constant/constant";
 import { Banner } from "@/models/Banner";
 import { escapeRegex } from "@/utils/escapeRegex";
+import { cookies } from "next/headers";
+import { getTranslations } from "next-intl/server";
 
 export async function POST(req) {
     try {
@@ -13,6 +15,10 @@ export async function POST(req) {
         const { name, status, image } = await req.json();
 
         const session = await getServerSession(authOptions);
+        const cookieStore = await cookies();
+        const locale = cookieStore.get("locale")?.value || "vi";
+        const t = await getTranslations({ locale, namespace: "Validation" });
+        const validators = createValidators(t);
         if (!session) {
             return Response.json({ message: "Bạn cần đăng nhập" }, { status: 401 });
         }
@@ -53,6 +59,10 @@ export async function PUT(req) {
         const { _id, name, status, image } = await req.json();
 
         const session = await getServerSession(authOptions);
+        const cookieStore = await cookies();
+        const locale = cookieStore.get("locale")?.value || "vi";
+        const t = await getTranslations({ locale, namespace: "Validation" });
+        const validators = createValidators(t);
         if (!session) {
             return Response.json({ message: "Bạn cần đăng nhập" }, { status: 401 });
         }
@@ -116,7 +126,7 @@ export async function GET(req) {
         desc: { name: -1 },
     };
 
-    const sortOrder = useOrderSort ? { order: 1 } :( sortMap[sort] || sortMap.newest);
+    const sortOrder = useOrderSort ? { order: 1 } : (sortMap[sort] || sortMap.newest);
 
     // không phân trang
     if (all) {

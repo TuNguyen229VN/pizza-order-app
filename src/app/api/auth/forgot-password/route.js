@@ -5,13 +5,18 @@ import { User } from "@/models/User";
 import { ResetToken } from "@/models/Resettoken";
 import { connectDB } from "@/libs/connectDB";
 import { renderResetPasswordEmail } from "@/mail/ResetPasswordEmail";
-import { validateForm, validators } from "@/libs/validators";
+import { createValidators, validateForm } from "@/libs/validators";
+import { getTranslations } from "next-intl/server";
+import { cookies } from "next/headers";
 
 export async function POST(req) {
     try {
         const body = await req.json();
         const email = body?.email;
-
+        const cookieStore = await cookies();
+        const locale = cookieStore.get("locale")?.value || "vi";
+        const t = await getTranslations({ locale, namespace: "Validation" });
+        const validators = createValidators(t);
         const { isValid, errors } = validateForm({
             email: {
                 value: body?.email,
@@ -75,10 +80,9 @@ export async function POST(req) {
         });
 
         return Response.json({
-            message: "Đã gửi email đặt lại mật khẩu.",
+            message: "Đã gửi email đặt lại mật khẩu",
         });
     } catch (error) {
-
         return Response.json(
             { message: "Lỗi server." },
             { status: 500 }

@@ -7,13 +7,16 @@ import ValidatedInput from "@/components/input/ValidatedInput";
 import { useFormValidate } from "@/hooks/useFormValidate";
 import Loader from "@/components/loading/Loader";
 import ButtonPrimary from "@/components/buttons/ButtonPrimary";
-import { validators } from "@/libs/validators";
+import { createValidators } from "@/libs/validators";
 import Image from "next/image";
 import { API_RESET_PASSWORD } from "@/constant/constant";
+import { useTranslations } from "next-intl";
 function ResetPasswordContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
-
+    const sTrans = useTranslations("System");
+    const t = useTranslations("Validation");
+    const validators = createValidators(t);
     const token = searchParams.get("token");
     const userId = searchParams.get("id");
 
@@ -26,7 +29,7 @@ function ResetPasswordContent() {
     useEffect(() => {
         if (!token || !userId) {
             setStatus("error");
-            setMessage("Link không hợp lệ. Vui lòng yêu cầu đặt lại mật khẩu mới.");
+            setMessage(sTrans("LINK_INVALID_RESET_PW"));
         }
     }, [token, userId]);
 
@@ -36,12 +39,12 @@ function ResetPasswordContent() {
         const isValid = handleValidate({
             password: {
                 value: password,
-                rules: [validators.required("mật khẩu"), validators.minLength(6), validators.passwordStrength(2)],
+                rules: [validators.required(sTrans("mật khẩu")), validators.minLength(6), validators.passwordStrength(2)],
             },
             confirm: {
                 value: confirm,
                 rules: [
-                    validators.required("xác nhận mật khẩu"),
+                    validators.required(sTrans("xác nhận mật khẩu")),
                     validators.matchField(password),
                 ],
             },
@@ -62,16 +65,16 @@ function ResetPasswordContent() {
 
             if (!res.ok) {
                 setStatus("error");
-                setMessage(data.message);
+                setMessage(sTrans.has(data.message) ? sTrans(data.message) : data.message);
                 return;
             }
 
             setStatus("success");
-            setMessage(data.message);
+            setMessage(sTrans.has(data.message) ? sTrans(data.message) : data.message);
             setTimeout(() => router.push("/login"), 3000);
         } catch {
             setStatus("error");
-            setMessage("Đã xảy ra lỗi. Vui lòng thử lại.");
+            setMessage(sTrans("FORGOT_PW_ERROR"));
         }
     }
 
@@ -79,8 +82,8 @@ function ResetPasswordContent() {
         <div className="p-4 md:p-0">
             <div className="p-4 mx-auto border shadow-sm rounded-2xl md:w-[510px] md:mt-8">
                 <div style={styles.header}>
-                    <h1 style={styles.title}>Tạo mật khẩu mới</h1>
-                    <p style={styles.subtitle}>Nhập mật khẩu mới cho tài khoản của bạn.</p>
+                    <h1 style={styles.title}>{sTrans("Tạo mật khẩu mới")}</h1>
+                    <p style={styles.subtitle}>{sTrans("Nhập mật khẩu mới cho tài khoản của bạn")}.</p>
                 </div>
 
                 {status === "success" ? (
@@ -88,31 +91,31 @@ function ResetPasswordContent() {
                         <div className="w-20 h-20 mx-auto mb-4">
                             <Image src={"/images/firework.png"} alt="firework" width={200} height={200} className="object-cover object-center w-full h-full" />
                         </div>
-                        <h2 style={styles.successTitle}>Cập nhật thành công!</h2>
+                        <h2 style={styles.successTitle}>{sTrans("Cập nhật thành công")}!</h2>
                         <p style={styles.successText}>{message}</p>
-                        <p style={styles.successNote}>Đang chuyển hướng về trang đăng nhập...</p>
+                        <p style={styles.successNote}>{sTrans("Đang chuyển hướng về trang đăng nhập")}...</p>
                     </div>
                 ) : (
                     <form onSubmit={handleSubmit} style={styles.form}>
                         <ValidatedInput
-                            label="Mật khẩu mới"
+                            label={sTrans("Mật khẩu mới")}
                             name="password"
                             type="password"
                             value={password || ""}
                             inputRef={registerRef("password")}
                             error={errors.password}
-                            placeholder="Nhập mật khẩu của bạn"
+                            placeholder={sTrans("Nhập mật khẩu của bạn")}
                             disabled={status === "loading" || !token}
                             onChange={(e) => { setPassword(e.target.value); clearError("password"); }}
                         />
                         <ValidatedInput
-                            label="Nhập lại mật khẩu"
+                            label={sTrans("Nhập lại mật khẩu")}
                             name="confirm"
                             type="password"
                             value={confirm || ""}
                             inputRef={registerRef("confirm")}
                             error={errors.confirm}
-                            placeholder="Nhập mật khẩu của bạn"
+                            placeholder={sTrans("Nhập mật khẩu của bạn")}
                             disabled={status === "loading" || !token}
                             onChange={(e) => { setConfirm(e.target.value); clearError("confirm"); }}
                         />
@@ -126,14 +129,14 @@ function ResetPasswordContent() {
                             type="submit"
                             disabled={status === "loading" || !token || !userId}
                         >
-                            {status === "loading" ? <Loader size={20} /> : "Đặt lại mật khẩu"}
+                            {status === "loading" ? <Loader size={20} /> : sTrans("Đặt lại mật khẩu")}
                         </ButtonPrimary>
                     </form>
                 )}
 
                 <p style={styles.footer}>
                     <Link href="/forgot-password" className="font-medium text-primary">
-                        ← Yêu cầu link mới
+                        ← {sTrans("Yêu cầu link mới")}
                     </Link>
                 </p>
             </div>

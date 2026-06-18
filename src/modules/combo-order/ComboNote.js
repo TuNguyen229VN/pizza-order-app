@@ -1,18 +1,20 @@
 import CloseIcon from '@/components/icons/CloseIcon'
+import { useTranslations } from 'next-intl';
 import React from 'react'
 
 export default function ComboNote({ noteOrder, setNoteOrder }) {
+    const sTrans = useTranslations("System");
     return (
         <div className="px-4 mt-6 md:px-0">
             <div className="flex items-center justify-between mb-4">
-                <h3 className="font-medium md:font-semibold">Ghi chú (tùy chọn)</h3>
+                <h3 className="font-medium md:font-semibold">{sTrans("Ghi chú")} ({sTrans("tùy chọn")})</h3>
                 <span className="text-xs md:text-sm whitespace-nowrap">{noteOrder?.length}/72</span>
             </div>
             <div className="relative">
                 <input
                     type="text"
                     maxLength={72}
-                    placeholder="Chúng tôi sẽ cố gắng hết sức để phục vụ bạn nếu có thể!"
+                    placeholder={sTrans("PLACEHOLDER_NOTES")}
                     value={noteOrder}
                     onChange={e => setNoteOrder(e.target.value)}
                     className="flex-1 w-full px-4 py-3 pr-10 border rounded-lg outline-none focus:border-black"

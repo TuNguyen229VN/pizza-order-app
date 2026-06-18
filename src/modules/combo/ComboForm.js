@@ -7,17 +7,20 @@ import Loader from "@/components/loading/Loader";
 import { API_CATEGORIES, API_COMBO, API_COMBO_TYPES, API_MENU_ITEMS, STATUS_OPTIONS } from "@/constant/constant";
 import { useFormValidate } from "@/hooks/useFormValidate";
 import { uploadImage } from "@/libs/uploadImage";
-import { validators } from "@/libs/validators";
+import { createValidators } from "@/libs/validators";
 import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import ComboSlots from "./ComboSlots";
 import ComboSummary from "./ComboSummary";
+import { useTranslations } from "next-intl";
 
 
 export default function ComboForm({ onSuccess, editData = null, setRedirectToItems }) {
     const isEdit = !!editData;
     const { errors, setErrors, registerRef, handleValidate, clearError } = useFormValidate();
-
+    const sTrans = useTranslations("System");
+    const t = useTranslations("Validation");
+    const validators = createValidators(t);
     const slotRefs = useRef([]);
     const [slotErrors, setSlotErrors] = useState([]);
     // ── State cơ bản ───────────────────────────────────────────────────────

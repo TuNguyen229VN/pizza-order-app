@@ -1,15 +1,17 @@
 import React from 'react'
 import ChevronLeft from '../icons/ChevronLeft'
 import ChevronRight from '../icons/ChevronRight'
+import { useTranslations } from 'next-intl';
 
 export default function Paging({ page, setPage, totalPages, total, items }) {
+    const sTrans = useTranslations("System");
     const getPages = () => {
         if (totalPages <= 7) {
             return Array.from({ length: totalPages }, (_, i) => i + 1);
         }
 
         if (page <= 2) {
-            return [1, 2, 3,  "...", totalPages];
+            return [1, 2, 3, "...", totalPages];
         }
 
         if (page >= totalPages - 1) {
@@ -35,7 +37,7 @@ export default function Paging({ page, setPage, totalPages, total, items }) {
     return (
         <div className="flex items-center justify-between py-4 border-t px-gutter text-body-md text-secondary border-outline-variant">
             <p>
-                Hiển thị {items?.length} của {total} mục
+                {sTrans("Hiển thị")} {items?.length} {sTrans("của")} {total} {sTrans("mục")}
             </p>
             <div className="flex gap-1">
                 <button
@@ -59,8 +61,8 @@ export default function Paging({ page, setPage, totalPages, total, items }) {
                             key={p}
                             onClick={() => setPage(p)}
                             className={`flex items-center justify-center w-8 h-8 font-bold border rounded ${page === p
-                                    ? "border-primary bg-primary text-white"
-                                    : "border-outline-variant hover:bg-surface-container-low"
+                                ? "border-primary bg-primary text-white"
+                                : "border-outline-variant hover:bg-surface-container-low"
                                 }`}
                         >
                             {p}

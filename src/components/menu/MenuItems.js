@@ -14,12 +14,14 @@ import DeliveryPickupModal from "@/modules/DeliveryPickupModal";
 import { KEYWORDS } from "@/constant/constant";
 import SkeletonLoadingBox from "../skeleton/SkeletonLoadingBox";
 import { RenderTag } from "./RenderTag";
+import { useTranslations } from "next-intl";
 
 const MenuItems = ({ recomStyle, ...menuItem }) => {
   const { image, name, description, basePrice, sizes, extraIngredientPrices, tags } = menuItem
   const [
     selectedSize, setSelectedSize
   ] = useState(sizes?.[0] || null);
+  const sTrans = useTranslations("System");
   const [selectedExtras, setSelectedExtras] = useState([]);
   const [quantity, setQuantity] = useState(1)
   const [noteOrder, setNoteOrder] = useState("")
@@ -154,7 +156,7 @@ const MenuItems = ({ recomStyle, ...menuItem }) => {
                 </div>
                 {sizes?.length > 0 && (
                   <div className="mt-4 md:mt-7 ">
-                    <h3 className="font-medium md:font-semibold ">Kích thước</h3>
+                    <h3 className="font-medium md:font-semibold ">{sTrans("Kích thước")}</h3>
                     <div className="flex mt-2 overflow-hidden text-center border rounded-md">
                       {sizes.map(size => (
                         <InputRadio key={size._id} name={size.name} onClick={() => setSelectedSize(size)} selectedSize={selectedSize?.name} />
@@ -164,7 +166,7 @@ const MenuItems = ({ recomStyle, ...menuItem }) => {
                 )}
                 {extraIngredientPrices?.length > 0 && (
                   <div className="mt-4 md:mt-6">
-                    <h3 className="mb-5 font-medium md:font-semibold md:mb-7">Topping thêm</h3>
+                    <h3 className="mb-5 font-medium md:font-semibold md:mb-7">{sTrans("Topping thêm")}</h3>
                     {extraIngredientPrices.map(extraThing => {
                       const sel = selectedExtras.find(e => e._id === extraThing._id);
                       const isChecked = !!sel;
@@ -176,14 +178,14 @@ const MenuItems = ({ recomStyle, ...menuItem }) => {
                 )}
                 <div className="mt-6">
                   <div className="flex items-center justify-between mb-5">
-                    <h3 className="font-medium md:font-semibold">Ghi chú (tùy chọn)</h3>
+                    <h3 className="font-medium md:font-semibold">{sTrans("Ghi chú")} ({sTrans("tùy chọn")})</h3>
                     <span className="text-xs md:text-sm whitespace-nowrap">{noteOrder?.length}/72</span>
                   </div>
                   <div className="relative">
                     <input
                       type="text"
                       maxLength={72}
-                      placeholder="Chúng tôi sẽ cố gắng hết sức để phục vụ bạn nếu có thể!"
+                      placeholder={sTrans("PLACEHOLDER_NOTES")}
                       value={noteOrder}
                       onChange={e => setNoteOrder(e.target.value)}
                       className="flex-1 w-full px-4 py-3 pr-10 border rounded-lg outline-none focus:border-black"
@@ -237,7 +239,7 @@ const MenuItems = ({ recomStyle, ...menuItem }) => {
                     }
                   }}>
                     <div className="text-center text-white">
-                      Thêm vào giỏ hàng{" "}
+                      {sTrans("Thêm vào giỏ hàng")}{" "}
                       <span className="inline-block w-2 h-2 mx-2 bg-white rounded-full" />{" "}
                       {selectedPrice.toLocaleString('vi-VN')} <span className="underline">đ</span>
                     </div>
