@@ -3,28 +3,30 @@ import ButtonPrimary from '@/components/buttons/ButtonPrimary';
 import ValidatedInput from '@/components/input/ValidatedInput';
 import ValidatedSelectInput from '@/components/input/ValidatedSelectInput';
 import Loader from '@/components/loading/Loader';
+import { useTranslations } from 'next-intl';
 import React from 'react'
 
-export default function BannersForm({ categories, editedBanner, bannerName, setBannerName, status, setStatus, errors, loadingForm, handleBannerSubmit, clearError, setPreviewImage, setPendingFile, setEditedBanner, registerRef, STATUS_OPTIONS,setImageInputKey }) {
+export default function BannersForm({ categories, editedBanner, bannerName, setBannerName, status, setStatus, errors, loadingForm, handleBannerSubmit, clearError, setPreviewImage, setPendingFile, setEditedBanner, registerRef, STATUS_OPTIONS, setImageInputKey }) {
+    const sTrans = useTranslations("System");
     return (
         <form className="" onSubmit={handleBannerSubmit}>
             <div className="">
                 <ValidatedSelectInput
-                    label={editedBanner ? <span>Cập nhật banner <span className="font-semibold">{editedBanner.name}</span></span> : "Tên banner mới"}
+                    label={editedBanner ? <span>{sTrans("Cập nhật banner")} <span className="font-semibold">{editedBanner.name}</span></span> : sTrans("Tên banner mới")}
                     name="bannerName"
                     value={bannerName || ""}
                     inputRef={registerRef("bannerName")}
                     error={errors.bannerName}
                     options={[
-                        { value: "", label: "-- Chọn slug để trỏ vào --" },
+                        { value: "", label: sTrans("Chọn slug để trỏ vào") },
                         ...categories.map((c) => ({ value: c.name, label: c.name })),
                     ]}
-                    placeholder="Nhập tên banner "
+                    placeholder={sTrans("Nhập tên banner")}
                     disabled={loadingForm}
                     onChange={(e) => { setBannerName(e.target.value); clearError("bannerName"); }}
                 />
                 <ValidatedSelectInput
-                    label="Trạng thái"
+                    label={"Trạng thái"}
                     name="status"
                     value={status}
                     options={STATUS_OPTIONS}
@@ -46,7 +48,7 @@ export default function BannersForm({ categories, editedBanner, bannerName, setB
                         setEditedBanner(null);
                         setImageInputKey((k) => k + 1);
                     }} />
-                <ButtonPrimary disabled={loadingForm} className={"!w-[170px]"} type="submit">{loadingForm ? <Loader size={20} /> : (editedBanner ? "Cập nhật" : "Tạo mới")}</ButtonPrimary>
+                <ButtonPrimary disabled={loadingForm} className={"!w-[170px]"} type="submit">{loadingForm ? <Loader size={20} /> : (editedBanner ? sTrans("Cập nhật") : sTrans("Tạo mới"))}</ButtonPrimary>
             </div>
         </form>
     )

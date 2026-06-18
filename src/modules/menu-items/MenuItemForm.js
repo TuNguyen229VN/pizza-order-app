@@ -8,8 +8,10 @@ import ButtonPrimary from '../../components/buttons/ButtonPrimary';
 import Loader from '../../components/loading/Loader';
 import ButtonCancel from '../../components/buttons/ButtonCancel';
 import TagInput from '@/components/input/TagInput';
+import { useTranslations } from 'next-intl';
 
 export default function MenuItemForm({ onSubmit, menuItem, errors, registerRef, clearError, loadingForm }) {
+    const sTrans = useTranslations("System");
     const [image, setImage] = useState(menuItem?.image || "");
     const [name, setName] = useState(menuItem?.name || "");
     const [description, setDescription] = useState(menuItem?.description || "");
@@ -121,7 +123,7 @@ export default function MenuItemForm({ onSubmit, menuItem, errors, registerRef, 
                         inputRef={registerRef("name")}
                         error={errors.name}
                         disabled={loadingForm}
-                        placeholder="Nhập tên món ăn"
+                        placeholder={sTrans("Nhập tên món ăn")}
                         onChange={(e) => {
                             setName(e.target.value);
                             clearError("name");
@@ -135,7 +137,7 @@ export default function MenuItemForm({ onSubmit, menuItem, errors, registerRef, 
                         inputRef={registerRef("description")}
                         error={errors.description}
                         disabled={loadingForm}
-                        placeholder="Nhập mô tả món ăn"
+                        placeholder={sTrans("Nhập mô tả món ăn")}
                         onChange={(e) => {
                             setDescription(e.target.value);
                             clearError("description");
@@ -147,7 +149,7 @@ export default function MenuItemForm({ onSubmit, menuItem, errors, registerRef, 
                         name="category"
                         value={category}
                         options={[
-                            { value: "", label: "-- Chọn danh mục --" },
+                            { value: "", label: "Chọn danh mục" },
                             ...categories.map(c => ({ value: c._id, label: c.name }))]}
                         disabled={loadingForm}
                         inputRef={registerRef("category")}
@@ -162,7 +164,7 @@ export default function MenuItemForm({ onSubmit, menuItem, errors, registerRef, 
                         inputRef={registerRef("basePrice")}
                         error={errors.basePrice}
                         disabled={loadingForm}
-                        placeholder="Nhập giá món ăn cơ bản"
+                        placeholder={sTrans("Nhập giá món ăn cơ bản")}
                         onChange={(e) => {
                             setBasePrice(e.target.value);
                             clearError("basePrice");
@@ -199,7 +201,7 @@ export default function MenuItemForm({ onSubmit, menuItem, errors, registerRef, 
                     />
                     <div className='flex justify-end gap-4 mt-4'>
                         <ButtonCancel loadingForm={loadingForm} onClick={handleCancel} />
-                        <button className={`flex items-center justify-center font-medium px-6 py-3 rounded-lg w-[170px] hover:opacity-80 hover:scale-[1.02] duration-500 ${loadingForm ? "bg-[#DFE4EA] text-secondary pointer-events-none" : "bg-primary text-white pointer-events-auto"}`} type="submit" disabled={loadingForm}>{loadingForm ? <Loader size={20} /> : <span className='font-medium'>Cập nhật</span>}</button>
+                        <button className={`flex items-center justify-center font-medium px-6 py-3 rounded-lg w-[170px] hover:opacity-80 hover:scale-[1.02] duration-500 ${loadingForm ? "bg-[#DFE4EA] text-secondary pointer-events-none" : "bg-primary text-white pointer-events-auto"}`} type="submit" disabled={loadingForm}>{loadingForm ? <Loader size={20} /> : <span className='font-medium'>{sTrans("Cập nhật")}</span>}</button>
                     </div>
                 </div>
             </div>

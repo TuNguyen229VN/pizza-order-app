@@ -2,22 +2,24 @@ import Trash from '@/components/icons/Trash';
 import ConfirmPopup from '@/components/popup/ConfirmPopup';
 import SkeletonLoadingBox from '@/components/skeleton/SkeletonLoadingBox';
 import { dbTimeForHuman } from '@/libs/datetime';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import React, { useState } from 'react'
 import { MdOutlineModeEdit } from 'react-icons/md';
 
 export default function CategoryTable({ categories, setEditedCategory, setCategoryName, setStatus, clearError, loadingForm, setPendingFile, setPreviewImage, handleCategoryDelete }) {
+    const sTrans = useTranslations("System");
     const [loadingImage, setLoadingImage] = useState({});
     return (
         <div className='overflow-x-auto'>
             <table className="w-full text-left">
                 <thead className="bg-surface border-b border-outline-variant text-[12px] font-bold text-secondary uppercase tracking-wider">
                     <tr>
-                        <th className="px-4 py-4 md:px-6"><p className='w-max'>Hình ảnh</p></th>
-                        <th className="px-4 py-4 md:px-6 "><p className='w-max'>Tên danh mục</p></th>
-                        <th className="px-4 py-4 md:px-6">Trạng thái</th>
-                        <th className="px-4 py-4 md:px-6">Ngày tạo</th>
-                        <th className="sticky right-0 z-10 px-5 py-4 text-right bg-white "><p className='w-max'>Thao tác</p></th>
+                        <th className="px-4 py-4 md:px-6"><p className='w-max'>{sTrans("Hình ảnh")}</p></th>
+                        <th className="px-4 py-4 md:px-6 "><p className='w-max'>{sTrans("Tên danh mục")}</p></th>
+                        <th className="px-4 py-4 md:px-6">{sTrans("Trạng thái")}</th>
+                        <th className="px-4 py-4 md:px-6">{sTrans("Ngày tạo")}</th>
+                        <th className="sticky right-0 z-10 px-5 py-4 text-right bg-white "><p className='w-max'>{sTrans("Thao tác")}</p></th>
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-outline-variant font-body-md">
@@ -38,7 +40,7 @@ export default function CategoryTable({ categories, setEditedCategory, setCatego
                                 </td>
                                 <td className="px-4 py-4 md:px-6">
                                     <div className='flex items-center'>
-                                        <span className={`hidden md:inline-block w-2 h-2 mr-2 rounded-full ${category.status === "on" ? "bg-green-500" : "bg-red-500"}`}></span> <span className='truncate'>{category?.status === "on" ? "Đang kinh doanh" : "Tạm đóng"}</span>
+                                        <span className={`hidden md:inline-block w-2 h-2 mr-2 rounded-full ${category.status === "on" ? "bg-green-500" : "bg-red-500"}`}></span> <span className='truncate'>{category?.status === "on" ? sTrans("Đang kinh doanh") : sTrans("Tạm đóng")}</span>
                                     </div>
                                 </td>
                                 <td className="px-4 py-4 md:px-6">
@@ -57,9 +59,9 @@ export default function CategoryTable({ categories, setEditedCategory, setCatego
                                             setCategoryName(category.name);
                                             setPendingFile(null);
                                             setPreviewImage(null);
-                                        }}><MdOutlineModeEdit className="w-5 h-5" title='Chỉnh sửa' /></button>
-                                        <ConfirmPopup disabled={loadingForm} label={`Xóa danh mục ${category.name}`} onDelete={() => { handleCategoryDelete(category._id) }} classNameButton='hover:text-primary'>
-                                            <p title='Xóa danh mục'>
+                                        }}><MdOutlineModeEdit className="w-5 h-5" title={sTrans("Chỉnh sửa")} /></button>
+                                        <ConfirmPopup disabled={loadingForm} label={`${sTrans("Xóa danh mục")} ${category.name}`} onDelete={() => { handleCategoryDelete(category._id) }} classNameButton='hover:text-primary'>
+                                            <p title={sTrans("Xóa danh mục")}>
                                                 <Trash className="w-5 h-5" />
                                             </p>
                                         </ConfirmPopup>
@@ -69,7 +71,7 @@ export default function CategoryTable({ categories, setEditedCategory, setCatego
                         )) : (
                             <tr>
                                 <td colSpan={5} className="py-4 italic text-center text-secondary">
-                                    Không có dữ liệu
+                                    {sTrans("Không có dữ liệu")}
                                 </td>
                             </tr>
                         )}

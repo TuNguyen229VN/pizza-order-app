@@ -106,7 +106,7 @@ export default function OrderPage() {
     if (status !== null && status !== "1") return null;
     const isOwnOrder = profile.email === order?.userEmail;
     const showAdminLayout = profile.admin && !isOwnOrder;
-    if (order?.message) {
+    if (!loadingOrder && (order?.message || !order)) {
         return (
             <p className="max-w-3xl mx-auto mt-8 text-center md:pb-6">
                 {sTrans("Không có đơn hàng")}
@@ -116,7 +116,9 @@ export default function OrderPage() {
     return (
         <section className="max-w-3xl mx-auto md:pb-6">
             {loadingOrder && (
+                <div className="mb-[100px]">
                 <LoadingCat />
+                </div>
             )}
             {order && <>
                 {from === "orders" &&

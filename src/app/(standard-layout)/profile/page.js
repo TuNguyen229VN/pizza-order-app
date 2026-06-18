@@ -12,6 +12,8 @@ import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import UserPointRewards from "@/components/layout/UserPointRewards";
 import { useTranslations } from "next-intl";
+import LoadingCat from "@/components/loading/LoadingCat";
+import { getLabel } from "@/utils/i18n-utils";
 
 const ProfilePage = () => {
   const session = useSession();
@@ -48,9 +50,8 @@ const ProfilePage = () => {
     return null;
   }
   if (status === "loading" || !profileFetched) {
-    return "Loading...";
+    return <div className="mb-[100px]"><LoadingCat /></div>;
   }
-
   const handleProfileInfoUpdate = async (e, data, pendingFile) => {
     e.preventDefault();
     if (loadingForm) return;
@@ -58,19 +59,19 @@ const ProfilePage = () => {
     const isValid = handleValidate({
       userName: {
         value: data?.name,
-        rules: [validators.required("tên"), validators.minLength(2), validators.maxLength(200)],
+        rules: [validators.required(sTrans("tên")), validators.minLength(2), validators.maxLength(200)],
       },
       gender: {
         value: data?.gender,
-        rules: [validators.requiredSelect("giới tính")],
+        rules: [validators.requiredSelect(sTrans("giới tính"))],
       },
       phone: {
         value: data?.phone,
-        rules: [validators.required("số điện thoại"), validators.phone],
+        rules: [validators.required(sTrans("số điện thoại")), validators.phone],
       },
       birthday: {
         value: data?.birthday,
-        rules: [validators.required("ngày sinh"), validators.pastDate, validators.ageDate(10, 90)],
+        rules: [validators.required(sTrans("ngày sinh")), validators.pastDate, validators.ageDate(10, 90)],
       },
     });
     setLoadingForm(false);
@@ -84,7 +85,7 @@ const ProfilePage = () => {
       const uploadRes = await fetch(API_UPLOAD_IMAGE, { method: "POST", body: formData });
       if (!uploadRes.ok) {
         setLoadingForm(false);
-        toast.error("Upload ảnh thất bại");
+        toast.error(sTrans("Upload ảnh thất bại"));
         return;
       }
       const uploadData = await uploadRes.json();
@@ -111,8 +112,8 @@ const ProfilePage = () => {
 
     });
     await toast.promise(savingPromise, {
-      loading: "Đang lưu...",
-      success: "Lưu thông tin thành công",
+      loading: sTrans("Đang lưu"),
+      success: sTrans("Lưu thông tin thành công"),
       error: (err) => {
         // Xử lý lỗi validation từ server
         if (err?.errors && typeof err.errors === 'object') {
@@ -121,9 +122,9 @@ const ProfilePage = () => {
             ...prev,
             ...err.errors // merge lỗi server vào errors hiện tại
           }));
-          return err?.message || "Dữ liệu không hợp lệ";
+          return getLabel(sTrans,err?.message) || sTrans("Dữ liệu không hợp lệ");
         }
-        return err?.message || "Cập nhật thất bại";
+        return getLabel(sTrans,err?.message) || sTrans("Cập nhật thất bại");
       },
     });
   };

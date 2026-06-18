@@ -17,6 +17,8 @@ import React, { useState } from 'react'
 import toast from 'react-hot-toast';
 import { uploadImage } from '@/libs/uploadImage';
 import { useTranslations } from 'next-intl';
+import LoadingCat from '@/components/loading/LoadingCat';
+import { getLabel } from '@/utils/i18n-utils';
 
 export default function NewMenuItemPage() {
     const { loading: profileLoading, data: profileData } = UseProfile();
@@ -41,22 +43,22 @@ export default function NewMenuItemPage() {
         formData.sizes.forEach((item, i) => {
             dynamicFields[`sizes_${i}_name`] = {
                 value: item.name,
-                rules: [validators.required("tên size")],
+                rules: [validators.required(sTrans("tên size"))],
             };
             dynamicFields[`sizes_${i}_price`] = {
                 value: item.price,
-                rules: [validators.required("giá"), validators.isNumber("Giá cơ bản"), validators.isNumber("Giá"), validators.minValue(1000), validators.maxValue(100000000)],
+                rules: [validators.required(sTrans("giá")), validators.isNumber(sTrans("Giá cơ bản")), validators.isNumber(sTrans("Giá")), validators.minValue(1000), validators.maxValue(100000000)],
             };
         });
 
         formData.extraIngredientPrices.forEach((item, i) => {
             dynamicFields[`extraIngredientPrices_${i}_name`] = {
                 value: item.name,
-                rules: [validators.required("tên topping")],
+                rules: [validators.required(sTrans("tên topping"))],
             };
             dynamicFields[`extraIngredientPrices_${i}_price`] = {
                 value: item.price,
-                rules: [validators.required("giá"), validators.isNumber("Giá cơ bản"), validators.isNumber("Giá"), validators.minValue(1000), validators.maxValue(100000000)],
+                rules: [validators.required(sTrans("giá")), validators.isNumber(sTrans("Giá cơ bản")), validators.isNumber(sTrans("Giá")), validators.minValue(1000), validators.maxValue(100000000)],
             };
         });
 
@@ -64,27 +66,27 @@ export default function NewMenuItemPage() {
         const isValid = handleValidate({
             name: {
                 value: formData?.name,
-                rules: [validators.required("tên món ăn"), validators.minLength(2), validators.maxLength(200)],
+                rules: [validators.required(sTrans("tên món ăn")), validators.minLength(2), validators.maxLength(200)],
             },
             description: {
                 value: formData?.description,
-                rules: [validators.required("mô tả"), validators.minLength(2), validators.maxLength(200)],
+                rules: [validators.required(sTrans("mô tả")), validators.minLength(2), validators.maxLength(200)],
             },
             basePrice: {
                 value: formData?.basePrice,
-                rules: [validators.required("giá cơ bản"), validators.isNumber("Giá cơ bản"), validators.minValue(1000), validators.maxValue(100000000)],
+                rules: [validators.required(sTrans("giá cơ bản")), validators.isNumber(sTrans("Giá cơ bản")), validators.minValue(1000), validators.maxValue(100000000)],
             },
             category: {
                 value: formData?.category,
-                rules: [validators.requiredSelect("danh mục")],
+                rules: [validators.requiredSelect(sTrans("danh mục"))],
             },
             status: {
                 value: formData?.status,
-                rules: [validators.requiredSelect("trạng thái")],
+                rules: [validators.requiredSelect(sTrans("trạng thái"))],
             },
             image: {
-                value: pendingFile || formData.image, // ✅ check cả file mới lẫn ảnh cũ
-                rules: [validators.required("ảnh món ăn")],
+                value: pendingFile || formData.image, // check cả file mới lẫn ảnh cũ
+                rules: [validators.required(sTrans("ảnh món ăn"))],
             },
 
             ...dynamicFields,
@@ -99,7 +101,7 @@ export default function NewMenuItemPage() {
                 finalImage = await uploadImage(pendingFile);
             } catch (error) {
                 setLoadingForm(false);
-                toast.error(error.message);
+                toast.error(getLabel(sTrans, error.message));
                 return;
             }
         }
@@ -124,8 +126,8 @@ export default function NewMenuItemPage() {
                 setLoadingForm(false);
             }
             await toast.promise(savingPromise, {
-                loading: "Đang tạo món ăn...",
-                success: "Tạo món ăn thành công",
+                loading: sTrans("Đang tạo món ăn"),
+                success: sTrans("Tạo món ăn thành công"),
                 error: (err) => {
                     // Xử lý lỗi validation từ server
                     if (err?.errors && typeof err.errors === 'object') {
@@ -134,9 +136,9 @@ export default function NewMenuItemPage() {
                             ...prev,
                             ...err.errors // merge lỗi server vào errors hiện tại
                         }));
-                        return err?.message || "Dữ liệu không hợp lệ";
+                        return getLabel(sTrans, err?.message) || sTrans("Dữ liệu không hợp lệ");
                     }
-                    return err?.message || "Tạo món ăn thất bại";
+                    return getLabel(sTrans, err?.message) || sTrans("Tạo món ăn thất bại");
                 },
             });
 
@@ -149,7 +151,7 @@ export default function NewMenuItemPage() {
     }
 
     if (profileLoading) {
-        return "Loading user info...";
+        return <div className="mb-[100px]"><LoadingCat /></div>;
     }
     if (!profileData.admin) {
         return "Not an admin";
@@ -162,7 +164,7 @@ export default function NewMenuItemPage() {
                 <UserTabs isAdmin={profileData.admin}></UserTabs>
                 <div className="relative col-span-2">
                     <ContainerProfileLeft >
-                        <Link href={MENU_ITEMS_ROUTE} className='absolute flex items-center right-4 top-4'><ArrowLeft className='w-5 h-5' /> <span className='ml-1'>Hiển thị tất cả món ăn</span></Link>
+                        <Link href={MENU_ITEMS_ROUTE} className='absolute flex items-center right-4 top-4'><ArrowLeft className='w-5 h-5' /> <span className='ml-1'>{sTrans("Hiển thị tất cả món ăn")}</span></Link>
                         <MenuItemForm onSubmit={handleFormSubmit} menuItem={null} errors={errors} registerRef={registerRef}
                             clearError={clearError} loadingForm={loadingForm}></MenuItemForm>
                     </ContainerProfileLeft>

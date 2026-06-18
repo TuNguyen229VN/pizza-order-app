@@ -5,6 +5,7 @@ import EditTableImage from '@/components/layout/EditTableImage'
 import Paging from '@/components/layout/Paging'
 import TotalDashboard from '@/components/layout/TotalDashboard'
 import UserTabs from '@/components/layout/UserTabs'
+import LoadingCat from '@/components/loading/LoadingCat'
 import UseProfile from '@/components/UseProfile'
 import { API_BANNERS, API_CATEGORIES, API_COMBO_TYPES, LIST_OPTION, STATUS_OPTIONS, STATUS_OPTIONS_FILTER } from '@/constant/constant'
 import ContainerProfileLeft from '@/container/ContainerProfileLeft'
@@ -15,6 +16,7 @@ import { createValidators } from '@/libs/validators'
 import BannersForm from '@/modules/banners/BannersForm'
 import BannersTable from '@/modules/banners/BannersTable'
 import HeaderCart from '@/modules/cart/HeaderCart'
+import { getLabel } from '@/utils/i18n-utils'
 import { useTranslations } from 'next-intl'
 import React, { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
@@ -94,7 +96,7 @@ export default function BannersPage() {
   };
 
   if (profileLoading) {
-    return "Loading user info";
+    return <div className="mb-[100px]"><LoadingCat /></div>;;
   }
   if (!profileData.admin) {
     return "Not an admin";
@@ -113,15 +115,15 @@ export default function BannersPage() {
     const isValid = handleValidate({
       bannerName: {
         value: bannerName,
-        rules: [validators.requiredSelect("tên banner")],
+        rules: [validators.requiredSelect(sTrans("tên banner"))],
       },
       status: {
         value: status,
-        rules: [validators.requiredSelect("trạng thái")],
+        rules: [validators.requiredSelect(sTrans("trạng thái"))],
       },
       image: {
         value: pendingFile || editedBanner?.image,
-        rules: [validators.required("ảnh banner")],
+        rules: [validators.required(sTrans("ảnh banner"))],
       },
     });
 
@@ -136,7 +138,7 @@ export default function BannersPage() {
         finalImage = await uploadImage(pendingFile);
       } catch (error) {
         setLoadingForm(false);
-        toast.error(error.message);
+        toast.error(getLabel(sTrans, error.message));
         return;
       }
     }
@@ -167,8 +169,8 @@ export default function BannersPage() {
       setLoadingForm(false);
     });
     await toast.promise(creationPromise, {
-      loading: editedBanner ? "Đang cập nhật..." : "Đang tạo mới...",
-      success: editedBanner ? "Cập nhật thành công" : "Tạo mới thành công",
+      loading: editedBanner ? `${sTrans("Đang cập nhật")}...` : `${sTrans("Đang tạo mới")}...`,
+      success: editedBanner ? sTrans("Cập nhật thành công") : sTrans("Tạo mới thành công"),
       error: (err) => {
         // Xử lý lỗi validation từ server
         if (err?.errors && typeof err.errors === 'object') {
@@ -177,9 +179,9 @@ export default function BannersPage() {
             ...prev,
             ...err.errors // merge lỗi server vào errors hiện tại
           }));
-          return err?.message || "Dữ liệu không hợp lệ";
+          return getLabel(sTrans, err?.message) || sTrans("Dữ liệu không hợp lệ");
         }
-        return err?.message || "Cập nhật thất bại";
+        return getLabel(sTrans, err?.message) || sTrans("Cập nhật thất bại");
       },
     });
   };
@@ -196,9 +198,9 @@ export default function BannersPage() {
     });
 
     await toast.promise(promise, {
-      loading: "Đang xóa danh mục...",
-      success: "Danh mục đã được xóa",
-      error: "Có lỗi xảy ra, xin lỗi vì sự bất tiện này",
+      loading: sTrans("Đang xóa banner"),
+      success: sTrans("Banner đã được xóa"),
+      error: sTrans("APOLOGIZE_FOR_INCONVENIENCE"),
     });
 
     fetchBanners();
@@ -208,7 +210,7 @@ export default function BannersPage() {
     <section>
       <HeaderCart text="Quản lý danh mục" className={"top-[70px]"} />
       <div className="grid gap-6 md:grid-cols-3">
-        <UserTabs isAdmin={profileData.admin} />
+        <UserTabs isAdmin={profileData?.admin} />
         <div className="min-w-0 col-span-2">
           <ContainerProfileLeft >
             <div className="relative w-full h-[200px] group mb-4 ">
@@ -228,7 +230,7 @@ export default function BannersPage() {
 
           </ContainerProfileLeft>
           <ContainerProfileLeft className={"mt-6"}>
-            <h3 className="tracking-wider uppercase font-label-bold text-secondary">Danh sách chi tiết</h3>
+            <h3 className="tracking-wider uppercase font-label-bold text-secondary">{sTrans("Danh sách chi tiết")}</h3>
 
             {/* ✅ Thanh tìm kiếm + sort */}
             <div className="flex flex-wrap items-center gap-3 my-4">

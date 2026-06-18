@@ -123,7 +123,7 @@ export default function ComboOrderPage() {
     }
 
     if (loading) {
-        return <LoadingCat />
+        return <div className="mb-[100px]"> <LoadingCat /></div>
     }
     if (!combos || !categories) {
         return <NotFindLayout title={sTrans("COMBO_NOTFOUND_SEARCH")} />

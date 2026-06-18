@@ -1,15 +1,18 @@
 import { useState } from "react";
 import InfoIcon from "../icons/InfoIcon";
 import { VscEye, VscEyeClosed } from "react-icons/vsc";
+import { useTranslations } from "next-intl";
+import { getLabel } from "@/utils/i18n-utils";
 
 // components/ui/ValidatedInput.jsx
 const ValidatedInput = ({ important = true, label, name, error, inputRef, type, value, ...props }) => {
+   const sTrans = useTranslations("System");
   const [showPassword, setShowPassword] = useState(false);
   const isPassword = type === "password";
   const inputType = isPassword ? (showPassword ? "text" : "password") : type;
   return (
     <div className="flex flex-col w-full gap-1">
-      {label && <label className='my-2 text-sm font-medium'>{label} {important && <span className="text-primary">*</span>}</label>}
+      {label && <label className='my-2 text-sm font-medium'>{getLabel(sTrans,label)} {important && <span className="text-primary">*</span>}</label>}
       <div className="relative">
         <input
           ref={inputRef}

@@ -1,10 +1,13 @@
 import React from 'react'
 import InfoIcon from '../icons/InfoIcon';
+import { useTranslations } from 'next-intl';
+import { getLabel } from '@/utils/i18n-utils';
 
 export default function ValidatedSelectInput({ important = true, label, name, error, inputRef, options = [], value, ...props }) {
+  const sTrans = useTranslations("System");
   return (
     <div className="flex flex-col gap-1">
-      {label && <label className="my-2 text-sm font-medium">{label}{important && <span className="text-primary"> *</span>}</label>}
+      {label && <label className="my-2 text-sm font-medium">{getLabel(sTrans,label)}{important && <span className="text-primary"> *</span>}</label>}
       <div className="relative">
         <select
           ref={inputRef}
@@ -15,7 +18,7 @@ export default function ValidatedSelectInput({ important = true, label, name, er
         >
           {options.map((opt) => (
             <option key={opt.value} value={opt.value}>
-              {opt.label}
+              {getLabel(sTrans,opt.label)}
             </option>
           ))}
         </select>

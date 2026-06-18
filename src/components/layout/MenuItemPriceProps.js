@@ -6,9 +6,11 @@ import ChevronUp from '../icons/ChevronUp';
 import ValidatedInput from '../input/ValidatedInput';
 import ConfirmPopup from '../popup/ConfirmPopup';
 import CloseIcon from '../icons/CloseIcon';
+import { useTranslations } from 'next-intl';
+import { getLabel } from '@/utils/i18n-utils';
 
 export default function MenuItemPriceProps({ name, addLabel, props, setProps, errors, clearError, registerRef, fieldKey, disabled }) {
-
+    const sTrans = useTranslations("System");
     const [isOpen, setIsOpen] = useState(false)
 
     const addProps = () => {
@@ -54,9 +56,9 @@ export default function MenuItemPriceProps({ name, addLabel, props, setProps, er
                 onClick={() => setIsOpen(prev => !prev)}
             >
                 {isOpen ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
-                <span className="ml-1">{name}</span>
+                <span className="ml-1">{getLabel(sTrans,name)}</span>
                 <span className="ml-1">({props?.length})</span>
-                {hasError && <span className="ml-2 text-xs text-red-500">Có lỗi cần sửa</span>}
+                {hasError && <span className="ml-2 text-xs text-red-500">{sTrans("Có lỗi cần sửa")}</span>}
             </button>
 
             <div className={isOpen ? "block" : "hidden"}>
@@ -68,27 +70,27 @@ export default function MenuItemPriceProps({ name, addLabel, props, setProps, er
                             value={item.name}
                             inputRef={registerRef(`${fieldKey}_${index}_name`)}
                             error={errors[`${fieldKey}_${index}_name`]}
-                            placeholder="Nhập tên"
+                            placeholder={sTrans("Nhập tên")}
                             disabled={disabled}
                             onChange={(e) => editProps(e, index, "name")}
                         />
                         <ValidatedInput
-                            label="Giá thêm (đ)"
+                            label="Giá thêm"
                             name={`${fieldKey}_${index}_price`}
                             value={item.price}
                             disabled={disabled}
                             inputRef={registerRef(`${fieldKey}_${index}_price`)}
                             error={errors[`${fieldKey}_${index}_price`]}
-                            placeholder="Nhập giá"
+                            placeholder={sTrans("Nhập giá")}
                             onChange={(e) => editProps(e, index, "price")}
                         />
-                        <div className='absolute top-0 flex items-center gap-2 sm:top-1/2 right-4'>
+                        <div className='absolute top-0 right-0 flex items-center gap-2 sm:top-0'>
                             <button
                                 type="button"
                                 onClick={() => moveSlot(index, -1)}
                                 disabled={index === 0}
                                 className={`p-1 text-lg text-gray-400 hover:text-gray-600 disabled:opacity-30 ${disabled ? "pointer-events-none" : "cursor-pointer"}`}
-                                title="Di chuyển lên"
+                                title={sTrans("Di chuyển lên")}
                             >
                                 ▲
                             </button>
@@ -97,12 +99,12 @@ export default function MenuItemPriceProps({ name, addLabel, props, setProps, er
                                 onClick={() => moveSlot(index, 1)}
                                 disabled={index === props.length - 1}
                                 className={`p-1 text-lg text-gray-400 hover:text-gray-600 disabled:opacity-30 ${disabled ? "pointer-events-none" : "cursor-pointer"}`}
-                                title="Di chuyển xuống"
+                                title={sTrans("Di chuyển xuống")}
                             >
                                 ▼
                             </button>
                             <ConfirmPopup onDelete={() => removeProps(index)} label='Xóa' disabled={disabled}>
-                                <p title='Xóa'>
+                                <p title={sTrans("Xóa")}>
                                     <CloseIcon className='w-6 h-6 text-primary' />
                                 </p>
                             </ConfirmPopup>
@@ -112,7 +114,7 @@ export default function MenuItemPriceProps({ name, addLabel, props, setProps, er
 
                 <button type="button" onClick={addProps} className="flex items-center mt-3 font-medium bg-white text-primary" disabled={disabled}>
                     <Plus className="w-4 h-4" />
-                    <span className="ml-1">{addLabel}</span>
+                    <span className="ml-1">{getLabel(sTrans,addLabel)}</span>
                 </button>
             </div>
         </div>

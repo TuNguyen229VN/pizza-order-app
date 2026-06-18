@@ -91,7 +91,7 @@ export async function PUT(req) {
 
         const updated = await Banner.updateOne({ _id }, { name, status, image });
         if (!updated) {
-            return Response.json({ message: "Không tìm thấy danh mục" }, { status: 404 });
+            return Response.json({ message: "Không tìm thấy banner" }, { status: 404 });
         }
         return Response.json(true);
 

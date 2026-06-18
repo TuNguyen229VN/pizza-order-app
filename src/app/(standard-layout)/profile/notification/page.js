@@ -1,6 +1,7 @@
 "use client"
 import NotFindLayout from '@/components/layout/NotFindLayout';
 import UserTabs from '@/components/layout/UserTabs';
+import LoadingCat from '@/components/loading/LoadingCat';
 import SkeletonLoadingNotification from '@/components/skeleton/SkeletonLoadingNotification';
 import UseProfile from '@/components/UseProfile';
 import { ORDERS_ROUTE } from '@/constant/routesApp';
@@ -30,7 +31,7 @@ export default function NotificationPage() {
     return null;
   }
   if (status === "loading") {
-    return "Loading...";
+    return <div className="mb-[100px]"><LoadingCat /></div>;
   }
 
   function handleScroll() {
@@ -46,17 +47,17 @@ export default function NotificationPage() {
     <section>
       <HeaderCart text="Tài khoản" />
       <div className="grid gap-6 md:grid-cols-3">
-        <UserTabs isAdmin={profile.admin}></UserTabs>
+        <UserTabs isAdmin={profile?.admin}></UserTabs>
 
         <div className="col-span-2">
-          <ContainerProfileLeft title={`Thông báo${unreadCount > 0 ? ` (${unreadCount})` : ""}`} >
+          <ContainerProfileLeft title={`${sTrans("Thông báo")}${unreadCount > 0 ? ` (${unreadCount})` : ""}`} >
             <div className="flex items-center justify-end p-3 border-b">
               {!loading && unreadCount > 0 && (
                 <button
                   onClick={markAllAsRead}
                   className="text-xs text-blue-500 hover:text-blue-700 hover:underline"
                 >
-                  Đọc tất cả
+                  {sTrans("Đọc tất cả")}
                 </button>
               )}
             </div>

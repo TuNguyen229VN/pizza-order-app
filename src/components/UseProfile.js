@@ -2,8 +2,8 @@ import { API_PROFILE } from "@/constant/constant";
 import { useEffect, useState } from "react";
 
 export default function UseProfile() {
-  const [data, setData_] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [data, setData_] = useState(null);
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     setLoading(true);
     fetch(API_PROFILE).then((response) => {

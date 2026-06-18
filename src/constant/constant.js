@@ -1,8 +1,8 @@
 const LIST_OPTION = [
   { value: "newest", label: "Mới nhất" },
   { value: "oldest", label: "Cũ nhất" },
-  { value: "asc", label: "Tên A-Z" },
-  { value: "desc", label: "Tên Z-A" },
+  { value: "asc", label: "AtoZ" },
+  { value: "desc", label: "ZtoA" },
 ];
 const STATUS_OPTIONS = [
   { value: "on", label: "Đang kinh doanh" },

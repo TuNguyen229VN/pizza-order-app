@@ -1,9 +1,6 @@
 // lib/i18n-utils.ts
 
 export const getLabel = (t, name) => {
-    try {
-        return t(name);
-    } catch {
-        return name;
-    }
+    const value = t.has(name) ? t(name) : name;
+    return value;
 };

@@ -20,6 +20,7 @@ import React, { useEffect, useState } from 'react'
 import toast from 'react-hot-toast';
 import { uploadImage } from '@/libs/uploadImage';
 import { useTranslations } from 'next-intl';
+import LoadingCat from '@/components/loading/LoadingCat';
 
 export default function EditMenuItemPage() {
     const { id } = useParams();
@@ -188,7 +189,7 @@ export default function EditMenuItemPage() {
     }
 
     if (profileLoading) {
-        return "Loading user info...";
+           return <div className="mb-[100px]"><LoadingCat /></div>;
     }
     if (!profileData.admin) {
         return "Not an admin";
@@ -202,13 +203,13 @@ export default function EditMenuItemPage() {
                 <div className="relative col-span-2">
                     <ContainerProfileLeft title={menuItem?.name || "Món ăn"}>
                         <p className='text-secondary'>ID: {menuItem?._id}</p>
-                        <Link href={MENU_ITEMS_ROUTE} className='absolute flex items-center right-4 top-4'><ArrowLeft className='w-5 h-5' /> <span className='ml-1'>Hiển thị tất cả món ăn</span></Link>
+                        <Link href={MENU_ITEMS_ROUTE} className='absolute flex items-center right-4 top-4'><ArrowLeft className='w-5 h-5' /> <span className='ml-1'>{sTrans("Hiển thị tất cả món ăn")}</span></Link>
 
                         <MenuItemForm onSubmit={handleFormSubmit} menuItem={menuItem} errors={errors} registerRef={registerRef}
                             clearError={clearError} loadingForm={loadingForm}></MenuItemForm>
                         <div className='flex items-center justify-center w-full p-4 mt-6 text-lg font-medium rounded-lg hover:bg-gray-200'>
-                            <ConfirmPopup onDelete={handleDeleteClick} label='Xóa món ăn' classNameButton='w-full'>
-                                <p >Xóa món ăn</p>
+                            <ConfirmPopup onDelete={handleDeleteClick} label={sTrans("Xóa món ăn")} classNameButton='w-full'>
+                                <p >{sTrans("Xóa món ăn")}</p>
                             </ConfirmPopup>
                         </div>
                     </ContainerProfileLeft>

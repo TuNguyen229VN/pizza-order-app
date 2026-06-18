@@ -3,6 +3,7 @@ import ButtonPrimary from '@/components/buttons/ButtonPrimary';
 import ValidatedInput from '@/components/input/ValidatedInput';
 import UserTabs from '@/components/layout/UserTabs'
 import Loader from '@/components/loading/Loader';
+import LoadingCat from '@/components/loading/LoadingCat';
 import UseProfile from '@/components/UseProfile';
 import { API_CHANGE_PASSWORD } from '@/constant/constant';
 import { LOGIN_ROUTE } from '@/constant/routesApp';
@@ -10,6 +11,7 @@ import ContainerProfileLeft from '@/container/ContainerProfileLeft';
 import { useFormValidate } from '@/hooks/useFormValidate';
 import { createValidators } from '@/libs/validators';
 import HeaderCart from '@/modules/cart/HeaderCart';
+import { getLabel } from '@/utils/i18n-utils';
 import { useSession } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
@@ -39,9 +41,8 @@ export default function ChangePasswordPage() {
         return null;
     }
     if (status === "loading") {
-        return "Loading...";
+        return <div className="mb-[100px]"><LoadingCat /></div>;
     }
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (loadingForm) return;
@@ -51,16 +52,16 @@ export default function ChangePasswordPage() {
         const isValid = handleValidate({
             currentPassword: {
                 value: currentPassword,
-                rules: [validators.required("mật khẩu")],
+                rules: [validators.required(sTrans("mật khẩu"))],
             },
             newPassword: {
                 value: newPassword,
-                rules: [validators.required("mật khẩu"), validators.minLength(6), validators.passwordStrength(2)],
+                rules: [validators.required(sTrans("mật khẩu")), validators.minLength(6), validators.passwordStrength(2)],
             },
             confirmNewPassword: {
                 value: confirmNewPassword,
                 rules: [
-                    validators.required("xác nhận mật khẩu"),
+                    validators.required(sTrans("xác nhận mật khẩu")),
                     validators.matchField(newPassword),
                 ],
             },
@@ -95,17 +96,17 @@ export default function ChangePasswordPage() {
         });
 
         await toast.promise(savingPromise, {
-            loading: "Đang cập nhật...",
-            success: "Đổi mật khẩu thành công",
+            loading: `${sTrans("Đang cập nhật")}...`,
+            success: sTrans("Đổi mật khẩu thành công"),
             error: (err) => {
                 if (err?.errors && typeof err.errors === 'object') {
                     setErrors(prev => ({
                         ...prev,
                         ...err.errors
                     }));
-                    return err?.message || "Dữ liệu không hợp lệ";
+                    return getLabel(sTrans,err?.message) || sTrans("Dữ liệu không hợp lệ");
                 }
-                return err?.message || "Đổi mật khẩu thất bại";
+                return getLabel(sTrans,err?.message) || sTrans("Đổi mật khẩu thất bại");
             },
         });
     }
@@ -113,46 +114,46 @@ export default function ChangePasswordPage() {
         <section>
             <HeaderCart text="Tài khoản" className={"top-[70px]"} />
             <div className="grid gap-6 md:grid-cols-3">
-                <UserTabs isAdmin={profile.admin}></UserTabs>
+                <UserTabs isAdmin={profile?.admin}></UserTabs>
 
                 <div className="col-span-2">
                     <ContainerProfileLeft title={"Đổi mật khẩu"}>
                         <form id='user-form' className="grow" onSubmit={handleSubmit}>
                             <ValidatedInput
-                                label="Mật khẩu hiện tại"
+                                label={sTrans("Mật khẩu hiện tại")}
                                 name="currentPassword"
                                 type="password"
                                 value={currentPassword || ""}
                                 inputRef={registerRef("currentPassword")}
                                 error={errors.currentPassword}
-                                placeholder="Nhập mật khẩu hiện tại"
+                                placeholder={sTrans("Nhập mật khẩu hiện tại")}
                                 disabled={loadingForm}
                                 onChange={(e) => { setCurrentPassword(e.target.value); clearError("currentPassword"); }}
                             />
                             <ValidatedInput
-                                label="Mật khẩu mới"
+                                label={sTrans("Mật khẩu mới")}
                                 name="newPassword"
                                 type="password"
                                 value={newPassword || ""}
                                 inputRef={registerRef("newPassword")}
                                 error={errors.newPassword}
-                                placeholder="Bao gồm chữ cái, số và ký tự đặc biệt"
+                                placeholder={sTrans("Bao gồm chữ cái số và ký tự đặc biệt")}
                                 disabled={loadingForm}
                                 onChange={(e) => { setNewPassword(e.target.value); clearError("newPassword"); }}
                             />
                             <ValidatedInput
-                                label="Nhập lại mật khẩu mới"
+                                label={sTrans("Nhập lại mật khẩu mới")}
                                 name="confirmNewPassword"
                                 type="password"
                                 value={confirmNewPassword || ""}
                                 inputRef={registerRef("confirmNewPassword")}
                                 error={errors.confirmNewPassword}
-                                placeholder="Nhập lại mật khẩu mới"
+                                placeholder={sTrans("Nhập lại mật khẩu mới2")}
                                 disabled={loadingForm}
                                 onChange={(e) => { setConfirmNewPassword(e.target.value); clearError("confirmNewPassword"); }}
                             />
                             <ButtonPrimary className={"mt-4 flex items-center justify-center mr-0 mx-auto !w-[150px]"} disabled={loadingForm} type="submit">
-                                {loadingForm ? <Loader size={22} /> : <span>Lưu</span>}
+                                {loadingForm ? <Loader size={22} /> : <span>{sTrans("Lưu")}</span>}
                             </ButtonPrimary>
                         </form>
                     </ContainerProfileLeft>

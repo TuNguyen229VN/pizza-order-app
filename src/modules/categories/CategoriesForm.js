@@ -3,19 +3,21 @@ import ButtonPrimary from '@/components/buttons/ButtonPrimary';
 import ValidatedInput from '@/components/input/ValidatedInput';
 import ValidatedSelectInput from '@/components/input/ValidatedSelectInput';
 import Loader from '@/components/loading/Loader';
+import { useTranslations } from 'next-intl';
 import React from 'react'
 
-export default function CategoriesForm({ editedCategory, categoryName, setCategoryName, status, setStatus, errors, loadingForm, handleCategorySubmit, clearError, previewImage, setPreviewImage, pendingFile, setPendingFile, setEditedCategory,registerRef,STATUS_OPTIONS,setImageInputKey }) {
+export default function CategoriesForm({ editedCategory, categoryName, setCategoryName, status, setStatus, errors, loadingForm, handleCategorySubmit, clearError, previewImage, setPreviewImage, pendingFile, setPendingFile, setEditedCategory, registerRef, STATUS_OPTIONS, setImageInputKey }) {
+    const sTrans = useTranslations("System");
     return (
         <form className="" onSubmit={handleCategorySubmit}>
             <div className="">
                 <ValidatedInput
-                    label={editedCategory ? <span>Cập nhật danh mục <span className="font-semibold">{editedCategory.name}</span></span> : "Tên danh mục mới"}
+                    label={editedCategory ? <span>{sTrans("Cập nhật danh mục")} <span className="font-semibold">{editedCategory.name}</span></span> : sTrans("Tên danh mục mới")}
                     name="categoryName"
                     value={categoryName || ""}
                     inputRef={registerRef("categoryName")}
                     error={errors.categoryName}
-                    placeholder="Nhập tên danh mục "
+                    placeholder={sTrans("Nhập tên danh mục")}
                     disabled={loadingForm}
                     onChange={(e) => { setCategoryName(e.target.value); clearError("categoryName"); }}
                 />
@@ -42,7 +44,7 @@ export default function CategoriesForm({ editedCategory, categoryName, setCatego
                         setEditedCategory(null);
                         setImageInputKey((k) => k + 1);
                     }} />
-                <ButtonPrimary disabled={loadingForm} className={"!w-[170px]"} type="submit">{loadingForm ? <Loader size={20} /> : (editedCategory ? "Cập nhật" : "Tạo mới")}</ButtonPrimary>
+                <ButtonPrimary disabled={loadingForm} className={"!w-[170px]"} type="submit">{loadingForm ? <Loader size={20} /> : (editedCategory ? sTrans("Cập nhật") : sTrans("Tạo mới"))}</ButtonPrimary>
             </div>
         </form>
     )

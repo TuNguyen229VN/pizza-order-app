@@ -1,7 +1,10 @@
 import React from 'react'
 import { HiCheck } from "react-icons/hi2";
 import { CiGrid2H, CiWarning } from "react-icons/ci";
+import { useTranslations } from 'next-intl';
+import { getLabel } from '@/utils/i18n-utils';
 export default function TotalDashboard({ textAll = "Tổng", textOn = "Đang kinh doanh", textOff = "Tạm đóng", quantityAll = 0, quantityOn = 0, quantityOff = 0 }) {
+    const sTrans = useTranslations("System");
     return (
         <div className="grid gap-4 mt-4 md:gap-6 md:mt-6 md:grid-cols-3">
             <div className="flex gap-4 px-4 py-4 border rounded-xl">
@@ -9,7 +12,7 @@ export default function TotalDashboard({ textAll = "Tổng", textOn = "Đang kin
                     <CiGrid2H />
                 </div>
                 <div>
-                    <p className='text-sm text-secondary first-letter:uppercase'>{textAll}</p>
+                    <p className='text-sm text-secondary first-letter:uppercase'>{getLabel(sTrans,textAll)}</p>
                     <p className='text-lg font-medium'>{quantityAll}</p>
                 </div>
             </div>
@@ -18,7 +21,7 @@ export default function TotalDashboard({ textAll = "Tổng", textOn = "Đang kin
                     <HiCheck />
                 </div>
                 <div>
-                    <p className='text-sm text-secondary first-letter:uppercase'>{textOn}</p>
+                    <p className='text-sm text-secondary first-letter:uppercase'>{getLabel(sTrans,textOn)}</p>
                     <p className='text-lg font-medium'>{quantityOn}</p>
                 </div>
             </div>
@@ -27,7 +30,7 @@ export default function TotalDashboard({ textAll = "Tổng", textOn = "Đang kin
                     <CiWarning />
                 </div>
                 <div>
-                    <p className='text-sm text-secondary first-letter:uppercase'>{textOff}</p>
+                    <p className='text-sm text-secondary first-letter:uppercase'>{getLabel(sTrans,textOff)}</p>
                     <p className='text-lg font-medium'>{quantityOff}</p>
                 </div>
             </div>

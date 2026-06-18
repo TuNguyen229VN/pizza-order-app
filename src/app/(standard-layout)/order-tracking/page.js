@@ -92,7 +92,7 @@ export default function OrderTrackingPage() {
   //   return null;
   // }
   if (loading) {
-    return <LoadingCat/>;
+    return <div className="mb-[100px]"> <LoadingCat /></div>;
   }
   return (
     <section>

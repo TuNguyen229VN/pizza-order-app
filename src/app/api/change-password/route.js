@@ -74,7 +74,6 @@ export async function PUT(req) {
 
         return Response.json({ message: "Thay đổi mật khẩu thành công" });
     } catch (error) {
-        console.error("Change password error:", error);
         return Response.json({ message: "Không thể kết nối Database" }, { status: 500 });
     }
 }

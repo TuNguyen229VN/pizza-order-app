@@ -1,4 +1,6 @@
 import { PRESET_TAGS } from "@/constant/constant";
+import { getLabel } from "@/utils/i18n-utils";
+import { useTranslations } from "next-intl";
 import { useState, useRef } from "react";
 
 // Trả về class màu phù hợp với từng tag
@@ -8,6 +10,7 @@ function getTagColor(value) {
 }
 
 export default function TagInput({ tags = [], setTags, disabled = false }) {
+     const sTrans = useTranslations("System");
     const [inputValue, setInputValue] = useState("");
     const inputRef = useRef(null);
 
@@ -42,7 +45,7 @@ export default function TagInput({ tags = [], setTags, disabled = false }) {
     return (
         <div className="mt-1">
             <label className="block my-2 text-sm font-medium">
-                Nhãn món ăn
+                {sTrans("Nhãn món ăn")}
             </label>
 
             {/* Tag box */}
@@ -77,19 +80,19 @@ export default function TagInput({ tags = [], setTags, disabled = false }) {
                     onKeyDown={handleKeyDown}
                     onBlur={handleBlur}
                     disabled={disabled}
-                    placeholder={tags.length === 0 ? "Nhập nhãn rồi nhấn Enter" : ""}
+                    placeholder={tags.length === 0 ? sTrans("Nhập nhãn rồi nhấn Enter") : ""}
                     maxLength={30}
                     className="flex-1 placeholder-gray-400 bg-transparent border-none outline-none"
                 />
             </div>
 
             <p className="mt-2 text-xs text-gray-400">
-                Nhấn <kbd className="px-1 py-0.5 bg-gray-100 rounded text-xs">Enter</kbd> hoặc <kbd className="px-1 py-0.5 bg-gray-100 rounded text-xs">,</kbd> để thêm nhãn. Nhấn <kbd className="px-1 py-0.5 bg-gray-100 rounded text-xs">Backspace</kbd> để xóa nhãn cuối.
+                {sTrans("Nhấn")} <kbd className="px-1 py-0.5 bg-gray-100 rounded text-xs">Enter</kbd> {sTrans("hoặc")} <kbd className="px-1 py-0.5 bg-gray-100 rounded text-xs">,</kbd> {sTrans("để thêm nhãn")}. {sTrans("Nhấn")} <kbd className="px-1 py-0.5 bg-gray-100 rounded text-xs">Backspace</kbd> {sTrans("để xóa nhãn cuối")}.
             </p>
 
             {/* Preset quick-select */}
             <div className="mt-2">
-                <p className="text-xs text-gray-400 mb-1.5">Chọn nhanh:</p>
+                <p className="text-xs text-gray-400 mb-1.5">{sTrans("Chọn nhanh")}:</p>
                 <div className="flex flex-wrap gap-1.5">
                     {PRESET_TAGS.map((preset) => {
                         const isUsed = tags.includes(preset.value);
@@ -104,7 +107,7 @@ export default function TagInput({ tags = [], setTags, disabled = false }) {
                                         ? "opacity-30 cursor-not-allowed " + preset.color
                                         : preset.color + " hover:opacity-80 active:scale-95"}`}
                             >
-                                {preset.label}
+                                {getLabel(sTrans,preset.label)}
                             </button>
                         );
                     })}

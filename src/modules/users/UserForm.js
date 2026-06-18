@@ -9,12 +9,14 @@ import ValidatedDateInput from '../../components/input/ValidatedDateInput';
 import Loader from '../../components/loading/Loader';
 import ContainerProfileLeft from '@/container/ContainerProfileLeft';
 import ButtonCancel from '../../components/buttons/ButtonCancel';
+import { useTranslations } from 'next-intl';
 
 export default function UserForm({ title, user, onSave, errors, registerRef, clearError, loadingForm }) {
   const STATUS_OPTIONS = [
     { value: "off", label: "Đang hoạt động" },
     { value: "on", label: "Bị chặn" },
   ];
+    const sTrans = useTranslations("System");
   const [status, setStatus] = useState(user?.status || STATUS_OPTIONS[0].value);
   const [userName, setUserName] = useState(user?.name || "");
   const [image, setImage] = useState(user?.image || "");
@@ -114,20 +116,20 @@ export default function UserForm({ title, user, onSave, errors, registerRef, cle
       </div>
       <form id='user-form' className="grow" onSubmit={handleSubmit}>
         <ValidatedInput
-          label="Tên"
+          label={sTrans("Tên")}
           name="userName"
           value={userName || ""}
           inputRef={registerRef("userName")}
           error={errors.userName}
           disabled={loadingForm}
-          placeholder="Nhập tên của bạn"
+          placeholder={sTrans("Nhập tên của bạn")}
           onChange={(e) => {
             setUserName(e.target.value);
             clearError("userName");
           }}
         />
         <ValidatedSelectInput
-          label="Giới tính"
+          label={sTrans("Giới tính")}
           name="gender"
           value={gender}
           options={GENDER_OPTIONS}
@@ -137,7 +139,7 @@ export default function UserForm({ title, user, onSave, errors, registerRef, cle
           onChange={(e) => { setGender(e.target.value); clearError("gender"); }}
         />
         <ValidatedDateInput
-          label="Ngày sinh"
+          label={sTrans("Ngày sinh")}
           name="birthday"
           value={birthday}
           inputRef={registerRef("birthday")}
@@ -146,12 +148,12 @@ export default function UserForm({ title, user, onSave, errors, registerRef, cle
           onChange={(e) => { setBirthday(e.target.value); clearError("birthday"); }}
         />
         <ValidatedInput
-          label="Số điện thoại"
+          label={sTrans("Số điện thoại")}
           name="phone"
           value={phone || ""}
           inputRef={registerRef("phone")}
           error={errors.phone}
-          placeholder="Nhập số điện thoại của bạn"
+          placeholder={sTrans("Nhập số điện thoại của bạn")}
           disabled={loadingForm}
           onChange={(e) => {
             setPhone(e.target.value);
@@ -161,10 +163,10 @@ export default function UserForm({ title, user, onSave, errors, registerRef, cle
 
         <ValidatedInput
           important={false}
-          label="Email"
+          label={sTrans("Email")}
           name="email"
           value={user?.email}
-          placeholder="Nhập email của bạn"
+          placeholder={sTrans("Nhập email của bạn")}
           disabled
         />
         {loggedInUserData?.admin && loggedInUserData?.email !== user?.email && (
@@ -180,7 +182,7 @@ export default function UserForm({ title, user, onSave, errors, registerRef, cle
       </form>
       <div className='flex justify-end gap-4 mt-4'>
         <ButtonCancel loadingForm={loadingForm} onClick={handleCancel} />
-        <button form='user-form' className={`flex items-center justify-center font-medium px-6 py-3 rounded-lg w-[170px] hover:opacity-80 hover:scale-[1.02] duration-500 ${loadingForm ? "bg-[#DFE4EA] text-secondary pointer-events-none" : "bg-primary text-white pointer-events-auto"}`} type="submit" disabled={loadingForm}>{loadingForm ? <Loader size={20} /> : <span className='font-medium'>Cập nhật</span>}</button>
+        <button form='user-form' className={`flex items-center justify-center font-medium px-6 py-3 rounded-lg w-[170px] hover:opacity-80 hover:scale-[1.02] duration-500 ${loadingForm ? "bg-[#DFE4EA] text-secondary pointer-events-none" : "bg-primary text-white pointer-events-auto"}`} type="submit" disabled={loadingForm}>{loadingForm ? <Loader size={20} /> : <span className='font-medium'>{sTrans("Cập nhật")}</span>}</button>
       </div>
     </ContainerProfileLeft>
   )
