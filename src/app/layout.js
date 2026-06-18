@@ -9,6 +9,7 @@ import { DeliveryProvider } from "@/context/DeliveryContext";
 import { NotificationProvider } from "@/context/NotificationContext";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
+import ErudaLoader from "@/components/ErudaLoader";
 
 const roboto = Inter({
   subsets: ["latin"],
@@ -35,6 +36,7 @@ export default async function RootLayout({ children }) {
         }} />
       </head>
       <body className={roboto.className}>
+       <ErudaLoader /> 
         <NextIntlClientProvider messages={messages} timeZone="Asia/Ho_Chi_Minh" locale={locale}>
           <AppProvider>
             <DeliveryProvider>
