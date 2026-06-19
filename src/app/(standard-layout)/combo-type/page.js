@@ -6,6 +6,7 @@ import InputSearch from '@/components/input/InputSearch';
 import Paging from '@/components/layout/Paging';
 import TotalDashboard from '@/components/layout/TotalDashboard';
 import UserTabs from '@/components/layout/UserTabs';
+import LoadingCat from '@/components/loading/LoadingCat';
 import UseProfile from '@/components/UseProfile';
 import { API_CATEGORIES, API_COMBO_TYPES, LIST_OPTION, STATUS_OPTIONS_FILTER, } from '@/constant/constant';
 import { COMBOTYPE_NEW_ROUTE } from '@/constant/routesApp';
@@ -13,12 +14,14 @@ import ContainerProfileLeft from '@/container/ContainerProfileLeft';
 import { useDebounce } from '@/hooks/useDebounce';
 import HeaderCart from '@/modules/cart/HeaderCart';
 import ComboTypeTable from '@/modules/combo-type/ComboTypeTable';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react'
 import toast from 'react-hot-toast';
 
 export default function ComboTypePage() {
     const { loading: profileLoading, data: profileData } = UseProfile();
+    const sTrans = useTranslations("System");
     const [loadingForm, setLoadingForm] = useState(false);
     const [search, setSearch] = useState("");
     const [sort, setSort] = useState("newest");
@@ -91,16 +94,16 @@ export default function ComboTypePage() {
                 reject();
             }
             await toast.promise(promise, {
-                loading: "Đang xóa...",
-                success: "Đã xóa",
-                error: "Lỗi",
+                loading: sTrans("Đang xóa"),
+                success: sTrans("Đã xóa"),
+                error: sTrans("Lỗi"),
             });
             setLoadingForm(false);
         })
     }
 
     if (profileLoading) {
-        return "Loading user info...";
+        return <div className="mb-[100px]"><LoadingCat /></div>;
     }
     if (!profileData.admin) {
         return "Not an admin";
@@ -113,15 +116,15 @@ export default function ComboTypePage() {
                 <div className="min-w-0 col-span-2">
                     <ContainerProfileLeft >
                         <div className="flex justify-end">
-                            <Link className="w-max" href={COMBOTYPE_NEW_ROUTE}><ButtonPrimary className={"w-max p-4 flex items-center gap-2"}> <PlusIcon /> Tạo loại combo mới</ButtonPrimary></Link>
+                            <Link className="w-max" href={COMBOTYPE_NEW_ROUTE}><ButtonPrimary className={"w-max p-4 flex items-center gap-2"}> <PlusIcon /> {sTrans("Tạo loại combo mới")}</ButtonPrimary></Link>
                         </div>
                         <div className="">
-                            <h3 class="font-label-bold text-secondary uppercase tracking-wider">Danh sách loại combo</h3>
+                            <h3 class="font-label-bold text-secondary uppercase tracking-wider">{sTrans("Danh sách loại combo")}</h3>
 
                             <div className="flex flex-wrap items-center gap-3 my-4">
-                            <div className='w-full'>
-                                <InputSearch search={search} setSearch={setSearch} placeholder="Nhập tên loại combo" />
-                            </div>
+                                <div className='w-full'>
+                                    <InputSearch search={search} setSearch={setSearch} placeholder="Nhập tên loại combo" />
+                                </div>
                                 <FilterSort sort={status} setSort={setStatus} listOption={STATUS_OPTIONS_FILTER} />
                                 <FilterSort sort={sort} setSort={setSort} listOption={LIST_OPTION} />
                             </div>

@@ -1,11 +1,13 @@
+import { useTranslations } from 'next-intl';
 import React from 'react'
 
-export default function ComboSummary({slots=[],categories}) {
+export default function ComboSummary({ slots = [], categories }) {
+    const sTrans = useTranslations("System");
     return (
         <>
             {slots.length > 0 && (
                 <div className="p-3 mt-4 text-[#333] text-sm border border-gray-200 bg-red-50 rounded-xl">
-                    <p className="mb-1 font-medium">Tóm tắt combo:</p>
+                    <p className="mb-1 font-medium">{sTrans("Tóm tắt combo")}:</p>
                     <ul className="list-disc list-inside space-y-0.5">
                         {slots.map((slot, idx) => {
                             const cat = categories.find((c) => c._id === slot.category);

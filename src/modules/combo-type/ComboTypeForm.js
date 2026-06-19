@@ -9,6 +9,7 @@ import { API_CATEGORIES, API_COMBO_TYPES, STATUS_OPTIONS } from "@/constant/cons
 import { useFormValidate } from "@/hooks/useFormValidate";
 import { uploadImage } from "@/libs/uploadImage";
 import { createValidators } from "@/libs/validators";
+import { getLabel } from "@/utils/i18n-utils";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -41,15 +42,15 @@ export default function ComboTypeForm({ onSuccess, editData = null, setRedirectT
         const isValid = handleValidate({
             name: {
                 value: name,
-                rules: [validators.required("tên loại combo"), validators.minLength(2), validators.maxLength(200)],
+                rules: [validators.required(sTrans("tên loại combo")), validators.minLength(2), validators.maxLength(200)],
             },
             status: {
                 value: status,
-                rules: [validators.requiredSelect("trạng thái")],
+                rules: [validators.requiredSelect(sTrans("trạng thái"))],
             },
             image: {
                 value: pendingFile || image,
-                rules: [validators.required("ảnh loại combo")],
+                rules: [validators.required(sTrans("ảnh loại combo"))],
             },
         });
 
@@ -66,7 +67,7 @@ export default function ComboTypeForm({ onSuccess, editData = null, setRedirectT
                 finalImage = await uploadImage(pendingFile);
             } catch (error) {
                 setLoading(false);
-                toast.error(error.message);
+                toast.error(getLabel(sTrans, error.message));
                 return;
             }
         }
@@ -85,20 +86,20 @@ export default function ComboTypeForm({ onSuccess, editData = null, setRedirectT
                 return data;
             } catch {
                 // server trả HTML hoặc text lạ
-                throw { message: `Lỗi server (${res.status})` };
+                throw { message: `${sTrans("Lỗi server")} (${res.status})` };
             }
         });
 
         try {
             const data = await toast.promise(savingPromise, {
-                loading: isEdit ? "Đang cập nhật loại combo..." : "Đang tạo loại combo...",
-                success: isEdit ? "Cập nhật loại combo thành công!" : "Tạo loại combo thành công!",
+                loading: isEdit ? sTrans("Đang cập nhật loại combo") : sTrans("Đang tạo loại combo"),
+                success: isEdit ? sTrans("Cập nhật loại combo thành công") : sTrans("Tạo loại combo thành công"),
                 error: (err) => {
                     if (err?.errors && typeof err.errors === "object") {
                         setErrors((prev) => ({ ...prev, ...err.errors }));
-                        return err?.message || "Dữ liệu không hợp lệ";
+                        return getLabel(sTrans, err?.message) || sTrans("Dữ liệu không hợp lệ");
                     }
-                    return err?.message || (isEdit ? "Cập nhật thất bại" : "Tạo loại combo thất bại");
+                    return getLabel(sTrans, err?.message) || (isEdit ? sTrans("Cập nhật thất bại") : sTrans("Tạo loại combo thất bại"));
                 },
             });
 
@@ -166,7 +167,7 @@ export default function ComboTypeForm({ onSuccess, editData = null, setRedirectT
                 inputRef={registerRef("name")}
                 error={errors.name}
                 disabled={loading}
-                placeholder="VD: Combo 1 1, Combo gia đình..."
+                placeholder={sTrans("PLACE_HOLDER_COMBO_TYPE")}
                 onChange={(e) => {
                     setName(e.target.value);
                     clearError("name");
@@ -186,7 +187,7 @@ export default function ComboTypeForm({ onSuccess, editData = null, setRedirectT
             {/* Submit */}
             <div className='flex justify-end gap-4 mt-4'>
                 <ButtonCancel loadingForm={loading} onClick={handleCancel} />
-                <button onClick={handleSubmit} className={`flex items-center justify-center font-medium px-6 py-3 rounded-lg w-[220px] hover:opacity-80 hover:scale-[1.02] duration-500 ${loading ? "bg-[#DFE4EA] text-secondary pointer-events-none" : "bg-primary text-white pointer-events-auto"}`} type="submit" disabled={loading}>{loading ? <Loader size={20} /> : <span className='font-medium'>{isEdit ? "Cập Nhật Loại Combo" : "Lưu Loại Combo"}</span>}</button>
+                <button onClick={handleSubmit} className={`flex items-center justify-center font-medium px-6 py-3 rounded-lg w-[220px] hover:opacity-80 hover:scale-[1.02] duration-500 ${loading ? "bg-[#DFE4EA] text-secondary pointer-events-none" : "bg-primary text-white pointer-events-auto"}`} type="submit" disabled={loading}>{loading ? <Loader size={20} /> : <span className='font-medium'>{isEdit ? sTrans("Cập Nhật Loại Combo") : sTrans("Lưu Loại Combo")}</span>}</button>
             </div>
         </div>
     );

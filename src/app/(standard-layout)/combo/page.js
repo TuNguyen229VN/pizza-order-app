@@ -6,6 +6,7 @@ import InputSearch from '@/components/input/InputSearch'
 import Paging from '@/components/layout/Paging'
 import TotalDashboard from '@/components/layout/TotalDashboard'
 import UserTabs from '@/components/layout/UserTabs'
+import LoadingCat from '@/components/loading/LoadingCat'
 import UseProfile from '@/components/UseProfile'
 import { API_CATEGORIES, API_COMBO, API_COMBO_TYPES, API_MENU_ITEMS, LIST_OPTION, STATUS_OPTIONS_FILTER } from '@/constant/constant'
 import { COMBO_NEW_ROUTE } from '@/constant/routesApp'
@@ -13,12 +14,14 @@ import ContainerProfileLeft from '@/container/ContainerProfileLeft'
 import { useDebounce } from '@/hooks/useDebounce'
 import HeaderCart from '@/modules/cart/HeaderCart'
 import ComboTable from '@/modules/combo/ComboTable'
+import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 
 export default function ComboPage() {
   const { loading: profileLoading, data: profileData } = UseProfile();
+  const sTrans = useTranslations("System");
   const [loadingForm, setLoadingForm] = useState(false);
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("newest");
@@ -48,7 +51,7 @@ export default function ComboPage() {
     } else {
       fetchCombo();
     }
-  }, [debouncedSearch, sort, status,comboType]);
+  }, [debouncedSearch, sort, status, comboType]);
 
   const fetchCombo = () => {
     const params = new URLSearchParams({
@@ -121,27 +124,27 @@ export default function ComboPage() {
   ];
 
   if (profileLoading) {
-    return "Loading combo info...";
+    return <div className="mb-[100px]"><LoadingCat /></div>;
   }
   if (!profileData.admin) {
     return "Not an admin";
   }
   return (
     <section>
-      <HeaderCart text="Quản Combo" className={"top-[70px]"} />
+      <HeaderCart text="Quản lý combo" className={"top-[70px]"} />
       <div className="grid gap-6 md:grid-cols-3">
         <UserTabs isAdmin={profileData.admin} />
         <div className="min-w-0 col-span-2">
           <ContainerProfileLeft >
             <div className="flex justify-end">
-              <Link className="w-max" href={COMBO_NEW_ROUTE}><ButtonPrimary className={"w-max p-4 flex items-center gap-2"}> <PlusIcon /> Tạo Combo mới</ButtonPrimary></Link>
+              <Link className="w-max" href={COMBO_NEW_ROUTE}><ButtonPrimary className={"w-max p-4 flex items-center gap-2"}> <PlusIcon /> {sTrans("Tạo combo mới")}</ButtonPrimary></Link>
             </div>
             <div className="">
-              <h3 class="font-label-bold text-secondary uppercase tracking-wider">Danh sách Combo</h3>
+              <h3 class="font-label-bold text-secondary uppercase tracking-wider">{sTrans("Danh sách combo")}</h3>
 
               <div className="flex flex-wrap items-center gap-3 my-4">
                 <div className='w-full'>
-                  <InputSearch search={search} setSearch={setSearch} placeholder="Nhập tên cobmo" />
+                  <InputSearch search={search} setSearch={setSearch} placeholder="Nhập tên combo" />
                 </div>
                 <FilterSort sort={status} setSort={setStatus} listOption={STATUS_OPTIONS_FILTER} />
                 <FilterSort sort={comboType} setSort={setComboType} listOption={comboTypeOptions} />

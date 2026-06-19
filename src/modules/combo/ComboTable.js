@@ -3,6 +3,7 @@ import ConfirmPopup from '@/components/popup/ConfirmPopup'
 import SkeletonLoadingBox from '@/components/skeleton/SkeletonLoadingBox'
 import { COMBO_EDIT_ROUTE } from '@/constant/routesApp'
 import { dbTimeForHuman } from '@/libs/datetime'
+import { useTranslations } from 'next-intl'
 import Image from 'next/image'
 import Link from 'next/link'
 import React, { useState } from 'react'
@@ -11,6 +12,7 @@ import { MdOutlineModeEdit } from 'react-icons/md'
 
 export default function ComboTable({ comboList, loadingForm, handleComboDelete, menuItems, categories }) {
     const [loadingImage, setLoadingImage] = useState({});
+    const sTrans = useTranslations("System");
     const getItemsForMenu = (items) => {
         return items?.map((slot) => {
             const menuItem = menuItems.find(
@@ -41,14 +43,14 @@ export default function ComboTable({ comboList, loadingForm, handleComboDelete, 
                 <table className="w-full text-left">
                     <thead className="bg-surface border-b border-outline-variant text-[12px] font-bold text-secondary uppercase tracking-wider">
                         <tr>
-                            <th className="px-5 py-4"><p className='w-max'>Hình ảnh</p></th>
-                            <th className="px-5 py-4">Tên combo</th>
-                            <th className="px-5 py-4">Giá</th>
-                            <th className="px-5 py-4">Mô tả</th>
-                            <th className="px-5 py-4">Loại combo</th>
-                            <th className="px-5 py-4">Trạng thái</th>
-                            <th className="px-5 py-4">Ngày tạo</th>
-                            <th className="sticky right-0 z-10 px-5 py-4 text-right bg-white "><p className='w-max'>Thao tác</p></th>
+                            <th className="px-5 py-4"><p className='w-max'>{sTrans("Hình ảnh")}</p></th>
+                            <th className="px-5 py-4">{sTrans("Tên combo")}</th>
+                            <th className="px-5 py-4">{sTrans("Giá")}</th>
+                            <th className="px-5 py-4">{sTrans("Mô tả")}</th>
+                            <th className="px-5 py-4">{sTrans("Loại combo")}</th>
+                            <th className="px-5 py-4">{sTrans("Trạng thái")}</th>
+                            <th className="px-5 py-4">{sTrans("Ngày tạo")}</th>
+                            <th className="sticky right-0 z-10 px-5 py-4 text-right bg-white "><p className='w-max'>{sTrans("Thao tác")}</p></th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-outline-variant font-body-md">
@@ -88,7 +90,7 @@ export default function ComboTable({ comboList, loadingForm, handleComboDelete, 
                                     <td className="px-5 py-4">
                                         <div className='w-[180px]'>
 
-                                            <span className={`inline-block  px-3 py-1 rounded-full  ${item.status === "on" ? "bg-green-100 text-green-800" : " bg-red-100 text-red-800"}`}>{item?.status === "on" ? "Đang kinh doanh" : "Tạm đóng"}</span>
+                                            <span className={`inline-block  px-3 py-1 rounded-full  ${item.status === "on" ? "bg-green-100 text-green-800" : " bg-red-100 text-red-800"}`}>{item?.status === "on" ? sTrans("Đang kinh doanh") : sTrans("Tạm đóng")}</span>
                                         </div>
                                     </td>
                                     <td className="px-5 py-4">
@@ -98,9 +100,9 @@ export default function ComboTable({ comboList, loadingForm, handleComboDelete, 
                                     </td>
                                     <td className="sticky right-0 z-10 px-6 py-4 text-right bg-white ">
                                         <div className="flex justify-end gap-3">
-                                            <Link href={`${COMBO_EDIT_ROUTE}/${item._id}`} className={`transition-colors text-secondary hover:text-primary ${loadingForm ? "opacity-50 cursor-not-allowed" : ""}`}><MdOutlineModeEdit className="w-5 h-5" title='Chỉnh sửa' /></Link>
-                                            <ConfirmPopup disabled={loadingForm} label={`Xóa món ${item.name}`} onDelete={() => { handleComboDelete(item._id) }} classNameButton='hover:text-primary'>
-                                                <p title='Xóa combo'>
+                                            <Link href={`${COMBO_EDIT_ROUTE}/${item._id}`} className={`transition-colors text-secondary hover:text-primary ${loadingForm ? "opacity-50 cursor-not-allowed" : ""}`}><MdOutlineModeEdit className="w-5 h-5" title={sTrans("Chỉnh sửa")} /></Link>
+                                            <ConfirmPopup disabled={loadingForm} label={`${sTrans("Xóa món")} ${item.name}`} onDelete={() => { handleComboDelete(item._id) }} classNameButton='hover:text-primary'>
+                                                <p title={sTrans("Xóa combo")}>
                                                     <Trash className="w-5 h-5" />
                                                 </p>
                                             </ConfirmPopup>
@@ -110,7 +112,7 @@ export default function ComboTable({ comboList, loadingForm, handleComboDelete, 
                             )) : (
                                 <tr>
                                     <td colSpan={8} className="py-4 italic text-center text-secondary">
-                                        Không có dữ liệu
+                                        {sTrans("Không có dữ liệu")}
                                     </td>
                                 </tr>
                             )}
@@ -119,7 +121,7 @@ export default function ComboTable({ comboList, loadingForm, handleComboDelete, 
             </div>
             <div className="flex items-center justify-end gap-1 my-2 text-sm text-secondary">
                 <HiArrowRight className="w-3 h-3 animate-bounce-x" />
-                <span>Cuộn sang phải để xem thêm</span>
+                <span>{sTrans("Cuộn sang phải để xem thêm")}</span>
             </div>
         </>
     )

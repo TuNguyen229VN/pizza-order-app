@@ -14,6 +14,7 @@ import React, { useEffect, useState } from 'react'
 import toast from 'react-hot-toast';
 import { uploadImage } from '@/libs/uploadImage';
 import { useTranslations } from 'next-intl';
+import LoadingCat from '@/components/loading/LoadingCat';
 
 export default function EditUserPage() {
     const { loading: profileLoading, data: profileData } = UseProfile();
@@ -116,7 +117,7 @@ export default function EditUserPage() {
     }
 
     if (profileLoading) {
-        return "Loading user info...";
+        return <div className="mb-[100px]"><LoadingCat /></div>;
     }
     if (!profileData.admin) {
         return "Not an admin";
@@ -129,9 +130,9 @@ export default function EditUserPage() {
                 <UserTabs isAdmin={profileData.admin}></UserTabs>
                 <div className="relative col-span-2">
                     <div className='absolute right-4 top-4'>
-                        <Link href={USERS_ROUTE} className='flex items-center '><ArrowLeft className='w-5 h-5' /> <span className='ml-1'>Trở lại trang QLND</span></Link>
+                        <Link href={USERS_ROUTE} className='flex items-center '><ArrowLeft className='w-5 h-5' /> <span className='ml-1'>{sTrans("Trở lại trang QLND")}</span></Link>
                         {profileData?.admin && profileData?.email !== user?.email && (
-                            <span className={`inline-block mt-4 w-[150px] text-center  px-3 py-1 rounded-full  ${user?.status === "on" ? "bg-red-100 text-red-800" : " bg-green-100 text-green-800"}`}>{user?.status === "on" ? "Bị chặn" : "Đang hoạt động"}</span>
+                            <span className={`inline-block mt-4 w-[150px] text-center  px-3 py-1 rounded-full  ${user?.status === "on" ? "bg-red-100 text-red-800" : " bg-green-100 text-green-800"}`}>{user?.status === "on" ? sTrans("Bị chặn") : sTrans("Đang hoạt động")}</span>
                         )}
                     </div>
                     <UserForm user={user} onSave={handleSaveButtonClick} errors={errors} registerRef={registerRef}

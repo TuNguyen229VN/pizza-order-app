@@ -4,6 +4,7 @@ import InputSearch from '@/components/input/InputSearch';
 import Paging from '@/components/layout/Paging';
 import TotalDashboard from '@/components/layout/TotalDashboard';
 import UserTabs from '@/components/layout/UserTabs'
+import LoadingCat from '@/components/loading/LoadingCat';
 import UseProfile from '@/components/UseProfile';
 import { API_PROFILE, API_USERS, LIST_OPTION, USER_STATUS_OPTION } from '@/constant/constant';
 import { USERS_ROUTE } from '@/constant/routesApp';
@@ -11,13 +12,14 @@ import ContainerProfileLeft from '@/container/ContainerProfileLeft';
 import { useDebounce } from '@/hooks/useDebounce';
 import HeaderCart from '@/modules/cart/HeaderCart';
 import UserTable from '@/modules/users/UserTable';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react'
 import toast from 'react-hot-toast';
 
 export default function UsersPage() {
     const { loading: profileLoading, data: profileData } = UseProfile();
-
+    const sTrans = useTranslations("System");
     const [users, setUsers] = useState([]);
     const [status, setStatus] = useState("");
     const [loadingForm, setLoadingForm] = useState(false);
@@ -73,7 +75,7 @@ export default function UsersPage() {
 
     const handleUserBlock = async (user) => {
         if (user?.admin) {
-            toast.error("Không thể chặn người dùng là admin");
+            toast.error(sTrans("Không thể chặn người dùng là admin"));
             return;
         }
 
@@ -96,7 +98,7 @@ export default function UsersPage() {
             }),
         }).then(async (response) => {
             if (!response.ok) {
-                throw new Error("Cập nhật thất bại");
+                throw new Error(sTrans("Cập nhật thất bại"));
             }
 
 
@@ -106,12 +108,12 @@ export default function UsersPage() {
 
         try {
             await toast.promise(promise, {
-                loading: "Đang cập nhật trạng thái...",
+                loading: sTrans("Đang cập nhật trạng thái"),
                 success:
                     newStatus === "on"
-                        ? "Đã khóa người dùng"
-                        : "Đã mở khóa người dùng",
-                error: "Có lỗi xảy ra, xin lỗi vì sự bất tiện này",
+                        ? sTrans("Đã khóa người dùng")
+                        : sTrans("Đã mở khóa người dùng"),
+                error: sTrans("APOLOGIZE_FOR_INCONVENIENCE"),
             });
             fetchUsers();
         } finally {
@@ -120,7 +122,7 @@ export default function UsersPage() {
     };
 
     if (profileLoading) {
-        return "Loading user info...";
+        return <div className="mb-[100px]"><LoadingCat /></div>;
     }
     if (!profileData?.admin) {
         return "Not an admin";
@@ -133,12 +135,12 @@ export default function UsersPage() {
                 <UserTabs isAdmin={profileData.admin}></UserTabs>
                 <div className='min-w-0 col-span-2'>
                     <ContainerProfileLeft >
-                        <h3 class="font-label-bold text-secondary uppercase tracking-wider">Danh sách người dùng</h3>
+                        <h3 class="font-label-bold text-secondary uppercase tracking-wider">{sTrans("Danh sách người dùng")}</h3>
 
                         <div className="flex flex-wrap items-center gap-3 my-4">
-                        <div className='w-full'>
-                            <InputSearch search={search} setSearch={setSearch} placeholder="Nhập tên người dùng hoặc email" />
-                        </div>
+                            <div className='w-full'>
+                                <InputSearch search={search} setSearch={setSearch} placeholder="Nhập tên người dùng hoặc email" />
+                            </div>
                             <FilterSort sort={status} setSort={setStatus} listOption={USER_STATUS_OPTION} />
                             <FilterSort sort={sort} setSort={setSort} listOption={LIST_OPTION} />
                         </div>

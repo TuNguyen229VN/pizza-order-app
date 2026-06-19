@@ -1,10 +1,12 @@
 import Image from "next/image";
 import React, { useState } from "react";
 import SkeletonLoadingBox from "../skeleton/SkeletonLoadingBox";
+import { useTranslations } from "next-intl";
 
 
 export default function EditTableImage({ link, previewLink, onFileSelect, loadingForm, classNameImage }) {
-  const [loadingImage, setLoadingImage] = useState(true)
+  const [loadingImage, setLoadingImage] = useState(true);
+   const sTrans = useTranslations("System");
   const handleFileChange = (e) => {
     const file = e?.target.files?.[0];
     if (!file) return;
@@ -36,7 +38,7 @@ export default function EditTableImage({ link, previewLink, onFileSelect, loadin
       <div className={`absolute hidden -translate-x-1/2 -translate-y-1/2 bg-white border border-gray-300 rounded-lg cursor-pointer  top-1/2 left-1/2 ${loadingForm ? "" : "group-hover:block"}`}>
         <input type="file" className="hidden" onChange={handleFileChange} disabled={loadingForm} />
         <span className="block p-2 text-center ">
-          Chỉnh sửa
+          {sTrans("Chỉnh sửa")}
         </span>
       </div>
     </label>

@@ -19,6 +19,9 @@ import UseProfile from "@/components/UseProfile";
 import ContainerProfileLeft from "@/container/ContainerProfileLeft";
 import Image from "next/image";
 import SkeletonLoadingBox from "@/components/skeleton/SkeletonLoadingBox";
+import LoadingCat from "@/components/loading/LoadingCat";
+import { useTranslations } from "next-intl";
+import { getLabel } from "@/utils/i18n-utils";
 
 const TABS = [
     { key: "banner", label: "Banner" },
@@ -28,6 +31,7 @@ const TABS = [
 ];
 
 function SortableItem({ item }) {
+    const sTrans = useTranslations("System");
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: item._id });
     const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : 1 };
     const [loadingImage, setLoadingImage] = useState({});
@@ -53,13 +57,13 @@ function SortableItem({ item }) {
                 <span className="font-medium">{item.name}</span>
                 {item.refType && (
                     <span className="ml-2 text-xs text-gray-400">
-                        {item.refType === "comboType" ? "Loại combo" : "Danh mục"}
+                        {item.refType === "comboType" ? sTrans("Loại combo") : sTrans("Danh mục")}
                     </span>
                 )}
             </div>
             {item.status && (
                 <span className={`text-xs px-2 py-0.5 rounded-full ${item.status === "on" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-500"}`}>
-                    {item.status === "on" ? "Đang kinh doanh" : "Tạm đóng"}
+                    {item.status === "on" ? sTrans("Đang kinh doanh") : sTrans("Tạm đóng")}
                 </span>
             )}
         </div>
@@ -68,6 +72,7 @@ function SortableItem({ item }) {
 
 export default function RearrangePage() {
     const [activeTab, setActiveTab] = useState("banner");
+    const sTrans = useTranslations("System");
     const [items, setItems] = useState([]);
     const [originalItems, setOriginalItems] = useState([]); // snapshot để reset
     const [loading, setLoading] = useState(false);
@@ -77,7 +82,7 @@ export default function RearrangePage() {
     const [parentList, setParentList] = useState([]);
     const [parentId, setParentId] = useState("");
 
-    const { data: profileData } = UseProfile();
+    const { loading: loadingProfile, data: profileData } = UseProfile();
 
     useEffect(() => {
         if (activeTab === "combo") {
@@ -196,9 +201,14 @@ export default function RearrangePage() {
             setSaving(false);
         }
     };
-
+    if (loadingProfile) {
+        return <div className="mb-[100px]"><LoadingCat /></div>;
+    }
+    if (!profileData?.admin) {
+        return "Not an admin";
+    }
     const needsParent = activeTab === "combo" || activeTab === "menuItem";
-    const parentLabel = activeTab === "combo" ? "loại combo" : "danh mục";
+    const parentLabel = activeTab === "combo" ? sTrans("loại combo") : sTrans("danh mục");
 
     return (
         <section>
@@ -219,7 +229,7 @@ export default function RearrangePage() {
                                             : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200"
                                         }`}
                                 >
-                                    {tab.label}
+                                    {getLabel(sTrans,tab.label)}
                                 </button>
                             ))}
                         </div>
@@ -231,7 +241,7 @@ export default function RearrangePage() {
                                 onChange={e => setParentId(e.target.value)}
                                 className="w-full px-3 py-2 mb-4 border rounded-lg dark:bg-background dark:border-gray-700"
                             >
-                                <option value="">-- Chọn {parentLabel} --</option>
+                                <option value="">-- {sTrans("ChọnSelect")} {getLabel(sTrans,parentLabel)} --</option>
                                 {parentList.map(p => (
                                     <option key={p._id} value={p._id}>{p.name}</option>
                                 ))}
@@ -240,11 +250,11 @@ export default function RearrangePage() {
 
                         {/* List */}
                         {loading ? (
-                            <div className="py-12 text-center text-gray-400">Đang tải...</div>
+                            <div className="py-12 text-center text-gray-400">{sTrans("Đang tải")}...</div>
                         ) : needsParent && !parentId ? (
-                            <div className="py-12 text-center text-gray-400">Chọn {parentLabel} để xem danh sách</div>
+                            <div className="py-12 text-center text-gray-400">{sTrans("Chọn")} {getLabel(sTrans,parentLabel)} {sTrans("để xem danh sách")}</div>
                         ) : items.length === 0 ? (
-                            <div className="py-12 text-center text-gray-400">Không có dữ liệu</div>
+                            <div className="py-12 text-center text-gray-400">{sTrans("Không có dữ liệu")}</div>
                         ) : (
                             <div className="overflow-y-auto max-h-[400px] pr-1">
                                 <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
@@ -266,14 +276,14 @@ export default function RearrangePage() {
                                 disabled={!dirty || saving}
                                 className="px-6 py-2 font-medium text-gray-600 transition-opacity border border-gray-300 rounded-lg dark:border-gray-600 dark:text-gray-300 disabled:opacity-40 hover:bg-gray-50 dark:hover:bg-gray-800"
                             >
-                                Hủy
+                                {sTrans("Hủy")}
                             </button>
                             <button
                                 onClick={handleSave}
                                 disabled={!dirty || saving || (needsParent && !parentId)}
                                 className="px-6 py-2 font-medium text-white transition-opacity rounded-lg bg-primary disabled:opacity-40"
                             >
-                                {saving ? "Đang lưu..." : "Lưu thứ tự"}
+                                {saving ? sTrans("Đang lưu") : sTrans("Lưu thứ tự")}
                             </button>
                         </div>
                     </ContainerProfileLeft>

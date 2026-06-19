@@ -9,15 +9,18 @@ import Link from 'next/link'
 import React, { useState } from 'react'
 import ComboTypeForm from '@/modules/combo-type/ComboTypeForm'
 import { redirect } from 'next/navigation'
+import LoadingCat from '@/components/loading/LoadingCat'
+import { useTranslations } from 'next-intl'
 
 export default function NewComboTypePage() {
     const { loading: profileLoading, data: profileData } = UseProfile();
+    const sTrans = useTranslations("System");
     const [redirectToItems, setRedirectToItems] = useState(false)
     if (redirectToItems) {
         redirect(COMBOTYPE_ROUTE);
     }
     if (profileLoading) {
-        return "Loading user info...";
+        return <div className="mb-[100px]"><LoadingCat /></div>;
     }
     if (!profileData.admin) {
         return "Not an admin";
@@ -29,8 +32,8 @@ export default function NewComboTypePage() {
                 <UserTabs isAdmin={profileData.admin}></UserTabs>
                 <div className="relative col-span-2">
                     <ContainerProfileLeft >
-                        <Link href={COMBOTYPE_ROUTE} className='absolute flex items-center right-4 top-4'><ArrowLeft className='w-5 h-5' /> <span className='ml-1'>Hiển thị tất cả loại combo</span></Link>
-                        <ComboTypeForm setRedirectToItems={setRedirectToItems}/>
+                        <Link href={COMBOTYPE_ROUTE} className='absolute flex items-center right-4 top-4'><ArrowLeft className='w-5 h-5' /> <span className='ml-1'>{sTrans("Hiển thị tất cả loại combo")}</span></Link>
+                        <ComboTypeForm setRedirectToItems={setRedirectToItems} />
                     </ContainerProfileLeft>
                 </div>
             </div>

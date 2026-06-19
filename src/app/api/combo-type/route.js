@@ -168,7 +168,7 @@ export async function DELETE(req) {
 
         const url = new URL(req.url);
         const _id = url.searchParams.get("_id");
-        if (!_id) return Response.json({ message: "Thiếu _id" }, { status: 400 });
+        if (!_id) return Response.json({ message: "Thiếu id" }, { status: 400 });
 
         await ComboType.findByIdAndDelete(_id);
         return Response.json(true);

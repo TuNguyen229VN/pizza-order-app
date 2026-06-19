@@ -13,6 +13,7 @@ import toast from "react-hot-toast";
 import ComboSlots from "./ComboSlots";
 import ComboSummary from "./ComboSummary";
 import { useTranslations } from "next-intl";
+import { getLabel } from "@/utils/i18n-utils";
 
 
 export default function ComboForm({ onSuccess, editData = null, setRedirectToItems }) {
@@ -117,37 +118,37 @@ export default function ComboForm({ onSuccess, editData = null, setRedirectToIte
         const isValid = handleValidate({
             name: {
                 value: name,
-                rules: [validators.required("tên combo"), validators.minLength(2), validators.maxLength(200)],
+                rules: [validators.required(sTrans("tên combo")), validators.minLength(2), validators.maxLength(200)],
             },
             price: {
                 value: price,
-                rules: [validators.required("giá cơ bản"), validators.isNumber("giá cơ bản"), validators.minValue(1000), validators.maxValue(100000000)],
+                rules: [validators.required(sTrans("giá cơ bản")), validators.isNumber(sTrans("giá cơ bản")), validators.minValue(1000), validators.maxValue(100000000)],
             },
             status: {
                 value: status,
-                rules: [validators.requiredSelect("trạng thái")],
+                rules: [validators.requiredSelect(sTrans("trạng thái"))],
             },
             selectedComboType: {
                 value: selectedComboType,
-                rules: [validators.requiredSelect("loại combo")],
+                rules: [validators.requiredSelect(sTrans("loại combo"))],
             },
             image: {
                 value: pendingFile || image,
-                rules: [validators.required("ảnh combo")],
+                rules: [validators.required(sTrans("ảnh combo"))],
             },
         });
 
         let hasSlotError = false;
         if (slots.length === 0) {
-            setErrors((prev) => ({ ...prev, slots: "Phải có ít nhất 1 slot" }));
+            setErrors((prev) => ({ ...prev, slots: sTrans("Phải có ít nhất 1 slot") }));
             hasSlotError = true;
         } else {
             const errs = slots.map((slot) => {
                 const e = {};
-                if (!slot.category) e.category = "Chưa chọn danh mục";
-                if (!slot.quantity || slot.quantity < 1) e.quantity = "Số lượng phải >= 1";
-                if (!slot.size?.name && categorySizes[slot.category]?.length > 0) e.size = "Chưa chọn size";
-                if (!slot.allowedItems?.length) e.allowedItems = "Phải chọn ít nhất 1 món";
+                if (!slot.category) e.category = sTrans("Chưa chọn danh mục");
+                if (!slot.quantity || slot.quantity < 1) e.quantity = sTrans("Số lượng phải lớn hơn 1");
+                if (!slot.size?.name && categorySizes[slot.category]?.length > 0) e.size = sTrans("Chưa chọn size");
+                if (!slot.allowedItems?.length) e.allowedItems = sTrans("Phải chọn ít nhất 1 món");
                 return e;
             });
 
@@ -178,7 +179,7 @@ export default function ComboForm({ onSuccess, editData = null, setRedirectToIte
                 finalImage = await uploadImage(pendingFile);
             } catch (error) {
                 setLoading(false);
-                toast.error(error.message);
+                toast.error(getLabel(sTrans, error.message));
                 return;
             }
         }
@@ -194,12 +195,12 @@ export default function ComboForm({ onSuccess, editData = null, setRedirectToIte
             }),
         }).then(async (res) => {
             const text = await res.text();
-            if (!text) throw { message: `Lỗi server (${res.status})` };
+            if (!text) throw { message: `${sTrans("Lỗi server")} (${res.status})` };
             let data;
             try {
                 data = JSON.parse(text);
             } catch {
-                throw { message: `Lỗi server (${res.status})` };  // ✅ chỉ catch JSON parse fail
+                throw { message: `${sTrans("Lỗi server")} (${res.status})` };  // ✅ chỉ catch JSON parse fail
             }
 
             if (!res.ok) throw data;  // ✅ throw ra ngoài catch, giữ nguyên error từ server
@@ -208,14 +209,14 @@ export default function ComboForm({ onSuccess, editData = null, setRedirectToIte
 
         try {
             const data = await toast.promise(savingPromise, {
-                loading: isEdit ? "Đang cập nhật combo..." : "Đang tạo combo...",
-                success: isEdit ? "Cập nhật combo thành công!" : "Tạo combo thành công!",
+                loading: isEdit ? sTrans("Đang cập nhật combo") : sTrans("Đang tạo combo"),
+                success: isEdit ? sTrans("Cập nhật combo thành công") : sTrans("Tạo combo thành công"),
                 error: (err) => {
                     if (err?.errors && typeof err.errors === "object") {
                         setErrors((prev) => ({ ...prev, ...err.errors }));
-                        return err?.message || "Dữ liệu không hợp lệ";
+                        return getLabel(sTrans, err?.message) || sTrans("Dữ liệu không hợp lệ");
                     }
-                    return err?.message || (isEdit ? "Cập nhật thất bại" : "Tạo combo thất bại");
+                    return getLabel(sTrans, err?.message) || (isEdit ? sTrans("Cập nhật thất bại") : sTrans("Tạo combo thất bại"));
                 },
             });
 
@@ -353,7 +354,7 @@ export default function ComboForm({ onSuccess, editData = null, setRedirectToIte
                 inputRef={registerRef("name")}
                 error={errors.name}
                 disabled={loading}
-                placeholder="Nhập tên combo"
+                placeholder={sTrans("Nhập tên combo")}
                 onChange={(e) => {
                     setName(e.target.value);
                     clearError("name");
@@ -366,7 +367,7 @@ export default function ComboForm({ onSuccess, editData = null, setRedirectToIte
                 inputRef={registerRef("price")}
                 error={errors.price}
                 disabled={loading}
-                placeholder="Nhập giá combo"
+                placeholder={sTrans("Nhập giá combo")}
                 onChange={(e) => {
                     setPrice(e.target.value);
                     clearError("price");
@@ -383,11 +384,11 @@ export default function ComboForm({ onSuccess, editData = null, setRedirectToIte
                 onChange={(e) => { setStatus(e.target.value); clearError("status"); }}
             />
             <ValidatedSelectInput
-                label="Loại Combo"
+                label="Loại combo"
                 name="selectedComboType"
                 value={selectedComboType?._id || ""}
                 options={[
-                    { value: "", label: "-- Chọn loại combo --" },
+                    { value: "", label: "Chọn loại combo" },
                     ...comboTypes.map((c) => ({ value: c._id, label: c.name })),
                 ]}
                 disabled={loading}
@@ -411,7 +412,7 @@ export default function ComboForm({ onSuccess, editData = null, setRedirectToIte
             {/* Submit */}
             <div className='flex justify-end gap-4 mt-4'>
                 <ButtonCancel loadingForm={loading} onClick={handleCancel} />
-                <button onClick={handleSubmit} className={`flex items-center justify-center font-medium px-6 py-3 rounded-lg w-[220px] hover:opacity-80 hover:scale-[1.02] duration-500 ${loading ? "bg-[#DFE4EA] text-secondary pointer-events-none" : "bg-primary text-white pointer-events-auto"}`} type="submit" disabled={loading}>{loading ? <Loader size={20} /> : <span className='font-medium'>{isEdit ? "Cập Nhật Combo" : "Lưu Combo"}</span>}</button>
+                <button onClick={handleSubmit} className={`flex items-center justify-center font-medium px-6 py-3 rounded-lg w-[220px] hover:opacity-80 hover:scale-[1.02] duration-500 ${loading ? "bg-[#DFE4EA] text-secondary pointer-events-none" : "bg-primary text-white pointer-events-auto"}`} type="submit" disabled={loading}>{loading ? <Loader size={20} /> : <span className='font-medium'>{isEdit ? sTrans("Cập nhật combo") : sTrans("Lưu combo")}</span>}</button>
             </div>
         </div>
     );

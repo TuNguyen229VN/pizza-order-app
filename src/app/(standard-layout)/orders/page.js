@@ -4,19 +4,21 @@ import InputSearch from '@/components/input/InputSearch';
 import Paging from '@/components/layout/Paging';
 import TotalDashboard from '@/components/layout/TotalDashboard';
 import UserTabs from '@/components/layout/UserTabs';
+import LoadingCat from '@/components/loading/LoadingCat';
 import UseProfile from '@/components/UseProfile';
 import { API_ORDERS, LIST_OPTION, PAID_OPTION } from '@/constant/constant';
 import ContainerProfileLeft from '@/container/ContainerProfileLeft';
 import { useDebounce } from '@/hooks/useDebounce';
 import HeaderCart from '@/modules/cart/HeaderCart';
 import OrderTable from '@/modules/orders/OrderTable';
+import { useTranslations } from 'next-intl';
 import React, { useEffect, useState } from 'react'
 
 export default function OrdersPage() {
     const [orders, setOrders] = useState([]);
     const [loadingOrders, setLoadingOrders] = useState(true);
     const { loading, data: profile } = UseProfile();
-
+    const sTrans = useTranslations("System");
     const [search, setSearch] = useState("");
     const [sort, setSort] = useState("newest");
     const [page, setPage] = useState(1);
@@ -71,7 +73,7 @@ export default function OrdersPage() {
     }
 
     if (loading) {
-        return "Đang tải...";
+        return <div className="mb-[100px]"><LoadingCat /></div>;
     }
     if (!profile?.admin) {
         return "Not an admin";
@@ -84,23 +86,23 @@ export default function OrdersPage() {
                 <div className="min-w-0 col-span-2">
                     <ContainerProfileLeft>
                         <div className="">
-                            <h3 class="font-label-bold text-secondary uppercase tracking-wider">Danh sách món ăn</h3>
+                            <h3 class="font-label-bold text-secondary uppercase tracking-wider">{sTrans("Danh sách đơn hàng")}</h3>
 
                             <div className="flex flex-wrap items-center gap-3 my-4">
-                               <div className='w-full'>
-                                 <InputSearch search={search} setSearch={setSearch} placeholder="Nhập số điện thoại hoặc mã đơn hàng" />
-                               </div>
+                                <div className='w-full'>
+                                    <InputSearch search={search} setSearch={setSearch} placeholder={sTrans("Nhập số điện thoại hoặc mã đơn hàng")} />
+                                </div>
                                 <FilterSort sort={paid} setSort={setPaid} listOption={PAID_OPTION} />
                                 <FilterSort sort={sort} setSort={setSort} listOption={LIST_OPTION} />
                             </div>
                             <div>
                                 <div className='flex items-center gap-4'>
                                     <div className='h-4 bg-red-200 w-9' ></div>
-                                    <p className='text-red-500'>Chưa thanh toán</p>
+                                    <p className='text-red-500'>{sTrans("Chưa thanh toán")}</p>
                                 </div>
                                 <div className='flex items-center gap-4'>
                                     <div className='h-4 bg-green-200 w-9' ></div>
-                                    <p className='text-green-700'>Đã thanh toán</p>
+                                    <p className='text-green-700'>{sTrans("Đã thanh toán")}</p>
                                 </div>
                             </div>
 
@@ -117,7 +119,7 @@ export default function OrdersPage() {
                     </ContainerProfileLeft>
                 </div>
             </div>
-            <TotalDashboard quantityAll={totalAll} textAll="Tổng hóa đơn" textOn="Hóa đơn đã thanh toán" textOff="Hóa đơn chưa thanh toán" quantityOn={totalOn} quantityOff={totalOff} />
+            <TotalDashboard quantityAll={totalAll} textAll="Tổng đơn hàng" textOn="Đơn hàng đã thanh toán" textOff="Đơn hàng chưa thanh toán" quantityOn={totalOn} quantityOff={totalOff} />
         </section>
     );
 }
