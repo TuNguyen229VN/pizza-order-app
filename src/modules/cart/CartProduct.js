@@ -10,11 +10,12 @@ import Trash from '@/components/icons/Trash';
 import { useRouter } from 'next/navigation';
 import SkeletonLoadingBox from '@/components/skeleton/SkeletonLoadingBox';
 import { useTranslations } from 'next-intl';
+import { getLabel } from '@/utils/i18n-utils';
 
 export default function CartProduct({ index, product, onRemove, showEdit = false }) {
   const [showPopup, setShowPopup] = useState(false);
   const [loadingImage, setLoadingImage] = useState(true);
-  const cTrans = useTranslations("Cart");
+  const hTrans = useTranslations("HomePage");
  const sTrans = useTranslations("System");
   useLockBodyScroll(showPopup);
   const { wrapperRef, itemRef, bgRef } = useSwipeDelete(() => onRemove?.(index));
@@ -56,11 +57,11 @@ export default function CartProduct({ index, product, onRemove, showEdit = false
           </div>
 
           <div className='lg:w-[350px] break-words'>
-            <h4 className='font-medium capitalize'>{product.name}</h4>
+            <h4 className='font-medium capitalize'>{getLabel(hTrans,product.name)}</h4>
 
             {product.size && (
               <div className="mt-1 text-secondary">
-                {sTrans("Cỡ")}: <span>{product.size.name}</span>
+                {sTrans("Cỡ")}: <span>{getLabel(hTrans,product.size.name)}</span>
               </div>
             )}
 
@@ -68,7 +69,7 @@ export default function CartProduct({ index, product, onRemove, showEdit = false
               <div className="mt-1 text-secondary">
                 {sTrans("Topping thêm")}:
                 {product.extras.map((extra, i) => (
-                  <span key={extra.name}> {extra.name}{i !== product.extras.length - 1 && ","}</span>
+                  <span key={extra.name}> {getLabel(hTrans,extra.name)}{i !== product.extras.length - 1 && ","}</span>
                 ))}
               </div>
             )}
@@ -78,8 +79,8 @@ export default function CartProduct({ index, product, onRemove, showEdit = false
               <div className="mt-1 text-secondary">
                 {product.slots.map((item, i) => (
                   <span key={i} className="block">
-                    • {item.menuItem?.name}
-                    {item.selectedSize?.name && ` (${item.selectedSize.name})`}
+                    • {getLabel(hTrans,item.menuItem?.name)}
+                    {item.selectedSize?.name && ` (${getLabel(hTrans,item.selectedSize.name)})`}
                     {item.quantity > 0 && ` x${item.quantity}`}
                   </span>
                 ))}

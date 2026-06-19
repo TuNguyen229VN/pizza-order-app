@@ -289,7 +289,7 @@ export default function ComboSlots({
                                         value={slot.label}
                                         disabled={loading}
                                         onChange={(e) => updateSlot(idx, "label", e.target.value)}
-                                        placeholder="VD: Pizza, Đồ uống..."
+                                        placeholder={sTrans("PLACEHOLDER_LABEL_SLOT")}
                                     />
                                 </div>
 

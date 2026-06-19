@@ -6,6 +6,7 @@ import { KEYWORDS } from '@/constant/constant';
 import SkeletonLoadingBox from '../skeleton/SkeletonLoadingBox';
 import { RenderTag } from './RenderTag';
 import { useTranslations } from 'next-intl';
+import { getLabel } from '@/utils/i18n-utils';
 
 export default function MenuItemTile({ onClick, onAddToCart, addToCartRef, addToCartFn, recomStyle, ...item }) {
     const { image, description, tags, name, basePrice,
@@ -21,6 +22,7 @@ export default function MenuItemTile({ onClick, onAddToCart, addToCartRef, addTo
         ? Math.min(...sizes.map(size => size.price))
         : 0;
     const sTrans = useTranslations("System");
+    const hTrans = useTranslations("HomePage");
     return (
         <div className={`flex h-[156px] md:h-[230px] border md:rounded-2xl cursor-pointer overflow-hidden group transition duration-300 md:hover:shadow-[0_3px_8px_rgba(0,0,0,0.1)] ${recomStyle === "recomStyle" ? "rounded-2xl md:h-[190px] " : ""}`} onClick={(e) => {
             if (e.target.closest('.add-to-cart-zone')) return;
@@ -45,8 +47,8 @@ export default function MenuItemTile({ onClick, onAddToCart, addToCartRef, addTo
             </div>
             <div className='flex flex-col justify-between flex-1 w-full p-4 pl-2'>
                 <div>
-                    <h4 className={`${recomStyle === "recomStyle" ? "font-medium md:text-xl lg:text-2xl" : "font-semibold"} text-sm md:text-2xl  md:leading-[30px] capitalize text-[#374151] line-clamp-2`}>{name}</h4>
-                    {!recomStyle && <p className='text-sm md:text-lg leading-[26px] text-secondary line-clamp-1'>{description}</p>}
+                    <h4 className={`${recomStyle === "recomStyle" ? "font-medium md:text-xl lg:text-2xl" : "font-semibold"} text-sm md:text-2xl  md:leading-[30px] capitalize text-[#374151] line-clamp-2`}>{getLabel(hTrans,name)}</h4>
+                    {!recomStyle && <p className='text-sm md:text-lg leading-[26px] text-secondary line-clamp-1'>{getLabel(hTrans,description)}</p>}
                     <div className='flex flex-wrap items-center gap-4 mt-2'>
                         {tags && tags.map((tag, index) => (
                             <RenderTag key={index} tag={tag} />

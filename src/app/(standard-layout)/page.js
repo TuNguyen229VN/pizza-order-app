@@ -13,6 +13,8 @@ import MenuCombo from "@/components/menu/MenuCombo";
 import SkeletonLoadingSlider from "@/components/skeleton/SkeletonLoadingSlider";
 import SkeletonLoadingCarousel from "@/components/skeleton/SkeletonLoadingCarousel";
 import SkeletonLoadingSection from "@/components/skeleton/SkeletonLoadingSection";
+import { getLabel } from "@/utils/i18n-utils";
+import { useTranslations } from "next-intl";
 
 
 export default function Home() {
@@ -22,7 +24,7 @@ export default function Home() {
   const [comboList, setComboList] = useState([]);
   const [comboTypeList, setComboTypeList] = useState([]);
   const [sectionOrder, setSectionOrder] = useState([]);
-
+  const hTrans = useTranslations("HomePage");
   const [loadingBanners, setLoadingBanners] = useState(true);
   const [loadingCategories, setLoadingCategories] = useState(true);
   const [loadingMenuItems, setLoadingMenuItems] = useState(true);
@@ -45,41 +47,28 @@ export default function Home() {
 
   // — Fetch —
   useEffect(() => {
-    fetch(`${API_BANNERS}?all=true&statusFilter=on&useOrder=true`)
-      .then(r => r.json())
-      .then(data => setBanners(data.banners ?? []))
-      .catch(err => console.error("Failed to fetch banners:", err))
-      .finally(() => setLoadingBanners(false));
-
-    fetch(`${API_CATEGORIES}?all=true&statusFilter=on&useOrder=true`)
-      .then(r => r.json())
-      .then(data => setCategories(data.categories ?? []))
-      .catch(err => console.error("Failed to fetch categories:", err))
-      .finally(() => setLoadingCategories(false));
-
-    fetch(`${API_MENU_ITEMS}?all=true&status=on&useOrder=true`)
-      .then(r => r.json())
-      .then(data => setMenuItems(data.menuItems ?? []))
-      .catch(err => console.error("Failed to fetch menu items:", err))
-      .finally(() => setLoadingMenuItems(false));
-
-    fetch(`${API_COMBO}?all=true&status=on&useOrder=true`)
-      .then(r => r.json())
-      .then(data => setComboList(data.combos ?? []))
-      .catch(err => console.error("Failed to fetch combos:", err))
-      .finally(() => setLoadingCombos(false));
-
-    fetch(`${API_COMBO_TYPES}?all=true&status=on&useOrder=true`)
-      .then(r => r.json())
-      .then(data => setComboTypeList(data.comboTypes ?? []))
-      .catch(err => console.error("Failed to fetch combo types:", err))
-      .finally(() => setLoadingComboTypes(false));
-
-    fetch(`${API_REARRANGE}?type=sections`)
-      .then(r => r.json())
-      .then(data => setSectionOrder(data.sections ?? []))
-      .catch(err => console.error("Failed to fetch section order:", err))
-      .finally(() => setLoadingSectionOrder(false));
+    Promise.all([
+      fetch(`${API_BANNERS}?all=true&statusFilter=on&useOrder=true`).then(r => r.json()),
+      fetch(`${API_CATEGORIES}?all=true&statusFilter=on&useOrder=true`).then(r => r.json()),
+      fetch(`${API_MENU_ITEMS}?all=true&status=on&useOrder=true`).then(r => r.json()),
+      fetch(`${API_COMBO}?all=true&status=on&useOrder=true`).then(r => r.json()),
+      fetch(`${API_COMBO_TYPES}?all=true&status=on&useOrder=true`).then(r => r.json()),
+      fetch(`${API_REARRANGE}?type=sections`).then(r => r.json()),
+    ]).then(([banners, categories, menuItems, combos, comboTypes, sections]) => {
+      setBanners(banners.banners ?? []);
+      setCategories(categories.categories ?? []);
+      setMenuItems(menuItems.menuItems ?? []);
+      setComboList(combos.combos ?? []);
+      setComboTypeList(comboTypes.comboTypes ?? []);
+      setSectionOrder(sections.sections ?? []);
+    }).finally(() => {
+      setLoadingBanners(false);
+      setLoadingCategories(false);
+      setLoadingMenuItems(false);
+      setLoadingCombos(false);
+      setLoadingComboTypes(false);
+      setLoadingSectionOrder(false);
+    });
   }, []);
 
   const loadingSections = loadingCategories || loadingMenuItems;
@@ -92,14 +81,14 @@ export default function Home() {
     menuItems.filter(item =>
       item.category == categoryId &&
       item.status === "on" &&
-      (activeSearch === "" || item.name.toLowerCase().includes(activeSearch.toLowerCase()))
+      (activeSearch === "" || getLabel(hTrans, item.name).toLowerCase().includes(activeSearch.toLowerCase()))
     ), [menuItems, activeSearch]);
 
   const getCombosByType = useCallback((comboTypeId) =>
     comboList.filter(item =>
       item?.comboType?._id == comboTypeId &&
       item.status === "on" &&
-      (activeSearch === "" || item.name.toLowerCase().includes(activeSearch.toLowerCase()))
+      (activeSearch === "" || getLabel(hTrans, item.name).toLowerCase().includes(activeSearch.toLowerCase()))
     ), [comboList, activeSearch]);
 
   const orderedSections = useMemo(() => {

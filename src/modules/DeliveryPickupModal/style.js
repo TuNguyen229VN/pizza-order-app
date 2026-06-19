@@ -37,7 +37,7 @@ export const STYLES = `
 .pp-field{border:2px solid #e0e0e0;border-radius:12px;background:#fafafa;display:flex;align-items:center;transition:border-color .2s}
 .pp-field:focus-within{border-color:#E63946;background:#fff}
 .pp-ficon{padding:0 12px;font-size:15px;flex-shrink:0;display:flex;align-items:center;min-width:40px}
-.pp-input{flex:1;border:none;background:transparent;padding:13px 0;font-size:14px;color:#222;outline:none;font-family:inherit}
+.pp-input{flex:1;border:none;background:transparent;padding:13px 0;font-size:16px;color:#222;outline:none;font-family:inherit}
 .pp-input::placeholder{color:#bbb}
 .pp-clr{background:none;border:none;cursor:pointer;padding:0 14px;color:#bbb;font-size:14px;transition:color .2s}
 .pp-clr:hover{color:#E63946}

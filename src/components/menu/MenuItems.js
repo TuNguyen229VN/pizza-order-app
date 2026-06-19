@@ -15,6 +15,7 @@ import { KEYWORDS } from "@/constant/constant";
 import SkeletonLoadingBox from "../skeleton/SkeletonLoadingBox";
 import { RenderTag } from "./RenderTag";
 import { useTranslations } from "next-intl";
+import { getLabel } from "@/utils/i18n-utils";
 
 const MenuItems = ({ recomStyle, ...menuItem }) => {
   const { image, name, description, basePrice, sizes, extraIngredientPrices, tags } = menuItem
@@ -22,6 +23,7 @@ const MenuItems = ({ recomStyle, ...menuItem }) => {
     selectedSize, setSelectedSize
   ] = useState(sizes?.[0] || null);
   const sTrans = useTranslations("System");
+  const hTrans = useTranslations("HomePage");
   const [selectedExtras, setSelectedExtras] = useState([]);
   const [quantity, setQuantity] = useState(1)
   const [noteOrder, setNoteOrder] = useState("")
@@ -146,8 +148,8 @@ const MenuItems = ({ recomStyle, ...menuItem }) => {
             <div className="flex flex-col flex-1">
               <div className="overflow-auto h-[calc(100%-80px)] p-5 lg:w-[570px]">
                 <div>
-                  <h3 className="md:text-2xl leading-[30px] font-semibold break-words absolute md:static top-0 left-0 bg-white md:bg-none w-full md:w-max p-3 md:p-0">{name}</h3>
-                  <p className="text-sm break-words md:mt-2 md:text-base text-secondary">{description}</p>
+                  <h3 className="md:text-2xl leading-[30px] font-semibold break-words absolute md:static top-0 left-0 bg-white md:bg-none w-full  p-3 md:p-0">{getLabel(hTrans,name)}</h3>
+                  <p className="text-sm break-words md:mt-2 md:text-base text-secondary">{getLabel(hTrans,description)}</p>
                   <div className='flex flex-wrap items-center gap-4 mt-2'>
                     {tags && tags.map((tag, index) => (
                       <RenderTag key={index} tag={tag} haveName={true} />

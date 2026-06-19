@@ -423,11 +423,11 @@ export default function ComboSelector({
                                             </div>
                                             <div className='flex flex-col justify-between flex-1 w-full p-4 pl-2'>
                                                 <div>
-                                                    <h4 title={mi.name} className={`md:text-lg text-sm md:leading-[26px] capitalize  line-clamp-2 font-bold `}>{mi.name}</h4>
-                                                    <p className='text-sm text-secondary line-clamp-1'>{mi.description}</p>
+                                                    <h4 title={getLabel(hTrans,mi.name)} className={`md:text-lg text-sm md:leading-[26px] capitalize  line-clamp-2 font-bold `}>{getLabel(hTrans,mi.name)}</h4>
+                                                    <p className='text-sm text-secondary line-clamp-1'>{getLabel(hTrans,mi.description)}</p>
                                                     {combo.slots[chooseTabIndex].size?.name && (
                                                         <span className="text-xs font-medium ">
-                                                            {sTrans("Kích thước")}: {combo.slots[chooseTabIndex].size.name}
+                                                            {sTrans("Kích thước")}: {getLabel(hTrans,combo.slots[chooseTabIndex].size.name)}
                                                         </span>
                                                     )}
                                                 </div>

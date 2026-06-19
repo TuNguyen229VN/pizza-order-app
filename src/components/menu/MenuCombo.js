@@ -7,12 +7,14 @@ import { COMBO_ORDER_ROUTE } from '@/constant/routesApp'
 import { useDelivery } from '@/context/DeliveryContext'
 import SkeletonLoadingBox from '../skeleton/SkeletonLoadingBox'
 import { useTranslations } from 'next-intl'
+import { getLabel } from '@/utils/i18n-utils'
 
 export default function MenuCombo({ categories = [], menuItems = [], ...item }) {
     const { _id, image, name, price, slots } = item;
     const { deliveryInfo, openDeliveryModal } = useDelivery();
     const [loadingImage, setLoadingImage] = useState(true);
     const sTrans = useTranslations("System");
+    const hTrans = useTranslations("HomePage");
     return (
         <Link href={`${COMBO_ORDER_ROUTE}/${_id}`} onClick={(e) => {
             if (!deliveryInfo) {
@@ -26,7 +28,7 @@ export default function MenuCombo({ categories = [], menuItems = [], ...item }) 
                 <Image src={image} alt={name} fill quality={100} className={`object-fill object-center w-full h-full transition-transform duration-500 md:object-cover group-hover:scale-105 ${loadingImage ? "opacity-0" : "opacity-100"}`} onLoad={() => setLoadingImage(false)} />
             </div>
             <div className='flex flex-col justify-center w-full gap-2 p-2 md:p-4'>
-                <h4 className='text-sm capitalize text-[#374151]  md:text-[28px] font-semibold md:leading-[40px]'>{name}</h4>
+                <h4 className='text-sm capitalize text-[#374151]  md:text-[28px] font-semibold md:leading-[40px]'>{getLabel(hTrans,name)}</h4>
                 <div className='relative flex flex-col-reverse gap-2 md:flex-col'>
                     <div className='text-sm md:text-lg text-secondary'><span className='block mb-1 text-xs md:text-lg md:mb-0 md:inline'>{sTrans("Chỉ từ")}</span> <span className='font-semibold text-[#374151] '>{price?.toLocaleString('vi-VN')}</span> <span className='font-semibold underline text-[#374151] '>đ</span></div>
                     <p className='text-sm line-clamp-1 md:text-lg text-secondary'>
@@ -36,11 +38,11 @@ export default function MenuCombo({ categories = [], menuItems = [], ...item }) 
                                 if (!category) return null;
 
                                 const qty = String(slot.quantity).padStart(2, "0");
-                                const sizeText = slot?.size ? ` (${slot.size.name.toLowerCase()})` : '';
+                                const sizeText = slot?.size ? ` (${getLabel(hTrans,slot.size.name).toLowerCase()})` : '';
 
-                                if (slot.label) return `${qty} ${slot.label}${sizeText}`;
+                                if (slot.label) return `${qty} ${getLabel(hTrans,slot.label)}${getLabel(hTrans,sizeText)}`;
 
-                                if (slot?.size) return `${qty} ${category.name}${sizeText}`;
+                                if (slot?.size) return `${qty} ${getLabel(hTrans,category.name)}${getLabel(hTrans,sizeText)}`;
 
                                 // So sánh allowedItems với menuItems
                                 if (slot.allowedItems?.length) {
@@ -52,11 +54,11 @@ export default function MenuCombo({ categories = [], menuItems = [], ...item }) 
                                     const isSelectAll = allInCategory.length > 0 && allowed.length === allInCategory.length;
 
                                     if (!isSelectAll && allowed.length > 0) {
-                                        return `${qty} ${allowed.map(mi => mi.name).join(" / ")}`;
+                                        return `${qty} ${allowed.map(mi => getLabel(hTrans,mi.name)).join(" / ")}`;
                                     }
                                 }
 
-                                return `${qty} ${category.name}`;
+                                return `${qty} ${getLabel(hTrans,category.name)}`;
                             })
                             .filter(Boolean)
                             .join(", ") || "Chưa có"}

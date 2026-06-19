@@ -13,6 +13,7 @@ import ComboChoosedList from '@/modules/combo-order/ComboChoosedList';
 import ComboNote from '@/modules/combo-order/ComboNote';
 import ComboQuantity from '@/modules/combo-order/ComboQuantity';
 import ComboSelector from '@/modules/combo-order/ComboSelector';
+import { getLabel } from '@/utils/i18n-utils';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
@@ -23,6 +24,7 @@ export default function ComboOrderPage() {
     const { id } = useParams();
     const searchParams = useSearchParams();
     const sTrans = useTranslations("System");
+    const hTrans = useTranslations("HomePage");
     const comboCartId = searchParams.get("cartComboId");
     const { addComboToCart, updateComboInCart, cartProducts } = useContext(CartContext);
     const [comboChooseList, setComboChooseList] = useState([]);
@@ -134,7 +136,7 @@ export default function ComboOrderPage() {
 
             <div className='flex flex-col-reverse mb-4 md:flex-row'>
                 <div className='w-full p-4 md:w-1/2 '>
-                    <h4 className='mb-4 text-lg font-bold capitalize md:text-3xl'>{combos?.name}</h4>
+                    <h4 className='mb-4 text-lg font-bold capitalize md:text-3xl'>{getLabel(hTrans,combos?.name)}</h4>
                     <ul className='pl-5 mb-4 text-sm list-disc'>
                         {combos?.slots
                             ?.map((slot, index) => {
@@ -142,11 +144,11 @@ export default function ComboOrderPage() {
                                 if (!category) return null;
 
                                 const qty = String(slot.quantity).padStart(2, "0");
-                                const sizeText = slot?.size ? ` (${slot.size.name.toLowerCase()})` : '';
+                                const sizeText = slot?.size ? ` (${getLabel(hTrans,slot.size.name).toLowerCase()})` : '';
 
-                                if (slot.label) return <li key={`${slot.category}-${index}`}>{slot.label}</li>;
+                                if (slot.label) return <li key={`${slot.category}-${index}`}>{getLabel(hTrans,slot.label)}</li>;
 
-                                if (slot?.size) return <li key={`${slot.category}-${index}`}>{qty} {category.name}{sizeText}</li>;
+                                if (slot?.size) return <li key={`${slot.category}-${index}`}>{qty} {getLabel(hTrans,category.name)}{getLabel(hTrans,sizeText)}</li>;
 
                                 if (slot.allowedItems?.length) {
                                     const allowed = menuItems?.filter(mi =>
@@ -158,14 +160,14 @@ export default function ComboOrderPage() {
                                     const isSelectAll = allInCategory.length > 0 && allowed.length === allInCategory.length;
 
                                     if (!isSelectAll && allowed.length > 0) {
-                                        return <li key={`${slot.category}-${index}`}>{qty} {allowed.map(mi => mi.name).join(" / ")}</li>;
+                                        return <li key={`${slot.category}-${index}`}>{qty} {allowed.map(mi => getLabel(hTrans,mi.name)).join(" / ")}</li>;
                                     }
                                 }
 
-                                return <li key={`${slot.category}-${index}`}>{qty} {category.name}</li>;
+                                return <li key={`${slot.category}-${index}`}>{qty} {getLabel(hTrans,category.name)}</li>;
                             })
                             .filter(Boolean)
-                            || <li>Chưa có</li>}
+                            || <li>{sTrans("Chưa có")}</li>}
                     </ul>
                     <div className='flex flex-col gap-2 md:items-center md:gap-32 md:flex-row'>
                         <div>

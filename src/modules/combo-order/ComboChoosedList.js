@@ -1,5 +1,6 @@
 import ChevronRight from '@/components/icons/ChevronRight';
 import { KEYWORDS } from '@/constant/constant';
+import { getLabel } from '@/utils/i18n-utils';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import React from 'react'
@@ -52,7 +53,7 @@ export default function ComboChoosedList({ chooseTabIndex, setChooseTabIndex, co
                                 )}</span>  ({totalQuantity}/{item.quantity})</h4>
                                 <p className='text-sm text-secondary line-clamp-1'>
                                     {
-                                        selectedItems.map((choose, idx) => (<span key={`${choose.slotIndex}-${choose.menuItem._id}-${idx}`}>{choose.menuItem.name} x {choose.quantity}{idx < selectedItems.length - 1 ? ", " : ""} </span>))
+                                        selectedItems.map((choose, idx) => (<span key={`${choose.slotIndex}-${choose.menuItem._id}-${idx}`}>{getLabel(hTrans,choose.menuItem.name)} x {choose.quantity}{idx < selectedItems.length - 1 ? ", " : ""} </span>))
                                     }
                                 </p>
                             </div>

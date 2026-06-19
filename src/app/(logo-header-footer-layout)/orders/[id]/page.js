@@ -25,6 +25,7 @@ export default function OrderPage() {
     const [order, setOrder] = useState();
     const sTrans = useTranslations("System");
     const cTrans = useTranslations("Cart");
+    const hTrans = useTranslations("HomePage");
     const router = useRouter();
     const [loadingOrder, setLoadingOrder] = useState(true);
     const { loading, data: profile } = UseProfile();
@@ -104,8 +105,8 @@ export default function OrderPage() {
         }
     }
     if (status !== null && status !== "1") return null;
-    const isOwnOrder = profile.email === order?.userEmail;
-    const showAdminLayout = profile.admin && !isOwnOrder;
+    const isOwnOrder = profile?.email === order?.userEmail;
+    const showAdminLayout = profile?.admin && !isOwnOrder;
     if (!loadingOrder && (order?.message || !order)) {
         return (
             <p className="max-w-3xl mx-auto mt-8 text-center md:pb-6">
