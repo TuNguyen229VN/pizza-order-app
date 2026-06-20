@@ -136,6 +136,13 @@ export async function PATCH(req) {
             return Response.json({ message: "Không tìm thấy đơn hàng" }, { status: 404 });
         }
 
+        if (order.status === "cancelled") {
+            return Response.json(
+                { message: "Đơn hàng đã bị hủy, không thể xác nhận thanh toán" },
+                { status: 400 }
+            );
+        }
+
         if (order.paymentMethod !== "cod") {
             return Response.json(
                 { message: "Chỉ có thể xác nhận thanh toán cho đơn COD" },
@@ -151,6 +158,7 @@ export async function PATCH(req) {
 
         return Response.json(updated);
     } catch (error) {
+        console.log(error)
         return Response.json({ message: "Không thể kết nối Database" }, { status: 500 });
     }
 }

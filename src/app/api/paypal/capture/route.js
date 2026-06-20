@@ -28,7 +28,9 @@ export async function GET(req) {
     }
 
     const orderId = capture.purchase_units?.[0]?.payments?.captures?.[0]?.custom_id;
-    await markOrderPaid(orderId);
+    // await markOrderPaid(orderId);
+    const captureId = capture.purchase_units?.[0]?.payments?.captures?.[0]?.id;
+    await markOrderPaid(orderId, { paypalCaptureId: captureId });
 
     return Response.redirect(`${process.env.NEXTAUTH_URL}orders/${orderId}?clear-cart=1`);
 }

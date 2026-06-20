@@ -10,8 +10,10 @@ export async function POST(req) {
     const signature = crypto.createHmac("sha256", secretKey).update(rawSignature).digest("hex");
 
     if (signature !== body.signature) return Response.json({ message: "invalid signature" }, { status: 400 });
-    if (body.resultCode === 0) await markOrderPaid(body.orderId);
-
+    // if (body.resultCode === 0) await markOrderPaid(body.orderId);
+    if (body.resultCode === 0) {
+        await markOrderPaid(body.orderId, { momoTransId: String(body.transId) });
+    }
     return Response.json({ message: "ok" });
 }
 

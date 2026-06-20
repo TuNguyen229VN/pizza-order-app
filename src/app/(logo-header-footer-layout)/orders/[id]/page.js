@@ -3,7 +3,7 @@ import { CartContext, cartProductPrice, totalCartPrice } from '@/components/AppC
 import AddressInput from '@/components/layout/AddressInput';
 import SectionHeader from '@/components/layout/SectionHeader';
 import CartProduct from '@/modules/cart/CartProduct';
-import { API_ORDERS, METHODS } from '@/constant/constant';
+import { API_ORDERS, CANCEL_WINDOW_MINUTES, METHODS, ORDER_STATUS_FLOW, ORDER_STATUS_LABELS } from '@/constant/constant';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import React, { useContext, useEffect, useState } from 'react'
 import Image from 'next/image';
@@ -19,6 +19,8 @@ import ConfirmPopup from '@/components/popup/ConfirmPopup';
 import LoadingCat from '@/components/loading/LoadingCat';
 import { useTranslations } from 'next-intl';
 import { getLabel } from '@/utils/i18n-utils';
+import OrderStatusBadge from '@/modules/orders/OrderStatusBadge';
+import { pusherClient } from '@/libs/pusherClient';
 
 export default function OrderPage() {
     const { clearCart } = useContext(CartContext);
@@ -34,7 +36,17 @@ export default function OrderPage() {
     const [updatingPaid, setUpdatingPaid] = useState(false);
     const from = searchParams.get("from");
     const status = searchParams.get("status");
+    const [updatingStatus, setUpdatingStatus] = useState(false);
+    // refund
+    const [cancelling, setCancelling] = useState(false);
+    const [now, setNow] = useState(Date.now());
 
+    useEffect(() => {
+        const interval = setInterval(() => setNow(Date.now()), 30000);
+        return () => clearInterval(interval);
+    }, []);
+
+    // 
     useEffect(() => {
         if (status !== null && status !== "1") {
             router.replace("/cart?canceled=1");
@@ -52,6 +64,24 @@ export default function OrderPage() {
             });
         }
     }, [order]);
+
+    useEffect(() => {
+        if (!order?._id) return;
+
+        const channel = pusherClient.subscribe(`order-${order._id}`);
+
+        function handleOrderUpdated(data) {
+            setOrder(prev => prev ? { ...prev, status: data.status, paid: data.paid } : prev);
+        }
+
+        channel.bind("order-updated", handleOrderUpdated);
+
+        return () => {
+            channel.unbind("order-updated", handleOrderUpdated);
+            pusherClient.unsubscribe(`order-${order._id}`);
+        };
+    }, [order?._id]);
+
     useEffect(() => {
         if (typeof window.console !== "undefined") {
             const status = searchParams.get("status");
@@ -98,6 +128,46 @@ export default function OrderPage() {
         }
     }
 
+    async function handleCancelOrder() {
+        setCancelling(true);
+        try {
+            const res = await fetch(`/api/orders/${order._id}/cancel`, { method: "POST" });
+            const data = await res.json();
+            if (res.ok) {
+                setOrder(prev => ({ ...prev, status: "cancelled" }));
+                toast.success(sTrans("Đã hủy đơn hàng"));
+            } else {
+                toast.error(getLabel(sTrans, data?.message) || sTrans("Hủy đơn thất bại"));
+            }
+        } catch {
+            toast.error(sTrans("Lỗi kết nối"));
+        } finally {
+            setCancelling(false);
+        }
+    }
+
+    async function handleUpdateStatus(nextStatus) {
+        setUpdatingStatus(true);
+        try {
+            const res = await fetch(`/api/orders/${order._id}/status`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ status: nextStatus }),
+            });
+            const data = await res.json();
+            if (res.ok) {
+                setOrder(data);
+                toast.success(sTrans("Cập nhật trạng thái thành công"));
+            } else {
+                toast.error(getLabel(sTrans, data?.message) || sTrans("Cập nhật thất bại"));
+            }
+        } catch {
+            toast.error(sTrans("Lỗi kết nối"));
+        } finally {
+            setUpdatingStatus(false);
+        }
+    }
+
     let subtotal = 0;
     if (order?.cartProducts) {
         for (const product of order?.cartProducts) {
@@ -107,6 +177,20 @@ export default function OrderPage() {
     if (status !== null && status !== "1") return null;
     const isOwnOrder = profile?.email === order?.userEmail;
     const showAdminLayout = profile?.admin && !isOwnOrder;
+    const showAdminForHandleLayout = profile?.admin;
+
+    // ================
+    const minutesElapsed = order?.createdAt ? (now - new Date(order.createdAt).getTime()) / 60000 : Infinity;
+    const canCancel = order
+        && ["pending", "confirmed"].includes(order.status)
+        && minutesElapsed <= CANCEL_WINDOW_MINUTES;
+
+    const mode = order?.deliveryInfo?.mode === "delivery" ? "delivery" : "pickup";
+    const flow = ORDER_STATUS_FLOW[mode];
+    const currentIdx = order ? flow.indexOf(order.status) : -1;
+    const nextStatus = currentIdx >= 0 && currentIdx < flow.length - 1 ? flow[currentIdx + 1] : null;
+    const canAdvanceStatus = showAdminForHandleLayout && nextStatus && order?.status !== "cancelled";
+    // ================
     if (!loadingOrder && (order?.message || !order)) {
         return (
             <p className="max-w-3xl mx-auto mt-8 text-center md:pb-6">
@@ -118,7 +202,7 @@ export default function OrderPage() {
         <section className="max-w-3xl mx-auto md:pb-6">
             {loadingOrder && (
                 <div className="mb-[100px]">
-                <LoadingCat />
+                    <LoadingCat />
                 </div>
             )}
             {order && <>
@@ -162,13 +246,58 @@ export default function OrderPage() {
 
                         </p>
 
-                        {profile?.admin && order?.paymentMethod === "cod" && !order?.paid && (
+                        {showAdminForHandleLayout && order?.paymentMethod === "cod" && !order?.paid && (
                             <ConfirmPopup onDelete={handleConfirmCodPayment} disabled={updatingPaid} label={sTrans("CONFIRM_PAYMENT_COD_LABEL")} classNameButton='w-full py-3 mt-4 text-sm font-medium text-white duration-200 bg-green-600 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed'>
                                 {updatingPaid ? `${sTrans("Đang cập nhật")}...` : sTrans("COFIRM_PAYMENT_COD")}
                             </ConfirmPopup>
                         )}
+
+                        {/* ================refund */}
+                        {/* {order?.status === "cancelled" && (
+                            <p className='mt-4 text-center rounded-lg w-[150px] p-2 font-medium text-gray-700 bg-gray-200'>
+                                {sTrans("Đã hủy")}
+                            </p>
+                        )} */}
+
+
+
                     </div>
                 </div>
+                {/* ========================= */}
+                {/* {showAdminForHandleLayout && ( */}
+                <div className='p-6 mt-4 border rounded-lg md:mt-6'>
+                    <h4 className='mb-4 font-semibold md:mb-6 md:text-2xl'>{sTrans("Trạng thái đơn hàng")}</h4>
+                    <OrderStatusBadge status={order?.status} className="w-full mb-4" />
+                    {!showAdminLayout && canCancel && (
+                        <ConfirmPopup
+                            onDelete={handleCancelOrder}
+                            disabled={cancelling}
+                            label={sTrans("CONFIRM_CANCEL_ORDER_LABEL")}
+                            classNameButton='w-full py-3 text-sm font-medium text-white duration-200 bg-red-500 rounded-lg hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed'
+                        >
+                            {cancelling ? `${sTrans("Đang hủy")}...` : sTrans("Hủy đơn hàng")}
+                        </ConfirmPopup>
+                    )}
+                    {canAdvanceStatus && (
+                        <ConfirmPopup
+                            onDelete={() => handleUpdateStatus(nextStatus)}
+                            disabled={updatingStatus}
+                            label={`${sTrans("Xác nhận chuyển sang")}: ${sTrans(ORDER_STATUS_LABELS[nextStatus])}`}
+                            classNameButton='w-full py-3 text-sm duration-200 border-2 rounded-lg border-primary text-primary hover:bg-red-100 disabled:opacity-50 disabled:cursor-not-allowed'
+                        >
+                            {updatingStatus
+                                ? `${sTrans("Đang cập nhật")}...`
+                                : `${sTrans("Chuyển sang")}: ${sTrans(ORDER_STATUS_LABELS[nextStatus])}`}
+                        </ConfirmPopup>
+                    )}
+
+                    {/* {!canAdvanceStatus && order?.status !== "cancelled" && (
+                        <p className='text-sm italic text-secondary'>{sTrans("Đơn hàng đã hoàn thành")}</p>
+                    )} */}
+                </div>
+                {/* )} */}
+
+                {/* ==================== */}
                 <div className='grid grid-cols-1 p-6 mt-4 border rounded-lg md:grid-cols-2 md:mt-6'>
                     <p className='font-semibold'>{cTrans("Có")} {totalQuantity(order?.cartProducts)} {cTrans("sản phẩm trong giỏ hàng của bạn")}</p>
                     <div className='md:col-span-2'>

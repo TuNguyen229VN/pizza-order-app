@@ -24,7 +24,8 @@ export async function POST(req) {
 
     const data = JSON.parse(body.data);
     const orderId = data.app_trans_id.split("_").slice(1).join("_");
-    await markOrderPaid(orderId);
+    // await markOrderPaid(orderId);
+    await markOrderPaid(orderId, { zaloTransId: String(data.zp_trans_id) });
 
     return Response.json({ return_code: 1, return_message: "success" });
 }

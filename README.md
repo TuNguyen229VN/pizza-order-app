@@ -75,3 +75,5 @@
 
 ##
 ![Overviewpage](bg_info.png)
+
+paypal dG=iQtv1 sb-rqczv51529184@personal.example.com

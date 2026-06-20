@@ -180,6 +180,7 @@ export async function POST(req) {
             },
             cartProducts,
             paid: false,
+            totalOrder: finalAmount,
             paymentMethod,
             pointDiscount: { discountPercent, discountAmount, tierLabel },
         };

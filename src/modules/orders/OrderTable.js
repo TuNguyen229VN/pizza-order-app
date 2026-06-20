@@ -6,6 +6,7 @@ import Link from 'next/link'
 import React from 'react'
 import { HiDotsHorizontal } from "react-icons/hi";
 import { HiArrowRight } from 'react-icons/hi2';
+import OrderStatusBadge from './OrderStatusBadge';
 
 export default function OrderTable({ orders, loadingForm = false }) {
     const sTrans = useTranslations("System");
@@ -19,6 +20,7 @@ export default function OrderTable({ orders, loadingForm = false }) {
                             <th className="px-5 py-4">{sTrans("Khách hàng")}</th>
                             <th className="px-5 py-4">{sTrans("Đơn hàng")}</th>
                             <th className="px-5 py-4">{sTrans("Ngày đặt hàng")}</th>
+                            <th className="px-5 py-4 text-center"><p className=''>{sTrans("Trạng thái")}</p></th>
                             <th className="px-5 py-4 text-center"><p className=''>{sTrans("Thanh toán")}</p></th>
                             <th className="px-5 py-4"><p className='w-max'>{sTrans("Phương thức")}</p></th>
                             <th className="px-5 py-4">{sTrans("Loại đơn")}</th>
@@ -56,6 +58,9 @@ export default function OrderTable({ orders, loadingForm = false }) {
                                         </p>
                                     </td>
                                     <td className="px-5 py-4">
+                                        <OrderStatusBadge status={order?.status} className="w-[250px]" />
+                                    </td>
+                                    <td className="px-5 py-4">
                                         <p className={`text-center rounded-lg w-[150px] p-2 line-clamp-1 break-all overflow-hidden font-medium ${order.paid ? 'text-green-700 bg-green-200' : 'text-red-500 bg-red-200'}`} title={order.paid ? sTrans("Đã thanh toán'") : sTrans("Chưa thanh toán")}>
                                             {order.paid ? sTrans("Đã thanh toán") : sTrans("Chưa thanh toán")}
 
@@ -79,7 +84,7 @@ export default function OrderTable({ orders, loadingForm = false }) {
                                 </tr>
                             )) : (
                                 <tr>
-                                    <td colSpan={8} className="py-4 italic text-center text-secondary">
+                                    <td colSpan={9} className="py-4 italic text-center text-secondary">
                                         {sTrans("Không có dữ liệu")}
                                     </td>
                                 </tr>
