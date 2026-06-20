@@ -93,11 +93,13 @@ export const metadata = {
       vi: "/vi",
     },
   },
-
+  verification: {
+    google: "YWQK6RjsJk9LNozfyHkhzN0yS9PCAF0MDcsDfwWAKLE",
+  },
   openGraph: {
     title: "PizzaTeo - Pizza Delivery & Online Food Ordering",
     description:
-      "Order delicious pizzas, combo meals, and side dishes online with fast delivery, takeaway options, reward points, and secure payments.",
+      "Đặt pizza online nhanh chóng tại PizzaTeo với nhiều loại pizza, combo hấp dẫn, giao hàng tận nơi, mang đi, tích điểm đổi ưu đãi và nhiều phương thức thanh toán an toàn.",
 
     url: "https://pizzateo.vercel.app",
     siteName: "PizzaTeo",
@@ -135,6 +137,7 @@ export const metadata = {
     address: false,
     telephone: false,
   },
+  manifest: "/site.webmanifest"
 };
 
 
@@ -144,6 +147,19 @@ export default async function RootLayout({ children }) {
   return (
     <html lang="vi" className="scroll-smooth" suppressHydrationWarning={true}>
       <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Restaurant",
+              name: "PizzaTeo",
+              url: "https://pizzateo.vercel.app",
+              servesCuisine: "Pizza",
+              priceRange: "$$",
+            }),
+          }}
+        />
         <script dangerouslySetInnerHTML={{
           __html: `if (window.location.hash) { history.scrollRestoration = "manual"; window.scrollTo(0,0); }`
         }} />
@@ -205,8 +221,8 @@ export default async function RootLayout({ children }) {
             </DeliveryProvider>
           </AppProvider>
         </NextIntlClientProvider>
-        {/* <Analytics />
-        <SpeedInsights /> */}
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
