@@ -48,24 +48,24 @@ const WINDOW_MS = 60 * 1000;
 // path prefix -> max requests / phút (tùy độ nhạy cảm)
 const RATE_LIMIT_RULES = [
     // ── Checkout / Orders — chặn spam tạo đơn ảo ────────────
-    { prefix: API_CHECKOUT, max: 10 },
-    { prefix: API_ORDERS, max: 10 },
+    { prefix: API_CHECKOUT, max: 8 },
+    { prefix: API_ORDERS, max: 8 },
 
     // ── Auth — chặn brute-force / spam tài khoản ────────────
-    { prefix: API_LOGIN, max: 20 },
-    { prefix: API_REGISTER, max: 10 },
-    { prefix: API_FORGOT_PASSWORD, max: 10 },
-    { prefix: API_RESET_PASSWORD, max: 10 },
-    { prefix: API_CHANGE_PASSWORD, max: 20 },
+    { prefix: API_LOGIN, max: 10 },
+    { prefix: API_REGISTER, max: 5 },
+    { prefix: API_FORGOT_PASSWORD, max: 5 },
+    { prefix: API_RESET_PASSWORD, max: 5 },
+    { prefix: API_CHANGE_PASSWORD, max: 10 },
 
     // ── Admin CRUD — chặn spam thao tác hàng loạt ───────────
-    { prefix: API_CATEGORIES, max: 40 },
-    { prefix: API_MENU_ITEMS, max: 40 },
-    { prefix: API_COMBO_TYPES, max:40 },
-    { prefix: API_COMBO, max: 40 },
-    { prefix: API_BANNERS, max: 40 },
-    { prefix: API_REARRANGE, max: 40 },
-    { prefix: API_USERS, max: 40 },
+    { prefix: API_CATEGORIES, max: 20 },
+    { prefix: API_MENU_ITEMS, max: 20 },
+    { prefix: API_COMBO_TYPES, max: 20 },
+    { prefix: API_COMBO, max: 20 },
+    { prefix: API_BANNERS, max: 20 },
+    { prefix: API_REARRANGE, max: 20 },
+    { prefix: API_USERS, max: 20 },
 
     // ── Upload ảnh — tốn resource/storage, nên giới hạn thấp ─
     { prefix: API_UPLOAD_IMAGE, max: 10 },
