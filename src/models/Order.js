@@ -28,6 +28,7 @@ const OrderSchema = new Schema({
         discountAmount: { type: Number, default: 0 },
         tierLabel: { type: String, default: null },
     },
+    isLoggedIn: { type: Boolean, default: false },
 }, { timestamps: true });
 
 // Tự xóa sau 24h nếu chưa paid

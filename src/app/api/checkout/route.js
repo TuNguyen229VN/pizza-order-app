@@ -172,6 +172,7 @@ export async function POST(req) {
             ...infoProfileCheckout,
             userEmail: infoProfileCheckout.email,
             userName: infoProfileCheckout.name,
+            isLoggedIn,  
             noteDelivery,
             deliveryInfo: {
                 ...deliveryInfo,

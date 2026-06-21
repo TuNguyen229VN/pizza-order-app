@@ -65,13 +65,16 @@ export async function markOrderPaid(orderId, paymentRef = null) {
     const deliveryFee = order.deliveryInfo?.shipFee ?? 0;
     const earnedPoints = Math.floor((subtotal + deliveryFee) / DIVISION_POINT);
 
-    if (earnedPoints > 0) {
-        await UserInfo.findOneAndUpdate(
+    if (order.isLoggedIn && earnedPoints > 0) {
+        const updatedUser = await UserInfo.findOneAndUpdate(
             { email: order.userEmail },
-            { $inc: { pointRewards: earnedPoints } }
+            { $inc: { pointRewards: earnedPoints } },
+            { new: true }
         );
-        order.earnedPoints = earnedPoints;
-        await order.save();
+        if (updatedUser) {
+            order.earnedPoints = earnedPoints;
+            await order.save();
+        }
     }
 
     const [userNotif, adminNotif] = await Promise.all([

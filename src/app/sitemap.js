@@ -6,8 +6,6 @@ export default function sitemap() {
     "/combo-order",
     "/cart",
     "/rewards",
-    "/login",
-    "/register",
   ];
 
   const locales = ["vi", "en"];

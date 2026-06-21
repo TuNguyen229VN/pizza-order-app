@@ -6,6 +6,7 @@ import { LIMITPAGE } from "@/constant/constant";
 import { validateComboType } from "@/libs/validateComboType";
 import { escapeRegex } from "@/utils/escapeRegex";
 import { getServerT } from "@/libs/getServerT";
+import { ComboDetail } from "@/models/ComboDetail";
 
 async function checkAdmin() {
     const session = await getServerSession(authOptions);
@@ -169,7 +170,10 @@ export async function DELETE(req) {
         const url = new URL(req.url);
         const _id = url.searchParams.get("_id");
         if (!_id) return Response.json({ message: "Thiếu id" }, { status: 400 });
-
+        const inUse = await ComboDetail.countDocuments({ comboType: _id });
+        if (inUse > 0) {
+            return Response.json({ message: `Còn ${inUse} combo đang dùng loại combo này, không thể xóa` }, { status: 400 });
+        }
         await ComboType.findByIdAndDelete(_id);
         return Response.json(true);
     } catch (error) {

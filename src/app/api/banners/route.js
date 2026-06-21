@@ -154,9 +154,27 @@ export async function GET(req) {
 }
 
 export async function DELETE(req) {
-    await connectDB();
-    const url = new URL(req.url);
-    const _id = url.searchParams.get("_id");
-    await Banner.deleteOne({ _id });
-    return Response.json(true)
+    try {
+        await connectDB();
+        const session = await getServerSession(authOptions);
+        if (!session) {
+            return Response.json({ message: "Bạn cần đăng nhập" }, { status: 401 });
+        }
+        if (session?.user?.admin !== true) {
+            return Response.json({ message: "Bạn không phải là admin" }, { status: 403 });
+        }
+
+        const url = new URL(req.url);
+        const _id = url.searchParams.get("_id");
+        if (!_id) return Response.json({ message: "Thiếu id" }, { status: 400 });
+
+        const deleted = await Banner.deleteOne({ _id });
+        if (deleted.deletedCount === 0) {
+            return Response.json({ message: "Không tìm thấy banner" }, { status: 404 });
+        }
+        return Response.json(true);
+    } catch (error) {
+        console.error(error);
+        return Response.json({ message: "Lỗi server" }, { status: 500 });
+    }
 }
