@@ -1,11 +1,10 @@
 "use client";
 import ButtonCancel from "@/components/buttons/ButtonCancel";
-import CloseIcon from "@/components/icons/CloseIcon";
 import ValidatedInput from "@/components/input/ValidatedInput";
 import ValidatedSelectInput from "@/components/input/ValidatedSelectInput";
 import EditTableImage from "@/components/layout/EditTableImage";
 import Loader from "@/components/loading/Loader";
-import { API_CATEGORIES, API_COMBO_TYPES, STATUS_OPTIONS } from "@/constant/constant";
+import {  API_COMBO_TYPES, STATUS_OPTIONS } from "@/constant/constant";
 import { useFormValidate } from "@/hooks/useFormValidate";
 import { uploadImage } from "@/libs/uploadImage";
 import { createValidators } from "@/libs/validators";

@@ -132,7 +132,7 @@ export default function CheckoutPage() {
             error: (err) => {
                 // Xử lý lỗi validation từ server
                 if (err?.errors && typeof err.errors === 'object') {
-                    // ✅ Dùng setErrors để trigger re-render
+                    //  Dùng setErrors để trigger re-render
                     setErrors(prev => ({
                         ...prev,
                         ...err.errors // merge lỗi server vào errors hiện tại

@@ -1,7 +1,6 @@
 import React from 'react'
 import { GiFullPizza } from 'react-icons/gi'
 import UseProfile from '../UseProfile';
-import { getUserTier } from '@/libs/pointTier';
 import { POINT_TIERS } from '@/constant/constant';
 import { useTranslations } from 'next-intl';
 import { getLabel } from '@/utils/i18n-utils';
@@ -23,7 +22,7 @@ export default function UserPointRewards() {
     const currentIndex = ALL_TIERS.findIndex(
         (t) => t.minPoints === currentTier.minPoints
     );
-    // currentIndex của LOWEST_TIER = 4, nextTier = ALL_TIERS[3] = {minPoints: 50} ✅
+    // currentIndex của LOWEST_TIER = 4, nextTier = ALL_TIERS[3] = {minPoints: 50} 
 
     const nextTier = currentIndex > 0 ? ALL_TIERS[currentIndex - 1] : null;
 
@@ -54,7 +53,7 @@ export default function UserPointRewards() {
                 <div className="mt-4">
                     <div className="flex justify-between mb-1 text-xs">
                         <span>{currentMin} {rTrans("điểm")}</span>
-                        {/* ✅ Fix chỗ MAX */}
+                        {/* Fix chỗ MAX */}
                         <span>{nextMin !== undefined ? `${nextMin} ${rTrans("điểm")}` : "MAX"}</span>
                     </div>
                     <div className="w-full h-3 overflow-hidden rounded-full bg-white/30">

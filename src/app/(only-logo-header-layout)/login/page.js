@@ -6,7 +6,6 @@ import Loader from "@/components/loading/Loader";
 import { FORGOTPASSWORD_ROUTE, HOME_ROUTE, REGISTER_ROUTE } from "@/constant/routesApp";
 import { useFormValidate } from "@/hooks/useFormValidate";
 import { createValidators } from "@/libs/validators";
-// import { validators } from "@/libs/validators";
 import { signIn } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
@@ -57,7 +56,6 @@ const LoginPage = () => {
       return
     }
     setLoginInProgress(false);
-    // router.push(callbackUrl);
     window.location.href = callbackUrl;
   }
   return (

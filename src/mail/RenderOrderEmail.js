@@ -1,4 +1,4 @@
-import { DIVISION_POINT, METHODS } from "@/constant/constant";
+import {  METHODS } from "@/constant/constant";
 
 function cartProductPrice(product) {
     let price = product.basePrice ?? product.price ?? 0;

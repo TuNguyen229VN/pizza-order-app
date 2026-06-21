@@ -6,7 +6,7 @@ import { LOGIN_ROUTE } from "@/constant/routesApp";
 import { useFormValidate } from "@/hooks/useFormValidate";
 import { createValidators } from "@/libs/validators";
 import HeaderCart from "@/modules/cart/HeaderCart";
-import { signIn, useSession } from "next-auth/react";
+import {  useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -117,7 +117,7 @@ const ProfilePage = () => {
       error: (err) => {
         // Xử lý lỗi validation từ server
         if (err?.errors && typeof err.errors === 'object') {
-          // ✅ Dùng setErrors để trigger re-render
+          //  Dùng setErrors để trigger re-render
           setErrors(prev => ({
             ...prev,
             ...err.errors // merge lỗi server vào errors hiện tại

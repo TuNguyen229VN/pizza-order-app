@@ -28,7 +28,6 @@ export async function GET(req) {
     }
 
     const orderId = capture.purchase_units?.[0]?.payments?.captures?.[0]?.custom_id;
-    // await markOrderPaid(orderId);
     const captureId = capture.purchase_units?.[0]?.payments?.captures?.[0]?.id;
     await markOrderPaid(orderId, { paypalCaptureId: captureId });
 

@@ -1,54 +1,21 @@
--chưa check trùng email
--chưa validate input
--chưa filter page
--responsive
+
 -tối ưu(tách component,...)
--loading page
-- lổi loading khi npm run dev ở trang profile
--avtar cap nhât chưa dúng
 -them proptypes
--chua validation category,menuitems (price so am)
--disable nút save truoc khi save hình
-- làm register page.a
-- them confirm truoc khi xóa cho delete function
-- quên mat khau và thay doi password
-validate login register
-- register page phải có confirm password
 category ở menuitem khi tao mới sẽ lỗi nếu k chọn gì
 
-chử dài title thì nhớ tooltip,description sản phảm giói hạn 2 dòng phan homepage
-
-thời gian tạo chưa dúng
-
-nguoi đặt nen có history
-
 còn lỗi add to cart menu item
-cart, order ,user,... list nếu k có phải có chữ thong báo k có sản phảm hay gì dó
 chưa thanh toán van chua dúng 
-làm capcha login
 check ky thanh toán xong
 
 chưa filter login hay chưa
 
 res trả ve bị lôi pass (dafix) admin check phan network
 
-bỏ postal code field 
-loading button
-
-loadding button khi bam thanh toan
-confirm delete, confirm dang xuat
-
 order cancel nghien cuu lại
-làm notification khi dat hàng thành công, 
-trang theo doi don hàng chỉ account mói dc check
-làm thanh toán tien mat, paypal
-làm combo box
-quản lý banner
-i18n (english, vn)
-xem xet lai lich sử đơn hàng có nên show luôn cho "mang đi"
+
 quản lý đơn hàng làm thêm filter loại đơn,...
 xem xét cho đặt lại đơn hàng 
-noti
+
 dia chỉ xa de test: Aeon Mall Bình Tân, 1 Đường Số 17A, Bình Trị Đông B, Bình Tân
 
 Khu du lịch Suối Tiên, Xa lộ Hà Nội, TP. Thủ Đức

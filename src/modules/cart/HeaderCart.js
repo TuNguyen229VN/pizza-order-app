@@ -3,7 +3,6 @@ import ArrowLeft from '@/components/icons/ArrowLeft'
 import { HOME_ROUTE } from '@/constant/routesApp'
 import { getLabel } from '@/utils/i18n-utils'
 import { useTranslations } from 'next-intl'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 

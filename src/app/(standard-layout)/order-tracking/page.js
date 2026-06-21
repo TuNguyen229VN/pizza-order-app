@@ -6,14 +6,11 @@ import Paging from '@/components/layout/Paging'
 import LoadingCat from '@/components/loading/LoadingCat'
 import UseProfile from '@/components/UseProfile'
 import { API_ORDERS } from '@/constant/constant'
-import { LOGIN_ROUTE, ORDERS_ROUTE } from '@/constant/routesApp'
-import { useDebounce } from '@/hooks/useDebounce'
-import { dbTimeForHuman } from '@/libs/datetime'
+import { LOGIN_ROUTE } from '@/constant/routesApp'
 import HeaderCart from '@/modules/cart/HeaderCart'
 import OrderTable from '@/modules/orders/OrderTable'
 import { useSession } from 'next-auth/react'
 import { useTranslations } from 'next-intl'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 
@@ -32,9 +29,6 @@ export default function OrderTrackingPage() {
   const { status } = session;
   const [total, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
-  const [totalAll, setTotalAll] = useState(0);
-  const [totalOn, setTotalOn] = useState(0);
-  const [totalOff, setTotalOff] = useState(0);
   const [searched, setSearched] = useState(false);
 
   useEffect(() => {
@@ -75,9 +69,6 @@ export default function OrderTrackingPage() {
         setOrders(data.orders);
         setTotal(data.total);
         setTotalPages(data.totalPages);
-        setTotalAll(data.totalAll);
-        setTotalOn(data.totalOn);
-        setTotalOff(data.totalOff);
         setLoadingOrders(false);
         setSearched(true);
       })
@@ -87,10 +78,6 @@ export default function OrderTrackingPage() {
     router.push(LOGIN_ROUTE);
   }
 
-  // if (status === "authenticated" && statusAccount === "on") {
-  //   router.push(LOGIN_ROUTE);
-  //   return null;
-  // }
   if (loading) {
     return <div className="mb-[100px]"> <LoadingCat /></div>;
   }

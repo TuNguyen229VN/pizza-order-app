@@ -46,7 +46,6 @@ export default function ComboSelector({
 }) {
     const [indicatorLeft, setIndicatorLeft] = useState(0);
     const [indicatorWidth, setIndicatorWidth] = useState(0);
-    const tabsContainerRef = useRef(null);
 
     const [menuItemsBySlot, setMenuItemsBySlot] = useState({});
     const sTrans = useTranslations("System");
@@ -55,8 +54,7 @@ export default function ComboSelector({
     const [loadingSlots, setLoadingSlots] = useState(true);
     const [validationError, setValidationError] = useState("");
     const [editingItems, setEditingItems] = useState(new Set());
-    const prevRef = useRef(null);
-    const nextRef = useRef(null);
+
     const swiperRef = useRef(null);
     const [isBeginning, setIsBeginning] = useState(true)
     const [isEnd, setIsEnd] = useState(false)

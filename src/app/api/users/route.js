@@ -49,7 +49,7 @@ export async function GET(req) {
             }
         }
 
-        // ✅ Build query cho User
+        //  Build query cho User
         const query = {};
 
         if (safeSearch) {

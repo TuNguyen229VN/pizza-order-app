@@ -1,5 +1,4 @@
 "use client";
-// app/reset-password/page.jsx
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";

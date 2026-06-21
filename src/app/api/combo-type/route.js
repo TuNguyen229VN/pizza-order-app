@@ -37,28 +37,6 @@ export async function POST(req) {
 }
 
 // GET: Lấy tất cả loại combo (có populate category)
-// export async function GET(req) {
-//     try {
-//         await connectDB();
-//         const url = new URL(req.url);
-//         const _id = url.searchParams.get("_id");
-
-//         if (_id) {
-//             const comboType = await ComboType.findById(_id).populate("slots.category", "name status");
-//             if (!comboType) return Response.json({ message: "Không tìm thấy loại combo" }, { status: 404 });
-//             return Response.json(comboType);
-//         }
-
-//         const comboTypes = await ComboType.find({ status: "on" })
-//             .populate("slots.category", "name status")
-//             .sort({ createdAt: -1 });
-//         return Response.json({ comboTypes, total: comboTypes.length });
-//     } catch (error) {
-//         console.error(error);
-//         return Response.json({ message: "Không thể kết nối Database" }, { status: 500 });
-//     }
-// }
-// GET: Lấy tất cả loại combo (có populate category)
 export async function GET(req) {
     try {
         await connectDB();

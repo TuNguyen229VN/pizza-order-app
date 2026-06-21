@@ -122,7 +122,7 @@ export const metadata = {
     card: "summary_large_image",
     title: "PizzaTeo - Pizza Delivery & Online Food Ordering",
     description:
-      "Order delicious pizzas, combo meals, and side dishes online with delivery and takeaway options.",
+      "Đặt pizza online nhanh chóng tại PizzaTeo với nhiều loại pizza, combo hấp dẫn, giao hàng tận nơi, mang đi, tích điểm đổi ưu đãi và nhiều phương thức thanh toán an toàn.",
     images: ["/twitter-image.png"],
   },
 
@@ -163,7 +163,7 @@ export default async function RootLayout({ children }) {
         <script dangerouslySetInnerHTML={{
           __html: `if (window.location.hash) { history.scrollRestoration = "manual"; window.scrollTo(0,0); }`
         }} />
-        <script dangerouslySetInnerHTML={{
+        {/* <script dangerouslySetInnerHTML={{
           __html: `
       if (window.location.search.includes('debug=1')) {
         var box = document.createElement('div');
@@ -206,7 +206,7 @@ export default async function RootLayout({ children }) {
         });
       }
     `
-        }} />
+        }} /> */}
       </head>
       <body className={roboto.className}>
         <NextIntlClientProvider messages={messages} timeZone="Asia/Ho_Chi_Minh" locale={locale}>

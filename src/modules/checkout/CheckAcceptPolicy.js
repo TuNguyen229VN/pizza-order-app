@@ -4,7 +4,7 @@
 import InputCheckAccept from '@/components/input/InputCheckAccept'
 import { useTranslations } from 'next-intl';
 import Link from 'next/link'
-import React, { useState } from 'react'
+import React from 'react'
 
 export default function CheckAcceptPolicy({ checked, setChecked, legit }) {
     const sTrans = useTranslations("System");

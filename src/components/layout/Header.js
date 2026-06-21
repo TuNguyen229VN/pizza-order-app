@@ -2,7 +2,7 @@
 import { CART_ROUTE, HOME_ROUTE, LOGIN_ROUTE, MENU_ROUTE, ORDER_TRACKING_ROUTE, PROFILE_ROUTE, REGISTER_ROUTE, REWARDS_ROUTE } from "@/constant/routesApp";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { CartContext } from "../AppContext";
 import ShoppingCart from "../icons/ShoppingCart";
 import Bars2 from "../icons/Bars";
@@ -11,7 +11,6 @@ import Bell from "../icons/Bell";
 import UserIcon from "../icons/UserIcon";
 import { totalQuantity } from "@/libs/totalQuantity";
 import ConfirmPopup from "../popup/ConfirmPopup";
-import DeliveryPickupModal from "@/modules/DeliveryPickupModal";
 import { useDelivery } from "@/context/DeliveryContext";
 import CloseIcon from "../icons/CloseIcon";
 import MenuMobile from "./MenuMobile";
@@ -24,7 +23,6 @@ const Header = ({ className }) => {
   const session = useSession();
   const status = session.status;
   const userData = session.data?.user;
-  const [open, setOpen] = useState(false);
   const { cartProducts } = useContext(CartContext);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const { deliveryInfo, openDeliveryModal } = useDelivery();

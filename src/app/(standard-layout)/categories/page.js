@@ -1,6 +1,5 @@
 "use client";
 import FilterSort from "@/components/filter/FilterSort";
-import Trash from "@/components/icons/Trash";
 import InputSearch from "@/components/input/InputSearch";
 import EditTableImage from "@/components/layout/EditTableImage";
 import Paging from "@/components/layout/Paging";
@@ -8,7 +7,7 @@ import TotalDashboard from "@/components/layout/TotalDashboard";
 import UserTabs from "@/components/layout/UserTabs";
 import LoadingCat from "@/components/loading/LoadingCat";
 import UseProfile from "@/components/UseProfile";
-import { API_CATEGORIES, API_UPLOAD_IMAGE, LIST_OPTION, STATUS_OPTIONS, STATUS_OPTIONS_FILTER } from "@/constant/constant";
+import { API_CATEGORIES, LIST_OPTION, STATUS_OPTIONS, STATUS_OPTIONS_FILTER } from "@/constant/constant";
 import ContainerProfileLeft from "@/container/ContainerProfileLeft";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useFormValidate } from "@/hooks/useFormValidate";
@@ -162,7 +161,6 @@ const CategoriesPage = () => {
       error: (err) => {
         // Xử lý lỗi validation từ server
         if (err?.errors && typeof err.errors === 'object') {
-          // ✅ Dùng setErrors để trigger re-render
           setErrors(prev => ({
             ...prev,
             ...err.errors // merge lỗi server vào errors hiện tại
@@ -217,7 +215,7 @@ const CategoriesPage = () => {
           <ContainerProfileLeft className={"mt-6"}>
             <h3 className="tracking-wider uppercase font-label-bold text-secondary">{sTrans("Danh sách chi tiết")}</h3>
 
-            {/* ✅ Thanh tìm kiếm + sort */}
+            {/*  Thanh tìm kiếm + sort */}
             <div className="flex flex-wrap items-center gap-3 my-4">
               <div className="w-full">
                 <InputSearch search={search} setSearch={setSearch} />

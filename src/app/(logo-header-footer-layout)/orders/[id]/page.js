@@ -1,7 +1,5 @@
 "use client"
 import { CartContext, cartProductPrice, totalCartPrice } from '@/components/AppContext';
-import AddressInput from '@/components/layout/AddressInput';
-import SectionHeader from '@/components/layout/SectionHeader';
 import CartProduct from '@/modules/cart/CartProduct';
 import { API_ORDERS, CANCEL_WINDOW_MINUTES, METHODS, ORDER_STATUS_FLOW, ORDER_STATUS_LABELS } from '@/constant/constant';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
@@ -27,7 +25,6 @@ export default function OrderPage() {
     const [order, setOrder] = useState();
     const sTrans = useTranslations("System");
     const cTrans = useTranslations("Cart");
-    const hTrans = useTranslations("HomePage");
     const router = useRouter();
     const [loadingOrder, setLoadingOrder] = useState(true);
     const { loading, data: profile } = UseProfile();
@@ -252,19 +249,8 @@ export default function OrderPage() {
                             </ConfirmPopup>
                         )}
 
-                        {/* ================refund */}
-                        {/* {order?.status === "cancelled" && (
-                            <p className='mt-4 text-center rounded-lg w-[150px] p-2 font-medium text-gray-700 bg-gray-200'>
-                                {sTrans("Đã hủy")}
-                            </p>
-                        )} */}
-
-
-
                     </div>
                 </div>
-                {/* ========================= */}
-                {/* {showAdminForHandleLayout && ( */}
                 <div className='p-6 mt-4 border rounded-lg md:mt-6'>
                     <h4 className='mb-4 font-semibold md:mb-6 md:text-2xl'>{sTrans("Trạng thái đơn hàng")}</h4>
                     <OrderStatusBadge status={order?.status} className="w-full mb-4" />
@@ -290,12 +276,7 @@ export default function OrderPage() {
                                 : `${sTrans("Chuyển sang")}: ${sTrans(ORDER_STATUS_LABELS[nextStatus])}`}
                         </ConfirmPopup>
                     )}
-
-                    {/* {!canAdvanceStatus && order?.status !== "cancelled" && (
-                        <p className='text-sm italic text-secondary'>{sTrans("Đơn hàng đã hoàn thành")}</p>
-                    )} */}
                 </div>
-                {/* )} */}
 
                 {/* ==================== */}
                 <div className='grid grid-cols-1 p-6 mt-4 border rounded-lg md:grid-cols-2 md:mt-6'>

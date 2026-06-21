@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react'
 import EditTableImage from '../../components/layout/EditTableImage';
 import UseProfile from '../../components/UseProfile';
-import AddressInput from '../../components/layout/AddressInput';
 import ValidatedInput from '../../components/input/ValidatedInput';
 import ValidatedSelectInput from '../../components/input/ValidatedSelectInput';
 import ValidatedDateInput from '../../components/input/ValidatedDateInput';
@@ -55,12 +54,6 @@ export default function UserForm({ title, user, onSave, errors, registerRef, cle
     );
   }, [user]);
 
-
-  function handleAddressChange(propName, value) {
-    if (propName === 'phone') setPhone(value);
-    if (propName === 'city') setCity(value);
-    if (propName === 'country') setCountry(value);
-  }
 
   function handleFileSelect(file, localPreview) {
     setPendingFile(file);

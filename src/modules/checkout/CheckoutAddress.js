@@ -2,8 +2,6 @@ import ChevronRight from '@/components/icons/ChevronRight';
 import ValidatedInput from '@/components/input/ValidatedInput';
 import { useDelivery } from '@/context/DeliveryContext';
 import React, { useState } from 'react'
-import DeliveryPickupModal from '../DeliveryPickupModal';
-import CloseIcon from '@/components/icons/CloseIcon';
 import { useTranslations } from 'next-intl';
 
 export default function CheckoutAddress({ infoProps, setInfoProps, errors, registerRef, clearError, noteDelivery, setNoteDelivery }) {

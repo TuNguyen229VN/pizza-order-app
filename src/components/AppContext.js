@@ -4,35 +4,6 @@ import React, { createContext, useCallback, useEffect, useState } from "react";
 import uniqid from "uniqid";
 export const CartContext = createContext({});
 
-// // ─── Tính giá 1 item thường ───
-// export function cartProductPrice(cartProduct) {
-//   let price = cartProduct.basePrice;
-//   if (cartProduct.size) {
-//     price += cartProduct.size.price;
-//   }
-//   if (cartProduct.extras?.length > 0) {
-//     for (const extra of cartProduct.extras) {
-//       price += extra.price;
-//     }
-//   }
-//   if (cartProduct?.quantity) {
-//     price = price * cartProduct.quantity
-//   }
-//   return price;
-// }
-// // ─── Tính giá 1 combo trong giỏ 
-// export function cartComboPrice(comboCartItem) {
-//   return (comboCartItem.price || 0) * (comboCartItem.quantity || 1);
-// }
-
-// // ─── Tính tổng giỏ hàng (cả món lẻ lẫn combo) ───────────────────────────────
-// export function totalCartPrice(cartProducts) {
-//   return cartProducts.reduce((sum, item) => {
-//     if (item.type === "combo") return sum + cartComboPrice(item);
-//     return sum + cartProductPrice(item);
-//   }, 0);
-// }
-
 export { cartProductPrice, cartComboPrice, totalCartPrice } from "@/libs/priceUtils"
 const AppProvider = ({ children }) => {
   const [cartProducts, setCartProducts] = useState([]);

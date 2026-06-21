@@ -17,12 +17,6 @@ export default function CartSubtotal({ deliveryFee = 0, subtotal, children, clas
             <div className='flex items-center justify-between mt-4'>
                 <p className='flex items-center gap-1'>{cTrans("Giảm giá thành viên")} <NotificationPopup labelDesc={nTrans("DISCOUNT_NOTI_DESC")}><InfoIcon /></NotificationPopup></p>
                 <p className='font-semibold text-[#0a8020] text-sm md:text-base'>({discountPercent}%) {discountAmount.toLocaleString('vi-VN') || 0} <span className='underline'>đ</span>  </p>
-                {/* {order?.pointDiscount?.discountAmount > 0 && (
-                    <p className="text-sm text-green-600">
-                        🎁 Ưu đãi {order.pointDiscount.tierLabel} (-{order.pointDiscount.discountPercent}%):
-                        -{order.pointDiscount.discountAmount.toLocaleString("vi-VN")}đ
-                    </p>
-                )} */}
             </div>
             <div className='flex items-center justify-between pb-4 mt-4 border-b'>
                 <p className='flex items-center gap-1'>{cTrans("Phí giao hàng")} <NotificationPopup labelDesc={nTrans("DELIVERY_FEE_NOTI_DESC")}><InfoIcon /></NotificationPopup></p>

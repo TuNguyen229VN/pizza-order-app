@@ -1,6 +1,5 @@
 import ButtonCancel from '@/components/buttons/ButtonCancel';
 import ButtonPrimary from '@/components/buttons/ButtonPrimary';
-import ValidatedInput from '@/components/input/ValidatedInput';
 import ValidatedSelectInput from '@/components/input/ValidatedSelectInput';
 import Loader from '@/components/loading/Loader';
 import { useTranslations } from 'next-intl';

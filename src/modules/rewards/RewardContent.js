@@ -1,5 +1,4 @@
 import ButtonPrimary from '@/components/buttons/ButtonPrimary';
-import { POINT_TIERS } from '@/constant/constant'
 import { REGISTER_ROUTE } from '@/constant/routesApp';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';

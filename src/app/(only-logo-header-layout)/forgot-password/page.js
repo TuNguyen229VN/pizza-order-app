@@ -1,5 +1,4 @@
 "use client";
-// app/forgot-password/page.jsx
 import { useState } from "react";
 import Link from "next/link";
 import ValidatedInput from "@/components/input/ValidatedInput";

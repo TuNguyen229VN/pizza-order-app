@@ -4,7 +4,6 @@ import MenuItemPriceProps from '../../components/layout/MenuItemPriceProps';
 import { API_CATEGORIES, STATUS_OPTIONS } from '@/constant/constant';
 import ValidatedInput from '../../components/input/ValidatedInput';
 import ValidatedSelectInput from '../../components/input/ValidatedSelectInput';
-import ButtonPrimary from '../../components/buttons/ButtonPrimary';
 import Loader from '../../components/loading/Loader';
 import ButtonCancel from '../../components/buttons/ButtonCancel';
 import TagInput from '@/components/input/TagInput';

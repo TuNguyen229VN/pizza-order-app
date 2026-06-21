@@ -200,10 +200,10 @@ export default function ComboForm({ onSuccess, editData = null, setRedirectToIte
             try {
                 data = JSON.parse(text);
             } catch {
-                throw { message: `${sTrans("Lỗi server")} (${res.status})` };  // ✅ chỉ catch JSON parse fail
+                throw { message: `${sTrans("Lỗi server")} (${res.status})` };  //  chỉ catch JSON parse fail
             }
 
-            if (!res.ok) throw data;  // ✅ throw ra ngoài catch, giữ nguyên error từ server
+            if (!res.ok) throw data;  //  throw ra ngoài catch, giữ nguyên error từ server
             return data;
         });
 

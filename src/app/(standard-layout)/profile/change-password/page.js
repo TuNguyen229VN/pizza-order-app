@@ -46,9 +46,7 @@ export default function ChangePasswordPage() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (loadingForm) return;
-        // setError("");
         setLoadingForm(true);
-        // setUserCreated(false);
         const isValid = handleValidate({
             currentPassword: {
                 value: currentPassword,

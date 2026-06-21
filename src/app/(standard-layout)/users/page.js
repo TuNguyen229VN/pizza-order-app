@@ -7,13 +7,11 @@ import UserTabs from '@/components/layout/UserTabs'
 import LoadingCat from '@/components/loading/LoadingCat';
 import UseProfile from '@/components/UseProfile';
 import { API_PROFILE, API_USERS, LIST_OPTION, USER_STATUS_OPTION } from '@/constant/constant';
-import { USERS_ROUTE } from '@/constant/routesApp';
 import ContainerProfileLeft from '@/container/ContainerProfileLeft';
 import { useDebounce } from '@/hooks/useDebounce';
 import HeaderCart from '@/modules/cart/HeaderCart';
 import UserTable from '@/modules/users/UserTable';
 import { useTranslations } from 'next-intl';
-import Link from 'next/link';
 import React, { useEffect, useState } from 'react'
 import toast from 'react-hot-toast';
 

@@ -1,13 +1,10 @@
 "use client";
-import DeleteButton from '@/components/buttons/DeleteButton';
 import ArrowLeft from '@/components/icons/ArrowLeft';
-import Left from '@/components/icons/Left';
-import EditTableImage from '@/components/layout/EditTableImage';
 import MenuItemForm from '@/modules/menu-items/MenuItemForm';
 import UserTabs from '@/components/layout/UserTabs';
 import ConfirmPopup from '@/components/popup/ConfirmPopup';
 import UseProfile from '@/components/UseProfile';
-import { API_MENU_ITEMS, API_UPLOAD_IMAGE } from '@/constant/constant';
+import { API_MENU_ITEMS } from '@/constant/constant';
 import { MENU_ITEMS_ROUTE } from '@/constant/routesApp';
 import ContainerProfileLeft from '@/container/ContainerProfileLeft';
 import { useFormValidate } from '@/hooks/useFormValidate';
@@ -121,7 +118,7 @@ export default function EditMenuItemPage() {
                 rules: [validators.requiredSelect("trạng thái")],
             },
             image: {
-                value: pendingFile || formData.image, // ✅ check cả file mới lẫn ảnh cũ
+                value: pendingFile || formData.image, //  check cả file mới lẫn ảnh cũ
                 rules: [validators.required("ảnh món ăn")],
             },
 
@@ -172,7 +169,6 @@ export default function EditMenuItemPage() {
             error: (err) => {
                 // Xử lý lỗi validation từ server
                 if (err?.errors && typeof err.errors === 'object') {
-                    // ✅ Dùng setErrors để trigger re-render
                     setErrors(prev => ({
                         ...prev,
                         ...err.errors // merge lỗi server vào errors hiện tại
