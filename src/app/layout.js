@@ -30,7 +30,7 @@ export const metadata = {
 
   title: {
     default: "PizzaTeo - Pizza Delivery & Online Food Ordering",
-    template: "%s | PizzaTeo",
+    template: "%s",
   },
 
   description:
