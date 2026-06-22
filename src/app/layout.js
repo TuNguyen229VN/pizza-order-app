@@ -147,6 +147,7 @@ export default async function RootLayout({ children }) {
   return (
     <html lang="vi" className="scroll-smooth" suppressHydrationWarning={true}>
       <head>
+        <meta name="application-name" content="PizzaTeo" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
