@@ -254,7 +254,7 @@ export default function ComboSelector({
             const total = totalChosenInSlot(i);
             if (total < slot.quantity) {
                 const category = categories.find(c => c._id === slot.category)
-                const label = slot.label ||  getLabel(hTrans,category.name) || `Slot ${i + 1}`;
+                const label = slot.label || getLabel(hTrans, category.name) || `Slot ${i + 1}`;
                 setValidationError(`"${label}": ${sTrans("cần chọn đủ")} ${slot.quantity} ${sTrans("món")} (${sTrans("đã chọn")} ${total})`);
                 setChooseTabIndex(i); // Nhảy về slot lỗi
                 return;
@@ -375,7 +375,7 @@ export default function ComboSelector({
                                                 <div key={slotIdx} className={`flex items-center gap-2  ${total === 0 && chooseTabIndex !== slotIdx ? "opacity-50 pointer-events-none" : "cursor-pointer"}`} onClick={() => { setChooseTabIndex(slotIdx); setEditingItems(new Set()); }}>
                                                     <div className={`flex flex-shrink-0 items-center justify-center w-8 h-8 text-sm rounded-full border ${chooseTabIndex === slotIdx ? "bg-primary text-white " : "border-primary text-primary"}`}> <p className="font-semibold">{total > 0 && chooseTabIndex !== slotIdx ? <FaCheck /> : slotIdx + 1}</p></div>
                                                     <div>
-                                                        <p className="text-sm font-semibold whitespace-nowrap md:text-base">{sTrans("ChọnSelect")} {getLabel(hTrans,category?.name)} {slot.quantity > 0 && `(${total}/${slot.quantity})`}</p>
+                                                        <p className="text-sm font-semibold whitespace-nowrap md:text-base">{sTrans("ChọnSelect")} {getLabel(hTrans, category?.name)} {slot.quantity > 0 && `(${total}/${slot.quantity})`}</p>
                                                         <p className="text-sm font-semibold text-secondary">{sTrans("Yêu cầu")}</p>
                                                     </div>
                                                 </div>
@@ -421,17 +421,18 @@ export default function ComboSelector({
                                             </div>
                                             <div className='flex flex-col justify-between flex-1 w-full p-4 pl-2'>
                                                 <div>
-                                                    <h4 title={getLabel(hTrans,mi.name)} className={`md:text-lg text-sm md:leading-[26px] capitalize  line-clamp-2 font-bold `}>{getLabel(hTrans,mi.name)}</h4>
-                                                    <p className='text-sm text-secondary line-clamp-1'>{getLabel(hTrans,mi.description)}</p>
+                                                    <h4 title={getLabel(hTrans, mi.name)} className={`md:text-lg text-sm md:leading-[26px] capitalize  line-clamp-2 font-bold `}>{getLabel(hTrans, mi.name)}</h4>
+                                                    <p className='text-sm text-secondary line-clamp-1'>{getLabel(hTrans, mi.description)}</p>
                                                     {combo.slots[chooseTabIndex].size?.name && (
                                                         <span className="text-xs font-medium ">
-                                                            {sTrans("Kích thước")}: {getLabel(hTrans,combo.slots[chooseTabIndex].size.name)}
+                                                            {sTrans("Kích thước")}: {getLabel(hTrans, combo.slots[chooseTabIndex].size.name)}
                                                         </span>
                                                     )}
                                                 </div>
                                                 <div className='relative flex items-center justify-between w-full'>
-                                                    <div>
-                                                        <p className={`font-medium  md:text-base mt-1 text-sm `}>{(mi.basePrice + (mi.sizes?.[0]?.price || 0)).toLocaleString('vi-VN')}<span className='ml-2 underline'>đ</span></p>
+                                                    <div className="flex items-center gap-2">
+                                                        <p className={`font-medium  md:text-base mt-1 text-sm `}>0<span className='ml-1 underline'>đ</span></p>
+                                                        <p className={`text-secondary text-sm mt-1 line-through`}>{(mi.basePrice + (mi.sizes?.[0]?.price || 0)).toLocaleString('vi-VN')}<span className='ml-1 underline'>đ</span></p>
                                                     </div>
                                                     {(() => {
                                                         const slotFull = totalChosenInSlot(chooseTabIndex) >= combo.slots[chooseTabIndex].quantity;
