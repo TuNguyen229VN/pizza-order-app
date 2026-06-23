@@ -300,7 +300,7 @@ Administrators can enable or disable:
 
 ## Testing:
 
-- Tài khoản admin test: teo@gmail.com pass 123456
+- Tài khoản admin test: admin@gmail.com pass Admin123@
 - Paypal sb: sb-rqczv51529184@personal.example.com dG=iQtv1
 -  Momo sb: NGUYEN VAN A 9704 0000 0000 0018 03/07 OTP
 -  Zalopay sb: 4111111111111111 NGUYEN VAN A 01/28 123

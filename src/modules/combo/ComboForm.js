@@ -335,7 +335,7 @@ export default function ComboForm({ onSuccess, editData = null, setRedirectToIte
     // ── Render ─────────────────────────────────────────────────────────────
     return (
         <div className="rounded-lg">
-            <div className="relative p-2 rounded-lg w-[200px] h-[200px] mx-auto group mt-12 md:mt-8">
+            <div className="relative p-2 rounded-lg w-[400px] h-[200px] mx-auto group mt-12 md:mt-8">
                 <EditTableImage
                     key={imageInputKey}
                     classNameImage={"rounded-none"}

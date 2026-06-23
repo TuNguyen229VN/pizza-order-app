@@ -10,8 +10,8 @@ import React, { useState } from 'react'
 import { HiArrowRight } from 'react-icons/hi2';
 import { MdOutlineModeEdit } from 'react-icons/md';
 
-export default function MenuItemsTable({ menuItems, loadingForm, handleMenuItemDelete, categories }) {
-      const sTrans = useTranslations("System");
+export default function MenuItemsTable({ loadingData, menuItems, loadingForm, handleMenuItemDelete, categories }) {
+    const sTrans = useTranslations("System");
     const [loadedImages, setLoadedImages] = useState({});
     return (
         <>
@@ -29,7 +29,13 @@ export default function MenuItemsTable({ menuItems, loadingForm, handleMenuItemD
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-outline-variant font-body-md">
-                        {menuItems?.length > 0 ?
+                        {loadingData ? (
+                            <tr>
+                                <td colSpan={7} className="py-4 italic text-center text-secondary">
+                                    {sTrans("Đang tải")}
+                                </td>
+                            </tr>
+                        ) : menuItems?.length > 0 ?
                             menuItems.map((item) => (
                                 <tr className="transition-colors hover:bg-surface-container-low group" key={item._id}>
                                     <td className="px-5 py-4">

@@ -10,7 +10,7 @@ import React, { useState } from 'react'
 import { HiArrowRight } from 'react-icons/hi2'
 import { MdOutlineModeEdit } from 'react-icons/md'
 
-export default function ComboTypeTable({ comboTypes, loadingForm, handleMenuItemDelete, categories }) {
+export default function ComboTypeTable({ loadingData, comboTypes, loadingForm, handleMenuItemDelete, categories }) {
     const [loadingImage, setLoadingImage] = useState({});
     const sTrans = useTranslations("System");
     return (
@@ -27,7 +27,13 @@ export default function ComboTypeTable({ comboTypes, loadingForm, handleMenuItem
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-outline-variant font-body-md">
-                        {comboTypes?.length > 0 ?
+                        {loadingData ? (
+                            <tr>
+                                <td colSpan={5} className="py-4 italic text-center text-secondary">
+                                    {sTrans("Đang tải")}
+                                </td>
+                            </tr>
+                        ) : comboTypes?.length > 0 ?
                             comboTypes.map((item) => (
                                 <tr className="transition-colors hover:bg-surface-container-low group" key={item._id}>
                                     <td className="px-5 py-4">
@@ -47,7 +53,7 @@ export default function ComboTypeTable({ comboTypes, loadingForm, handleMenuItem
                                     <td className="px-5 py-4">
                                         <div className='w-[180px]'>
 
-                                            <span className={`inline-block  px-3 py-1 rounded-full  ${item.status === "on" ? "bg-green-100 text-green-800" : " bg-red-100 text-red-800"}`}>{item?.status === "on" ? sTrans("Đang kinh doanh" ): sTrans("Tạm đóng")}</span>
+                                            <span className={`inline-block  px-3 py-1 rounded-full  ${item.status === "on" ? "bg-green-100 text-green-800" : " bg-red-100 text-red-800"}`}>{item?.status === "on" ? sTrans("Đang kinh doanh") : sTrans("Tạm đóng")}</span>
                                         </div>
                                     </td>
                                     <td className="px-5 py-4">

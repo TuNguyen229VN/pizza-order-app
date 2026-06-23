@@ -389,6 +389,7 @@
     "Hãy thử lại với tìm kiếm mới": "Hãy thử lại với tìm kiếm mới",
     "Chỉ từ": "Chỉ từ",
     "Kích thước": "Kích thước",
+    "Tất cả trạng thái":"Tất cả trạng thái",
     "Topping thêm": "Topping thêm",
     "Ghi chú": "Ghi chú",
     "tùy chọn": "tùy chọn",
@@ -746,7 +747,13 @@
     "Xác nhận chuyển sang":"Xác nhận chuyển sang",
     "Trạng thái đơn hàng":"Trạng thái đơn hàng",
     "Đơn hàng đã hoàn thành":"Đơn hàng đã hoàn thành",
-    "Cập nhật trạng thái thành công":"Cập nhật trạng thái thành công"
+    "Cập nhật trạng thái thành công":"Cập nhật trạng thái thành công",
+    "Đặt hàng thành công":"Đặt hàng thành công",
+    "Đơn hàng mới (COD)":"Đơn hàng mới (COD)",
+    "Đơn hàng đã bị hủy":"Đơn hàng đã bị hủy",
+    "Cập nhật đơn hàng":"Cập nhật đơn hàng",
+    "Đơn đã thanh toán có món không còn bán":"Đơn đã thanh toán có món không còn bán",
+    "Đơn hàng mới":"Đơn hàng mới"
   },
   "Validation": {
     "required": "Vui lòng nhập {field}",

@@ -50,6 +50,7 @@ export async function GET(req) {
         const search = url.searchParams.get("search") || "";
         const safeSearch = escapeRegex(search);
         const sort = url.searchParams.get("sort") || "newest";
+        const statusOrder = url.searchParams.get("statusOrder") || "";
         const paid = url.searchParams.get("paid"); // "true" | "false" | null
         const page = parseInt(url.searchParams.get("page") || "1");
         const limit = LIMITPAGE;
@@ -63,6 +64,7 @@ export async function GET(req) {
         };
         const sortOrder = sortMap[sort] || sortMap.newest;
 
+        const statusFilter = statusOrder ? { status: statusOrder } : {};
         // 1. Lấy theo _id
         if (_id) {
             const order = await Order.findById(_id);
@@ -80,8 +82,8 @@ export async function GET(req) {
 
         // Base query theo quyền
         const baseQuery = admin
-            ? { ...buildSearchQuery(safeSearch, true), ...paidFilter }
-            : { userEmail, "deliveryInfo.mode": "delivery", ...buildSearchQuery(safeSearch, false), ...paidFilter };
+            ? { ...buildSearchQuery(safeSearch, true), ...paidFilter, ...statusFilter }
+            : { userEmail, "deliveryInfo.mode": "delivery", ...buildSearchQuery(safeSearch, false), ...paidFilter, ...statusFilter };
 
         // 3. Không phân trang
         if (all) {

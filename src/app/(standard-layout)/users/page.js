@@ -21,6 +21,7 @@ export default function UsersPage() {
     const [users, setUsers] = useState([]);
     const [status, setStatus] = useState("");
     const [loadingForm, setLoadingForm] = useState(false);
+    const [loadingData, setLoadingData] = useState(true);
     const [search, setSearch] = useState("");
     const [sort, setSort] = useState("newest");
     const [page, setPage] = useState(1);
@@ -52,6 +53,7 @@ export default function UsersPage() {
     }, [page])
 
     const fetchUsers = () => {
+        setLoadingData(true);
         const params = new URLSearchParams({
             search: debouncedSearch,
             sort,
@@ -67,6 +69,7 @@ export default function UsersPage() {
                 setTotalOff(data.totalOff);
                 setTotalPages(data.totalPages);
                 setTotalAll(data.totalAll);
+                setLoadingData(false);
             })
         })
     }
@@ -143,7 +146,7 @@ export default function UsersPage() {
                             <FilterSort sort={sort} setSort={setSort} listOption={LIST_OPTION} />
                         </div>
 
-                        <UserTable users={users} loadingForm={loadingForm} handleUserBlock={handleUserBlock} />
+                        <UserTable loadingData={loadingData} users={users} loadingForm={loadingForm} handleUserBlock={handleUserBlock} />
 
                         <Paging
                             page={page}

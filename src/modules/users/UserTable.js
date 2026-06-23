@@ -10,7 +10,7 @@ import { HiArrowRight, HiLockOpen } from "react-icons/hi2";
 import SkeletonLoadingBox from "@/components/skeleton/SkeletonLoadingBox";
 import { useTranslations } from "next-intl";
 
-export default function UserTable({ users, loadingForm = false, handleUserBlock }) {
+export default function UserTable({ loadingData, users, loadingForm = false, handleUserBlock }) {
     const [loadingImage, setLoadingImage] = useState({});
     const sTrans = useTranslations("System");
     return (
@@ -28,7 +28,13 @@ export default function UserTable({ users, loadingForm = false, handleUserBlock 
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-outline-variant font-body-md">
-                        {users?.length > 0 ?
+                        {loadingData ? (
+                            <tr>
+                                <td colSpan={6} className="py-4 italic text-center text-secondary">
+                                    {sTrans("Đang tải")}
+                                </td>
+                            </tr>
+                        ) : users?.length > 0 ?
                             users.map((user) => (
                                 <tr className="transition-colors hover:bg-surface-container-low group" key={user?._id}>
                                     <td className="px-5 py-4">

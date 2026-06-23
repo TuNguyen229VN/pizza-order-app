@@ -28,7 +28,13 @@ export default function OrderTable({ orders, loadingForm = false }) {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-outline-variant font-body-md">
-                        {orders?.length > 0 ?
+                        {loadingForm ? (
+                            <tr>
+                                <td colSpan={9} className="py-4 italic text-center text-secondary">
+                                    {sTrans("Đang tải")}
+                                </td>
+                            </tr>
+                        ) : orders?.length > 0 ?
                             orders.map((order) => (
                                 <tr className="transition-colors hover:bg-surface-container-low group" key={order?._id}>
                                     <td className="px-5 py-4">

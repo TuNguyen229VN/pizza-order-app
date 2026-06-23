@@ -9,6 +9,7 @@ import ContainerProfileLeft from '@/container/ContainerProfileLeft';
 import { useNotificationContext } from '@/context/NotificationContext';
 import { timeAgo } from '@/libs/timeAgo';
 import HeaderCart from '@/modules/cart/HeaderCart';
+import { getLabel } from '@/utils/i18n-utils';
 import { useSession } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
@@ -77,8 +78,8 @@ export default function NotificationPage() {
                   }}
                   className={`p-3 border-b cursor-pointer hover:bg-gray-50 transition ${!n.isRead ? "bg-blue-50" : ""}`}
                 >
-                  <p className="font-medium ">{n.title}</p>
-                  <p className="text-sm text-gray-500 mt-0.5">{n.message}</p>
+                  <p className="font-medium ">{getLabel(sTrans,n.title)}</p>
+                  <p className="text-sm text-gray-500 mt-0.5">{getLabel(sTrans,n.message)}</p>
                   <p className="mt-1 text-xs text-gray-400 text-end">{timeAgo(n.createdAt,sTrans)}</p>
                 </div>
               ))}

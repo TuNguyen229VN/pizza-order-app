@@ -21,6 +21,7 @@ import toast from "react-hot-toast";
 
 export default function MenuItemsPage() {
   const [loadingForm, setLoadingForm] = useState(false);
+  const [loadingData, setLoadingData] = useState(true);
   const sTrans = useTranslations("System");
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("newest");
@@ -64,6 +65,7 @@ export default function MenuItemsPage() {
   }, [page]);
 
   const fetchMenuItems = () => {
+    setLoadingData(true);
     const params = new URLSearchParams({
       search: debouncedSearch,
       sort,
@@ -80,6 +82,7 @@ export default function MenuItemsPage() {
         setTotalOff(data.totalOff);
         setTotalPages(data.totalPages);
         setTotalAll(data.totalAll);
+        setLoadingData(false);
       })
     );
   }
@@ -139,7 +142,7 @@ export default function MenuItemsPage() {
 
               </div>
 
-              <MenuItemsTable menuItems={menuItems} handleMenuItemDelete={handleMenuItemDelete} loadingForm={loadingForm} categories={categories} />
+              <MenuItemsTable loadingData={loadingData} menuItems={menuItems} handleMenuItemDelete={handleMenuItemDelete} loadingForm={loadingForm} categories={categories} />
 
               <Paging
                 page={page}

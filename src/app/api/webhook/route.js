@@ -55,7 +55,7 @@ export async function markOrderPaid(orderId, paymentRef = null) {
             type: "order_status",
             recipientRole: "admin",
             orderId: order._id,
-            title: "⚠️ Đơn đã thanh toán có món không còn bán",
+            title: "Đơn đã thanh toán có món không còn bán",
             message: `Đơn [${order._id}]: ${issues.join("; ")}`,
         });
         await pusherServer.trigger("private-admin", "new-notification", { notification: adminWarnNotif });
@@ -83,14 +83,14 @@ export async function markOrderPaid(orderId, paymentRef = null) {
             recipientRole: "user",
             recipientEmail: order.userEmail,
             orderId: order._id,
-            title: "Đặt hàng thành công 🎉",
+            title: "Đặt hàng thành công",
             message: `Đơn hàng [${order._id}] của bạn đã được thanh toán!`,
         }),
         sendNotification({
             type: "order_placed",
             recipientRole: "admin",
             orderId: order._id,
-            title: "Đơn hàng mới!",
+            title: "Đơn hàng mới",
             message: `Khách ${order.userName} (${order.phone}) vừa thanh toán đơn [${order._id}] - ${order.paymentMethod?.toUpperCase()}.`,
         }),
     ]);

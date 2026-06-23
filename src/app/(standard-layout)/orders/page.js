@@ -6,7 +6,7 @@ import TotalDashboard from '@/components/layout/TotalDashboard';
 import UserTabs from '@/components/layout/UserTabs';
 import LoadingCat from '@/components/loading/LoadingCat';
 import UseProfile from '@/components/UseProfile';
-import { API_ORDERS, LIST_OPTION, PAID_OPTION } from '@/constant/constant';
+import { API_ORDERS, LIST_OPTION, ORDER_STATUS_LABELS, PAID_OPTION } from '@/constant/constant';
 import ContainerProfileLeft from '@/container/ContainerProfileLeft';
 import { useDebounce } from '@/hooks/useDebounce';
 import HeaderCart from '@/modules/cart/HeaderCart';
@@ -21,6 +21,7 @@ export default function OrdersPage() {
     const sTrans = useTranslations("System");
     const [search, setSearch] = useState("");
     const [sort, setSort] = useState("newest");
+    const [statusOrder, setStatusOrder] = useState("")
     const [page, setPage] = useState(1);
     const [paid, setPaid] = useState(null)
     const [total, setTotal] = useState(0);
@@ -45,7 +46,7 @@ export default function OrdersPage() {
         } else {
             fetchOrders(); // page đã = 1 rồi, fetch luôn
         }
-    }, [debouncedSearch, sort, paid]);
+    }, [debouncedSearch, statusOrder, sort, paid]);
 
     useEffect(() => {
         fetchOrders();
@@ -56,6 +57,7 @@ export default function OrdersPage() {
         const params = new URLSearchParams({
             search: debouncedSearch,
             sort,
+            statusOrder,
             page,
             ...(paid !== null && { paid }),
         });
@@ -72,6 +74,13 @@ export default function OrdersPage() {
         })
     }
 
+    const statusOptions = [
+        { value: "", label: "Tất cả trạng thái" },
+        ...Object.entries(ORDER_STATUS_LABELS).map(([key, value]) => ({
+            value: key,
+            label: value,
+        })),
+    ];
     if (loading) {
         return <div className="mb-[100px]"><LoadingCat /></div>;
     }
@@ -93,19 +102,9 @@ export default function OrdersPage() {
                                     <InputSearch search={search} setSearch={setSearch} placeholder={sTrans("Nhập số điện thoại hoặc mã đơn hàng")} />
                                 </div>
                                 <FilterSort sort={paid} setSort={setPaid} listOption={PAID_OPTION} />
+                                <FilterSort sort={statusOrder} setSort={setStatusOrder} listOption={statusOptions} />
                                 <FilterSort sort={sort} setSort={setSort} listOption={LIST_OPTION} />
                             </div>
-                            <div>
-                                <div className='flex items-center gap-4'>
-                                    <div className='h-4 bg-red-200 w-9' ></div>
-                                    <p className='text-red-500'>{sTrans("Chưa thanh toán")}</p>
-                                </div>
-                                <div className='flex items-center gap-4'>
-                                    <div className='h-4 bg-green-200 w-9' ></div>
-                                    <p className='text-green-700'>{sTrans("Đã thanh toán")}</p>
-                                </div>
-                            </div>
-
                             <OrderTable orders={orders} loadingForm={loadingOrders} />
 
                             <Paging

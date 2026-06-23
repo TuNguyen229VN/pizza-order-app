@@ -10,20 +10,9 @@ import React, { useState } from 'react'
 import { HiArrowRight } from 'react-icons/hi2'
 import { MdOutlineModeEdit } from 'react-icons/md'
 
-export default function ComboTable({ comboList, loadingForm, handleComboDelete, menuItems, categories }) {
+export default function ComboTable({ comboList, loadingCombo, loadingForm, handleComboDelete, menuItems, categories }) {
     const [loadingImage, setLoadingImage] = useState({});
     const sTrans = useTranslations("System");
-    const getItemsForMenu = (items) => {
-        return items?.map((slot) => {
-            const menuItem = menuItems.find(
-                (c) => c._id === slot.menuItem?._id
-            );
-            if (!menuItem) return null;
-            return ` ${menuItem.name} ${slot.selectedSize?.name ? ` (${slot.selectedSize.name})` : ""}x${slot.quantity}`;
-        })
-            .filter(Boolean)
-            .join(", ") || "Chưa có"
-    }
 
     const getItemsForSlots = (items) => {
         return items
@@ -54,7 +43,13 @@ export default function ComboTable({ comboList, loadingForm, handleComboDelete, 
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-outline-variant font-body-md">
-                        {comboList?.length > 0 ?
+                        {loadingCombo ? (
+                            <tr>
+                                <td colSpan={8} className="py-4 italic text-center text-secondary">
+                                    {sTrans("Đang tải")}
+                                </td>
+                            </tr>
+                        ) : comboList?.length > 0 ?
                             comboList.map((item) => (
                                 <tr className="transition-colors hover:bg-surface-container-low group" key={item._id}>
                                     <td className="px-5 py-4">

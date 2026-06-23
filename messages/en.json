@@ -391,6 +391,7 @@
     "Hãy thử lại với tìm kiếm mới": "Try again with a new search",
     "Chỉ từ": "From",
     "Kích thước": "Size",
+    "Tất cả trạng thái":"All status",
     "Topping thêm": "Extra toppings",
     "Ghi chú": "Notes",
     "tùy chọn": "options",
@@ -748,7 +749,13 @@
     "Xác nhận chuyển sang": "Confirm change to",
     "Trạng thái đơn hàng": "Order status",
     "Đơn hàng đã hoàn thành": "Order completed",
-    "Cập nhật trạng thái thành công":"Status update successful"
+    "Cập nhật trạng thái thành công":"Status update successful",
+    "Đặt hàng thành công":"Order placed successfully",
+    "Đơn hàng mới (COD)":"New COD order",
+    "Đơn hàng đã bị hủy":"Order cancelled",
+    "Cập nhật đơn hàng":"Order update",
+    "Đơn đã thanh toán có món không còn bán":"Paid order contains unavailable items",
+    "Đơn hàng mới":"New order"
   },
   "Validation": {
     "required": "Please enter {field}",

@@ -9,6 +9,7 @@ import SkeletonLoadingNotification from "../skeleton/SkeletonLoadingNotification
 import { useNotificationContext } from "@/context/NotificationContext";
 import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
+import { getLabel } from "@/utils/i18n-utils";
 
 export function NotificationBell() {
     const { notifications, unreadCount, markAsRead, loadMore, hasMore, loadingMore, loading } = useNotificationContext();
@@ -111,8 +112,8 @@ export function NotificationBell() {
                             }}
                             className={`p-3 border-b cursor-pointer hover:bg-gray-50 transition ${!n.isRead ? "bg-blue-50" : ""}`}
                         >
-                            <p className="text-sm font-semibold">{n.title}</p>
-                            <p className="text-xs text-gray-500 mt-0.5">{n.message}</p>
+                            <p className="text-sm font-semibold">{getLabel(sTrans,n.title)}</p>
+                            <p className="text-xs text-gray-500 mt-0.5">{getLabel(sTrans,n.message)}</p>
                             <p className="mt-1 text-xs text-gray-400">{timeAgo(n.createdAt,sTrans)}</p>
                         </div>
                     ))}

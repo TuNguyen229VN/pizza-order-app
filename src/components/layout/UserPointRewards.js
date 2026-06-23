@@ -42,12 +42,12 @@ export default function UserPointRewards() {
                 </div>
                 <div className='flex flex-row items-center justify-between md:flex-col lg:flex-row'>
                     <div>
-                        <span className='text-[40px] font-semibold'>{points}</span>
-                        <span className='ml-2 text-sm'>{rTrans("điểm")}</span>
+                        <span className='text-[38px] font-semibold'>{nextMin !== undefined ? points : "MAX"}</span>
+                        <span className='ml-1 text-sm'>{rTrans("điểm")}</span>
                     </div>
                     <div>
-                        <span className='text-[40px] font-semibold'>{currentTier?.discountPercent || 0}%</span>
-                        <span className='ml-2 text-sm'>{rTrans("giảm giá")}</span>
+                        <span className='text-[38px] font-semibold'>{currentTier?.discountPercent || 0}%</span>
+                        <span className='ml-1 text-sm'>{rTrans("giảm giá")}</span>
                     </div>
                 </div>
                 <div className="mt-4">

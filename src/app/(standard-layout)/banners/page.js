@@ -36,6 +36,7 @@ export default function BannersPage() {
   const [previewImage, setPreviewImage] = useState(null);
   const [imageInputKey, setImageInputKey] = useState(0);
   const [loadingForm, setLoadingForm] = useState(false);
+  const [loadingData, setLoadingData] = useState(true);
   const { errors, setErrors, registerRef, handleValidate, clearError } = useFormValidate();
   // --- state mới ---
   const [search, setSearch] = useState("");
@@ -77,6 +78,7 @@ export default function BannersPage() {
   }, [page]);
 
   const fetchBanners = () => {
+    setLoadingData(true);
     const params = new URLSearchParams({
       search: debouncedSearch,
       sort,
@@ -91,6 +93,7 @@ export default function BannersPage() {
         setTotal(data.total);
         setTotalPages(data.totalPages);
         setTotalAll(data.totalAll);
+        setLoadingData(false);
       })
     );
   };
@@ -240,7 +243,7 @@ export default function BannersPage() {
               <FilterSort sort={sort} setSort={setSort} listOption={LIST_OPTION} />
             </div>
 
-            <BannersTable banners={banners} setEditedBanner={setEditedBanner} setBannerName={setBannerName} setStatus={setStatus} clearError={clearError} loadingForm={loadingForm} setPendingFile={setPendingFile} setPreviewImage={setPreviewImage} handleBannerDelete={handleBannerDelete} />
+            <BannersTable loadingData={loadingData} banners={banners} setEditedBanner={setEditedBanner} setBannerName={setBannerName} setStatus={setStatus} clearError={clearError} loadingForm={loadingForm} setPendingFile={setPendingFile} setPreviewImage={setPreviewImage} handleBannerDelete={handleBannerDelete} />
 
             <Paging
               page={page}

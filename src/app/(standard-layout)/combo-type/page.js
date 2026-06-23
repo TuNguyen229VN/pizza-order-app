@@ -23,6 +23,7 @@ export default function ComboTypePage() {
     const { loading: profileLoading, data: profileData } = UseProfile();
     const sTrans = useTranslations("System");
     const [loadingForm, setLoadingForm] = useState(false);
+    const [loadingData, setLoadingData] = useState(true);
     const [search, setSearch] = useState("");
     const [sort, setSort] = useState("newest");
     const [status, setStatus] = useState("");
@@ -52,6 +53,7 @@ export default function ComboTypePage() {
     }, [debouncedSearch, sort, status]);
 
     const fetchComboTypes = () => {
+        setLoadingData(true);
         const params = new URLSearchParams({
             search: debouncedSearch,
             sort,
@@ -67,6 +69,7 @@ export default function ComboTypePage() {
                 setTotalOff(data.totalOff);
                 setTotalPages(data.totalPages);
                 setTotalAll(data.totalAll);
+                setLoadingData(false);
             })
         );
     }
@@ -128,7 +131,7 @@ export default function ComboTypePage() {
                                 <FilterSort sort={status} setSort={setStatus} listOption={STATUS_OPTIONS_FILTER} />
                                 <FilterSort sort={sort} setSort={setSort} listOption={LIST_OPTION} />
                             </div>
-                            <ComboTypeTable comboTypes={comboTypes} loadingForm={loadingForm} handleMenuItemDelete={handleMenuItemDelete} categories={categories} />
+                            <ComboTypeTable loadingData={loadingData} comboTypes={comboTypes} loadingForm={loadingForm} handleMenuItemDelete={handleMenuItemDelete} categories={categories} />
                             <Paging
                                 page={page}
                                 setPage={setPage}

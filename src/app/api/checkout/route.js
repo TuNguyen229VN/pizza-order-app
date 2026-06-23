@@ -31,14 +31,14 @@ async function triggerOrderNotification(orderDoc) {
             recipientRole: "user",
             recipientEmail: orderDoc.userEmail,
             orderId: orderDoc._id,
-            title: "Đặt hàng thành công 🎉",
+            title: "Đặt hàng thành công",
             message: `Đơn hàng [${orderDoc._id}] của bạn đã được đặt! Vui lòng thanh toán khi nhận hàng (COD).`,
         }),
         sendNotification({
             type: "order_placed",
             recipientRole: "admin",
             orderId: orderDoc._id,
-            title: "Đơn hàng mới (COD)!",
+            title: "Đơn hàng mới (COD)",
             message: `Khách ${orderDoc.userName} (${orderDoc.phone}) vừa đặt đơn [${orderDoc._id}] - COD. Chưa thanh toán, chờ giao hàng.`,
         }),
     ]);

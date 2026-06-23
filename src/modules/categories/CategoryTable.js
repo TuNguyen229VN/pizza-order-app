@@ -7,7 +7,7 @@ import Image from 'next/image';
 import React, { useState } from 'react'
 import { MdOutlineModeEdit } from 'react-icons/md';
 
-export default function CategoryTable({ categories, setEditedCategory, setCategoryName, setStatus, clearError, loadingForm, setPendingFile, setPreviewImage, handleCategoryDelete }) {
+export default function CategoryTable({ loadingData, categories, setEditedCategory, setCategoryName, setStatus, clearError, loadingForm, setPendingFile, setPreviewImage, handleCategoryDelete }) {
     const sTrans = useTranslations("System");
     const [loadingImage, setLoadingImage] = useState({});
     return (
@@ -23,7 +23,13 @@ export default function CategoryTable({ categories, setEditedCategory, setCatego
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-outline-variant font-body-md">
-                    {categories?.length > 0 ?
+                    {loadingData ? (
+                        <tr>
+                            <td colSpan={5} className="py-4 italic text-center text-secondary">
+                                {sTrans("Đang tải")}
+                            </td>
+                        </tr>
+                    ) : categories?.length > 0 ?
                         categories.map((category) => (
                             <tr className="transition-colors hover:bg-surface-container-low group" key={category._id}>
                                 <td className="px-4 py-4 md:px-6">

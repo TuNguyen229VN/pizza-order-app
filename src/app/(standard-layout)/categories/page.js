@@ -33,6 +33,7 @@ const CategoriesPage = () => {
   const [pendingFile, setPendingFile] = useState(null);     // file chờ upload
   const [previewImage, setPreviewImage] = useState(null);
   const [loadingForm, setLoadingForm] = useState(false);
+  const [loadingData, setLoadingData] = useState(true);
   const [imageInputKey, setImageInputKey] = useState(0);
   // --- state mới ---
   const [search, setSearch] = useState("");
@@ -68,6 +69,7 @@ const CategoriesPage = () => {
   }, [page]);
 
   const fetchCategories = () => {
+    setLoadingData(true);
     const params = new URLSearchParams({
       search: debouncedSearch,
       sort,
@@ -82,6 +84,7 @@ const CategoriesPage = () => {
         setTotal(data.total);
         setTotalPages(data.totalPages);
         setTotalAll(data.totalAll);
+        setLoadingData(false);
       })
     );
   };
@@ -224,7 +227,7 @@ const CategoriesPage = () => {
               <FilterSort sort={sort} setSort={setSort} listOption={LIST_OPTION} />
             </div>
 
-            <CategoryTable categories={categories} setEditedCategory={setEditedCategory} setCategoryName={setCategoryName} setStatus={setStatus} clearError={clearError} loadingForm={loadingForm} setPendingFile={setPendingFile} setPreviewImage={setPreviewImage} handleCategoryDelete={handleCategoryDelete} />
+            <CategoryTable loadingData={loadingData} categories={categories} setEditedCategory={setEditedCategory} setCategoryName={setCategoryName} setStatus={setStatus} clearError={clearError} loadingForm={loadingForm} setPendingFile={setPendingFile} setPreviewImage={setPreviewImage} handleCategoryDelete={handleCategoryDelete} />
 
             <Paging
               page={page}
