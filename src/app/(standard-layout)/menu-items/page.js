@@ -14,6 +14,7 @@ import ContainerProfileLeft from "@/container/ContainerProfileLeft";
 import { useDebounce } from "@/hooks/useDebounce";
 import HeaderCart from "@/modules/cart/HeaderCart";
 import MenuItemsTable from "@/modules/menu-items/MenuItemsTable";
+import { getLabel } from "@/utils/i18n-utils";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
@@ -89,24 +90,31 @@ export default function MenuItemsPage() {
 
   const handleMenuItemDelete = async (id) => {
     setLoadingForm(true);
-    const promise = new Promise(async (resolve, reject) => {
+
+    const promise = (async () => {
       const response = await fetch(`${API_MENU_ITEMS}?_id=${id}`, {
         method: "DELETE",
-      })
-      if (response.ok) {
-        resolve();
-        fetchMenuItems();
-      } else {
-        reject();
-      }
-      await toast.promise(promise, {
-        loading: sTrans("Đang xóa"),
-        success: sTrans("Đã xóa"),
-        error: sTrans("Lỗi"),
       });
+      const data = await response.json();
+
+      if (!response.ok) {
+        return Promise.reject(getLabel(sTrans, data?.message) || sTrans("Lỗi"));
+      }
+
+      fetchMenuItems();
+      return data;
+    })();
+
+    toast.promise(promise, {
+      loading: sTrans("Đang xóa"),
+      success: sTrans("Đã xóa"),
+      error: (msg) => msg || sTrans("Lỗi"),
+    });
+
+    promise.catch(() => { }).finally(() => {
       setLoadingForm(false);
-    })
-  }
+    });
+  };
 
   const categoryOptions = [
     { value: "", label: "Tất cả danh mục" },

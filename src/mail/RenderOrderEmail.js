@@ -43,7 +43,7 @@ export function renderOrderInvoiceEmail({ order, subtotal, deliveryFee, earnedPo
     <!-- Header -->
     <tr>
         <td style="background:#ffd6d8;padding:28px 32px;text-align:center;">
-            <img src="https://i.postimg.cc/MpxGdbxx/logo.png" alt="Pizza Teo" style="width:200px;height:80px;display:block;margin:0 auto;" />
+            <img src="https://i.ibb.co/bRbhrtvK/logo.png" alt="Pizza Teo" style="width:200px;height:80px;display:block;margin:0 auto;" />
             <p style="margin:8px 0 0;color:#e63946;font-size:14px;text-transform:uppercase;font-weight:600;">Hóa đơn thanh toán</p>
         </td>
     </tr>

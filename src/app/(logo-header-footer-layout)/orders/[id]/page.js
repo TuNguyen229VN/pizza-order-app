@@ -243,7 +243,7 @@ export default function OrderPage() {
 
                         </p>
 
-                        {showAdminForHandleLayout && order?.paymentMethod === "cod" && !order?.paid && (
+                        {showAdminForHandleLayout && order?.paymentMethod === "cod" && !order?.paid && order?.status !== "cancelled" && (
                             <ConfirmPopup onDelete={handleConfirmCodPayment} disabled={updatingPaid} label={sTrans("CONFIRM_PAYMENT_COD_LABEL")} classNameButton='w-full py-3 mt-4 text-sm font-medium text-white duration-200 bg-green-600 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed'>
                                 {updatingPaid ? `${sTrans("Đang cập nhật")}...` : sTrans("COFIRM_PAYMENT_COD")}
                             </ConfirmPopup>
@@ -269,7 +269,7 @@ export default function OrderPage() {
                             onDelete={() => handleUpdateStatus(nextStatus)}
                             disabled={updatingStatus}
                             label={`${sTrans("Xác nhận chuyển sang")}: ${sTrans(ORDER_STATUS_LABELS[nextStatus])}`}
-                            classNameButton='w-full py-3 text-sm duration-200 border-2 rounded-lg border-primary text-primary hover:bg-red-100 disabled:opacity-50 disabled:cursor-not-allowed'
+                            classNameButton='w-full py-3 text-sm duration-200 border-2 rounded-lg border-primary text-primary hover:bg-red-100 disabled:opacity-50 disabled:cursor-not-allowed mt-1'
                         >
                             {updatingStatus
                                 ? `${sTrans("Đang cập nhật")}...`

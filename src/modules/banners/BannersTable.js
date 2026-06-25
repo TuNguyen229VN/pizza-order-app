@@ -68,7 +68,7 @@ export default function BannersTable({ loadingData, banners, setEditedBanner, se
                                                     setPendingFile(null);
                                                     setPreviewImage(null);
                                                 }}><MdOutlineModeEdit className="w-5 h-5" title='Chỉnh sửa' /></button>
-                                                <ConfirmPopup disabled={loadingForm} label={`${sTrans("Xóa banner")} ${banner.name}`} onDelete={() => { handleBannerDelete(category._id) }} classNameButton='hover:text-primary'>
+                                                <ConfirmPopup disabled={loadingForm} label={`${sTrans("Xóa banner")} ${banner.name}`} onDelete={() => { handleBannerDelete(banner._id) }} classNameButton='hover:text-primary'>
                                                     <p title={sTrans("Xóa banner")}>
                                                         <Trash className="w-5 h-5" />
                                                     </p>

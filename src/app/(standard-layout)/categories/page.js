@@ -177,24 +177,28 @@ const CategoriesPage = () => {
 
   const handleCategoryDelete = async (_id) => {
     if (loadingForm) return;
-    const promise = new Promise(async (resolve, reject) => {
-      const response = await fetch(`${API_CATEGORIES}/?_id=${_id}`, { method: "DELETE" });
-      if (response.ok) {
-        resolve();
-      } else {
-        reject();
-      }
-    });
 
-    await toast.promise(promise, {
+    const promise = (async () => {
+      const response = await fetch(`${API_CATEGORIES}/?_id=${_id}`, { method: "DELETE" });
+      const data = await response.json();
+
+      if (!response.ok) {
+        return Promise.reject(getLabel(sTrans,data?.message) || sTrans("APOLOGIZE_FOR_INCONVENIENCE"));
+      }
+
+      fetchCategories();
+      return data;
+    })();
+
+    toast.promise(promise, {
       loading: sTrans("Đang xóa danh mục"),
       success: sTrans("Danh mục đã được xóa"),
-      error: sTrans("APOLOGIZE_FOR_INCONVENIENCE"),
+      error: (msg) => msg || sTrans("APOLOGIZE_FOR_INCONVENIENCE"),
     });
 
-    fetchCategories();
+    promise.catch(() => { });
   };
-
+  
   return (
     <section>
       <HeaderCart text="Quản lý danh mục" className={"top-[70px]"} />

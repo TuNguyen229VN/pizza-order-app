@@ -12,7 +12,7 @@ export function useNotifications() {
     const [loadingMore, setLoadingMore] = useState(false);
     const [loading, setLoading] = useState(true);
     useEffect(() => {
-         setLoading(true);
+        setLoading(true);
         fetch(`${API_NOTIFICATION}?page=1`)
             .then(res => res.json())
             .then(data => {
@@ -40,37 +40,73 @@ export function useNotifications() {
         setLoadingMore(false);
     }, [hasMore, loadingMore, page]);
 
+    // useEffect(() => {
+    //     if (!session?.user || !pusherClient) return;
+
+    //     const isAdmin = session.user?.admin;
+    //     const channelName = isAdmin
+    //         ? "private-admin"
+    //         : `private-user-${session.user.email.replace(/[@.]/g, "-")}`;
+
+    //     const channel = pusherClient.subscribe(channelName);
+
+    //     channel.bind("new-notification", ({ notification }) => {
+    //         setNotifications(prev => [notification, ...prev]);
+    //         setUnreadCount(prev => prev + 1);
+
+    //         if (Notification.permission === "granted") {
+    //             try {
+    //                 const n = new Notification(notification.title, {
+    //                     body: notification.message,
+    //                     icon: "/images/thankyour.png",
+    //                 });
+    //             } catch (e) {
+    //             }
+    //         }
+    //     });
+
+    //     return () => {
+    //         channel.unbind_all();
+    //         pusherClient.unsubscribe(channelName);
+    //     };
+    // }, [session]);
+
     useEffect(() => {
         if (!session?.user || !pusherClient) return;
 
         const isAdmin = session.user?.admin;
-        const channelName = isAdmin
-            ? "private-admin"
-            : `private-user-${session.user.email.replace(/[@.]/g, "-")}`;
+        const userChannelName = `private-user-${session.user.email.replace(/[@.]/g, "-")}`;
+        const adminChannelName = "private-admin";
 
-        const channel = pusherClient.subscribe(channelName);
+        const channels = [pusherClient.subscribe(userChannelName)];
+        if (isAdmin) {
+            channels.push(pusherClient.subscribe(adminChannelName));
+        }
 
-        channel.bind("new-notification", ({ notification }) => {
+        const handleNewNotification = ({ notification }) => {
             setNotifications(prev => [notification, ...prev]);
             setUnreadCount(prev => prev + 1);
 
             if (Notification.permission === "granted") {
                 try {
-                    const n = new Notification(notification.title, {
+                    new Notification(notification.title, {
                         body: notification.message,
                         icon: "/images/thankyour.png",
                     });
-                } catch (e) {
-                }
+                } catch (e) { }
             }
-        });
+        };
+
+        channels.forEach(channel => channel.bind("new-notification", handleNewNotification));
 
         return () => {
-            channel.unbind_all();
-            pusherClient.unsubscribe(channelName);
+            channels.forEach(channel => {
+                channel.unbind_all();
+                pusherClient.unsubscribe(channel.name);
+            });
         };
     }, [session]);
-
+    
     const markAsRead = async (id) => {
         await fetch(API_NOTIFICATION, {
             method: "PATCH",
@@ -93,5 +129,5 @@ export function useNotifications() {
         setUnreadCount(0);
     };
 
-    return { notifications, unreadCount, markAsRead, markAllAsRead, loadMore, hasMore, loadingMore,loading };
+    return { notifications, unreadCount, markAsRead, markAllAsRead, loadMore, hasMore, loadingMore, loading };
 }

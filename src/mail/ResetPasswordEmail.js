@@ -18,7 +18,7 @@ export function renderResetPasswordEmail({ resetUrl, userName }) {
                         <!-- Logo -->
                         <tr>
                             <td align="center" style="padding-bottom:24px;">
-                                <img src="https://i.postimg.cc/MpxGdbxx/logo.png" alt="logo" style="width: 200px; height: 80px;">
+                                <img src="https://i.ibb.co/bRbhrtvK/logo.png" alt="logo" style="width: 200px; height: 80px;">
                             </td>
                         </tr>
 

@@ -89,12 +89,11 @@ export async function POST(req) {
         const lineItems = []; // { name, quantity, unitAmount }
         for (const cartProduct of cartProducts) {
             if (cartProduct.type === "combo") {
-                const comboInfo = await ComboDetail.findById(cartProduct._id);
+                const comboInfo = await ComboDetail.findById(cartProduct._id).populate("comboType").populate("slots.category");
                 if (!comboInfo) return Response.json({ message: `Combo "${cartProduct?.name || ""}" không tồn tại` }, { status: 400 });
                 if (comboInfo.status !== "on") return Response.json({ message: `Combo "${cartProduct?.name || ""}" không còn bán` }, { status: 400 });
                 const quantity = cartProduct.quantity;
                 if (!Number.isInteger(quantity) || quantity < 1) return Response.json({ message: `Số lượng trong "${cartProduct?.name || ""}" không hợp lệ` }, { status: 400 });
-
                 const selectedItems = cartProduct.slots || [];
                 for (const selected of selectedItems) {
                     const slotIdx = selected.slotIndex;
@@ -103,6 +102,7 @@ export async function POST(req) {
                     const menuItemInfo = await MenuItem.findById(selected.menuItem?._id || selected.menuItem);
                     if (!menuItemInfo) return Response.json({ message: `Combo "${cartProduct?.name || ""}": món không tồn tại` }, { status: 400 });
                     if (menuItemInfo.status !== "on") return Response.json({ message: `Combo "${cartProduct?.name || ""}": món "${menuItemInfo.name}" không còn bán` }, { status: 400 });
+                    if (comboInfo.comboType?.status !== "on") return Response.json({ message: `Loại combo "${cartProduct?.name || ""}" không còn bán` }, { status: 400 });
                     if (menuItemInfo.category.toString() !== slot.category._id?.toString()) return Response.json({ message: `Combo "${cartProduct?.name || ""}": món "${menuItemInfo.name}" không thuộc danh mục của slot ${slotIdx + 1}` }, { status: 400 });
                     if (slot.allowedItems?.length > 0) {
                         const allowed = slot.allowedItems.map((id) => id?._id?.toString() || id.toString());
@@ -130,9 +130,10 @@ export async function POST(req) {
             }
 
             // món đơn
-            const productInfo = await MenuItem.findById(cartProduct._id);
+            const productInfo = await MenuItem.findById(cartProduct._id).populate("category");
             if (!productInfo) return Response.json({ message: `Sản phẩm "${cartProduct?.name || ""}" trong giỏ hàng không tồn tại` }, { status: 400 });
             if (productInfo.status !== "on") return Response.json({ message: `Sản phẩm "${cartProduct?.name || ""}" trong giỏ hàng không còn bán` }, { status: 400 });
+            if (productInfo.category?.status !== "on") return Response.json({ message: `Sản phẩm "${cartProduct?.name || ""}" thuộc danh mục đã ngừng bán` }, { status: 400 });
             let productPrice = productInfo.basePrice;
             if (cartProduct.size) {
                 const size = productInfo.sizes.find((s) => s._id.toString() === cartProduct.size._id.toString());
@@ -172,7 +173,7 @@ export async function POST(req) {
             ...infoProfileCheckout,
             userEmail: infoProfileCheckout.email,
             userName: infoProfileCheckout.name,
-            isLoggedIn,  
+            isLoggedIn,
             noteDelivery,
             deliveryInfo: {
                 ...deliveryInfo,

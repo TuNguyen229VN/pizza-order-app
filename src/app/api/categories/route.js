@@ -8,6 +8,7 @@ import { escapeRegex } from "@/utils/escapeRegex";
 import { cookies } from "next/headers";
 import { getTranslations } from "next-intl/server";
 import { MenuItem } from "@/models/MenuItem";
+import { ComboDetail } from "@/models/ComboDetail";
 
 export async function POST(req) {
   try {

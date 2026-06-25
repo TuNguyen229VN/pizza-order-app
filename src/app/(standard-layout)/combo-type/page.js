@@ -14,6 +14,7 @@ import ContainerProfileLeft from '@/container/ContainerProfileLeft';
 import { useDebounce } from '@/hooks/useDebounce';
 import HeaderCart from '@/modules/cart/HeaderCart';
 import ComboTypeTable from '@/modules/combo-type/ComboTypeTable';
+import { getLabel } from '@/utils/i18n-utils';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react'
@@ -86,24 +87,36 @@ export default function ComboTypePage() {
 
     const handleMenuItemDelete = async (id) => {
         setLoadingForm(true);
-        const promise = new Promise(async (resolve, reject) => {
-            const response = await fetch(`${API_COMBO_TYPES}?_id=${id}`, {
-                method: "DELETE",
-            })
-            if (response.ok) {
-                resolve();
+
+        const promise = (async () => {
+            try {
+                const response = await fetch(`${API_COMBO_TYPES}?_id=${id}`, {
+                    method: "DELETE",
+                });
+                const data = await response.json();
+
+                if (!response.ok) {
+                    const err = new Error(data?.message || "Lỗi");
+                    throw err;
+                }
+
                 fetchComboTypes();
-            } else {
-                reject();
+                return data;
+            } catch (error) {
+                throw error;
             }
-            await toast.promise(promise, {
-                loading: sTrans("Đang xóa"),
-                success: sTrans("Đã xóa"),
-                error: sTrans("Lỗi"),
-            });
+        })();
+
+        toast.promise(promise, {
+            loading: sTrans("Đang xóa"),
+            success: sTrans("Đã xóa"),
+            error: (err) => getLabel(sTrans,err?.message) || sTrans("Lỗi"),
+        });
+
+        promise.catch(() => { }).finally(() => {
             setLoadingForm(false);
-        })
-    }
+        });
+    };
 
     if (profileLoading) {
         return <div className="mb-[100px]"><LoadingCat /></div>;

@@ -6,6 +6,7 @@ import { validateMenuItem } from "@/libs/validateMenuItem";
 import { LIMITPAGE } from "@/constant/constant";
 import { escapeRegex } from "@/utils/escapeRegex";
 import { getServerT } from "@/libs/getServerT";
+import { ComboDetail } from "@/models/ComboDetail";
 
 export async function POST(req) {
     try {
@@ -76,7 +77,7 @@ export async function GET(req) {
     const query = {
         ...(safeSearch && { name: { $regex: safeSearch, $options: "i" } }),
         status: status || { $in: ["on", "off"] },
-        ...(category && { category }), 
+        ...(category && { category }),
     };
 
     const sortMap = {
@@ -127,7 +128,10 @@ export async function DELETE(req) {
         const url = new URL(req.url);
         const _id = url.searchParams.get("_id");
         if (!_id) return Response.json({ message: "Thiếu id" }, { status: 400 });
-
+        const inUseCombo = await ComboDetail.countDocuments({ "slots.allowedItems": _id });
+        if (inUseCombo > 0) {
+            return Response.json({ message: "Món ăn đang được dùng trong combo, không thể xóa" }, { status: 400 });
+        }
         const deleted = await MenuItem.findByIdAndDelete(_id);
         if (!deleted) return Response.json({ message: "Không tìm thấy món ăn" }, { status: 404 });
         return Response.json(true);

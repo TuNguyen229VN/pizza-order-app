@@ -14,6 +14,7 @@ import ContainerProfileLeft from '@/container/ContainerProfileLeft'
 import { useDebounce } from '@/hooks/useDebounce'
 import HeaderCart from '@/modules/cart/HeaderCart'
 import ComboTable from '@/modules/combo/ComboTable'
+import { getLabel } from '@/utils/i18n-utils'
 import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
@@ -102,24 +103,31 @@ export default function ComboPage() {
 
   const handleComboDelete = async (id) => {
     setLoadingForm(true);
-    const promise = new Promise(async (resolve, reject) => {
+
+    const promise = (async () => {
       const response = await fetch(`${API_COMBO}?_id=${id}`, {
         method: "DELETE",
-      })
-      if (response.ok) {
-        resolve();
-        fetchCombo();
-      } else {
-        reject();
-      }
-      await toast.promise(promise, {
-        loading: "Đang xóa...",
-        success: "Đã xóa",
-        error: "Lỗi",
       });
+      const data = await response.json();
+
+      if (!response.ok) {
+        return Promise.reject(getLabel(sTrans,data?.message) || "Lỗi");
+      }
+
+      fetchCombo();
+      return data;
+    })();
+
+    toast.promise(promise, {
+      loading: "Đang xóa...",
+      success: "Đã xóa",
+      error: (msg) => msg || "Lỗi",
+    });
+
+    promise.catch(() => { }).finally(() => {
       setLoadingForm(false);
-    })
-  }
+    });
+  };
 
   const comboTypeOptions = [
     { value: "", label: "Tất cả loại combo" },
@@ -153,7 +161,7 @@ export default function ComboPage() {
                 <FilterSort sort={comboType} setSort={setComboType} listOption={comboTypeOptions} />
                 <FilterSort sort={sort} setSort={setSort} listOption={LIST_OPTION} />
               </div>
-              <ComboTable comboList={comboList}  loadingCombo={loadingCombo}  loadingForm={loadingForm} handleComboDelete={handleComboDelete} menuItems={menuItems} categories={categories} />
+              <ComboTable comboList={comboList} loadingCombo={loadingCombo} loadingForm={loadingForm} handleComboDelete={handleComboDelete} menuItems={menuItems} categories={categories} />
               <Paging
                 page={page}
                 setPage={setPage}

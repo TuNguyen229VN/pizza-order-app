@@ -190,22 +190,26 @@ export default function BannersPage() {
 
   const handleBannerDelete = async (_id) => {
     if (loadingForm) return;
-    const promise = new Promise(async (resolve, reject) => {
-      const response = await fetch(`${API_BANNERS}/?_id=${_id}`, { method: "DELETE" });
-      if (response.ok) {
-        resolve();
-      } else {
-        reject();
-      }
-    });
 
-    await toast.promise(promise, {
+    const promise = (async () => {
+      const response = await fetch(`${API_BANNERS}/?_id=${_id}`, { method: "DELETE" });
+      const data = await response.json();
+
+      if (!response.ok) {
+        return Promise.reject(getLabel(sTrans, data?.message) || sTrans("APOLOGIZE_FOR_INCONVENIENCE"));
+      }
+
+      fetchBanners();
+      return data;
+    })();
+
+    toast.promise(promise, {
       loading: sTrans("Đang xóa banner"),
       success: sTrans("Banner đã được xóa"),
-      error: sTrans("APOLOGIZE_FOR_INCONVENIENCE"),
+      error: (msg) => msg || sTrans("APOLOGIZE_FOR_INCONVENIENCE"),
     });
 
-    fetchBanners();
+    promise.catch(() => { });
   };
 
   return (
