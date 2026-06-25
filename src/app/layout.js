@@ -161,6 +161,17 @@ export default async function RootLayout({ children }) {
             }),
           }}
         />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              name: "PizzaTeo",
+              url: "https://pizzateo.vercel.app",
+            }),
+          }}
+        />
         <script dangerouslySetInnerHTML={{
           __html: `if (window.location.hash) { history.scrollRestoration = "manual"; window.scrollTo(0,0); }`
         }} />
