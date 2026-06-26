@@ -58,7 +58,6 @@ Customers can place delivery or takeaway orders, track their order status, manag
 
 ### Utilities
 
-- Axios
 - Nodemailer
 - Moment.js
 - FormData
