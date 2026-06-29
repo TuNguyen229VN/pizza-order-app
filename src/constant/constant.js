@@ -123,5 +123,32 @@ export const ORDER_STATUS_COLORS = {
   completed: "text-green-700 bg-green-200",
   cancelled: "text-gray-700 bg-gray-200",
 };
+
+// Admin Dashboard Chart
+export const API_DASHBOARD = "/api/dashboard";
+
+export const ORDER_STATUS_LABEL = {
+  pending: "Chờ xác nhận",
+  confirmed: "Đã xác nhận",
+  preparing: "Đang chuẩn bị",
+  delivering: "Đang giao",
+  completed: "Hoàn thành",
+  cancelled: "Đã hủy",
+};
+
+export const STATUS_COLOR = {
+  pending: "#facc15",
+  confirmed: "#38bdf8",
+  preparing: "#fb923c",
+  delivering: "#a78bfa",
+  completed: "#4ade80",
+  cancelled: "#f87171",
+};
+
+export const DASHBOARD_STATUS_OPTIONS = [
+  { value: "", label: "Tất cả" },
+  ...Object.entries(ORDER_STATUS_LABEL).map(([value, label]) => ({ value, label })),
+];
+
 export { PAID_OPTION, USER_STATUS_OPTION, STATUS_OPTIONS, STATUS_OPTIONS_FILTER, LIST_OPTION, KEYWORDS, SALT_ROUNDS, LIMITPAGE, API_PROFILE, API_CATEGORIES, API_MENU_ITEMS, API_REGISTER, API_LOGIN, API_UPLOAD_IMAGE, API_USERS, API_CHECKOUT, API_ORDERS, API_CHANGE_PASSWORD, API_FORGOT_PASSWORD, API_RESET_PASSWORD, API_COMBO_TYPES, API_COMBO, API_BANNERS, API_REARRANGE, PRESET_TAGS, API_NOTIFICATION, API_PUSHER_AUTH, METHODS, EXCHANGE_RATE_VIETNAM, DIVISION_POINT, POINT_TIERS, MIN_DELIVERY_AMOUNT, CANCEL_WINDOW_MINUTES, ORDER_STATUS_FLOW };
 

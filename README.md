@@ -13,6 +13,7 @@ Customers can place delivery or takeaway orders, track their order status, manag
 ---
 
 ## Demo
+
 **Website:** [PizzaTeo Demo](https://pizzateo.vercel.app)
 
 ---
@@ -65,6 +66,10 @@ Customers can place delivery or takeaway orders, track their order status, manag
 - uniqid
 - Eruda
 
+### Data Visualization
+
+- Recharts
+
 ### Drag & Drop
 
 - @dnd-kit/core
@@ -72,6 +77,7 @@ Customers can place delivery or takeaway orders, track their order status, manag
 - @dnd-kit/utilities
 
 ---
+
 ## System Design
 
 ### Customer Flow
@@ -130,6 +136,7 @@ Admin
 - Manage Orders
 - Order Detail
 - Rearrange Sections
+- Dashboard Page
 
 ---
 
@@ -236,6 +243,17 @@ Order statuses include:
 - Drag-and-drop section ordering
 - Dynamic homepage management
 
+### Dashboard & Analytics
+
+Built with Recharts for interactive data visualization:
+
+- Total revenue, total orders, total customers, total pizza/items sold, total combos sold
+- Monthly revenue trend (Line Chart)
+- Top 5 best-selling products — pizzas, single items, and combos (Bar Chart)
+- Order status distribution (Pie Chart)
+- Latest orders table
+- Filter by order status and by month
+
 ---
 
 ## System Features
@@ -301,9 +319,9 @@ Administrators can enable or disable:
 
 - Tài khoản admin test: admin@gmail.com pass Admin123@
 - Paypal sb: sb-rqczv51529184@personal.example.com dG=iQtv1
--  Momo sb: NGUYEN VAN A 9704 0000 0000 0018 03/07 OTP
--  Zalopay sb: 4111111111111111 NGUYEN VAN A 01/28 123
--  Stripe: 4242 4242 4242 4242 - 04 / 26 (Change date by year) - 424 - 24242
+- Momo sb: NGUYEN VAN A 9704 0000 0000 0018 03/07 OTP
+- Zalopay sb: 4111111111111111 NGUYEN VAN A 01/28 123
+- Stripe: 4242 4242 4242 4242 - 04 / 26 (Change date by year) - 424 - 24242
 
 ## Future Improvements
 
@@ -314,4 +332,3 @@ Administrators can enable or disable:
 ## Screenshots
 
 ![Overview Page](bg_info.png)
-

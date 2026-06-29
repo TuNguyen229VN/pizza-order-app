@@ -1,6 +1,7 @@
 import { connectDB } from "@/libs/connectDB";
 import { Order } from "@/models/Order";
 import { MenuItem } from "@/models/MenuItem";
+import { ComboType } from "@/models/ComboType";
 import { createValidators, validateForm } from "@/libs/validators";
 import { calcDeliveryInfo } from "@/utils/utils";
 import { ComboDetail } from "@/models/ComboDetail";

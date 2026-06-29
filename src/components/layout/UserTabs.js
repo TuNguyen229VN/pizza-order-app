@@ -1,5 +1,5 @@
 "use client";
-import { BANNER_ROUTE, CATEGORIES_ROUTE, CHANGEPASSWORD_ROUTE, COMBO_ROUTE, COMBOTYPE_ROUTE, MENU_ITEMS_ROUTE, NOTIFICATION_ROUTE, ORDERS_ROUTE, PROFILE_ROUTE, REARRANGE_ROUTE, USERS_ROUTE } from "@/constant/routesApp";
+import { BANNER_ROUTE, CATEGORIES_ROUTE, CHANGEPASSWORD_ROUTE, COMBO_ROUTE, COMBOTYPE_ROUTE, DASHBOARD_ROUTE, MENU_ITEMS_ROUTE, NOTIFICATION_ROUTE, ORDERS_ROUTE, PROFILE_ROUTE, REARRANGE_ROUTE, USERS_ROUTE } from "@/constant/routesApp";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
@@ -12,7 +12,7 @@ import Bell from "../icons/Bell";
 import ConfirmPopup from "../popup/ConfirmPopup";
 import SignOutIcon from "../icons/SignOutIcon";
 import { signOut } from "next-auth/react";
-import { MdOutlineFastfood } from "react-icons/md";
+import { MdDashboard, MdOutlineFastfood } from "react-icons/md";
 import { FiPackage } from "react-icons/fi";
 import { GrSystem } from "react-icons/gr";
 import { useNotificationContext } from "@/context/NotificationContext";
@@ -22,7 +22,7 @@ import { useTranslations } from "next-intl";
 const UserTabs = ({ isAdmin }) => {
   const path = usePathname();
   const { unreadCount } = useNotificationContext();
-   const sTrans = useTranslations("System");
+  const sTrans = useTranslations("System");
   return (
     <div className="hidden md:block">
       <UserPointRewards />
@@ -33,6 +33,13 @@ const UserTabs = ({ isAdmin }) => {
         </Link>
         {isAdmin && (
           <>
+            <Link
+              className={`flex items-center p-4 gap-4 text-lg ${path === DASHBOARD_ROUTE ? "text-primary font-semibold" : ""}`}
+              href={DASHBOARD_ROUTE}
+            >
+              <MdDashboard className="w-6 h-6" />
+              <span>{sTrans("Thống kê tổng quan")}</span>
+            </Link>
             <Link
               className={`flex items-center p-4 gap-4 text-lg ${path === BANNER_ROUTE ? "text-primary font-semibold" : ""}`}
               href={BANNER_ROUTE}

@@ -2,7 +2,7 @@ import { getToken } from "next-auth/jwt";
 import { NextResponse } from "next/server";
 import {
     BANNER_ROUTE, CATEGORIES_ROUTE, CHANGEPASSWORD_ROUTE,
-    COMBO_ROUTE, COMBOTYPE_ROUTE, FORGOTPASSWORD_ROUTE,
+    COMBO_ROUTE, COMBOTYPE_ROUTE, DASHBOARD_ROUTE, FORGOTPASSWORD_ROUTE,
     LOGIN_ROUTE, MENU_ITEMS_ROUTE, NOTIFICATION_ROUTE,
     ORDER_TRACKING_ROUTE, ORDERS_ROUTE, PROFILE_ROUTE,
     REARRANGE_ROUTE, REGISTER_ROUTE, USERS_ROUTE,
@@ -22,7 +22,7 @@ const protectedRoutePatterns = [
     exact(COMBOTYPE_ROUTE), exact(COMBOTYPE_ROUTE + "/new"), exact(COMBOTYPE_ROUTE + "/edit"),
     withId(COMBOTYPE_ROUTE + "/edit"), exact(COMBO_ROUTE), exact(COMBO_ROUTE + "/new"),
     exact(COMBO_ROUTE + "/edit"), withId(COMBO_ROUTE + "/edit"),
-    exact(ORDER_TRACKING_ROUTE), exact(BANNER_ROUTE), exact(REARRANGE_ROUTE),
+    exact(ORDER_TRACKING_ROUTE), exact(BANNER_ROUTE), exact(REARRANGE_ROUTE), exact(DASHBOARD_ROUTE),
 ];
 
 const adminRoutePatterns = [
@@ -32,7 +32,7 @@ const adminRoutePatterns = [
     exact(COMBOTYPE_ROUTE), exact(COMBOTYPE_ROUTE + "/new"), exact(COMBOTYPE_ROUTE + "/edit"),
     withId(COMBOTYPE_ROUTE + "/edit"), exact(COMBO_ROUTE), exact(COMBO_ROUTE + "/new"),
     exact(COMBO_ROUTE + "/edit"), withId(COMBO_ROUTE + "/edit"),
-    exact(BANNER_ROUTE), exact(REARRANGE_ROUTE),
+    exact(BANNER_ROUTE), exact(REARRANGE_ROUTE), exact(DASHBOARD_ROUTE),
 ];
 
 const authRoutes = [LOGIN_ROUTE, REGISTER_ROUTE, FORGOTPASSWORD_ROUTE];
