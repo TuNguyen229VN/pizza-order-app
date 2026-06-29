@@ -46,7 +46,6 @@ export default function ComboSelector({
 }) {
     const [indicatorLeft, setIndicatorLeft] = useState(0);
     const [indicatorWidth, setIndicatorWidth] = useState(0);
-    const [test, settest] = useState([])
     const [menuItemsBySlot, setMenuItemsBySlot] = useState({});
     const sTrans = useTranslations("System");
     const hTrans = useTranslations("HomePage");
