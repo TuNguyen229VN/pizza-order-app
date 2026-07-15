@@ -244,7 +244,6 @@ export async function POST(req) {
             const requestId = orderId;
             const redirectUrl = `${process.env.NEXTAUTH_URL}orders/${orderId}?clear-cart=1`;
             const ipnUrl = `${process.env.NEXTAUTH_URL}api/momo/callback`;
-            console.log(ipnUrl);
             const requestType = "payWithMethod";
             const extraData = "";
             const rawSignature = `accessKey=${accessKey}&amount=${finalAmount}&extraData=${extraData}&ipnUrl=${ipnUrl}&orderId=${orderId}&orderInfo=Thanh toan don hang&partnerCode=${partnerCode}&redirectUrl=${redirectUrl}&requestId=${requestId}&requestType=${requestType}`;
