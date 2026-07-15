@@ -38,7 +38,7 @@ export async function POST(req, { params }) {
                 try {
                     await refundOrder(order);
                     // refunded = true;
-                    refunded = order.paymentMethod === "zalo"
+                    refunded = order.paymentMethod === "zalopay"
                         ? order.refundStatus === "success"
                         : true;
                 } catch (err) {
