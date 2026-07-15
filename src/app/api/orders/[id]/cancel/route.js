@@ -5,6 +5,8 @@ import { CANCEL_WINDOW_MINUTES } from "@/constant/constant";
 import { UserInfo } from "@/models/UserInfo";
 import { sendNotification } from "@/libs/sendNotification";
 import { pusherServer } from "@/libs/pusherServer";
+import { renderCancelOrderEmail } from "@/mail/CancelOrderEmail";
+import transporter from "@/libs/mailer";
 
 export async function POST(req, { params }) {
     try {
@@ -25,11 +27,13 @@ export async function POST(req, { params }) {
             );
         }
 
+        let refunded = false;
         if (order.paid) {
             // refund tiền qua cổng (nếu không phải cod)
             if (order.paymentMethod !== "cod") {
                 try {
                     await refundOrder(order);
+                    refunded = true;
                 } catch (err) {
                     console.error("Refund failed:", err);
                     return Response.json({ message: "Hủy đơn thất bại, vui lòng liên hệ admin" }, { status: 500 });
@@ -61,6 +65,24 @@ export async function POST(req, { params }) {
             status: "cancelled",
             paid: order.paid,
         });
+
+        // send mail
+        if (order.userEmail) {
+            transporter.sendMail({
+                from: `"Pizza Teo" <${process.env.GMAIL_USER}>`,
+                to: order.userEmail,
+                replyTo: process.env.GMAIL_USER,
+                subject: `Đơn hàng #${order._id} đã bị hủy`,
+                html: renderCancelOrderEmail({
+                    orderId: order._id,
+                    userName: order.userName,
+                    total: order.totalOrder,
+                    refunded,
+                    paymentMethod: order.paymentMethod,
+                }),
+            }).catch((err) => console.error("Send cancel email failed:", err));
+        }
+
         return Response.json({ message: "Đã hủy đơn hàng" });
     } catch (error) {
         console.error(error);

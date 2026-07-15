@@ -1,3 +1,7 @@
+import { BsShieldCheck } from "react-icons/bs";
+import { FaBan, FaBoxOpen, FaClock, FaTruck } from "react-icons/fa";
+import { FaCircleCheck } from "react-icons/fa6";
+
 const LIST_OPTION = [
   { value: "newest", label: "Mới nhất" },
   { value: "oldest", label: "Cũ nhất" },
@@ -124,6 +128,32 @@ export const ORDER_STATUS_COLORS = {
   cancelled: "text-gray-700 bg-gray-200",
 };
 
+export const ICON_STATUS = {
+  pending: {
+    icon: FaClock,
+    className: "text-green-700 bg-green-200",
+  },
+  confirmed: {
+    icon: BsShieldCheck,
+    className: "text-green-700 bg-green-200",
+  },
+  preparing: {
+    icon: FaBoxOpen,
+    className: "text-green-700 bg-green-200",
+  },
+  delivering: {
+    icon: FaTruck,
+    className: "text-green-700 bg-green-200",
+  },
+  completed: {
+    icon: FaCircleCheck,
+    className: "text-green-700 bg-green-200",
+  },
+  cancelled: {
+    icon: FaBan,
+    className: "text-red-700 bg-red-200",
+  },
+}
 // Admin Dashboard Chart
 export const API_DASHBOARD = "/api/dashboard";
 

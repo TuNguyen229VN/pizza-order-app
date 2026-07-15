@@ -253,7 +253,7 @@ export default function OrderPage() {
                 </div>
                 <div className='p-6 mt-4 border rounded-lg md:mt-6'>
                     <h4 className='mb-4 font-semibold md:mb-6 md:text-2xl'>{sTrans("Trạng thái đơn hàng")}</h4>
-                    <OrderStatusBadge status={order?.status} className="w-full mb-4" />
+                    <OrderStatusBadge status={order?.status} statusList={flow} className="w-full mb-4" />
                     {!showAdminLayout && canCancel && (
                         <ConfirmPopup
                             onDelete={handleCancelOrder}
