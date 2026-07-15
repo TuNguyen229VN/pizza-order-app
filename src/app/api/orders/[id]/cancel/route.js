@@ -28,16 +28,19 @@ export async function POST(req, { params }) {
         }
 
         let refunded = false;
-        if (order.refundStatus === "pending" || order.refundStatus === "success") {
-            return Response.json({ message: "Đơn hàng đang/đã được xử lý hủy, vui lòng đợi" }, { status: 400 });
+        if (order.refundStatus === "success") {
+            return Response.json({ message: "Đơn hàng đã được refund, không thể hủy lại" }, { status: 400 });
         }
-        
+
         if (order.paid) {
             // refund tiền qua cổng (nếu không phải cod)
             if (order.paymentMethod !== "cod") {
                 try {
                     await refundOrder(order);
-                    refunded = true;
+                    // refunded = true;
+                    refunded = order.paymentMethod === "ZALO_LABEL"
+                        ? order.refundStatus === "success"
+                        : true;
                 } catch (err) {
                     console.error("Refund failed:", err);
                     return Response.json({ message: "Hủy đơn thất bại, vui lòng liên hệ admin" }, { status: 500 });

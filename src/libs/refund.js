@@ -37,10 +37,22 @@ export async function refundOrder(order) {
         case "zalopay": {
             if (!paymentRef?.zaloTransId) throw new Error("Thiếu zp_trans_id để refund ZaloPay");
 
-            // Đã refund thành công hoặc đang xử lý rồi -> không gọi lại
             if (order.refundStatus === "success") return true;
-            if (order.refundStatus === "pending") {
-                throw new Error("Refund đang được ZaloPay xử lý, vui lòng đợi vài phút rồi thử lại");
+
+            // Nếu đang pending và đã có refund request trước đó -> query trạng thái thật
+            // thay vì chặn cứng hoặc gọi refund mới
+            if (order.refundStatus === "pending" && paymentRef.zaloRefundId) {
+                const status = await queryZaloRefundStatus(paymentRef.zaloRefundId, paymentRef.zaloTransId);
+                if (status === "success") {
+                    order.refundStatus = "success";
+                    await order.save();
+                    return true;
+                }
+                if (status === "pending") {
+                    // vẫn đang xử lý, coi như ok để không chặn cancel
+                    return true;
+                }
+                // status === "failed" -> rơi xuống dưới để tạo refund request mới
             }
 
             const app_id = Number(process.env.ZALOPAY_APP_ID);
@@ -60,8 +72,8 @@ export async function refundOrder(order) {
                 }),
             });
             const data = await res.json();
+            const msg = data.return_message || data.sub_return_message || "";
 
-            // return_code: 1 = thành công, 2 = đang xử lý (không phải lỗi thật), khác = lỗi
             if (data.return_code === 1) {
                 order.refundStatus = "success";
                 order.paymentRef.zaloRefundId = m_refund_id;
@@ -73,13 +85,20 @@ export async function refundOrder(order) {
                 order.refundStatus = "pending";
                 order.paymentRef.zaloRefundId = m_refund_id;
                 await order.save();
-                // coi như đã submit thành công, ZaloPay sẽ xử lý async
+                return true;
+            }
+
+            // ZaloPay báo đã có 1 refund khác đang chạy cho giao dịch này (do lần trước
+            // gọi thành công phía ZaloPay nhưng order.save() không kịp lưu pending)
+            if (msg.includes("đang refund") || msg.toLowerCase().includes("in progress")) {
+                order.refundStatus = "pending";
+                await order.save();
                 return true;
             }
 
             order.refundStatus = "failed";
             await order.save();
-            throw new Error(data.return_message || data.sub_return_message || "ZaloPay refund lỗi");
+            throw new Error(msg || "ZaloPay refund lỗi");
         }
         case "paypal": {
             if (!paymentRef?.paypalCaptureId) throw new Error("Thiếu capture_id để refund PayPal");
@@ -107,4 +126,24 @@ export async function refundOrder(order) {
         default:
             throw new Error("Phương thức thanh toán không hợp lệ để refund");
     }
+}
+
+export async function queryZaloRefundStatus(m_refund_id, zp_trans_id) {
+    const app_id = Number(process.env.ZALOPAY_APP_ID);
+    const key1 = process.env.ZALOPAY_KEY1;
+    const timestamp = Date.now();
+    const hmac_input = `${app_id}|${m_refund_id}|${timestamp}`;
+    const mac = crypto.createHmac("sha256", key1).update(hmac_input).digest("hex");
+
+    const res = await fetch("https://sb-openapi.zalopay.vn/v2/query_refund", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ app_id, m_refund_id, timestamp, mac }),
+    });
+    const data = await res.json();
+
+    // 1 = thành công, 2 = đang xử lý, khác = thất bại
+    if (data.return_code === 1) return "success";
+    if (data.return_code === 2) return "pending";
+    return "failed";
 }
