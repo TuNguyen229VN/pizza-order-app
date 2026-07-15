@@ -11,7 +11,7 @@ export async function POST(req) {
 
     if (signature !== body.signature) return Response.json({ message: "invalid signature" }, { status: 400 });
     // if (body.resultCode === 0) await markOrderPaid(body.orderId);
-    if (body.resultCode === 0) {
+    if (Number(body.resultCode) === 0) {
         await markOrderPaid(body.orderId, { momoTransId: String(body.transId) });
     }
     return Response.json({ message: "ok" });
