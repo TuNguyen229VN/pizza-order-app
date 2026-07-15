@@ -15,11 +15,26 @@ export async function refundOrder(order) {
         case "momo": {
             if (!paymentRef?.momoTransId) throw new Error("Thiếu transId để refund MoMo");
 
-            // Idempotency guard — tránh gọi lại nếu đã xử lý
             if (order.refundStatus === "success") return true;
 
             const partnerCode = process.env.MOMO_PARTNER_CODE;
             const secretKey = process.env.MOMO_SECRET_KEY;
+
+            // Nếu đang pending và đã có refund request trước đó -> query trạng thái thật
+            // thay vì chặn cứng hoặc gọi refund mới
+            if (order.refundStatus === "pending" && paymentRef.momoRefundId) {
+                const status = await queryMomoRefundStatus(paymentRef.momoRefundId);
+                if (status === "success") {
+                    order.refundStatus = "success";
+                    await order.save();
+                    return true;
+                }
+                if (status === "pending") {
+                    // vẫn đang xử lý, coi như ok để không chặn cancel
+                    return true;
+                }
+                // status === "failed" -> rơi xuống dưới để tạo refund request mới
+            }
 
             // Dùng chung 1 giá trị unique cho cả orderId và requestId của lần refund này
             const refundId = paymentRef.momoRefundId || `${_id}_refund_${Date.now()}`;
@@ -37,26 +52,34 @@ export async function refundOrder(order) {
                 }),
             });
             const data = await res.json();
+            const msg = data.message || "";
 
-            // Lưu lại refundId đã dùng để lần sau (nếu retry) tái sử dụng thay vì sinh mới
-            order.paymentRef.momoRefundId = refundId;
-
+            // resultCode = 0: thành công
             if (data.resultCode === 0) {
                 order.refundStatus = "success";
+                order.paymentRef.momoRefundId = refundId;
                 await order.save();
                 return true;
             }
 
-            // resultCode 1005 (ví dụ) = đang xử lý trùng request — coi là pending, không throw cứng
-            if (data.resultCode === 1005 || (data.message || "").toLowerCase().includes("trùng")) {
+            // MoMo báo giao dịch đang được xử lý (do lần trước gọi thành công phía MoMo
+            // nhưng order.save() không kịp lưu pending, hoặc do network timeout giữa chừng)
+            if (
+                msg.toLowerCase().includes("đang được xử lý") ||
+                msg.toLowerCase().includes("đang xử lý") ||
+                msg.toLowerCase().includes("processing") ||
+                data.resultCode === 1005 // trùng orderId/requestId
+            ) {
                 order.refundStatus = "pending";
+                order.paymentRef.momoRefundId = refundId;
                 await order.save();
                 return true;
             }
 
             order.refundStatus = "failed";
+            order.paymentRef.momoRefundId = refundId;
             await order.save();
-            throw new Error(data.message || "MoMo refund lỗi");
+            throw new Error(msg || "MoMo refund lỗi");
         }
 
         case "zalopay": {
@@ -170,5 +193,29 @@ export async function queryZaloRefundStatus(m_refund_id, zp_trans_id) {
     // 1 = thành công, 2 = đang xử lý, khác = thất bại
     if (data.return_code === 1) return "success";
     if (data.return_code === 2) return "pending";
+    return "failed";
+}
+
+
+export async function queryMomoRefundStatus(requestId) {
+    const partnerCode = process.env.MOMO_PARTNER_CODE;
+    const accessKey = process.env.MOMO_ACCESS_KEY;
+    const secretKey = process.env.MOMO_SECRET_KEY;
+    // orderId dùng chung với requestId theo cách bạn đang sinh refundId
+    const orderId = requestId;
+
+    const rawSignature = `accessKey=${accessKey}&orderId=${orderId}&partnerCode=${partnerCode}&requestId=${requestId}`;
+    const signature = crypto.createHmac("sha256", secretKey).update(rawSignature).digest("hex");
+
+    const res = await fetch("https://test-payment.momo.vn/v2/gateway/api/query", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ partnerCode, orderId, requestId, signature, lang: "vi" }),
+    });
+    const data = await res.json();
+
+    // resultCode: 0 = thành công, 1000/7002 = đang xử lý, khác = thất bại
+    if (data.resultCode === 0) return "success";
+    if (data.resultCode === 1000 || data.resultCode === 7002) return "pending";
     return "failed";
 }
