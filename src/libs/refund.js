@@ -36,13 +36,18 @@ export async function refundOrder(order) {
 
         case "zalopay": {
             if (!paymentRef?.zaloTransId) throw new Error("Thiếu zp_trans_id để refund ZaloPay");
+
+            // Đã refund thành công hoặc đang xử lý rồi -> không gọi lại
+            if (order.refundStatus === "success") return true;
+            if (order.refundStatus === "pending") {
+                throw new Error("Refund đang được ZaloPay xử lý, vui lòng đợi vài phút rồi thử lại");
+            }
+
             const app_id = Number(process.env.ZALOPAY_APP_ID);
             const key1 = process.env.ZALOPAY_KEY1;
             const m_refund_id = `${moment().format("YYMMDD")}_${app_id}_${Date.now()}`;
             const timestamp = Date.now();
             const description = "Pizza Teo refund toàn phần";
-            // ⚠️ CHƯA verify field order với doc thật của ZaloPay refund API — test kỹ trước khi dùng,
-            // giống lúc trước mình từng debug lại HMAC create API.
             const hmac_input = `${app_id}|${paymentRef.zaloTransId}|${totalOrder}|${description}|${timestamp}`;
             const mac = crypto.createHmac("sha256", key1).update(hmac_input).digest("hex");
 
@@ -55,10 +60,27 @@ export async function refundOrder(order) {
                 }),
             });
             const data = await res.json();
-            if (data.return_code !== 1) throw new Error(data.return_message || "ZaloPay refund lỗi");
-            return true;
-        }
 
+            // return_code: 1 = thành công, 2 = đang xử lý (không phải lỗi thật), khác = lỗi
+            if (data.return_code === 1) {
+                order.refundStatus = "success";
+                order.paymentRef.zaloRefundId = m_refund_id;
+                await order.save();
+                return true;
+            }
+
+            if (data.return_code === 2) {
+                order.refundStatus = "pending";
+                order.paymentRef.zaloRefundId = m_refund_id;
+                await order.save();
+                // coi như đã submit thành công, ZaloPay sẽ xử lý async
+                return true;
+            }
+
+            order.refundStatus = "failed";
+            await order.save();
+            throw new Error(data.return_message || data.sub_return_message || "ZaloPay refund lỗi");
+        }
         case "paypal": {
             if (!paymentRef?.paypalCaptureId) throw new Error("Thiếu capture_id để refund PayPal");
             const basicAuth = Buffer.from(

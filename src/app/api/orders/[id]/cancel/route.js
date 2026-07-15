@@ -28,6 +28,10 @@ export async function POST(req, { params }) {
         }
 
         let refunded = false;
+        if (order.refundStatus === "pending" || order.refundStatus === "success") {
+            return Response.json({ message: "Đơn hàng đang/đã được xử lý hủy, vui lòng đợi" }, { status: 400 });
+        }
+        
         if (order.paid) {
             // refund tiền qua cổng (nếu không phải cod)
             if (order.paymentMethod !== "cod") {

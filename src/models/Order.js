@@ -9,7 +9,7 @@ const OrderSchema = new Schema({
     cartProducts: Object,
     paid: { type: Boolean, default: false },
     totalOrder: Number,
-    earnedPoints: { type: Number, default: 0 }, 
+    earnedPoints: { type: Number, default: 0 },
     paymentMethod: String,
     app_trans_id: { type: String },
     status: {
@@ -22,6 +22,12 @@ const OrderSchema = new Schema({
         momoTransId: { type: String, default: null },
         zaloTransId: { type: String, default: null },
         paypalCaptureId: { type: String, default: null },
+        zaloRefundId: { type: String, default: null },
+    },
+    refundStatus: {
+        type: String,
+        enum: ["none", "pending", "success", "failed"],
+        default: "none",
     },
     pointDiscount: {
         discountPercent: { type: Number, default: 0 },
