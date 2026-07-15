@@ -20,6 +20,7 @@ const OrderSchema = new Schema({
     paymentRef: {
         stripePaymentIntentId: { type: String, default: null },
         momoTransId: { type: String, default: null },
+        momoRefundId: { type: String, default: null },
         zaloTransId: { type: String, default: null },
         paypalCaptureId: { type: String, default: null },
         zaloRefundId: { type: String, default: null },

@@ -14,24 +14,49 @@ export async function refundOrder(order) {
 
         case "momo": {
             if (!paymentRef?.momoTransId) throw new Error("Thiếu transId để refund MoMo");
+
+            // Idempotency guard — tránh gọi lại nếu đã xử lý
+            if (order.refundStatus === "success") return true;
+
             const partnerCode = process.env.MOMO_PARTNER_CODE;
             const secretKey = process.env.MOMO_SECRET_KEY;
-            const requestId = `${_id}_refund_${Date.now()}`;
-            const rawSignature = `accessKey=${process.env.MOMO_ACCESS_KEY}&amount=${totalOrder}&description=&orderId=${_id}&partnerCode=${partnerCode}&requestId=${requestId}&transId=${paymentRef.momoTransId}`;
+
+            // Dùng chung 1 giá trị unique cho cả orderId và requestId của lần refund này
+            const refundId = paymentRef.momoRefundId || `${_id}_refund_${Date.now()}`;
+
+            const rawSignature = `accessKey=${process.env.MOMO_ACCESS_KEY}&amount=${totalOrder}&description=&orderId=${refundId}&partnerCode=${partnerCode}&requestId=${refundId}&transId=${paymentRef.momoTransId}`;
             const signature = crypto.createHmac("sha256", secretKey).update(rawSignature).digest("hex");
 
             const res = await fetch("https://test-payment.momo.vn/v2/gateway/api/refund", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    partnerCode, orderId: _id.toString(), requestId,
+                    partnerCode, orderId: refundId, requestId: refundId,
                     amount: totalOrder, transId: Number(paymentRef.momoTransId),
                     lang: "vi", description: "", signature,
                 }),
             });
             const data = await res.json();
-            if (data.resultCode !== 0) throw new Error(data.message || "MoMo refund lỗi");
-            return true;
+
+            // Lưu lại refundId đã dùng để lần sau (nếu retry) tái sử dụng thay vì sinh mới
+            order.paymentRef.momoRefundId = refundId;
+
+            if (data.resultCode === 0) {
+                order.refundStatus = "success";
+                await order.save();
+                return true;
+            }
+
+            // resultCode 1005 (ví dụ) = đang xử lý trùng request — coi là pending, không throw cứng
+            if (data.resultCode === 1005 || (data.message || "").toLowerCase().includes("trùng")) {
+                order.refundStatus = "pending";
+                await order.save();
+                return true;
+            }
+
+            order.refundStatus = "failed";
+            await order.save();
+            throw new Error(data.message || "MoMo refund lỗi");
         }
 
         case "zalopay": {
