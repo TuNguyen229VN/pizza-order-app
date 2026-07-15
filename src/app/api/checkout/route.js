@@ -244,7 +244,7 @@ export async function POST(req) {
             const requestId = orderId;
             const redirectUrl = `${process.env.NEXTAUTH_URL}orders/${orderId}?clear-cart=1`;
             // const ipnUrl = `${process.env.NEXTAUTH_URL}api/momo/callback`;
-            const ipnUrl = `https://pizzateo.vercel.app/api/momo/callback`;
+            const ipnUrl = `https://pizzateo.vercel.app/api/test`;
             console.log(ipnUrl);
             const requestType = "payWithMethod";
             const extraData = "";
