@@ -5,7 +5,9 @@ import { Fragment } from 'react';
 export default function OrderStatusBadge({ status, statusList, className = "" }) {
     const sTrans = useTranslations("System");
     const isCancelled = status === "cancelled";
-    const displayList = isCancelled ? [...statusList, "cancelled"] : statusList;
+    const displayList = statusList
+        ? (isCancelled ? [...statusList, "cancelled"] : statusList)
+        : [];
     const currentIdx = isCancelled ? displayList.length - 1 : statusList?.indexOf(status);
     if (!statusList) {
         return (
@@ -21,7 +23,7 @@ export default function OrderStatusBadge({ status, statusList, className = "" })
                 const isCancelNode = item === "cancelled";
                 const isActive = isCancelNode ? true : (!isCancelled && currentIdx >= 0 && index <= currentIdx);
                 return (
-                    <Fragment key={index}>
+                    <Fragment key={item}>
                         <div className={`md:flex-shrink-0 flex items-center md:flex-col md:justify-center gap-2 md:gap-1`}>
                             <div className={`p-2 rounded-full bg-gray-100 text-gray-500 ${isActive ? classNameIcon : ""}`}>
                                 <Icon size={14} />
