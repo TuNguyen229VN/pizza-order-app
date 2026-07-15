@@ -95,6 +95,9 @@ export const metadata = {
   },
   verification: {
     google: "YWQK6RjsJk9LNozfyHkhzN0yS9PCAF0MDcsDfwWAKLE",
+     other: {
+    "msvalidate.01": "9681ADA0A905529094AABAB929E4F81C",
+  },
   },
   openGraph: {
     title: "PizzaTeo - Pizza Delivery & Online Food Ordering",
