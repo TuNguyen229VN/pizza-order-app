@@ -243,7 +243,8 @@ export async function POST(req) {
             const orderId = orderDoc._id.toString();
             const requestId = orderId;
             const redirectUrl = `${process.env.NEXTAUTH_URL}orders/${orderId}?clear-cart=1`;
-            const ipnUrl = `${process.env.NEXTAUTH_URL}api/momo/callback`;
+            // const ipnUrl = `${process.env.NEXTAUTH_URL}api/momo/callback`;
+            const ipnUrl = `https://webhook.site/157eeaa6-b4d6-47ff-8adc-286f4be6de33`;
             console.log(ipnUrl);
             const requestType = "payWithMethod";
             const extraData = "";
