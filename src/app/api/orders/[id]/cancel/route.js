@@ -75,7 +75,7 @@ export async function POST(req, { params }) {
 
         // send mail
         if (order.userEmail) {
-            transporter.sendMail({
+            await transporter.sendMail({
                 from: `"Pizza Teo" <${process.env.GMAIL_USER}>`,
                 to: order.userEmail,
                 replyTo: process.env.GMAIL_USER,
