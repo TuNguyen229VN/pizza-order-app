@@ -57,7 +57,7 @@ export function renderCancelOrderEmail({ orderId, userName, total, refunded, pay
                                                 ? "Đã hoàn tiền"
                                                 : paymentMethod === "cod"
                                                     ? "COD - không phát sinh thanh toán"
-                                                    : "Chưa thanh toán"}
+                                                    : "Đang xử lý hoàn tiền hoặc chưa thanh toán"}
                                         </td>
                                     </tr>
                                 </table>
