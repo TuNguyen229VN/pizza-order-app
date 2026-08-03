@@ -329,6 +329,81 @@ Administrators can enable or disable:
 - Analytics Dashboard
 - AI Product Recommendation
 
+## Environment Variables
+
+Create a `.env.local` file in the root directory and add the following variables:
+
+```env
+# Database
+MONGO_URL=""
+
+# NextAuth
+NEXTAUTH_URL=""
+NEXTAUTH_SECRET=""
+GOOGLE_CLIENT_ID=""
+GOOGLE_CLIENT_SECRET=""
+
+# Google reCAPTCHA
+NEXT_PUBLIC_RECAPTCHA_SITE_KEY=""
+RECAPTCHA_SECRET_KEY=""
+
+# Email
+RESEND_API_KEY=""
+RESEND_FROM_EMAIL=""
+GMAIL_USER=""
+GMAIL_APP_PASSWORD=""
+
+# AWS
+AWS_ACCESS_KEY=""
+AWS_SECRET_KEY=""
+
+# Image Upload
+IMGBB_API_KEY=""
+
+# Stripe
+STRIPE_SECRET_KEY=""
+STRIPE_PUBLIC_KEY=""
+STRIPE_SIGN_SECRET=""
+
+# Pusher
+PUSHER_APP_ID=""
+PUSHER_KEY=""
+PUSHER_SECRET=""
+PUSHER_CLUSTER=""
+
+NEXT_PUBLIC_PUSHER_KEY=""
+NEXT_PUBLIC_PUSHER_CLUSTER=""
+
+# PayPal
+PAYPAL_CLIENT_ID=""
+PAYPAL_CLIENT_SECRET=""
+
+# ZaloPay
+ZALOPAY_APP_ID=""
+ZALOPAY_KEY1=""
+ZALOPAY_KEY2=""
+
+# MoMo
+MOMO_PARTNER_CODE=""
+MOMO_ACCESS_KEY=""
+MOMO_SECRET_KEY=""
+
+# Environment
+NODE_ENV="development"
+TEST_ENV=""
+```
+
+Replace the empty values with your own credentials and configuration.
+
+> ⚠️ Never commit `.env.local` or expose secret keys. Add it to `.gitignore`.
+
+## Installation
+
+```bash
+npm install
+npm run dev
+```
+
 ## Screenshots
 
 ![Overview Page](bg_info.png)
