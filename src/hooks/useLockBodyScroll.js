@@ -1,9 +1,10 @@
 import { useEffect } from 'react';
 
-export function useLockBodyScroll(lock, forMobile = false) {
+export function useLockBodyScroll(lock) {
   useEffect(() => {
-    // if (lock) {
-    if (forMobile) {
+    if (lock) {
+      const mediaQuery = window.matchMedia("(max-width: 767px)");
+       if (!mediaQuery.matches) return;
       // Lưu lại style cũ để khôi phục chính xác
       const originalHtmlOverflow = document.documentElement.style.overflow;
       const originalBodyOverflow = document.body.style.overflow;
