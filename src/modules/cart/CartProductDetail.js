@@ -76,7 +76,7 @@ export default function CartProductDetail({ menuItem, showPopup, setShowPopup })
             <div
                 onClick={ev => ev.stopPropagation()}
                 className="relative flex flex-col md:flex-row w-full md:w-auto md:max-w-screen-lg
-                           h-full md:h-[560px] overflow-hidden bg-white rounded-t-xl md:rounded-xl"
+                           h-full md:h-[560px] overflow-hidden bg-white rounded-0 md:rounded-xl"
             >
                 <button
                     className="absolute z-10 p-1 bg-white rounded-full right-3 top-3 md:right-5 md:top-5"
@@ -85,7 +85,7 @@ export default function CartProductDetail({ menuItem, showPopup, setShowPopup })
                     <CloseIcon />
                 </button>
 
-                <div className="flex-shrink-0 hidden md:block md:w-1/2 md:h-full">
+                <div className="flex-shrink-0 h-[280px] md:w-1/2 md:h-full">
                     {loadingImage && <SkeletonLoadingBox className='w-full h-full' />}
                     <Image
                         src={image}
@@ -98,10 +98,10 @@ export default function CartProductDetail({ menuItem, showPopup, setShowPopup })
                 </div>
 
                 <div className="flex flex-col flex-1 w-full min-h-0 md:w-[570px]">
-                    <div className="flex-1 min-h-0 p-5 overflow-y-auto">
+                    <div className="flex-1 min-h-0 px-5 py-3 overflow-y-auto md:py-5">
                         <div>
-                            <h3 className="text-2xl leading-[30px] font-semibold break-words pr-8">{name}</h3>
-                            <p className="mt-2 break-words text-secondary">{description}</p>
+                            <h3 className="text-base md:text-2xl leading-[30px] font-semibold break-words pr-8">{name}</h3>
+                            <p className="mt-2 text-sm break-words md:text-base text-secondary">{description}</p>
                         </div>
 
                         <div className="flex flex-wrap items-center gap-4 mt-2">
@@ -159,7 +159,7 @@ export default function CartProductDetail({ menuItem, showPopup, setShowPopup })
                         </div>
                     </div>
 
-                    <div className="flex items-center justify-between gap-4 px-5 py-3 bg-white border-t md:gap-9">
+                    <div className="flex flex-col items-center justify-between gap-4 px-5 py-3 bg-white border-t md:flex-row md:gap-9">
                         <div className="flex items-center justify-center gap-3 md:gap-6">
                             <button onClick={() => handleQtyChange(-1)}
                                 className="flex items-center justify-center w-10 h-10 text-2xl border rounded-md text-primary">−</button>
@@ -167,7 +167,7 @@ export default function CartProductDetail({ menuItem, showPopup, setShowPopup })
                             <button onClick={() => handleQtyChange(1)}
                                 className="flex items-center justify-center w-10 h-10 text-2xl border rounded-md text-primary">+</button>
                         </div>
-                        <div className="flex items-center justify-center flex-1">
+                        <div className="flex items-center justify-center flex-1 w-full">
                             <ButtonPrimary onClick={handleAddToCartButtonClick}>
                                 <div className="text-sm text-center text-white md:text-base whitespace-nowrap">
                                     {sTrans("Cập nhật giỏ hàng")} <span className="inline-block w-2 h-2 mx-2 bg-white rounded-full"></span> {selectedPrice.toLocaleString('vi-VN')} <span className="underline">đ</span>
