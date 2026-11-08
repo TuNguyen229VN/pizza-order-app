@@ -14,7 +14,9 @@ export default function MenuMobile({ isAdmin, status, onClose }) {
     const { unreadCount } = useNotificationContext();
     const sTrans = useTranslations("System");
     return (
-        <div className='fixed bottom-0 left-0 z-30 w-full overflow-y-auto bg-white top-16 md:hidden'>
+        <div
+         data-scrollable
+         className='fixed bottom-0 left-0 z-30 w-full overflow-y-auto bg-white top-16 md:hidden'>
             {status === "unauthenticated" && (
                 <div className='border-b'>
                     <Link href={LOGIN_ROUTE} onClick={onClose} className="block py-3 pl-4 hover:font-medium hover:text-primary">{sTrans("Đăng nhập")}</Link>

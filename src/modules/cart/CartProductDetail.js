@@ -4,12 +4,14 @@ import CloseIcon from '@/components/icons/CloseIcon';
 import InputCheckbox from '@/components/input/InputCheckbox';
 import InputRadio from '@/components/input/InputRadio';
 import { RenderTag } from '@/components/menu/RenderTag';
+import SkeletonLoadingBox from '@/components/skeleton/SkeletonLoadingBox';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import React, { useContext, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 export default function CartProductDetail({ menuItem, showPopup, setShowPopup }) {
+    const [loadingImage, setLoadingImage] = useState(true);
     const [selectedSize, setSelectedSize] = useState(menuItem?.size ?? null);
     const [selectedExtras, setSelectedExtras] = useState(menuItem?.extras ?? []);
     const [quantity, setQuantity] = useState(menuItem?.quantity ?? 1);
@@ -69,12 +71,12 @@ export default function CartProductDetail({ menuItem, showPopup, setShowPopup })
     return createPortal(
         <div
             onClick={() => setShowPopup(false)}
-            className="fixed inset-0 z-50 flex items-end justify-center md:items-center bg-black/80"
+            className="fixed inset-0 z-50 flex justify-center md:items-center bg-black/80"
         >
             <div
                 onClick={ev => ev.stopPropagation()}
                 className="relative flex flex-col md:flex-row w-full md:w-auto md:max-w-screen-lg
-                           h-[90dvh] md:h-[560px] overflow-hidden bg-white rounded-t-xl md:rounded-xl"
+                           h-full md:h-[560px] overflow-hidden bg-white rounded-t-xl md:rounded-xl"
             >
                 <button
                     className="absolute z-10 p-1 bg-white rounded-full right-3 top-3 md:right-5 md:top-5"
@@ -84,12 +86,14 @@ export default function CartProductDetail({ menuItem, showPopup, setShowPopup })
                 </button>
 
                 <div className="flex-shrink-0 hidden md:block md:w-1/2 md:h-full">
+                    {loadingImage && <SkeletonLoadingBox className='w-full h-full' />}
                     <Image
                         src={image}
                         alt={name}
                         width={400}
                         height={400}
-                        className="object-cover object-center w-full h-full"
+                        onLoad={() => setLoadingImage(false)}
+                        className={`object-cover object-center w-full h-full ${loadingImage ? "opacity-0" : "opacity-100"}`}
                     />
                 </div>
 
