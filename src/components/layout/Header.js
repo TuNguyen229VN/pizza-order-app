@@ -28,7 +28,7 @@ const Header = ({ className }) => {
   const { deliveryInfo, openDeliveryModal } = useDelivery();
   const t = useTranslations('HomePage');
   const sTrans = useTranslations("System");
-  useLockBodyScroll(mobileNavOpen);
+  useLockBodyScroll(mobileNavOpen, true);
   return (
     <header className={`sticky top-0 z-30 max-w-6xl p-3 mx-auto bg-white md:p-4 ${className}`}>
       <div className="">
