@@ -25,7 +25,7 @@ export default function CartPage() {
     subtotal += cartProductPrice(p);
   }
   const cTrans = useTranslations("Cart");
-  const nTrans = useTranslations("Notification");
+  const nTrans =  useTranslations("Notification");
   const { deliveryInfo } = useDelivery();
   const { discountAmount, discountPercent, tier } = calcPointDiscount(profileData?.pointRewards, totalCartPrice(cartProducts));
   const isDeliveryBelowMin = deliveryInfo?.mode === "delivery" && totalCartPrice(cartProducts) < MIN_DELIVERY_AMOUNT;
