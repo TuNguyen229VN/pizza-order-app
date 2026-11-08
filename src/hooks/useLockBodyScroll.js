@@ -39,14 +39,14 @@ export function useLockBodyScroll(lock) {
       }
     };
 
-    document.addEventListener("touchstart", onTouchStart, { passive: true });
-    document.addEventListener("touchmove", onTouchMove, { passive: false });
+    // document.addEventListener("touchstart", onTouchStart, { passive: true });
+    // document.addEventListener("touchmove", onTouchMove, { passive: false });
 
     return () => {
       html.style.overflow = prevOverflow;
       html.style.overscrollBehavior = prevOverscroll;
-      document.removeEventListener("touchstart", onTouchStart);
-      document.removeEventListener("touchmove", onTouchMove);
+      // document.removeEventListener("touchstart", onTouchStart);
+      // document.removeEventListener("touchmove", onTouchMove);
     };
   }, [lock]);
 }
