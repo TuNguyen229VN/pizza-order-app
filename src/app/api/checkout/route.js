@@ -257,7 +257,7 @@ export async function POST(req) {
             });
             const momoText = await momoRes.text();
             console.log("MOMO", momoRes.status, momoText.slice(0, 500));
-            const momoData = await momoRes.json();
+            const momoData = JSON.parse(momoText);
             if (!momoData.payUrl) return Response.json({ message: momoData.localMessage || "MoMo lỗi" }, { status: 400 });
             return Response.json({ redirectUrl: momoData.payUrl });
         }
