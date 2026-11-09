@@ -16,7 +16,7 @@ export default function CartProduct({ index, product, onRemove, showEdit = false
   const [showPopup, setShowPopup] = useState(false);
   const [loadingImage, setLoadingImage] = useState(true);
   const hTrans = useTranslations("HomePage");
- const sTrans = useTranslations("System");
+  const sTrans = useTranslations("System");
   useLockBodyScroll(showPopup);
   const { wrapperRef, itemRef, bgRef } = useSwipeDelete(() => onRemove?.(index));
   const router = useRouter();
@@ -45,7 +45,7 @@ export default function CartProduct({ index, product, onRemove, showEdit = false
       >
         <div className='flex gap-4'>
           <div className='w-[82px] h-[96px] overflow-hidden flex-shrink-0'>
-           {loadingImage && <SkeletonLoadingBox className='w-full h-full' />}
+            {loadingImage && <SkeletonLoadingBox className='w-full h-full' />}
             <Image
               width={240}
               height={240}
@@ -57,11 +57,11 @@ export default function CartProduct({ index, product, onRemove, showEdit = false
           </div>
 
           <div className='lg:w-[350px] break-words'>
-            <h4 className='font-medium capitalize'>{getLabel(hTrans,product.name)}</h4>
+            <h4 className='font-medium capitalize'>{getLabel(hTrans, product.name)}</h4>
 
             {product.size && (
               <div className="mt-1 text-secondary">
-                {sTrans("Cỡ")}: <span>{getLabel(hTrans,product.size.name)}</span>
+                {sTrans("Cỡ")}: <span>{getLabel(hTrans, product.size.name)}</span>
               </div>
             )}
 
@@ -69,7 +69,7 @@ export default function CartProduct({ index, product, onRemove, showEdit = false
               <div className="mt-1 text-secondary">
                 {sTrans("Topping thêm")}:
                 {product.extras.map((extra, i) => (
-                  <span key={extra.name}> {getLabel(hTrans,extra.name)}{i !== product.extras.length - 1 && ","}</span>
+                  <span key={extra.name}> {getLabel(hTrans, extra.name)}{i !== product.extras.length - 1 && ","}</span>
                 ))}
               </div>
             )}
@@ -79,8 +79,8 @@ export default function CartProduct({ index, product, onRemove, showEdit = false
               <div className="mt-1 text-secondary">
                 {product.slots.map((item, i) => (
                   <span key={i} className="block">
-                    • {getLabel(hTrans,item.menuItem?.name)}
-                    {item.selectedSize?.name && ` (${getLabel(hTrans,item.selectedSize.name)})`}
+                    • {getLabel(hTrans, item.menuItem?.name)}
+                    {item.selectedSize?.name && ` (${getLabel(hTrans, item.selectedSize.name)})`}
                     {item.quantity > 0 && ` x${item.quantity}`}
                   </span>
                 ))}

@@ -5,6 +5,7 @@ import InputCheckbox from '@/components/input/InputCheckbox';
 import InputRadio from '@/components/input/InputRadio';
 import { RenderTag } from '@/components/menu/RenderTag';
 import SkeletonLoadingBox from '@/components/skeleton/SkeletonLoadingBox';
+import { getLabel } from '@/utils/i18n-utils';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import React, { useContext, useEffect, useState } from 'react';
@@ -18,6 +19,7 @@ export default function CartProductDetail({ menuItem, showPopup, setShowPopup })
     const [noteOrder, setNoteOrder] = useState(menuItem?.noteOrder ?? "");
     const [tags, setTags] = useState(menuItem?.tags ?? []);
     const [mounted, setMounted] = useState(false);
+    const hTrans = useTranslations("HomePage");
     const sTrans = useTranslations("System");
     const { updateCart } = useContext(CartContext);
 
@@ -100,8 +102,8 @@ export default function CartProductDetail({ menuItem, showPopup, setShowPopup })
                 <div className="flex flex-col flex-1 w-full min-h-0 md:w-[570px]">
                     <div className="flex-1 min-h-0 px-5 py-3 overflow-y-auto md:py-5">
                         <div>
-                            <h3 className="text-base md:text-2xl leading-[30px] font-semibold break-words pr-8">{name}</h3>
-                            <p className="mt-2 text-sm break-words md:text-base text-secondary">{description}</p>
+                            <h3 className="text-base md:text-2xl leading-[30px] font-semibold break-words pr-8">{getLabel(hTrans,name)}</h3>
+                            <p className="mt-2 text-sm break-words md:text-base text-secondary">{getLabel(hTrans,description)}</p>
                         </div>
 
                         <div className="flex flex-wrap items-center gap-4 mt-2">

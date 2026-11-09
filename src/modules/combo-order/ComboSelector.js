@@ -212,13 +212,14 @@ export default function ComboSelector({
     }
 
     // ── Validate ───────────────────────────────────────────────────────────
+    const clean = (s) => s?.replace(/[\s\u200B-\u200D\u2060\uFEFF]/g, "");
     function validate() {
         const slots = combo.slots;
         for (let slotIdx = 0; slotIdx < slots.length; slotIdx++) {
             const slot = slots[slotIdx];
             const total = totalChosenInSlot(slotIdx);
             if (chooseTabIndex === slotIdx && total < slot.quantity) {
-                const label = slot.label || slot.category?.name || `Slot ${slotIdx + 1}`;
+                const label = (clean(slot?.label) ? slot.label.trim() : null) || slot.category?.name || `Slot ${slotIdx + 1}`;
                 return `"${label}": cần chọn đủ ${slot.quantity} món (đã chọn ${total})`;
             }
         }
@@ -253,7 +254,7 @@ export default function ComboSelector({
             const total = totalChosenInSlot(i);
             if (total < slot.quantity) {
                 const category = categories.find(c => c._id === slot.category)
-                const label = slot.label || getLabel(hTrans, category.name) || `Slot ${i + 1}`;
+                const label = getLabel(hTrans, category.name) || (clean(slot?.label) ? slot.label.trim() : null) || `Slot ${i + 1}`;
                 setValidationError(`"${label}": ${sTrans("cần chọn đủ")} ${slot.quantity} ${sTrans("món")} (${sTrans("đã chọn")} ${total})`);
                 setChooseTabIndex(i); // Nhảy về slot lỗi
                 return;
