@@ -255,6 +255,8 @@ export async function POST(req) {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ partnerCode, accessKey, requestId, amount: finalAmount, orderId, orderInfo: "Thanh toan don hang", redirectUrl, ipnUrl, requestType, extraData, lang: "vi", signature }),
             });
+            const momoText = await momoRes.text();
+            console.log("MOMO", momoRes.status, momoText.slice(0, 500));
             const momoData = await momoRes.json();
             if (!momoData.payUrl) return Response.json({ message: momoData.localMessage || "MoMo lỗi" }, { status: 400 });
             return Response.json({ redirectUrl: momoData.payUrl });
